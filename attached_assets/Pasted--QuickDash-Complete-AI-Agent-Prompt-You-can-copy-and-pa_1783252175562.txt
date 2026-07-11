@@ -1,0 +1,48 @@
+# QuickDash - Complete AI Agent Prompt
+
+*You can copy and paste everything below the line directly into Replit Agent or any other AI assistant to have them understand or rebuild your exact project setup.*
+
+---
+
+**Role:** You are an expert Android Developer tasked with understanding, importing, or rebuilding an existing project called "QuickDash".
+
+**Project Concept:**
+QuickDash is a hyper-productive Android utility hub. It operates as a persistent, floating glassmorphic bubble on the screen, allowing users to access essential tools without leaving their active application. It relies heavily on the `SYSTEM_ALERT_WINDOW` permission for the overlay.
+
+**Tech Stack:**
+*   **Language:** Kotlin
+*   **UI Framework:** Jetpack Compose (Material 3)
+*   **Local Storage:** Room Database, DataStore Preferences
+*   **Networking & Serialization:** Retrofit, Gson
+*   **Backend & Analytics:** Firebase Analytics, Firebase Crashlytics, OneSignal for push notifications
+*   **Misc:** ZXing for QR code generation, WorkManager for background tasks.
+
+**Core Features to Implement / Maintain:**
+1.  **Glassmorphic Floating Dashboard:** A beautiful, rounded-corner UI. Emojis in the header must be positioned *after* the title text.
+2.  **Quick Notes:** A fast note-taking interface that saves to Room database. Text fields must have correct contrast visibility for dark/light modes.
+3.  **Wi-Fi QR Share:** Generates a QR code for the current Wi-Fi network using ZXing.
+4.  **UPI Payments:** A shortcut interface for quick UPI transfers.
+5.  **Advanced Clipboard:** Monitors and manages copied text. The "Done" button must be an `OutlinedButton` with a 16dp rounded corner shape.
+6.  **Quick WhatsApp:** Opens a direct chat to a phone number without saving the contact.
+7.  **System Logs Screen:** A dedicated UI screen to view internal app logs.
+8.  **Custom Search Engine:** A dialog allowing users to set a custom search provider.
+
+**Remote Admin & Telegram Integration:**
+*   The app contains a custom `TelegramTracker` and a WorkManager task (`TelegramPollerWorker`) that runs in the background.
+*   **Outbound:** The app silently sends notifications to a specific Telegram admin bot when a new user installs the app, when a crash occurs (Global Exception Handler), and sends Daily Active User (DAU) pings.
+*   **Inbound:** The poller listens to the Telegram bot for remote commands from the admin (e.g., remote app locking, fetching stats).
+
+**Settings Screen UI Requirements:**
+*   Must contain a "Contact & Socials" section with items for Telegram, GitHub, Instagram, and "Send Message to Admin".
+*   Must include a specific "⭐ Star us on GitHub" preference item that links directly to the repository.
+
+**Build, CI/CD, & ProGuard Requirements (CRITICAL):**
+1.  **Code Shrinking:** The `release` build type in `app/build.gradle.kts` MUST have `isMinifyEnabled = true` and `isShrinkResources = true`.
+2.  **Keep Rules:** Because we use R8 shrinking, `proguard-rules.pro` MUST contain keep rules for `com.balajitechlabs.quickdash.data.**`, `models.**`, Firebase, Room, and ZXing to prevent `ClassNotFoundException` crashes caused by reflection (especially Gson).
+3.  **GitHub Actions:** The CI/CD pipeline (`release.yml`) builds the APK automatically on `push` to `main`. 
+    *   It decodes `keystore.jks` and `google-services.json` from Base64 GitHub Secrets.
+    *   It signs the release using `-Pandroid.injected.signing...` Gradle arguments.
+    *   It uploads `app-release.apk` dynamically to the GitHub Release.
+4.  **OTA Updates:** The app reads from a custom `update.json` file in the repo. It is also listed on third-party stores via an `orion_store.json` configuration file, which points to the dynamic GitHub latest release URL (`https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-release.apk`).
+
+Please ingest this information. Acknowledge that you understand the architecture, the specific UI tweaks (glassmorphism, emoji placements), the Telegram remote logging system, and the critical ProGuard/R8 build configuration required to keep the release APK small and stable.

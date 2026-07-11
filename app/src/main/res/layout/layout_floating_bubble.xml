@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_bubble_container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/bg_floating_menu"
+    android:padding="6dp"
+    android:elevation="12dp">
+
+    <!-- The actual draggable bubble icon -->
+    <ImageView
+        android:id="@+id/img_bubble"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:padding="2dp"
+        android:background="@drawable/bg_bubble_circle"
+        android:contentDescription="QuickDash Bubble" />
+
+    <!-- Expandable quick menu items -->
+    <LinearLayout
+        android:id="@+id/layout_bubble_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp">
+
+        <!-- Space separator -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="8dp"
+            android:background="#33FFFFFF" />
+
+        <!-- UPI Collect -->
+        <ImageView
+            android:id="@+id/btn_menu_upi"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="6dp"
+            android:padding="10dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_upi_pay"
+            android:contentDescription="Quick Collect" />
+
+        <!-- Quick Chat -->
+        <ImageView
+            android:id="@+id/btn_menu_chat"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="6dp"
+            android:padding="10dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_shortcut_chat"
+            android:contentDescription="Quick Chat" />
+
+        <!-- Quick Search -->
+        <ImageView
+            android:id="@+id/btn_menu_search"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="6dp"
+            android:padding="10dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_search"
+            android:contentDescription="Quick Search" />
+
+        <!-- Quick Notes -->
+        <ImageView
+            android:id="@+id/btn_menu_notes"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="6dp"
+            android:padding="10dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_note"
+            android:contentDescription="Quick Notes" />
+
+        <!-- Quick Calculator -->
+        <ImageView
+            android:id="@+id/btn_menu_calculator"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="6dp"
+            android:padding="10dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_calculator"
+            android:contentDescription="Calculator" />
+
+        <!-- Quick Timer -->
+        <ImageView
+            android:id="@+id/btn_menu_timer"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="6dp"
+            android:padding="10dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_timer"
+            android:contentDescription="Timer" />
+
+        <!-- Settings -->
+        <ImageView
+            android:id="@+id/btn_menu_settings"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="6dp"
+            android:padding="10dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_settings"
+            android:contentDescription="Settings" />
+
+        <!-- Close / Minimize -->
+        <ImageView
+            android:id="@+id/btn_menu_close"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="11dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_close"
+            android:contentDescription="Close" />
+
+    </LinearLayout>
+
+</LinearLayout>

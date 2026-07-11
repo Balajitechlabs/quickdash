@@ -1,0 +1,6 @@
+Release Notes - QuickDash v2.0.1
+
+* Branded App Launcher Icon: Fully integrated the brand logo as the app launcher icon using adaptive icon layers. This ensures a clean look with the exact dark-blue background (#060D1D) and safe zone scaling, completely removing any white background plates or square borders.
+* Brand-Accurate Tool Icons: Added official vector icons for WhatsApp (brand green) and Instagram (brand pink/gradient) on the tool selection dashboard.
+* Saturated Menu Theme: Saturated the dashboard menu dialog fallback colors with a custom Gold/Orange (#FE9F06) and Navy (#060D1D) palette matching the QuickDash logo, making the main page look as vibrant as the tools inside.
+* Clean QR Code Share Footer: Fixed the footer logo in the shared QR code image to use the updated brand icon instead of the legacy icon with a white square container.

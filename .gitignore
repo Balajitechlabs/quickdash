@@ -1,0 +1,40 @@
+*.iml
+.gradle
+.kotlin/
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+app/build/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Keystore & Secrets
+*.jks
+*.keystore
+keystore.properties
+google-services.json
+secrets.properties
+
+# Release packages and notes
+release/*.apk
+Release*Notes.md
+*.b64
+
+# APKs and App Bundles
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+
+# IDE and OS
+/.idea/
+.DS_Store

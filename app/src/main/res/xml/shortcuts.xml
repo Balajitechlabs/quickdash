@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="quick_upi"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_upi"
+        android:shortcutShortLabel="@string/shortcut_quick_upi_short"
+        android:shortcutLongLabel="@string/shortcut_quick_upi_long">
+        <intent
+            android:action="com.balajitechlabs.quickdash.ACTION_QUICK_UPI"
+            android:targetPackage="com.balajitechlabs.quickdash"
+            android:targetClass="com.balajitechlabs.quickdash.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="quick_chat"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_chat"
+        android:shortcutShortLabel="@string/shortcut_quick_chat_short"
+        android:shortcutLongLabel="@string/shortcut_quick_chat_long">
+        <intent
+            android:action="com.balajitechlabs.quickdash.ACTION_QUICK_CHAT"
+            android:targetPackage="com.balajitechlabs.quickdash"
+            android:targetClass="com.balajitechlabs.quickdash.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="quick_insta"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_insta"
+        android:shortcutShortLabel="@string/shortcut_quick_insta_short"
+        android:shortcutLongLabel="@string/shortcut_quick_insta_long">
+        <intent
+            android:action="com.balajitechlabs.quickdash.ACTION_QUICK_INSTA"
+            android:targetPackage="com.balajitechlabs.quickdash"
+            android:targetClass="com.balajitechlabs.quickdash.MainActivity" />
+    </shortcut>
+</shortcuts>
