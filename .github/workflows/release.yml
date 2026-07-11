@@ -41,6 +41,13 @@ jobs:
         env:
           GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
 
+      - name: Create local.properties for Secrets
+        run: |
+          echo "TG_BOT_TOKEN=${{ secrets.TG_BOT_TOKEN }}" >> local.properties
+          echo "TG_BROADCAST_BOT_TOKEN=${{ secrets.TG_BROADCAST_BOT_TOKEN }}" >> local.properties
+          echo "TG_CHAT_ID=${{ secrets.TG_CHAT_ID }}" >> local.properties
+          echo "sdk.dir=$ANDROID_HOME" >> local.properties
+
       - name: Build Signed Release APK & AAB
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
