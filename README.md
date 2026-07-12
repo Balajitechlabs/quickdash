@@ -4,7 +4,7 @@
 </h1>
 
 <p align="center">
-  <a href="https://github.com/Balajitechlabs/quickdash/releases/download/v4.2.1/quickdash_v4.2.1.apk
+  <a href="  <a href="https://github.com/Balajitechlabs/quickdash/releases/download/[v4.2.1/quickdash_v4.2.1.apk](https://github.com/Balajitechlabs/quickdash/releases/download/v4.2.1-1/quickdash-app-v4.2.1.apk)
 ">
     <img src="https://img.shields.io/badge/Download%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white" alt="Download APK">
   </a>
