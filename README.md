@@ -10,7 +10,7 @@
 
 <br>
 
-[![Download APK](https://img.shields.io/badge/Download%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Balajitechlabs/quickdash/releases/latest/download/quickdash_v4.3.0.apk)
+[![Download APK](https://img.shields.io/badge/Download%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Balajitechlabs/quickdash/releases/download/v4.3.0-4/quickdash-app-v4.3.0.apk)
 
 <br>
 
