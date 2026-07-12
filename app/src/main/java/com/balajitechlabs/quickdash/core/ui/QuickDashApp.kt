@@ -341,21 +341,18 @@ fun QuickDashApp(
             }
 
             val payScheme = targetApp.schemePrefix
-            val uriBuilder = Uri.parse(payScheme).buildUpon()
-                .appendQueryParameter("pa", selectedId)
-                .apply {
-                    if (amount.isNotBlank()) {
-                        appendQueryParameter("am", amount)
-                    }
-                }.appendQueryParameter("cu", "INR")
-
+            
+            // We manually construct the string to prevent Uri.Builder from URL-encoding the '@' symbol in the UPI ID
+            var payURL = "$payScheme?pa=$selectedId&cu=INR"
+            if (amount.isNotBlank()) {
+                payURL += "&am=$amount"
+            }
             if (!savedPayeeName.isNullOrBlank()) {
-                uriBuilder.appendQueryParameter("pn", savedPayeeName)
+                payURL += "&pn=${Uri.encode(savedPayeeName)}"
             }
             if (note.isNotBlank()) {
-                uriBuilder.appendQueryParameter("tn", note)
+                payURL += "&tn=${Uri.encode(note)}"
             }
-            val payURL = uriBuilder.build().toString()
 
             scope.launch {
                 userStore.saveQrHistoryItem(amount, note, selectedId, targetApp.name, category)

@@ -124,16 +124,16 @@ fun QuickSocialScreen(
                         }
                         
                         val userJsonStr = userConn.inputStream.bufferedReader().use { it.readText() }
-                        val userObj = JsonParser.parseString(userJsonStr).asJsonObject
+                        val userObj = org.json.JSONObject(userJsonStr)
                         
-                        val login = userObj.get("login")?.asString ?: targetUsername
-                        val name = userObj.get("name")?.asString ?: login
-                        val avatarUrl = userObj.get("avatar_url")?.asString ?: ""
-                        val bio = userObj.get("bio")?.asString ?: "No bio description."
-                        val followers = userObj.get("followers")?.asInt ?: 0
-                        val following = userObj.get("following")?.asInt ?: 0
-                        val blogUrl = userObj.get("blog")?.asString ?: ""
-                        val githubUrl = userObj.get("html_url")?.asString ?: "https://github.com/$login"
+                        val login = userObj.optString("login", targetUsername)
+                        val name = userObj.optString("name", login)
+                        val avatarUrl = userObj.optString("avatar_url", "")
+                        val bio = userObj.optString("bio", "No bio description.")
+                        val followers = userObj.optInt("followers", 0)
+                        val following = userObj.optInt("following", 0)
+                        val blogUrl = userObj.optString("blog", "")
+                        val githubUrl = userObj.optString("html_url", "https://github.com/$login")
                         
                         // 2. Fetch README markdown preview
                         var readmeContent = "No profile README found."
