@@ -105,7 +105,7 @@ object UpdateManager {
                 val currentVersionName = packageInfo.versionName ?: "0.0.0"
                 // Assuming version names are like "3.2.4"
                 
-                val url = URL("https://api.github.com/repos/balajitechlabs/quickdash-app/releases/latest")
+                val url = URL("https://api.github.com/repos/balajitechlabs/quickdash/releases/latest")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.connectTimeout = 5000
                 connection.readTimeout = 5000

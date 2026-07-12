@@ -356,7 +356,7 @@ fun SettingsScreen(
                 iconVector = Icons.Default.Star,
                 onClick = {
                     triggerFeedback()
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Balajitechlabs/quickdash-app"))
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Balajitechlabs/quickdash"))
                     context.startActivity(intent)
                 }
             )
@@ -1612,7 +1612,7 @@ fun SettingsScreen(
                 iconVector = Icons.Default.PrivacyTip,
                 onClick = {
                     triggerFeedback()
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Balajitechlabs/quickdash-app/blob/main/PRIVACY_POLICY.md"))
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Balajitechlabs/quickdash/blob/main/PRIVACY_POLICY.md"))
                     context.startActivity(intent)
                 }
             )
@@ -1633,7 +1633,7 @@ fun SettingsScreen(
                 iconVector = Icons.Default.Gavel,
                 onClick = {
                     triggerFeedback()
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Balajitechlabs/quickdash-app/blob/main/LICENSE"))
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Balajitechlabs/quickdash/blob/main/LICENSE"))
                     context.startActivity(intent)
                 }
             )
@@ -1644,7 +1644,7 @@ fun SettingsScreen(
                 iconVector = Icons.Default.HistoryEdu,
                 onClick = {
                     triggerFeedback()
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Balajitechlabs/quickdash-app/blob/main/CHANGELOG.md"))
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Balajitechlabs/quickdash/blob/main/CHANGELOG.md"))
                     context.startActivity(intent)
                 }
             )
@@ -2179,6 +2179,18 @@ fun SettingsScreen(
                             Text("QuickDash", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onPrimaryContainer)
                             Text("Version $vNameAbout (Build $vCodeAbout)", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f))
                             Text("Made with ❤️ by BalajiTechLabs", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f))
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                "Fork of IIXII™ Product .",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold,
+                                textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline,
+                                modifier = Modifier.clickable {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/IIXII-L192/PocketOps-app.git"))
+                                    context.startActivity(intent)
+                                }.padding(vertical = 4.dp)
+                            )
                         }
                     }
 

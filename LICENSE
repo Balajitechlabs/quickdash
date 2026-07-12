@@ -1,18 +1,91 @@
-MIT License
+# PocketOps Custom Open Source Fork License
 
-Copyright (c) 2026 BalajiTechLabs
+Copyright (c) 2026 Aakarsh (L192) / IIXII™
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-associated documentation files (the "Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the
-following conditions:
+TERMS AND CONDITIONS FOR FORKED DERIVATIVES, REPRODUCTION, AND DISTRIBUTION
 
-The above copyright notice and this permission notice shall be included in all copies or substantial
-portions of the Software.
+1. DEFINITIONS
+- "Author" refers to Aakarsh (L192) / IIXII™.
+- "Original Software" refers to the official PocketOps Android application 
+  source code and binaries.
+- "Fork" or "Derivative" refers to any modified version of the Original 
+  Software, created by a third party.
+- "Publish" or "Distribute" refers to making the Software or Derivatives
+  available to third parties via app stores, websites, direct file transfers,
+  or any other media.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
-LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
-EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-USE OR OTHER DEALINGS IN THE SOFTWARE.
+2. LOCAL & PERSONAL USE
+You are permitted to download, compile, modify, and use the Software locally
+and privately on your personal devices without restriction.
+
+3. REDISTRIBUTION OF ORIGINAL SOFTWARE
+You are permitted to redistribute the original, unmodified Software, provided
+that:
+- You clearly identify it as an unofficial distribution of the Original
+  Software.
+- You do NOT use the original branding, name (PocketOps), or package name
+  (l192.aakarsh.pocketops) for any public-facing redistribution or app store
+  listing.
+- You must include this license file and clearly credit the Author as the
+  original creator.
+
+4. RESTRICTIONS ON DERIVATIVES & PUBLISHING
+You may NOT Publish or Distribute any Forked Derivative work unless it meets 
+the requirement of containing Major Functional Changes.
+- Minor Changes (such as changing the name, logo, icons, colors, or visual
+  theme; modifying the package name; bug fixes, refactoring, etc.) DO NOT
+  grant permission to Publish or Distribute.
+- All Forked Derivative works must use a unique, non-confusing name and package
+  name to ensure they are not mistaken for the Original Software.
+- "Major Functional Changes" require that new features and functional
+  modifications constitute at least 30% of the entire codebase and
+  functionality of the project.
+- Bug fixes, refactoring, and UI/theme adjustments DO NOT count toward the 30%
+  threshold. Only entirely new features or substantial functional expansions
+  qualify.
+- The Author (Aakarsh/L192) reserves the right to serve as the final arbiter 
+  in determining if the 30% functional change threshold has been met.
+
+5. SHARE-ALIKE AND OPEN SOURCE FORCE (COPYLEFT)
+If you meet the 30% Major Functional Changes threshold and choose to Publish
+or Distribute a Forked Derivative work, you are legally obligated to:
+- Keep the entire source code of your Forked Derivative work fully public and
+  open-source. You cannot close the source code, sell it privately, or hide
+  your modifications.
+- Distribute your Forked Derivative work under this exact same license, 
+  ensuring that any downstream users have the same rights and restrictions.
+- Platform Requirement: If the Forked Derivative is hosted on a public 
+  repository platform (such as GitHub), it must be managed via that platform’s 
+  native "Fork" mechanism to maintain a transparent, verifiable link to the 
+  original repository.
+
+6. PROTECTION OF AUTHORSHIP
+Any permitted Forked Derivative work must:
+- Retain all original copyright notices, credits, and trademarks pointing to
+  the Author.
+- Prominently state inside the application (within the "About" or "Settings"
+  menu) that it is a "Fork of IIXII™ property" and include a clear link to the
+  Original Software repository.
+- Include a comprehensive changelog within the repository detailing all
+  functional modifications.
+
+7. REVOCATION AND COMPLIANCE
+- Any permission granted under this license is contingent upon continuous
+  compliance. Failure to adhere to the terms herein shall result in an
+  immediate, automatic revocation of all rights granted, without prejudice to
+  the Author's right to pursue further legal action.
+
+8. OWNER EXCEPTIONS AND CUSTOM GRANTS
+The Author (Aakarsh / L192) reserves the sole right to grant exceptions, waive
+any restrictions, or offer custom licensing terms at their absolute
+discretion. Any such custom permission must be requested and obtained in
+writing via email exclusively at 192aakarsh@gmail.com.
+
+9. NO WARRANTY
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
