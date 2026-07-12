@@ -7,6 +7,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -102,6 +103,7 @@ import com.balajitechlabs.quickdash.features.chat.presentation.QuickChatScreen
 import com.balajitechlabs.quickdash.features.insta.presentation.QuickSocialScreen
 import com.balajitechlabs.quickdash.features.notes.presentation.QuickNotesScreen
 import com.balajitechlabs.quickdash.features.search.presentation.QuickSearchScreen
+import com.balajitechlabs.quickdash.features.search.presentation.QuickWebScreen
 import com.balajitechlabs.quickdash.features.wifi.presentation.QuickWifiScreen
 import com.balajitechlabs.quickdash.features.dashboard.presentation.QuickTool
 import com.balajitechlabs.quickdash.features.settings.presentation.SystemLogsScreen
@@ -131,6 +133,7 @@ sealed interface QuickDashUiState {
     data object SystemLogs : QuickDashUiState
     data object Notes : QuickDashUiState
     data object Search : QuickDashUiState
+    data object Web : QuickDashUiState
     data object Wifi : QuickDashUiState
     data object Hotspot : QuickDashUiState
     data object ApiPanel : QuickDashUiState
@@ -160,14 +163,17 @@ fun QuickDashApp(
     onConvertToFullScreen: (() -> Unit)? = null
 ) {
     val savedUpiIds by userStore.upiIds.collectAsState(initial = emptyList())
+    val savedPaypalIds by userStore.paypalIds.collectAsState(initial = emptyList())
+    val usePaypal by userStore.usePaypal.collectAsState(initial = false)
     val defaultPaymentApp by userStore.defaultPaymentApp.collectAsState(initial = "ANY")
     val qrHistoryJson by userStore.qrHistory.collectAsState(initial = "[]")
     
     // Choose active IDs based on mode
-    val activeIds = savedUpiIds
+    val activeIds = if (usePaypal) savedPaypalIds else savedUpiIds
     
     val savedDefaultUpiId by userStore.defaultUpiId.collectAsState(initial = null)
-    val activeDefaultId = savedDefaultUpiId ?: savedUpiIds.firstOrNull() ?: ""
+    val savedDefaultPaypalId by userStore.defaultPaypalId.collectAsState(initial = null)
+    val activeDefaultId = if (usePaypal) savedDefaultPaypalId ?: savedPaypalIds.firstOrNull() ?: "" else savedDefaultUpiId ?: savedUpiIds.firstOrNull() ?: ""
 
     val savedPayeeName by userStore.payeeName.collectAsState(initial = null)
     val recentAmounts by userStore.recentAmounts.collectAsState(initial = emptyList())
@@ -285,6 +291,7 @@ fun QuickDashApp(
             "com.balajitechlabs.quickdash.ACTION_QUICK_INSTA" -> QuickDashUiState.Instagram
             "com.balajitechlabs.quickdash.ACTION_QUICK_NOTES" -> QuickDashUiState.Notes
             "com.balajitechlabs.quickdash.ACTION_QUICK_SEARCH" -> QuickDashUiState.Search
+            "com.balajitechlabs.quickdash.ACTION_QUICK_WEB" -> QuickDashUiState.Web
             "com.balajitechlabs.quickdash.ACTION_QUICK_SETTINGS" -> QuickDashUiState.Settings
             "com.balajitechlabs.quickdash.ACTION_QUICK_CALCULATOR" -> QuickDashUiState.Calculator
             "com.balajitechlabs.quickdash.ACTION_QUICK_TIMER" -> QuickDashUiState.Timer
@@ -302,6 +309,8 @@ fun QuickDashApp(
     QuickDashContent(
         userStore = userStore,
         uiState = uiState,
+        usePaypal = usePaypal,
+        onTogglePaypal = { scope.launch { userStore.saveUsePaypal(it) } },
         isFloating = isFloating,
         recentAmounts = recentAmounts,
         upiIds = activeIds,
@@ -323,8 +332,13 @@ fun QuickDashApp(
         onScanQr = triggerScanQr,
         onSaveUpiIds = { ids, name, defaultId ->
             scope.launch {
-                userStore.saveUpiIds(ids)
-                userStore.saveDefaultUpiId(defaultId)
+                if (usePaypal) {
+                    userStore.savePaypalIds(ids)
+                    userStore.saveDefaultPaypalId(defaultId)
+                } else {
+                    userStore.saveUpiIds(ids)
+                    userStore.saveDefaultUpiId(defaultId)
+                }
                 userStore.savePayeeName(name)
                 val wasManaging = (navigationStack.lastOrNull() as? QuickDashUiState.Setup)?.isManaging == true
                 if (navigationStack.isNotEmpty() && navigationStack.lastOrNull() is QuickDashUiState.Setup) {
@@ -343,11 +357,17 @@ fun QuickDashApp(
             val payScheme = targetApp.schemePrefix
             
             // We manually construct the string to prevent Uri.Builder from URL-encoding the '@' symbol in the UPI ID
-            var payURL = "$payScheme?pa=$selectedId&cu=INR"
-            if (amount.isNotBlank()) {
-                payURL += "&am=$amount"
+            var payURL = if (usePaypal) {
+                if (amount.isNotBlank()) "https://paypal.me/$selectedId/$amount"
+                else "https://paypal.me/$selectedId"
+            } else {
+                var url = "$payScheme?pa=$selectedId&cu=INR"
+                if (amount.isNotBlank()) {
+                    url += "&am=$amount"
+                }
+                url
             }
-            if (!savedPayeeName.isNullOrBlank()) {
+            if (!usePaypal && !savedPayeeName.isNullOrBlank()) {
                 payURL += "&pn=${Uri.encode(savedPayeeName)}"
             }
             if (note.isNotBlank()) {
@@ -397,6 +417,7 @@ fun QuickDashApp(
                 QuickTool.INSTAGRAM -> QuickDashUiState.Instagram
                 QuickTool.NOTES -> QuickDashUiState.Notes
                 QuickTool.SEARCH -> QuickDashUiState.Search
+                QuickTool.WEB -> QuickDashUiState.Web
                 QuickTool.WIFI -> QuickDashUiState.Wifi
                 QuickTool.CLIPBOARD -> QuickDashUiState.Clipboard
                 QuickTool.CALCULATOR -> QuickDashUiState.Calculator
@@ -442,6 +463,8 @@ fun QuickDashApp(
 fun QuickDashContent(
     userStore: UserStore,
     uiState: QuickDashUiState,
+    usePaypal: Boolean = false,
+    onTogglePaypal: (Boolean) -> Unit = {},
     isFloating: Boolean = false,
     recentAmounts: List<String> = emptyList(),
     upiIds: List<String> = emptyList(),
@@ -807,6 +830,11 @@ fun QuickDashContent(
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
+                        } else if (uiState is QuickDashUiState.Setup || uiState is QuickDashUiState.EnterAmount || uiState is QuickDashUiState.ShowQr) {
+                            PaymentModeSwitcherButton(
+                                usePaypal = usePaypal,
+                                onTogglePaypal = onTogglePaypal
+                            )
                         }
                     }
                 }
@@ -817,50 +845,10 @@ fun QuickDashContent(
                 AnimatedContent(
                     targetState = uiState,
                     transitionSpec = {
-                        val springSpec = spring<Float>(
-                            dampingRatio = Spring.DampingRatioNoBouncy,
-                            stiffness = Spring.StiffnessMediumLow
-                        )
-                        val specInt = spring<androidx.compose.ui.unit.IntOffset>(
-                            dampingRatio = Spring.DampingRatioNoBouncy,
-                            stiffness = Spring.StiffnessMediumLow
-                        )
-                        if (targetState != QuickDashUiState.Dashboard && initialState == QuickDashUiState.Dashboard) {
-                            // Premium Slide in from Right + Scale + Fade
-                            slideInHorizontally(
-                                animationSpec = specInt,
-                                initialOffsetX = { it }
-                            ) + scaleIn(
-                                animationSpec = springSpec,
-                                initialScale = 0.92f
-                            ) + fadeIn(animationSpec = springSpec) togetherWith
-                                slideOutHorizontally(
-                                    animationSpec = specInt,
-                                    targetOffsetX = { -it }
-                                ) + scaleOut(
-                                    animationSpec = springSpec,
-                                    targetScale = 0.92f
-                                ) + fadeOut(animationSpec = springSpec)
-                        } else if (targetState == QuickDashUiState.Dashboard && initialState != QuickDashUiState.Dashboard) {
-                            // Premium Slide in from Left (Back) + Scale + Fade
-                            slideInHorizontally(
-                                animationSpec = specInt,
-                                initialOffsetX = { -it }
-                            ) + scaleIn(
-                                animationSpec = springSpec,
-                                initialScale = 0.92f
-                            ) + fadeIn(animationSpec = springSpec) togetherWith
-                                slideOutHorizontally(
-                                    animationSpec = specInt,
-                                    targetOffsetX = { it }
-                                ) + scaleOut(
-                                    animationSpec = springSpec,
-                                    targetScale = 0.92f
-                                ) + fadeOut(animationSpec = springSpec)
-                        } else {
-                            fadeIn(animationSpec = springSpec) + scaleIn(animationSpec = springSpec, initialScale = 0.95f) togetherWith 
-                                fadeOut(animationSpec = springSpec) + scaleOut(animationSpec = springSpec, targetScale = 0.95f)
-                        }
+                        val tweenSpec = tween<Float>(150)
+                        fadeIn(animationSpec = tweenSpec) togetherWith 
+                                fadeOut(animationSpec = tweenSpec) using
+                                androidx.compose.animation.SizeTransform(clip = false) { _, _ -> snap() }
                     },
                     label = "screenTransition",
                     modifier = Modifier.fillMaxWidth()
@@ -950,14 +938,19 @@ fun QuickDashContent(
                             SystemLogsScreen(onDismiss = onBackToHome)
                         QuickDashUiState.Notes ->
                             QuickNotesScreen(userStore = userStore, isFloating = isFloating, onDismiss = onBackToHome)
-                        QuickDashUiState.Search ->
+                        QuickDashUiState.Search -> {
                             QuickSearchScreen(userStore = userStore, onDismiss = onBackToHome)
-                        QuickDashUiState.Wifi ->
+                        }
+                        QuickDashUiState.Web -> {
+                            QuickWebScreen(onClose = onBackToHome)
+                        }
+                        QuickDashUiState.Wifi -> {
                             QuickWifiScreen(
                                 userStore = userStore,
                                 isFloating = isFloating,
                                 onDismiss = onBackToHome
                             )
+                        }
                         QuickDashUiState.Clipboard ->
                             com.balajitechlabs.quickdash.features.clipboard.presentation.ClipboardScreen(
                                 userStore = userStore,
@@ -1353,6 +1346,42 @@ fun UpdateTag() {
                         modifier = Modifier.size(12.dp)
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun PaymentModeSwitcherButton(
+    usePaypal: Boolean,
+    onTogglePaypal: (Boolean) -> Unit
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.primary,
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp),
+        modifier = Modifier
+            .size(width = 44.dp, height = 32.dp)
+            .clip(androidx.compose.foundation.shape.RoundedCornerShape(10.dp))
+            .clickable { onTogglePaypal(!usePaypal) }
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.padding(horizontal = 4.dp)
+        ) {
+            AnimatedContent(
+                targetState = usePaypal,
+                transitionSpec = {
+                    fadeIn(animationSpec = spring(stiffness = Spring.StiffnessMediumLow)) togetherWith
+                            fadeOut(animationSpec = spring(stiffness = Spring.StiffnessMediumLow))
+                },
+                label = "paymentModeTransition"
+            ) { activePaypal ->
+                Icon(
+                    painter = painterResource(if (activePaypal) R.drawable.ic_paypal else R.drawable.ic_upi_pay),
+                    contentDescription = "Switch Payment Mode",
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(16.dp)
+                )
             }
         }
     }

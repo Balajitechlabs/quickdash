@@ -1,95 +1,92 @@
-<h1 align="center">
-  <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" width="120" alt="QuickDash Logo"/><br>
-  QuickDash
-</h1>
+<div align="center">
 
-<p align="center">
-  <a href="  <a href="https://github.com/Balajitechlabs/quickdash/releases/download/[v4.2.1/quickdash_v4.2.1.apk](https://github.com/Balajitechlabs/quickdash/releases/download/v4.2.1-1/quickdash-app-v4.2.1.apk)
-">
-    <img src="https://img.shields.io/badge/Download%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white" alt="Download APK">
-  </a>
-</p>
+<img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" width="140" alt="QuickDash Logo" style="border-radius: 20%; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin-bottom: 20px;"/>
 
-<p align="center">
-  <strong>The Ultimate Floating Utility Hub for Android</strong><br>
-  <em>Never switch apps again. All your essential tools, floating on your screen.</em>
-</p>
-<p align="center">
-  <img src="https://img.shields.io/badge/Version-4.2.1-blue" alt="Version">
-  <img src="https://img.shields.io/badge/Kotlin-100%25-blue.svg?logo=kotlin" alt="Kotlin">
-  <img src="https://img.shields.io/badge/Android-13.0%2B-green.svg?logo=android" alt="Android">
-  <img src="https://img.shields.io/badge/Jetpack_Compose-Material_3-purple.svg" alt="Compose">
-  <img src="https://img.shields.io/badge/Architecture-Room_DB_%7C_DataStore-orange.svg" alt="Architecture">
-  <img src="https://img.shields.io/badge/License-MIT-brightgreen.svg" alt="License">
-</p>
+# QuickDash ⚡
+
+**The Ultimate Floating Utility Hub for Android**
+<br>
+*Never switch apps again. All your essential tools, floating beautifully on your screen.*
+
+<br>
+
+[![Download APK](https://img.shields.io/badge/Download%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Balajitechlabs/quickdash/releases/latest/download/quickdash_v4.3.0.apk)
+
+<br>
+
+![Version](https://img.shields.io/badge/Version-4.3.0-blue?style=flat-square)
+![Kotlin](https://img.shields.io/badge/Kotlin-100%25-blue.svg?logo=kotlin&style=flat-square)
+![Android](https://img.shields.io/badge/Android-13.0%2B-green.svg?logo=android&style=flat-square)
+![Compose](https://img.shields.io/badge/Jetpack_Compose-Material_3-purple.svg?style=flat-square)
+![Architecture](https://img.shields.io/badge/Architecture-Room_DB_%7C_DataStore-orange.svg?style=flat-square)
+![License](https://img.shields.io/badge/License-Custom_Fork_License-red.svg?style=flat-square)
+
+</div>
+
 ---
 
 ## 📸 Screenshots
 <p align="center">
-  <img src="screenshots/1.jpg" width="18%" alt="Screenshot 1">
-  <img src="screenshots/2.jpg" width="18%" alt="Screenshot 2">
-  <img src="screenshots/3.jpg" width="18%" alt="Screenshot 3">
-  <img src="screenshots/4.jpg" width="18%" alt="Screenshot 4">
-  <img src="screenshots/5.jpg" width="18%" alt="Screenshot 5">
+  <img src="screenshots/1.jpg" width="18%" alt="Screenshot 1" style="border-radius: 12px; margin: 5px;">
+  <img src="screenshots/2.jpg" width="18%" alt="Screenshot 2" style="border-radius: 12px; margin: 5px;">
+  <img src="screenshots/3.jpg" width="18%" alt="Screenshot 3" style="border-radius: 12px; margin: 5px;">
+  <img src="screenshots/4.jpg" width="18%" alt="Screenshot 4" style="border-radius: 12px; margin: 5px;">
+  <img src="screenshots/5.jpg" width="18%" alt="Screenshot 5" style="border-radius: 12px; margin: 5px;">
 </p>
 
+---
+
 ## 🚀 What is QuickDash?
-QuickDash is a hyper-productive Android utility application designed to save you time. Instead of minimizing your current app to open your notes, calculator, or QR generator, QuickDash lives as a **Floating Bubble** on your screen. Tap the bubble, and a gorgeous, blurred dashboard appears instantly.
+
+**QuickDash** is a hyper-productive Android utility application engineered to drastically save your time and screen real estate. Instead of minimizing your current game, video, or app to open your notes, calculator, or QR generator, QuickDash lives as a **Floating Bubble** on your screen. Tap the bubble, and a gorgeous, blurred dashboard appears instantly with snappy `SizeTransform` animations, adapting dynamically to whatever tool you select.
 
 ## ✨ Core Features
 
 ### 🟢 The Floating Dashboard & Compliance
 - **System-Wide Overlay:** Accessible over any app, game, or video.
-- **Glassmorphic UI:** Stunning Material 3 design with a beautiful blur effect.
-- **App Lock:** Secure the dashboard using device Biometrics (Fingerprint/Face).
-- **100% Privacy Enforced:** Google Sign-In and OneSignal tracking SDKs have been completely purged to ensure absolute anonymity. Enforces strict HTTPS traffic.
+- **Glassmorphic UI & Dynamic Animations:** Stunning Material 3 design with beautiful background blurs. Windows instantly snap and resize based on the tool.
+- **App Lock:** Secure the dashboard using native device Biometrics (Fingerprint/Face).
+- **100% Privacy Enforced:** Built without commercial third-party trackers. No Google Sign-In, no external ad SDKs. Total anonymity.
 
-### 🛠 Quick Tools & Customizations
+### 🛠 Elite Productivity Tools
 - **📝 Quick Notes:** Jot down thoughts instantly. Backed by **Room Database** for crash-safe, persistent storage. Pin your most important notes to the top.
-- **🔍 Quick Web Search:** Type a query and instantly launch Google or custom engines.
-- **📋 Clipboard Manager:** Automatically track and retrieve your recently copied items. Features a pinned section with quick actions (Pin, Share, Copy, Delete) and crash-free layouts.
-- **⏱️ Quick Timer & History:** Features lap records and timer presets stored in a clean history log.
-- **📊 Live Traffic Monitor:** View real-time device traffic alongside editable server credentials in a swipeable pager.
+- **🌐 Quick Web (Floating Browser):** A mini floating browser inside the dashboard to search and navigate links without switching apps.
+- **📋 Smart Clipboard Manager:** Track and retrieve your recently copied items. Features a dedicated Pinned section with one-click actions (Pin, Share, Copy, Delete).
+- **⏱️ Advanced Timer:** Stopwatches with lap records and countdowns stored in a clean history log.
+- **📊 Live Traffic Monitor:** View real-time device traffic alongside editable server credentials.
+- **💾 Data Backup & Restore:** Export all your preferences, notes, and configs to a single JSON file and restore anytime.
 
-### 💳 Fast Payments & QR Generation
-- **UPI QR & Connected Divisions:** Set up Division Slots 1, 2, and 3 for quick UPI target generation. Generates codes with category labels (groceries, dining) and filters logs by date ranges. Wiped all hardcoded fallback IDs for a clean start.
-- **Wi-Fi Sharer & QR:** Generates a Wi-Fi share QR with a direct scan-to-connect option in the Wi-Fi history logs dialog.
+### 💳 Fast Payments & Connectivity
+- **PayPal & UPI Switcher:** Tap a single toggle to instantly flip your QR generator between PayPal payment links and UPI targets.
+- **Categorized Target Divisions:** Set up customizable Division Slots (e.g. Groceries, Dining) for rapid payment target generation.
+- **Wi-Fi Sharer:** Generate a Wi-Fi share QR with a direct scan-to-connect option natively built into the history logs.
 
-### 💬 Quick Chat Target Expansion
-- Start conversations without saving contacts. Fully supports **WhatsApp, Telegram, Signal, and SMS** with tab-specific prefilled message templates. Supports direct Telegram username searches or wizard launches. Direct flag click pulls up Dial Code search list.
+### 💬 Frictionless Communication
+- **WhatsApp Live QR Scanner:** Scan a friend's WhatsApp QR with Google ML Kit to instantly launch their chat without saving the number.
+- **Direct Chat Launcher:** Fully supports **WhatsApp, Telegram, Signal, and SMS** with tab-specific prefilled message templates. Enter a number and jump straight to the chat.
 
-### 🎨 Personalization
-- **Custom Font Families:** Choose between Poppins, Space Grotesk, and Nunito in both Onboarding and Settings.
-- **11 Built-in Themes:** Handcrafted Material 3 color palettes.
-- **Dynamic Color (Monet):** Adapts the app UI to match your Android 12+ system wallpaper.
-- **Haptic Feedback Engine:** Premium vibration responses across the entire UI.
+### 🎨 State-of-the-art Personalization
+- **Custom Font Families:** Hot-swap between Poppins, Space Grotesk, and Nunito on the fly.
+- **11 Built-in Themes & Dynamic Color:** Handcrafted Material 3 palettes, plus Android 12+ wallpaper-based Monet styling.
+- **Haptic Engine:** Premium localized vibration responses across the entire UI.
 
-### 📣 Zero-Cost Global Push Announcements
-- Intercepts broadcasts using a custom **Telegram Bot Poller** that polls a private Telegram Bot without using expensive Firebase servers.
+### 📣 Developer Zero-Cost Infrastructure
+- **Diagnostic Crash Logger:** A built-in terminal that intercepts uncaught exceptions and logs them to the System Logs Screen for one-click sharing.
+- **Telegram Bot Integration:** Intercepts remote broadcast announcements and collects app feedback without relying on expensive Firebase server architecture.
 
 ---
 
 ## 💻 Developer Setup & Building
 
-To clone and build the project locally, you must provide your own Telegram Bot keys.
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/balajitechlabs/quickdash.git
-   cd quickdash
-   ```
-2. Create a file named `local.properties` in the root directory.
-3. Add your Telegram Bot credentials (this file is gitignored):
-   ```properties
-   TG_BOT_TOKEN=your_telegram_bot_token_here
-   TG_CHAT_ID=your_telegram_chat_id_here
-   ```
-4. Open the project in **Android Studio (Giraffe or newer)** and hit Build.
+Looking to build QuickDash from source? Please refer to our dedicated **[SETUP.md](SETUP.md)** for instructions on cloning, configuring required Telegram Bot credentials, and compiling via Android Studio.
 
 ---
 
 ## 📝 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project operates under a **Custom Open Source Fork License**. All derivative works must comply with the terms defined in the [LICENSE](LICENSE) file (including maintaining 100% open-source visibility and implementing major functional changes).
 
----
-<p align="center">Made with ❤️ by <strong>BalajiTechLabs</strong></p>
+<br>
+
+<div align="center">
+  <p>Made with ❤️ by <strong>BalajiTechLabs</strong></p>
+</div>

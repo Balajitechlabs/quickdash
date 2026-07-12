@@ -58,6 +58,7 @@ fun ShowQrScreen(
     payeeName: String,
     showUpiId: Boolean,
     payUrl: String,
+    usePaypal: Boolean = false,
     showShareButton: Boolean = true,
     confettiType: String = "Default",
     hapticLevel: String = "Crisp",
@@ -182,10 +183,9 @@ fun ShowQrScreen(
         if (showUpiId) {
             Text(
                 text = "$idTypeLabel: $upiId",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                modifier = Modifier.padding(top = 8.dp)
             )
         }
 
@@ -197,7 +197,7 @@ fun ShowQrScreen(
                 Button(
                     onClick = {
                         triggerFeedback()
-                        ShareUtils.shareQrCode(context, qrBitmap, payeeName, upiId, amount, showUpiId)
+                        ShareUtils.shareQrCode(context, qrBitmap, payeeName, upiId, amount, showUpiId, usePaypal)
                         showConfetti = true
                         confettiTriggerKey++
                     },

@@ -2,6 +2,17 @@
 
 All notable changes to **QuickDash** will be documented in this file.
 
+## [4.3.0] - 2026-07-12
+### Added
+- **Dynamic Centered Window Animations:** Overhauled the main floating window transition animations using `SizeTransform` and spring animations for a sleek, minimizing center-reveal effect when switching tools.
+- **Data Backup & Restore 💾:** Added a robust Data Management system in Settings. Users can now export all their preferences, notes, and configurations into a portable JSON file, and restore them anytime.
+- **Diagnostic Crash Logger 🐛:** Integrated a comprehensive in-app crash reporter. It intercepts uncaught exceptions and saves them to local disk for easy viewing and sharing in the System Logs screen.
+- **WhatsApp Live QR Scanner 📷:** Integrated Google ML Kit Barcode Scanning directly into the Quick Chat screen. Scan a friend's WhatsApp QR code to instantly launch their chat without saving their contact.
+- **PayPal Switcher 💳:** Upgraded the Quick Collect screen with a beautiful animated top-bar toggle. Instantly switch between generating UPI QR codes and PayPal.me payment links.
+- **Quick Web (Floating Browser) 🌐:** Added a new floating web browser tool. Open and browse any URL in a lightweight, resizable floating window without ever leaving your current app.
+
+---
+
 ## [4.2.1] - 2026-07-12
 ### Added
 - **Premium Onboarding Redesign (0-8 Flow):** Overhauled step-by-step onboarding flow featuring premium Welcome intro, Location/Notification permission checks, Quick Collect UPI setup, Theme Mode, Corners & Shapes, Font selections, and complete confetti splash.

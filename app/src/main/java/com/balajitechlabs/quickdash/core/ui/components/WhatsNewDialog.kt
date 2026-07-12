@@ -27,7 +27,7 @@ import androidx.compose.foundation.BorderStroke
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WhatsNewDialog(
-        versionName: String = "4.2.1",
+        versionName: String = "4.3.0",
         onDismiss: () -> Unit
     ) {
         var isInverted by remember { mutableStateOf(false) }

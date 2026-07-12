@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.balajitechlabs.quickdash.R
 
 enum class QuickTool {
-    UPI, WHATSAPP, INSTAGRAM, NOTES, SEARCH, WIFI, CLIPBOARD, CALCULATOR, TIMER
+    UPI, WHATSAPP, INSTAGRAM, NOTES, SEARCH, WEB, WIFI, CLIPBOARD, CALCULATOR, TIMER
 }
 
 private data class ToolDef(
@@ -46,15 +46,16 @@ private data class ToolDef(
 )
 
 @Composable
-private fun toolDefinitions(): List<ToolDef> {
+private fun toolDefinitions(usePaypal: Boolean = false): List<ToolDef> {
     val cs = MaterialTheme.colorScheme
     return listOf(
         ToolDef(QuickTool.CLIPBOARD,   "Smart Clipboard",    "Copy history & sensitive data guard", R.drawable.ic_note,        { cs.primaryContainer },         { cs.onPrimaryContainer }),
-        ToolDef(QuickTool.UPI,         "Quick Collect",      "UPI & payment app QR codes",        R.drawable.ic_upi_pay,     { cs.secondaryContainer },       { cs.onSecondaryContainer }),
+        ToolDef(QuickTool.UPI,         if (usePaypal) "Quick PayPal" else "Quick Collect",      if (usePaypal) "Quick PayPal link generators" else "UPI & payment app QR codes",        if (usePaypal) R.drawable.ic_paypal else R.drawable.ic_upi_pay,     { cs.secondaryContainer },       { cs.onSecondaryContainer }),
         ToolDef(QuickTool.WHATSAPP,    "Quick Chat",         "Prefilled direct chat & templates",       R.drawable.ic_shortcut_chat,     { cs.tertiaryContainer },        { cs.onTertiaryContainer }),
         ToolDef(QuickTool.INSTAGRAM,   "Quick Social Access",        "Social media & GitHub profiler", R.drawable.ic_instagram,   { cs.errorContainer },           { cs.onErrorContainer }),
         ToolDef(QuickTool.NOTES,       "Quick Notes",        "Offline notes with Markdown",          R.drawable.ic_note,        { cs.primaryContainer },         { cs.onPrimaryContainer }),
         ToolDef(QuickTool.SEARCH,      "Quick Search",       "Multi-engine web search",              R.drawable.ic_search,      { cs.secondaryContainer },       { cs.onSecondaryContainer }),
+        ToolDef(QuickTool.WEB,         "Quick Web",          "Floating mini browser",                R.drawable.ic_globe,       { cs.tertiaryContainer },        { cs.onTertiaryContainer }),
         ToolDef(QuickTool.WIFI,        "Quick Wi-Fi",        "Share Wi-Fi via encrypted QR",         R.drawable.ic_qr_code,     { cs.tertiaryContainer },        { cs.onTertiaryContainer }),
         ToolDef(QuickTool.CALCULATOR,  "Quick Calculator",   "Expression calc with history",         R.drawable.ic_calculator,  { cs.primaryContainer },         { cs.onPrimaryContainer }),
         ToolDef(QuickTool.TIMER,       "Quick Timer",        "Stopwatch & countdown timer",          R.drawable.ic_timer,       { cs.secondaryContainer },       { cs.onSecondaryContainer }),
@@ -65,9 +66,10 @@ private fun toolDefinitions(): List<ToolDef> {
 fun DashboardScreen(
     hapticEnabled: Boolean = true,
     isFloating: Boolean = false,
+    usePaypal: Boolean = false,
     onToolSelected: (QuickTool) -> Unit
 ) {
-    val tools = toolDefinitions()
+    val tools = toolDefinitions(usePaypal)
 
     if (isFloating) {
         LazyColumn(

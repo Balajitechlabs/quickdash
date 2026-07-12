@@ -1,8 +1,8 @@
 {
-  "versionCode": 101,
-  "versionName": "3.2.0",
+  "versionCode": 104,
+  "versionName": "4.3.0",
   "releaseUrl": "https://github.com/Balajitechlabs/quickdash/releases/latest",
-  "apkUrl": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/quickdash-app.apk",
-  "announcementTitle": "🚀 QuickDash v3.2.0 is Here!",
-  "announcementBody": "New Features: Shake-to-Trigger QuickDash, Custom Search Engines, and In-App System Log Viewer! We also fixed several minor bugs and added proper GitHub automated releases."
+  "apkUrl": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/quickdash_v4.3.0.apk",
+  "announcementTitle": "🚀 QuickDash v4.3.0 is Here!",
+  "announcementBody": "New Features: Floating Web Browser, Crash Logger, Data Backup/Restore, WhatsApp QR Scanner, PayPal Support, and beautifully snappy Floating Window Animations!"
 }

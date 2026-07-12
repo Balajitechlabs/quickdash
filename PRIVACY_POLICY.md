@@ -1,6 +1,6 @@
 # Privacy Policy — QuickDash
 
-Last updated: July 2026 (Version 3.0 Update)
+Last updated: July 2026 (Version 4.3 Update)
 
 ## What We Collect
 QuickDash collects minimal anonymous telemetry to check installation health:

@@ -58,6 +58,11 @@ class UserStore(private val context: Context) {
         val APP_LOCKED_KEY = booleanPreferencesKey("app_locked")
         val DISPLAY_MODE_KEY = stringPreferencesKey("display_mode")
 
+        // PayPal integration
+        val USE_PAYPAL_KEY = booleanPreferencesKey("use_paypal")
+        val PAYPAL_IDS_KEY = stringPreferencesKey("paypal_ids")
+        val DEFAULT_PAYPAL_ID_KEY = stringPreferencesKey("default_paypal_id")
+
         // New Upgrades Additions
         val HAPTIC_ENABLED_KEY = booleanPreferencesKey("haptic_enabled")
         val HAPTIC_LEVEL_KEY = stringPreferencesKey("haptic_level")
@@ -215,6 +220,21 @@ class UserStore(private val context: Context) {
 
     val upiId: Flow<String?> = upiIds.map { it.firstOrNull() }
 
+    val usePaypal: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[USE_PAYPAL_KEY] ?: false
+    }
+
+    val paypalIds: Flow<List<String>> = context.dataStore.data.map { preferences ->
+        val rawIds = preferences[PAYPAL_IDS_KEY]
+        if (!rawIds.isNullOrBlank()) {
+            rawIds.split(",").filter { it.isNotBlank() }
+        } else emptyList()
+    }
+
+    val defaultPaypalId: Flow<String?> = context.dataStore.data.map { preferences ->
+        preferences[DEFAULT_PAYPAL_ID_KEY] ?: ""
+    }
+
     val payeeName: Flow<String?> =
         context.dataStore.data.map { preferences -> preferences[PAYEE_NAME_KEY] ?: "" }
 
@@ -313,6 +333,32 @@ class UserStore(private val context: Context) {
 
     suspend fun saveUpiId(id: String) {
         saveUpiIds(listOf(id))
+    }
+
+    suspend fun saveUsePaypal(use: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[USE_PAYPAL_KEY] = use
+        }
+    }
+
+    suspend fun savePaypalIds(ids: List<String>) {
+        context.dataStore.edit { preferences ->
+            preferences[PAYPAL_IDS_KEY] = ids.joinToString(",")
+            if (ids.isNotEmpty()) {
+                val currentDefault = preferences[DEFAULT_PAYPAL_ID_KEY]
+                if (currentDefault == null || !ids.contains(currentDefault)) {
+                    preferences[DEFAULT_PAYPAL_ID_KEY] = ids.first()
+                }
+            } else {
+                preferences.remove(DEFAULT_PAYPAL_ID_KEY)
+            }
+        }
+    }
+
+    suspend fun saveDefaultPaypalId(id: String) {
+        context.dataStore.edit { preferences ->
+            preferences[DEFAULT_PAYPAL_ID_KEY] = id
+        }
     }
 
     suspend fun savePayeeName(name: String) {
@@ -999,6 +1045,53 @@ class UserStore(private val context: Context) {
     suspend fun saveServerCredentials(json: String) {
         context.dataStore.edit { preferences ->
             preferences[SERVER_CREDENTIALS_KEY] = json
+        }
+    }
+
+    suspend fun exportToJson(): String {
+        val json = org.json.JSONObject()
+        json.put("magic", "QuickDash_Backup_v1")
+
+        val prefs = context.dataStore.data.first()
+        
+        prefs[UPI_IDS_KEY]?.let { json.put("upi_ids", it) }
+        prefs[UPI_ID_KEY]?.let { json.put("upi_id", it) }
+        prefs[DEFAULT_UPI_ID_KEY]?.let { json.put("default_upi_id", it) }
+        prefs[PAYEE_NAME_KEY]?.let { json.put("payee_name", it) }
+        prefs[RECENT_AMOUNTS_KEY]?.let { json.put("recent_amounts", it) }
+        prefs[SHOW_UPI_ID_KEY]?.let { json.put("show_upi_id", it) }
+        prefs[THEME_MODE_KEY]?.let { json.put("theme_mode", it) }
+        prefs[DYNAMIC_COLOR_KEY]?.let { json.put("dynamic_color", it) }
+        prefs[CHAT_DEFAULT_CODE_KEY]?.let { json.put("chat_default_code", it) }
+        prefs[CHAT_DEFAULT_ISO_KEY]?.let { json.put("chat_default_iso", it) }
+        prefs[CHAT_PAUSE_HISTORY_KEY]?.let { json.put("chat_pause_history", it) }
+        
+        return json.toString(4)
+    }
+
+    suspend fun importFromJson(jsonString: String): Boolean {
+        try {
+            val json = org.json.JSONObject(jsonString)
+            if (json.optString("magic") != "QuickDash_Backup_v1") {
+                return false
+            }
+            context.dataStore.edit { preferences ->
+                if (json.has("upi_ids")) preferences[UPI_IDS_KEY] = json.getString("upi_ids")
+                if (json.has("upi_id")) preferences[UPI_ID_KEY] = json.getString("upi_id")
+                if (json.has("default_upi_id")) preferences[DEFAULT_UPI_ID_KEY] = json.getString("default_upi_id")
+                if (json.has("payee_name")) preferences[PAYEE_NAME_KEY] = json.getString("payee_name")
+                if (json.has("recent_amounts")) preferences[RECENT_AMOUNTS_KEY] = json.getString("recent_amounts")
+                if (json.has("show_upi_id")) preferences[SHOW_UPI_ID_KEY] = json.getBoolean("show_upi_id")
+                if (json.has("theme_mode")) preferences[THEME_MODE_KEY] = json.getString("theme_mode")
+                if (json.has("dynamic_color")) preferences[DYNAMIC_COLOR_KEY] = json.getBoolean("dynamic_color")
+                if (json.has("chat_default_code")) preferences[CHAT_DEFAULT_CODE_KEY] = json.getString("chat_default_code")
+                if (json.has("chat_default_iso")) preferences[CHAT_DEFAULT_ISO_KEY] = json.getString("chat_default_iso")
+                if (json.has("chat_pause_history")) preferences[CHAT_PAUSE_HISTORY_KEY] = json.getBoolean("chat_pause_history")
+            }
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
         }
     }
 }

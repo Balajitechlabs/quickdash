@@ -46,6 +46,11 @@ class FloatingDialogActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         userStore = UserStore(this)
 
+        val pendingCrash = com.balajitechlabs.quickdash.core.utils.DiagnosticLogger.getPendingCrashLogFile(this)
+        if (pendingCrash != null) {
+            shareLogFile(pendingCrash)
+        }
+
         val displayMetrics = resources.displayMetrics
         val isLargeScreen = resources.configuration.smallestScreenWidthDp >= 600
         isFullScreen = isLargeScreen
@@ -231,5 +236,20 @@ class FloatingDialogActivity : FragmentActivity() {
         layoutParams.screenBrightness =
             android.view.WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
         window.attributes = layoutParams
+    }
+
+    private fun shareLogFile(file: java.io.File) {
+        try {
+            val authority = "${packageName}.provider"
+            val uri = androidx.core.content.FileProvider.getUriForFile(this, authority, file)
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "application/json"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(Intent.createChooser(intent, "Share Diagnostic Log"))
+        } catch (e: Exception) {
+            android.widget.Toast.makeText(this, "Error sharing log: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+        }
     }
 }

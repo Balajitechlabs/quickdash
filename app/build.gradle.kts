@@ -30,8 +30,8 @@ android {
         applicationId = "com.balajitechlabs.quickdash"
         minSdk = 24
         targetSdk = 35
-        versionCode = 103
-        versionName = "4.2.1"
+        versionCode = 104
+        versionName = "4.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

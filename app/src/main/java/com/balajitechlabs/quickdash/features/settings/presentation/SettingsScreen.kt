@@ -351,7 +351,7 @@ fun SettingsScreen(
             )
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
             PreferenceItem(
-                title = "Star us on GitHub",
+                title = "Star QuickDash on GitHub",
                 subtitle = "Love QuickDash? Give us a star on our repository!",
                 iconVector = Icons.Default.Star,
                 onClick = {
@@ -359,6 +359,24 @@ fun SettingsScreen(
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Balajitechlabs/quickdash"))
                     context.startActivity(intent)
                 }
+            )
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            PreferenceItem(
+                title = "Star PocketOps on GitHub",
+                subtitle = "Support the original open-source project that inspired QuickDash",
+                iconVector = Icons.Default.StarBorder,
+                onClick = {
+                    triggerFeedback()
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/IIXII-L192/PocketOps-app"))
+                    context.startActivity(intent)
+                }
+            )
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            PreferenceItem(
+                title = "Shared Access",
+                subtitle = "60-rate limit of the tab",
+                iconVector = Icons.Default.Info,
+                onClick = { triggerFeedback() }
             )
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
             // ── Donate Banner ──────────────────────────────────────────
@@ -1670,6 +1688,39 @@ fun SettingsScreen(
                 onClick = { showFeatureRequestDialog = true }
             )
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            
+            var isLoggingActive by remember { mutableStateOf(com.balajitechlabs.quickdash.core.utils.DiagnosticLogger.isActive()) }
+            PreferenceItem(
+                title = "Diagnostic Logs (Crash Reporter)",
+                subtitle = if (isLoggingActive) "Recording active process logcat..." else "Record diagnostic logs for developer crash reports",
+                iconVector = Icons.Default.BugReport,
+                onClick = {
+                    triggerFeedback()
+                    if (isLoggingActive) {
+                        val logFile = com.balajitechlabs.quickdash.core.utils.DiagnosticLogger.stopLogging(context)
+                        if (logFile != null) {
+                            try {
+                                val authority = "${context.packageName}.provider"
+                                val uri = androidx.core.content.FileProvider.getUriForFile(context, authority, logFile)
+                                val intent = Intent(Intent.ACTION_SEND).apply {
+                                    type = "application/json"
+                                    putExtra(Intent.EXTRA_STREAM, uri)
+                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+                                context.startActivity(Intent.createChooser(intent, "Share Diagnostic Log"))
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                android.widget.Toast.makeText(context, "Failed to share log", android.widget.Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        isLoggingActive = false
+                    } else {
+                        com.balajitechlabs.quickdash.core.utils.DiagnosticLogger.startLogging(context)
+                        isLoggingActive = true
+                    }
+                }
+            )
 
             // Developer Logs - Prominent Button
             Row(

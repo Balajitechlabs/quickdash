@@ -45,6 +45,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.balajitechlabs.quickdash.R
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QrCodeScanner
@@ -59,6 +61,7 @@ fun EnterAmountScreen(
     upiIds: List<String>,
     defaultUpiId: String,
     defaultPaymentApp: String,
+    usePaypal: Boolean = false,
     qrHistoryJson: String,
     onClearQrHistory: () -> Unit,
     onScanQr: () -> Unit,
@@ -84,12 +87,12 @@ fun EnterAmountScreen(
     val categories = listOf("Personal", "Business", "Dining", "Groceries", "Services", "Other")
     var selectedCategory by remember { mutableStateOf("Other") }
 
-    val idTypeLabel = "UPI ID"
-    val idIcon = R.drawable.ic_upi_pay
-    val currencySymbol = "₹"
-    val displayAmounts = remember(recentAmounts) {
+    val idTypeLabel = if (usePaypal) "PayPal ID" else "UPI ID"
+    val idIcon = if (usePaypal) R.drawable.ic_paypal else R.drawable.ic_upi_pay
+    val currencySymbol = if (usePaypal) "$" else "₹"
+    val displayAmounts = remember(recentAmounts, usePaypal) {
         if (recentAmounts.isEmpty() || recentAmounts == listOf("100", "200", "500")) {
-            listOf("100", "200", "500")
+            if (usePaypal) listOf("10", "20", "50") else listOf("100", "200", "500")
         } else {
             recentAmounts
         }
@@ -102,8 +105,10 @@ fun EnterAmountScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
+            .padding(16.dp)
             .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Row(
@@ -163,6 +168,7 @@ fun EnterAmountScreen(
                             value = selectedUpiId,
                             onValueChange = {},
                             readOnly = true,
+                            label = { Text("Select $idTypeLabel") },
                             shape = RoundedCornerShape(12.dp),
                             trailingIcon = {
                                 Icon(
@@ -174,8 +180,9 @@ fun EnterAmountScreen(
                             leadingIcon = {
                                 Icon(
                                     painter = painterResource(idIcon),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp)
+                                    contentDescription = idTypeLabel,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             },
                             modifier = Modifier
@@ -252,17 +259,15 @@ fun EnterAmountScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     OutlinedTextField(
                         value = amountInput,
-                        onValueChange = { amountInput = it },
-                        label = { Text("Amount (Optional)") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        shape = RoundedCornerShape(12.dp),
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_currency_rupee),
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
+                        onValueChange = { newValue ->
+                            if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*$"))) {
+                                amountInput = newValue
+                            }
                         },
+                        label = { Text("Amount (Optional)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        shape = RoundedCornerShape(12.dp),
+                        leadingIcon = { Text(currencySymbol, modifier = Modifier.padding(start = 12.dp)) },
                         trailingIcon = {
                             if (amountInput.isNotEmpty()) {
                                 IconButton(onClick = { amountInput = "" }) {
@@ -278,7 +283,16 @@ fun EnterAmountScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    if (isAmountError) {
+                    if (usePaypal) {
+                        Text(
+                            text = "PayPal",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier
+                                .background(MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(4.dp))
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    } else if (isAmountError) {
                         Text(
                             text = "Please enter a valid amount",
                             color = MaterialTheme.colorScheme.error,
@@ -296,9 +310,12 @@ fun EnterAmountScreen(
                             .fillMaxWidth()
                             .horizontalScroll(rememberScrollState())
                     ) {
-                        displayAmounts.forEach { amount ->
+                        displayAmounts.take(3).forEach { amount ->
                             SuggestionChip(
-                                onClick = { amountInput = amount },
+                                onClick = { 
+                                    amountInput = amount
+                                    onGenerateQr(amountInput, noteInput, selectedUpiId, selectedTargetApp, selectedCategory, useCircularDots, useGradient)
+                                },
                                 label = {
                                     Text(
                                         text = "$currencySymbol$amount",

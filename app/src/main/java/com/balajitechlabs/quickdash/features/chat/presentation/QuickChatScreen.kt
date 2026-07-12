@@ -26,6 +26,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -804,12 +806,49 @@ fun QuickChatScreen(
                     }
                 },
                 trailingIcon = {
-                    if (phoneNumber.isNotEmpty()) {
-                        IconButton(onClick = { phoneNumber = "" }) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_close),
-                                contentDescription = "Clear"
-                            )
+                    Row {
+                        if (phoneNumber.isNotEmpty()) {
+                            IconButton(onClick = { phoneNumber = "" }) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_close),
+                                    contentDescription = "Clear"
+                                )
+                            }
+                        }
+                        IconButton(onClick = {
+                            val barcodeScanner = com.google.mlkit.vision.codescanner.GmsBarcodeScanning.getClient(context)
+                            barcodeScanner.startScan().addOnSuccessListener { barcode ->
+                                val raw = barcode.rawValue ?: ""
+                                val clean = raw.trim()
+                                val lower = clean.lowercase()
+                                val isWhatsAppPayload = lower.contains("wa.me/") ||
+                                        lower.contains("api.whatsapp.com/send") ||
+                                        lower.contains("whatsapp://send") ||
+                                        lower.contains("web.whatsapp.com/send") ||
+                                        lower.contains("chat.whatsapp.com/") ||
+                                        lower.contains("whatsapp.com/channel/")
+                                
+                                var parsed: String? = null
+                                if (isWhatsAppPayload) {
+                                    parsed = Regex("[?&]phone=([+0-9]+)", RegexOption.IGNORE_CASE)
+                                        .find(clean)?.groupValues?.get(1)
+                                    if (parsed == null) {
+                                        parsed = Regex("wa\\.me/([+0-9]+)", RegexOption.IGNORE_CASE)
+                                            .find(clean)?.groupValues?.get(1)
+                                    }
+                                    if (parsed == null) {
+                                        parsed = clean
+                                    }
+                                }
+                                
+                                if (parsed != null) {
+                                    phoneNumber = parsed
+                                } else {
+                                    android.widget.Toast.makeText(context, "Invalid WhatsApp QR code", android.widget.Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }) {
+                            Icon(Icons.Default.QrCodeScanner, "Scan QR")
                         }
                     }
                 },

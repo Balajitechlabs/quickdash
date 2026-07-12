@@ -22,9 +22,10 @@ object ShareUtils {
         name: String,
         upiId: String,
         amount: String,
-        showUpiId: Boolean
+        showUpiId: Boolean,
+        usePaypal: Boolean = false
     ) {
-        val imageFile = generateShareableImage(context, qrBitmap, name, upiId, amount, showUpiId) ?: return
+        val imageFile = generateShareableImage(context, qrBitmap, name, upiId, amount, showUpiId, usePaypal) ?: return
         val contentUri = FileProvider.getUriForFile(
             context,
             "${context.packageName}.provider",
@@ -43,10 +44,13 @@ object ShareUtils {
         context: Context,
         payUrl: String,
         amount: String,
-        payeeName: String
+        payeeName: String,
+        usePaypal: Boolean = false
     ) {
+        val currencySymbol = if (usePaypal) "$" else "₹"
+        val amountText = if (amount.isNotBlank()) "$currencySymbol$amount" else "Any Amount"
         val shareText = if (amount.isNotBlank()) {
-            "Pay ₹$amount to $payeeName using this link:\n$payUrl"
+            "Pay $amountText to $payeeName using this link:\n$payUrl"
         } else {
             "Pay to $payeeName using this link:\n$payUrl"
         }
@@ -63,8 +67,11 @@ object ShareUtils {
         name: String,
         upiId: String,
         amount: String,
-        showUpiId: Boolean
+        showUpiId: Boolean,
+        usePaypal: Boolean = false
     ): File? {
+        val currencySymbol = if (usePaypal) "$" else "₹"
+        val idTypeLabel = if (usePaypal) "PayPal ID" else "UPI ID"
         try {
             val width = 800
             val height = 1050
@@ -114,8 +121,7 @@ object ShareUtils {
                 textPaint.textSize = 75f
                 textPaint.isFakeBoldText = true
                 textPaint.color = "#1a1a1a".toColorInt()
-                val currencyPrefix = "₹"
-                canvas.drawText("$currencyPrefix$amount", width / 2f, qrTop + qrSize + 150f, textPaint)
+                canvas.drawText("$currencySymbol$amount", width / 2f, qrTop + qrSize + 150f, textPaint)
             }
 
             // Draw centered footer text at the bottom: QuickDash (without logo)

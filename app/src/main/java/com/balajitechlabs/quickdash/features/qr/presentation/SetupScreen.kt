@@ -65,6 +65,7 @@ fun SetupScreen(
     upiIds: List<String>,
     defaultUpiId: String?,
     payeeName: String?,
+    usePaypal: Boolean = false,
     onSaveUpiIds: (List<String>, String, String) -> Unit
 ) {
     val currentUpiIds = remember(upiIds) { mutableStateListOf(*upiIds.toTypedArray()) }
@@ -84,9 +85,9 @@ fun SetupScreen(
 
     var dropdownExpanded by remember { mutableStateOf(false) }
 
-    val idTypeLabel = "UPI ID"
-    val idPlaceholder = "name@bank"
-    val idIcon = R.drawable.ic_upi_pay
+    val idTypeLabel = if (usePaypal) "PayPal ID" else "UPI ID"
+    val idPlaceholder = if (usePaypal) "192aakarsh" else "name@bank"
+    val idIcon = if (usePaypal) R.drawable.ic_paypal else R.drawable.ic_upi_pay
 
     Column(
         modifier = Modifier
@@ -240,7 +241,11 @@ fun SetupScreen(
                 )
 
                 if (currentUpiIds.size < 3) {
-                    val isIdValid = newUpiInput.trim().matches(Regex("^[a-zA-Z0-9.\\-_]+@[a-zA-Z0-9.\\-_]+$"))
+                    val isIdValid = if (usePaypal) {
+                        newUpiInput.isNotBlank() && !newUpiInput.contains("@") && !newUpiInput.contains(" ")
+                    } else {
+                        newUpiInput.trim().matches(Regex("^[a-zA-Z0-9.\\-_]+@[a-zA-Z0-9.\\-_]+$"))
+                    }
                     val isDuplicate = currentUpiIds.contains(newUpiInput)
 
                     val addId = {
@@ -287,7 +292,7 @@ fun SetupScreen(
 
                         if (!isIdValid && newUpiInput.isNotEmpty()) {
                             Text(
-                                text = "Invalid UPI ID format (name@bank)",
+                                text = "Invalid $idTypeLabel format",
                                 color = MaterialTheme.colorScheme.error,
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.padding(start = 4.dp, top = 2.dp)

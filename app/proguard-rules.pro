@@ -1,5 +1,5 @@
 # ======================================================================
-# QuickDash R8 / ProGuard rules — Stable Release v4.2.1
+# QuickDash R8 / ProGuard rules — Stable Release v4.3.0
 # ======================================================================
 # These rules are carefully audited to prevent runtime crashes in the
 # minified release APK.  Every rule has a comment explaining WHY it is
