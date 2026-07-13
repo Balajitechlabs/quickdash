@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="gold-navy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Meta Tags -->
+  <title>QuickDash ⚡ | The Ultimate Android Floating Utility Hub</title>
+  <meta name="description" content="Access notes, clipboard, payments switcher, browser, and direct messaging without leaving your current app. Beautiful Glassmorphic Material 3 Floating Dashboard.">
+  <meta name="keywords" content="QuickDash, Floating Bubble, Android Utility, Overlay App, Glassmorphism, Material 3, Room DB">
+  <meta name="author" content="BalajiTechLabs">
+  
+  <!-- Font Loaders (Poppins, Space Grotesk, Nunito) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Material Symbols Outlined Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body id="home">
+
+  <!-- Header / Navigation -->
+  <header>
+    <div class="container nav-wrapper">
+      <a href="#home" class="logo">
+        <img src="assets/logo.png" alt="QuickDash Logo">
+        Quick<span>Dash</span> ⚡
+      </a>
+      <nav class="nav-links">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#simulator" class="nav-link">Interactive Demo</a>
+        <a href="#video" class="nav-link">Video Preview</a>
+        <a href="#sandbox" class="nav-link">Sandbox</a>
+        <a href="#setup" class="nav-link">Setup</a>
+      </nav>
+      <div>
+        <a href="https://github.com/Balajitechlabs/quickdash" target="_blank" class="btn btn-secondary">
+          <span class="material-symbols-outlined">star</span> GitHub
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          Never Switch Apps Again. <br>
+          <span>All Tools Floating.</span>
+        </h1>
+        <p class="hero-description">
+          QuickDash is a hyper-productive Android overlay utility dashboard. Operating as a gorgeous, customizable glassmorphic bubble, it brings notes, QR payments, browser panels, clipboard tracking, and chat logs directly over any active game, video, or app.
+        </p>
+        <div class="hero-buttons">
+          <a href="https://github.com/Balajitechlabs/quickdash/releases/download/v4.4.0-1/quickdash-app-v4.4.0.apk" class="btn btn-primary">
+            <span class="material-symbols-outlined">download</span> Download APK (v4.4.0)
+          </a>
+          <a href="#simulator" class="btn btn-secondary">
+            <span class="material-symbols-outlined">sports_esports</span> Try Interactive Demo
+          </a>
+        </div>
+        <div class="hero-badges">
+          <div class="badge">
+            <span class="material-symbols-outlined">lock</span> 100% Privacy Enforced
+          </div>
+          <div class="badge">
+            <span class="material-symbols-outlined">palette</span> Material Design 3
+          </div>
+          <div class="badge">
+            <span class="material-symbols-outlined">database</span> Offline Room Storage
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Phone Mockup Simulator -->
+      <div class="phone-container" id="simulator-section">
+        <div class="phone-mockup">
+          <div class="phone-status-bar">
+            <span>10:42 AM</span>
+            <div class="phone-status-bar-icons">
+              <span class="material-symbols-outlined" style="font-size: 0.88rem;">wifi</span>
+              <span class="material-symbols-outlined" style="font-size: 0.88rem;">signal_cellular_4_bar</span>
+              <span class="material-symbols-outlined" style="font-size: 0.88rem;">battery_charging_full</span>
+            </div>
+          </div>
+          
+          <div class="phone-screen wallpaper-1" id="phone-screen">
+            <!-- Simulated Home Screen Content -->
+            <div class="phone-home-screen" id="phone-home">
+              <div class="phone-time-widget">
+                <div class="phone-time" id="phone-clock">10:42</div>
+                <div class="phone-date">Tuesday, July 14</div>
+              </div>
+              
+              <div class="phone-app-icons">
+                <div class="phone-app-icon">
+                  <div class="phone-app-img" style="background-color: #4285F4;"><span class="material-symbols-outlined" style="font-size: 1.4rem;">search</span></div>
+                  <div class="phone-app-label">Google</div>
+                </div>
+                <div class="phone-app-icon">
+                  <div class="phone-app-img" style="background-color: #EA4335;"><span class="material-symbols-outlined" style="font-size: 1.4rem;">mail</span></div>
+                  <div class="phone-app-label">Gmail</div>
+                </div>
+                <div class="phone-app-icon">
+                  <div class="phone-app-img" style="background-color: #FBBC05;"><span class="material-symbols-outlined" style="font-size: 1.4rem;">map</span></div>
+                  <div class="phone-app-label">Maps</div>
+                </div>
+                <div class="phone-app-icon">
+                  <div class="phone-app-img" style="background-color: #34A853;"><span class="material-symbols-outlined" style="font-size: 1.4rem;">photo_library</span></div>
+                  <div class="phone-app-label">Photos</div>
+                </div>
+              </div>
+              
+              <div class="phone-bottom-dock">
+                <div class="phone-app-img" style="background-color: #0078D4;"><span class="material-symbols-outlined" style="font-size: 1.3rem;">phone</span></div>
+                <div class="phone-app-img" style="background-color: #107C41;"><span class="material-symbols-outlined" style="font-size: 1.3rem;">chat</span></div>
+                <div class="phone-app-img" style="background-color: #E61C24;"><span class="material-symbols-outlined" style="font-size: 1.3rem;">music_note</span></div>
+                <div class="phone-app-img" style="background-color: #00A4EF;"><span class="material-symbols-outlined" style="font-size: 1.3rem;">explore</span></div>
+              </div>
+            </div>
+
+            <!-- Floating Bubble Overlay -->
+            <div class="floating-bubble" id="floating-bubble" title="Tap to open QuickDash">
+              <img src="assets/logo.png" alt="QuickDash Overlay Logo">
+            </div>
+
+            <!-- Simulated Toast -->
+            <div class="sim-toast" id="sim-toast">Copied to Clipboard!</div>
+
+            <!-- Dashboard Overlay -->
+            <div class="dashboard-overlay" id="dashboard-overlay">
+              <div class="dashboard-panel">
+                
+                <!-- MAIN GRID DASHBOARD VIEW -->
+                <div class="subview-container active" id="view-main">
+                  <div class="dashboard-header">
+                    <div class="dashboard-title">QuickDash Utility Hub ⚡</div>
+                    <div style="display: flex; gap: 8px;">
+                      <button class="dashboard-close" id="btn-lock-app" title="Lock Hub"><span class="material-symbols-outlined" style="font-size: 1.1rem;">lock</span></button>
+                      <button class="dashboard-close" id="btn-close-dash"><span class="material-symbols-outlined" style="font-size: 1.1rem;">close</span></button>
+                    </div>
+                  </div>
+                  <div class="dashboard-body">
+                    <div class="tools-grid">
+                      <div class="tool-item" data-target="view-notes">
+                        <div class="tool-icon" style="background: #EAB308;"><span class="material-symbols-outlined">edit_note</span></div>
+                        <div class="tool-label">Quick Notes</div>
+                      </div>
+                      <div class="tool-item" data-target="view-clipboard">
+                        <div class="tool-icon" style="background: #3B82F6;"><span class="material-symbols-outlined">content_paste</span></div>
+                        <div class="tool-label">Clipboard</div>
+                      </div>
+                      <div class="tool-item" data-target="view-payments">
+                        <div class="tool-icon" style="background: #10B981;"><span class="material-symbols-outlined">payments</span></div>
+                        <div class="tool-label">UPI / PayPal</div>
+                      </div>
+                      <div class="tool-item" data-target="view-chat">
+                        <div class="tool-icon" style="background: #25D366;"><span class="material-symbols-outlined">chat_bubble</span></div>
+                        <div class="tool-label">Quick Chat</div>
+                      </div>
+                      <div class="tool-item" data-target="view-browser">
+                        <div class="tool-icon" style="background: #8B5CF6;"><span class="material-symbols-outlined">language</span></div>
+                        <div class="tool-label">Floating Web</div>
+                      </div>
+                      <div class="tool-item" id="btn-toast-speed">
+                        <div class="tool-icon" style="background: #EF4444;"><span class="material-symbols-outlined">speed</span></div>
+                        <div class="tool-label">Traffic</div>
+                      </div>
+                      <div class="tool-item" data-target="view-wifi">
+                        <div class="tool-icon" style="background: #EC4899;"><span class="material-symbols-outlined">wifi</span></div>
+                        <div class="tool-label">Wi-Fi QR</div>
+                      </div>
+                      <div class="tool-item" data-target="view-terminal">
+                        <div class="tool-icon" style="background: #1E293B;"><span class="material-symbols-outlined">terminal</span></div>
+                        <div class="tool-label">Crash Logs</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- QUICK NOTES VIEW -->
+                <div class="subview-container" id="view-notes">
+                  <div class="subview-header">
+                    <button class="subview-back-btn"><span class="material-symbols-outlined">arrow_back</span></button>
+                    <div class="subview-title">📝 Quick Notes</div>
+                  </div>
+                  <div class="subview-body">
+                    <div class="sim-notes-list" id="notes-container">
+                      <div class="sim-note-item pinned">
+                        <span class="sim-note-text">⭐ Review QuickDash features on the site</span>
+                        <div class="sim-note-actions">
+                          <button class="sim-note-btn pin-btn"><span class="material-symbols-outlined" style="font-size: 0.8rem;">push_pin</span></button>
+                        </div>
+                      </div>
+                      <div class="sim-note-item">
+                        <span class="sim-note-text">Groceries: Milk, eggs, coffee beans</span>
+                        <div class="sim-note-actions">
+                          <button class="sim-note-btn pin-btn"><span class="material-symbols-outlined" style="font-size: 0.8rem;">push_pin</span></button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="sim-note-input-container">
+                      <input type="text" class="sim-input" id="note-input" placeholder="Type a note...">
+                      <button class="sim-btn-add" id="btn-add-note"><span class="material-symbols-outlined" style="font-size: 1.1rem;">add</span></button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- CLIPBOARD VIEW -->
+                <div class="subview-container" id="view-clipboard">
+                  <div class="subview-header">
+                    <button class="subview-back-btn"><span class="material-symbols-outlined">arrow_back</span></button>
+                    <div class="subview-title">📋 Clipboard Manager</div>
+                  </div>
+                  <div class="subview-body">
+                    <div class="sim-clips-list" id="clipboard-container">
+                      <div class="sim-clip-item pinned">
+                        <span class="sim-clip-text">https://github.com/Balajitechlabs</span>
+                        <div class="sim-clip-actions">
+                          <button class="sim-note-btn btn-copy-clip"><span class="material-symbols-outlined" style="font-size: 0.8rem;">content_copy</span></button>
+                        </div>
+                      </div>
+                      <div class="sim-clip-item">
+                        <span class="sim-clip-text">QuickDash v4.4.0 Android Package</span>
+                        <div class="sim-clip-actions">
+                          <button class="sim-note-btn btn-copy-clip"><span class="material-symbols-outlined" style="font-size: 0.8rem;">content_copy</span></button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- UPI / PAYPAL SWITCHER VIEW -->
+                <div class="subview-container" id="view-payments">
+                  <div class="subview-header">
+                    <button class="subview-back-btn"><span class="material-symbols-outlined">arrow_back</span></button>
+                    <div class="subview-title">💳 Payments & QR</div>
+                  </div>
+                  <div class="subview-body">
+                    <div class="sim-payment-toggle">
+                      <div class="sim-payment-tab active" id="tab-upi">UPI</div>
+                      <div class="sim-payment-tab" id="tab-paypal">PayPal</div>
+                    </div>
+                    <div class="sim-qr-box">
+                      <div class="sim-qr-code" id="payment-qr" style="padding: 0; background: transparent; border: none;">
+                        <canvas id="payment-qr-canvas" width="110" height="110" style="width: 110px; height: 110px; border-radius: var(--radius-sm); background: #fff; padding: 4px; box-sizing: border-box;"></canvas>
+                      </div>
+                      <div class="sim-qr-label" id="payment-label">UPI Merchant Target</div>
+                      <div class="sim-qr-target" id="payment-target">upi://pay?pa=balaji@upi&am=100</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- QUICK CHAT VIEW -->
+                <div class="subview-container" id="view-chat">
+                  <div class="subview-header">
+                    <button class="subview-back-btn"><span class="material-symbols-outlined">arrow_back</span></button>
+                    <div class="subview-title">💬 Frictionless Chat</div>
+                  </div>
+                  <div class="subview-body">
+                    <div class="sim-chat-form">
+                      <select class="sim-select" id="chat-platform">
+                        <option value="WhatsApp">WhatsApp Chat</option>
+                        <option value="Telegram">Telegram Direct</option>
+                        <option value="Signal">Signal Private</option>
+                      </select>
+                      <input type="text" class="sim-input" id="chat-number" placeholder="Enter Phone Number...">
+                      <select class="sim-select" id="chat-template">
+                        <option value="Hey! Are you free to call?">Template: Call inquiry</option>
+                        <option value="I've sent the payment. Please check.">Template: Payment proof</option>
+                        <option value="Sent from my floating QuickDash hub! ⚡">Template: QuickDash Promo</option>
+                      </select>
+                      <button class="sim-chat-btn" id="btn-launch-chat">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">send</span>
+                        Launch WhatsApp
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- FLOATING BROWSER VIEW -->
+                <div class="subview-container" id="view-browser">
+                  <div class="subview-header">
+                    <button class="subview-back-btn"><span class="material-symbols-outlined">arrow_back</span></button>
+                    <div class="subview-title">🌐 Floating Browser</div>
+                  </div>
+                  <div class="subview-body">
+                    <div class="sim-browser-bar">
+                      <input type="text" class="sim-input" id="browser-search" value="Material Design 3 Android">
+                      <button class="sim-btn-add" id="btn-browser-go" style="background-color: var(--bg-accent);"><span class="material-symbols-outlined" style="font-size: 1rem;">search</span></button>
+                    </div>
+                    <div class="sim-browser-content" id="browser-viewport">
+                      <div class="sim-browser-result-title">Material Design 3 - Android Developers</div>
+                      <div class="sim-browser-result-url">developer.android.com/design/ui/m3</div>
+                      <div class="sim-browser-result-desc">Guidelines, dynamic Monet thematic components, styles, and tools to quickly build Material Design 3 layouts.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- WI-FI QR SHARE VIEW -->
+                <div class="subview-container" id="view-wifi">
+                  <div class="subview-header">
+                    <button class="subview-back-btn"><span class="material-symbols-outlined">arrow_back</span></button>
+                    <div class="subview-title">📶 Wi-Fi QR Share</div>
+                  </div>
+                  <div class="subview-body">
+                    <div class="sim-chat-form">
+                      <input type="text" class="sim-input" id="wifi-ssid" placeholder="Network SSID" value="QuickDash_HQ">
+                      <input type="password" class="sim-input" id="wifi-pass" placeholder="Password" value="flywithbubble">
+                      <select class="sim-select" id="wifi-security">
+                        <option value="WPA">WPA/WPA2</option>
+                        <option value="WEP">WEP</option>
+                        <option value="nopass">Unsecured (Open)</option>
+                      </select>
+                      <button class="sim-chat-btn" id="btn-generate-wifi-qr" style="background-color: #EC4899;">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">qr_code_2</span>
+                        Generate Wi-Fi QR
+                      </button>
+                    </div>
+                    <div class="sim-qr-box" id="wifi-qr-box" style="display:none; margin-top: 14px;">
+                      <div class="sim-qr-code" style="padding: 0; background: transparent; border: none; margin: 0 auto 8px;">
+                        <canvas id="wifi-qr-canvas" width="110" height="110" style="width: 110px; height: 110px; border-radius: var(--radius-sm); background: #fff; padding: 4px; box-sizing: border-box; display: block; margin: 0 auto;"></canvas>
+                      </div>
+                      <div class="sim-qr-target" id="wifi-qr-string" style="word-break: break-all; font-size: 0.58rem; text-align: center; color: var(--text-secondary);">WIFI:S:QuickDash_HQ;T:WPA;P:flywithbubble;;</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- DIAGNOSTIC TERMINAL LOGS VIEW -->
+                <div class="subview-container" id="view-terminal">
+                  <div class="subview-header">
+                    <button class="subview-back-btn"><span class="material-symbols-outlined">arrow_back</span></button>
+                    <div class="subview-title">📟 Diagnostic Terminal</div>
+                  </div>
+                  <div class="subview-body" style="padding: 12px; background: #000; display: flex; flex-direction: column; overflow: hidden; height: 100%; border-radius: var(--radius-sm);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                      <span style="font-size: 0.58rem; color: #10B981; font-family: monospace; font-weight: 700;">LOG_STREAM</span>
+                      <button id="btn-export-logs" style="background: rgba(16,185,129,0.15); border: 1px solid #10B981; color: #10B981; font-family: monospace; font-size: 0.58rem; border-radius: var(--radius-xs); cursor: pointer; padding: 2px 6px;">Export Report</button>
+                    </div>
+                    <div class="terminal-screen" id="terminal-screen" style="flex-grow: 1; min-height: 120px; max-height: 160px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 0.6rem; color: #10B981; margin-bottom: 8px; text-shadow: 0 0 2px rgba(16,185,129,0.5); line-height: 1.3;">
+                      <div>[System Init] QuickDash Log Engine</div>
+                      <div>[Daemon] Monitoring exceptions...</div>
+                      <div>Type /help to see commands.</div>
+                    </div>
+                    <div class="terminal-input-row" style="display: flex; align-items: center; border-top: 1px solid #10B981; padding-top: 6px;">
+                      <span style="color: #10B981; font-family: monospace; font-size: 0.65rem; margin-right: 6px; font-weight: 700;">$</span>
+                      <input type="text" id="terminal-input" style="flex-grow: 1; background: transparent; border: none; outline: none; color: #10B981; font-family: monospace; font-size: 0.65rem; padding: 2px 0;" placeholder="type /help...">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Notification Shade -->
+                <div class="notification-shade" id="notification-shade">
+                  <div class="shade-content">
+                    <div class="shade-header">
+                      <span>System Notifications</span>
+                      <button class="clear-shade-btn" id="btn-clear-notifications">Clear All</button>
+                    </div>
+                    <div class="shade-body" id="shade-notifications-list">
+                      <div class="shade-item" data-id="1">
+                        <div class="shade-item-header">
+                          <span class="shade-item-title">📋 Clipboard Monitor</span>
+                          <span class="shade-item-time">Now</span>
+                        </div>
+                        <p class="shade-item-desc">Clipboard tracked: "https://github.com/Balajitechlabs"</p>
+                      </div>
+                      <div class="shade-item" data-id="2">
+                        <div class="shade-item-header">
+                          <span class="shade-item-title">📡 Broadcast Poller</span>
+                          <span class="shade-item-time">5m ago</span>
+                        </div>
+                        <p class="shade-item-desc">Remote command ping received: locking configuration state.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="shade-handle-container" id="notification-handle">
+                    <div class="shade-handle"></div>
+                  </div>
+                </div>
+
+                <!-- Biometric Lock Screen Overlay -->
+                <div class="biometric-lock-screen" id="biometric-lock-screen">
+                  <div class="lock-card">
+                    <span class="material-symbols-outlined lock-icon">lock</span>
+                    <div class="lock-title">QuickDash Locked</div>
+                    <div class="lock-subtitle">Biometrics required for overlay clearance</div>
+                    <div class="fingerprint-container" id="fingerprint-sensor">
+                      <div class="fingerprint-glow-ring"></div>
+                      <span class="material-symbols-outlined fingerprint-icon">fingerprint</span>
+                    </div>
+                    <div class="scan-progress-bar">
+                      <div class="scan-progress-fill" id="scan-progress"></div>
+                    </div>
+                    <div class="scan-instructions" id="scan-instructions">Press & Hold Fingerprint Sensor</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+          <div class="phone-navigation"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Grid Section -->
+  <section class="features-section" id="features">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">Powerful Hub</span>
+        <h2 class="section-title">Everything, just a bubble away.</h2>
+      </div>
+      <div class="features-grid">
+        <!-- Feature 1 -->
+        <div class="feature-card reveal">
+          <div class="card-icon"><span class="material-symbols-outlined">bubble_chart</span></div>
+          <h3 class="card-title">Floating Overlay Bubble</h3>
+          <p class="card-description">Runs seamlessly system-wide overlaying all games, movies, and apps. Simply tap to reveal your hub.</p>
+        </div>
+        <!-- Feature 2 -->
+        <div class="feature-card reveal">
+          <div class="card-icon"><span class="material-symbols-outlined">edit_square</span></div>
+          <h3 class="card-title">Persistent Quick Notes</h3>
+          <p class="card-description">Capture ideas instantly. Powered by an offline SQLite Room Database preventing any accidental data loss.</p>
+        </div>
+        <!-- Feature 3 -->
+        <div class="feature-card reveal">
+          <div class="card-icon"><span class="material-symbols-outlined">assignment</span></div>
+          <h3 class="card-title">Clipboard Manager</h3>
+          <p class="card-description">Track recent copy history. Pin vital URLs, tokens, or messages with convenient 1-tap clear actions.</p>
+        </div>
+        <!-- Feature 4 -->
+        <div class="feature-card reveal">
+          <div class="card-icon"><span class="material-symbols-outlined">qr_code_2</span></div>
+          <h3 class="card-title">PayPal & UPI Switcher</h3>
+          <p class="card-description">Hot-swap with a single toggle between PayPal links and UPI targets to generate payment codes instantly.</p>
+        </div>
+        <!-- Feature 5 -->
+        <div class="feature-card reveal">
+          <div class="card-icon"><span class="material-symbols-outlined">forum</span></div>
+          <h3 class="card-title">Frictionless Messaging</h3>
+          <p class="card-description">Launch WhatsApp, Telegram, or Signal chats directly without polluting your contact logs, using predefined templates.</p>
+        </div>
+        <!-- Feature 6 -->
+        <div class="feature-card reveal">
+          <div class="card-icon"><span class="material-symbols-outlined">open_in_browser</span></div>
+          <h3 class="card-title">Mini-WebView Browser</h3>
+          <p class="card-description">Search queries, verify URLs, and browse pages without stopping your game streams or video playback.</p>
+        </div>
+        <!-- Feature 7 -->
+        <div class="feature-card reveal">
+          <div class="card-icon"><span class="material-symbols-outlined">terminal</span></div>
+          <h3 class="card-title">Diagnostic Exception Logger</h3>
+          <p class="card-description">Intercepts uncaught app crashes and logs them locally to a developer logs console for one-click reports.</p>
+        </div>
+        <!-- Feature 8 -->
+        <div class="feature-card reveal">
+          <div class="card-icon"><span class="material-symbols-outlined">vpn_lock</span></div>
+          <h3 class="card-title">Telegram Broadcasts</h3>
+          <p class="card-description">Polls Telegram channels in the background for remote broadcasts and telemetry feedback, preserving zero server costs.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Video Preview Section -->
+  <section class="video-section" id="video">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">Watch Demo</span>
+        <h2 class="section-title">See QuickDash in Action</h2>
+      </div>
+      <div class="video-player-wrapper reveal">
+        <div class="video-element-container">
+          <!-- Standard HTML5 Video with autoplay config, falling back to a stunning loop simulator -->
+          <video id="demo-video" width="100%" height="100%" controls style="display:none; object-fit: cover;">
+            <source src="assets/preview.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+          
+          <!-- Default Animated Walkthrough Demo Simulator -->
+          <div class="video-placeholder-anim" id="video-anim-screen">
+            <div class="video-anim-overlay">
+              <div class="video-anim-bubble"></div>
+              <div class="video-anim-dashboard">
+                <div class="video-dash-header">
+                  <span>QuickNotes</span>
+                  <span>📌</span>
+                </div>
+                <div class="video-dash-items">
+                  <div class="video-dash-item" style="background: rgba(254, 159, 6, 0.3);"></div>
+                  <div class="video-dash-item"></div>
+                  <div class="video-dash-item"></div>
+                </div>
+              </div>
+            </div>
+            
+            <button class="video-play-btn" id="btn-play-video">
+              <span class="material-symbols-outlined" style="font-size: 2.6rem;">play_arrow</span>
+            </button>
+            <div class="video-placeholder-title">Interactive Showcase Walkthrough</div>
+            <div class="video-placeholder-desc">Click Play to begin the simulated dynamic workflow. Drop your own demo video at <code>website/assets/preview.mp4</code> to override.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Personalization Sandbox Section -->
+  <section class="sandbox-section" id="sandbox">
+    <div class="container sandbox-container">
+      <div class="reveal">
+        <span class="section-tag">Custom Sandbox</span>
+        <h2 class="section-title">State-of-the-art Customization.</h2>
+        <p>
+          QuickDash includes an advanced theme customization suite. Swap between 11 distinctive color schemes (plus wallpaper-based Monet styling) and hot-swap system-wide fonts.
+        </p>
+        <p>
+          <strong>Interact with the panel to the right</strong> to dynamically hot-swap themes and fonts across this entire website, replicating the real in-app user experience.
+        </p>
+      </div>
+      <div class="sandbox-controls reveal">
+        <div class="control-group">
+          <label class="control-label">Select Color Theme</label>
+          <div class="theme-selectors" id="theme-selectors">
+            <button class="theme-select-btn active" data-theme="gold-navy">Gold & Navy</button>
+            <button class="theme-select-btn" data-theme="monet">Monet Styling</button>
+            <button class="theme-select-btn" data-theme="sapphire">Sapphire</button>
+            <button class="theme-select-btn" data-theme="emerald">Emerald</button>
+            <button class="theme-select-btn" data-theme="ruby">Ruby Red</button>
+            <button class="theme-select-btn" data-theme="lavender">Lavender</button>
+            <button class="theme-select-btn" data-theme="crimson">Crimson</button>
+            <button class="theme-select-btn" data-theme="midnight">Midnight</button>
+            <button class="theme-select-btn" data-theme="sunset">Sunset</button>
+            <button class="theme-select-btn" data-theme="ocean">Ocean</button>
+            <button class="theme-select-btn" data-theme="cyberpunk">Cyberpunk</button>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label">Custom Monet Engine (HSL Palette)</label>
+          <div style="display: flex; gap: 14px; align-items: center; background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.06);">
+            <input type="color" id="monet-color-picker" value="#FE9F06" style="width: 44px; height: 44px; border: none; border-radius: 50%; cursor: pointer; background: transparent; padding: 0;">
+            <div style="display: flex; flex-direction: column;">
+              <span id="monet-hex-val" style="font-size: 0.85rem; font-weight: 700; font-family: var(--font-space); letter-spacing: 0.05em; color: var(--bg-accent);">#FE9F06</span>
+              <span style="font-size: 0.68rem; color: var(--text-secondary);">Select custom wallpaper hue</span>
+            </div>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label">Wallpaper Color Extractor (Material You)</label>
+          <div style="display: flex; flex-direction: column; gap: 12px; background: rgba(255,255,255,0.03); padding: 12px 16px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.06);">
+            <div class="wallpaper-presets" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+              <div class="wallpaper-thumb active" data-bg="gradient-1" style="height: 48px; border-radius: var(--radius-sm); border: 2px solid var(--bg-accent); cursor: pointer; background: linear-gradient(135deg, #15002a 0%, #000925 100%);" title="Midnight Nebula"></div>
+              <div class="wallpaper-thumb" data-bg="gradient-2" style="height: 48px; border-radius: var(--radius-sm); border: 2px solid transparent; cursor: pointer; background: radial-gradient(circle at bottom, #2b001a 0%, #03000b 100%);" title="Crimson Core"></div>
+              <div class="wallpaper-thumb" data-bg="gradient-3" style="height: 48px; border-radius: var(--radius-sm); border: 2px solid transparent; cursor: pointer; background: linear-gradient(0deg, #0c1a2e 0%, #030712 100%);" title="Ocean Abyss"></div>
+              <div class="wallpaper-thumb" id="wallpaper-upload-btn" style="height: 48px; border-radius: var(--radius-sm); border: 2px dashed rgba(255,255,255,0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05);" title="Upload custom wallpaper">
+                <span class="material-symbols-outlined" style="font-size: 1.25rem;">upload</span>
+                <input type="file" id="wallpaper-file-input" accept="image/*" style="display: none;">
+              </div>
+            </div>
+            <span style="font-size: 0.68rem; color: var(--text-secondary);">Select wallpaper preset or upload image to extract colors system-wide.</span>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label">Select Font Family</label>
+          <div class="font-selectors">
+            <button class="font-select-btn active" data-font="var(--font-space)" style="font-family: var(--font-space);">Space Grotesk</button>
+            <button class="font-select-btn" data-font="var(--font-poppins)" style="font-family: var(--font-poppins);">Poppins</button>
+            <button class="font-select-btn" data-font="var(--font-nunito)" style="font-family: var(--font-nunito);">Nunito</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Developer Setup Section -->
+  <section class="setup-section" id="setup">
+    <div class="container">
+      <div class="setup-card reveal">
+        <div class="setup-tabs">
+          <button class="setup-tab-btn active" data-tab="tab-install">APK Installation</button>
+          <button class="setup-tab-btn" data-tab="tab-compile">Compile Source</button>
+        </div>
+        
+        <div class="setup-tab-content active" id="tab-install">
+          <h3>Quick APK Installation Guide</h3>
+          <p>Installing QuickDash is straightforward. Follow these steps:</p>
+          <ol>
+            <li>Download the official package file: 
+              <a href="https://github.com/Balajitechlabs/quickdash/releases/download/v4.4.0-1/quickdash-app-v4.4.0.apk" style="color: var(--bg-accent); font-weight:600;">Download v4.4.0 APK</a>
+            </li>
+            <li>Enable <strong>"Install from Unknown Sources"</strong> in your Android Settings if prompted.</li>
+            <li>Launch the app. It will request critical permissions:
+              <ul>
+                <li><strong>System Alert Window (Display over other apps):</strong> Essential to display the floating overlay bubble.</li>
+                <li><strong>Notification Listener Access:</strong> Optional, to read system notifications in your dashboard.</li>
+              </ul>
+            </li>
+            <li>Tap the bubble and start optimizing your workflow!</li>
+          </ol>
+        </div>
+        
+        <div class="setup-tab-content" id="tab-compile">
+          <h3>Developer Build instructions</h3>
+          <p>To compile the codebase using Android Studio:</p>
+          <pre><code># 1. Clone the repository
+git clone https://github.com/Balajitechlabs/quickdash.git
+cd quickdash
+
+# 2. Build local release package using Gradle Wrapper
+./gradlew assembleRelease</code></pre>
+          <p>Make sure to configure the variables for keystore properties inside your local environment setup to cleanly sign the output APK, and specify custom credentials for your Telegram log bots inside target files if modifying reporting endpoints.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <footer>
+    <div class="container footer-grid">
+      <div>
+        <a href="#home" class="footer-logo">
+          <img src="assets/logo.png" alt="Logo">
+          Quick<span>Dash</span> ⚡
+        </a>
+        <p class="footer-desc">
+          The ultimate productivity companion overlays your tasks cleanly on-screen. Build beautiful workflow extensions natively.
+        </p>
+      </div>
+      <div>
+        <h4 class="footer-title">Navigation</h4>
+        <ul class="footer-links">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#simulator">Interactive Demo</a></li>
+          <li><a href="#video">Video Preview</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">GitHub Repo</h4>
+        <ul class="footer-links">
+          <li><a href="https://github.com/Balajitechlabs/quickdash" target="_blank">Star Repository</a></li>
+          <li><a href="https://github.com/Balajitechlabs/quickdash/issues" target="_blank">Issue Tracker</a></li>
+          <li><a href="https://github.com/Balajitechlabs/quickdash/blob/main/LICENSE" target="_blank">Fork License</a></li>
+          <li><a href="https://github.com/Balajitechlabs/quickdash/blob/main/PRIVACY_POLICY.md" target="_blank">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <div class="copyright">&copy; 2026 BalajiTechLabs. Distributed under a Custom Open Source Fork License.</div>
+      <div class="copyright">Made with ❤️ for modern Android.</div>
+    </div>
+  </footer>
+
+  <!-- Main JavaScript File -->
+  <script src="app.js"></script>
+</body>
+</html>
