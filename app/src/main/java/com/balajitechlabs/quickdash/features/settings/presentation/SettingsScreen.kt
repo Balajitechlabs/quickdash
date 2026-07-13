@@ -108,9 +108,11 @@ fun SettingsScreen(
     val fontScale by userStore.fontScale.collectAsState(initial = 1f)
     val fontFamilyName by userStore.fontFamilyKey.collectAsState(initial = "system")
     val showShadow by userStore.showShadow.collectAsState(initial = true)
+    val showToolDescriptions by userStore.showToolDescriptions.collectAsState(initial = true)
     val secureMode by userStore.secureMode.collectAsState(initial = false)
     val maxBrightness by userStore.maxBrightness.collectAsState(initial = false)
     val showImagePreviews by userStore.showImagePreviews.collectAsState(initial = true)
+    val advancedThumbnail by userStore.advancedThumbnail.collectAsState(initial = false)
     val emojiHeader by userStore.emojiHeader.collectAsState(initial = "🚀")
     val appLanguage by userStore.appLanguage.collectAsState(initial = "en")
     val confettiType by userStore.confettiType.collectAsState(initial = "Default")
@@ -181,6 +183,9 @@ fun SettingsScreen(
     var showCustomSearchDialog by remember { mutableStateOf(false) }
     var showAdminMessageDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
+    var showCertificateDialog by remember { mutableStateOf(false) }
+    var showBubbleLearnMoreDialog by remember { mutableStateOf(false) }
+    var userIntendedEnable by remember { mutableStateOf(false) }
     var showTipsDialog by remember { mutableStateOf(false) }
     var showUpdateDialog by remember { mutableStateOf(false) }
     var adminMessageText by remember { mutableStateOf("") }
@@ -216,7 +221,12 @@ fun SettingsScreen(
     ) { uri ->
         if (uri != null) {
             coroutineScope.launch {
-                BackupRestoreManager.backupDataStore(context, uri)
+                val result = BackupRestoreManager.backupDataStore(context, uri)
+                if (result.isSuccess) {
+                    android.widget.Toast.makeText(context, "Backup Successful! 💾", android.widget.Toast.LENGTH_SHORT).show()
+                } else {
+                    android.widget.Toast.makeText(context, "Backup Failed: ${result.exceptionOrNull()?.message}", android.widget.Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
@@ -226,8 +236,35 @@ fun SettingsScreen(
     ) { uri ->
         if (uri != null) {
             coroutineScope.launch {
-                BackupRestoreManager.restoreDataStore(context, uri)
+                val result = BackupRestoreManager.restoreDataStore(context, uri)
+                if (result.isSuccess) {
+                    android.widget.Toast.makeText(context, "Data Restored Successfully! 🔄", android.widget.Toast.LENGTH_SHORT).show()
+                } else {
+                    android.widget.Toast.makeText(context, "Restore Failed: ${result.exceptionOrNull()?.message}", android.widget.Toast.LENGTH_LONG).show()
+                }
             }
+        }
+    }
+
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                if (userIntendedEnable) {
+                    if (Settings.canDrawOverlays(context)) {
+                        onToggleBubble(true)
+                        context.startService(Intent(context, com.balajitechlabs.quickdash.core.services.FloatingBubbleService::class.java))
+                    }
+                    userIntendedEnable = false
+                }
+                if (bubbleEnabled && !Settings.canDrawOverlays(context)) {
+                    onToggleBubble(false)
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
@@ -297,8 +334,10 @@ fun SettingsScreen(
             }
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
-        // ── Contact Section (Top) ──────────────────────────────────────
-        PreferenceGroup(
+            val isTabletOrLandscape = androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp >= 600
+            val column0Groups = @Composable {
+                // ── Contact Section (Top) ──────────────────────────────────────
+                PreferenceGroup(
             title = "Contact & Socials",
             expanded = expandedGroup == "Contact & Socials",
             onHeaderClick = {
@@ -710,6 +749,7 @@ fun SettingsScreen(
                                     onToggleBubble(true)
                                     context.startService(Intent(context, com.balajitechlabs.quickdash.core.services.FloatingBubbleService::class.java))
                                 } else {
+                                    userIntendedEnable = true
                                     val intent = Intent(
                                         Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                                         Uri.parse("package:${context.packageName}")
@@ -724,6 +764,25 @@ fun SettingsScreen(
                     )
                 }
             )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(
+                    onClick = { showBubbleLearnMoreDialog = true },
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                    modifier = Modifier.height(32.dp)
+                ) {
+                    Text(
+                        text = "Learn More",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
 
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
@@ -1206,10 +1265,28 @@ fun SettingsScreen(
                     )
                 }
             )
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            PreferenceItem(
+                title = "Show Tool Descriptions",
+                subtitle = "Render description text on dashboard cards",
+                iconVector = Icons.Default.Description,
+                trailing = {
+                    StyledSwitch(
+                        style = activeSwitchStyle,
+                        checked = showToolDescriptions,
+                        onCheckedChange = {
+                            triggerFeedback()
+                            coroutineScope.launch { userStore.saveShowToolDescriptions(it) }
+                        }
+                    )
+                }
+            )
         }
+    }
 
+    val column1Groups = @Composable {
         // ── Group 4: Typography & Fonts ───────────────────────────────
-        PreferenceGroup(
+            PreferenceGroup(
             title = "Typography & Fonts",
             expanded = expandedGroup == "Typography & Fonts",
             onHeaderClick = {
@@ -1324,6 +1401,20 @@ fun SettingsScreen(
                         checked = showImagePreviews,
                         onCheckedChange = {
                             coroutineScope.launch { userStore.saveShowImagePreviews(it) }
+                        }
+                    )
+                }
+            )
+            PreferenceItem(
+                title = "Advanced Thumbnail",
+                subtitle = "Enable advanced thumbnail options based on your preference",
+                iconVector = Icons.Default.Image,
+                trailing = {
+                    StyledSwitch(
+                        style = activeSwitchStyle,
+                        checked = advancedThumbnail,
+                        onCheckedChange = {
+                            coroutineScope.launch { userStore.saveAdvancedThumbnail(it) }
                         }
                     )
                 }
@@ -1768,6 +1859,24 @@ fun SettingsScreen(
                     }
                 }
             }
+        }
+        }
+
+        if (isTabletOrLandscape) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    column0Groups()
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    column1Groups()
+                }
+            }
+        } else {
+            column0Groups()
+            column1Groups()
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -2242,6 +2351,29 @@ fun SettingsScreen(
                                     context.startActivity(intent)
                                 }.padding(vertical = 4.dp)
                             )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            androidx.compose.material3.TextButton(
+                                onClick = {
+                                    showCertificateDialog = true
+                                },
+                                contentPadding = PaddingValues(0.dp),
+                                modifier = Modifier.height(28.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Verified,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = "View Permit Certificate",
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                )
+                            }
                         }
                     }
 
@@ -2263,6 +2395,22 @@ fun SettingsScreen(
                                         shape = RoundedCornerShape(8.dp)
                                     ) {
                                         Text("Check for Updates")
+                                    }
+                                }
+                                is com.balajitechlabs.quickdash.core.utils.UpdateState.Checking -> {
+                                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                                    Text("Checking for updates...", style = MaterialTheme.typography.bodySmall)
+                                }
+                                is com.balajitechlabs.quickdash.core.utils.UpdateState.Error -> {
+                                    Text("Error checking updates ❌", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
+                                    Text(updateState.message, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
+                                    Button(
+                                        onClick = {
+                                            try { com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(context, manual = true) } catch (e: Exception) { e.printStackTrace() }
+                                        },
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Text("Retry Check")
                                     }
                                 }
                                 is com.balajitechlabs.quickdash.core.utils.UpdateState.UpdateAvailable -> {
@@ -2309,6 +2457,67 @@ fun SettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showAboutDialog = false }) { Text("Close") }
+            }
+        )
+    }
+
+    if (showCertificateDialog) {
+        AlertDialog(
+            onDismissRequest = { showCertificateDialog = false },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Icon(Icons.Default.Verified, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Text("Verified Permit Certificate", fontWeight = FontWeight.Bold)
+                }
+            },
+            text = {
+                androidx.compose.foundation.Image(
+                    painter = painterResource(R.drawable.permit_certificate),
+                    contentDescription = "Permit Certificate",
+                    modifier = Modifier.fillMaxWidth().clip(MaterialTheme.shapes.medium),
+                    contentScale = ContentScale.Fit
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { showCertificateDialog = false }) {
+                    Text("Close")
+                }
+            }
+        )
+    }
+
+    if (showBubbleLearnMoreDialog) {
+        AlertDialog(
+            onDismissRequest = { showBubbleLearnMoreDialog = false },
+            title = {
+                Text("Quick Bubble", fontWeight = FontWeight.Bold)
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "A system-wide floating bubble for instant access to all QuickDash features.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        text = "• Tap to open the menu, drag to reposition.\n• Double-tap the bubble to disable it completely.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Available Features:",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "• UPI Pay\n• Quick Chat\n• Quick Search\n• Quick Notes\n• Calculator\n• Timer\n• Settings\n• Quick Web",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showBubbleLearnMoreDialog = false }) {
+                    Text("Got it")
+                }
             }
         )
     }
@@ -2553,7 +2762,7 @@ private fun shareBackupFile(context: android.content.Context, jsonString: String
         val uri = androidx.core.content.FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
         
         val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
-            type = "application/json"
+            type = "text/plain"
             putExtra(android.content.Intent.EXTRA_STREAM, uri)
             addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
             if (targetPackage != null) {

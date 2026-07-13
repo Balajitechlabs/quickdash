@@ -132,6 +132,8 @@ fun BlogPostsScreen(userStore: UserStore) {
         }
     }
 
+    var showClearFeedConfirmation by remember { mutableStateOf(false) }
+
     val pollVotes = remember(pollVotesJson) {
         try {
             val type = object : TypeToken<Map<String, String>>() {}.type
@@ -225,12 +227,7 @@ fun BlogPostsScreen(userStore: UserStore) {
                     )
                 }
                 IconButton(onClick = {
-                    coroutineScope.launch {
-                        userStore.saveFirebaseBlogPosts("[]")
-                        userStore.saveHiddenNotifications("[]")
-                        userStore.savePinnedNotifications("[]")
-                        userStore.savePollVote("{}")
-                    }
+                    showClearFeedConfirmation = true
                 }) {
                     Icon(
                         imageVector = Icons.Default.DeleteSweep,
@@ -376,6 +373,7 @@ fun BlogPostsScreen(userStore: UserStore) {
                                         )
                                     },
                                 shape = RoundedCornerShape(16.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                                 colors = CardDefaults.cardColors(
                                     containerColor = if (isPinned) MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f) 
                                                      else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
@@ -690,6 +688,22 @@ fun BlogPostsScreen(userStore: UserStore) {
             }
         }
 
+        if (hiddenSet.isNotEmpty() || localHiddenSet.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            TextButton(
+                onClick = {
+                    localHiddenSet = emptySet()
+                    coroutineScope.launch {
+                        userStore.saveHiddenNotifications("[]")
+                    }
+                    Toast.makeText(context, "All notifications restored!", Toast.LENGTH_SHORT).show()
+                },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text("Restore Dismissed Notifications 🔄", style = MaterialTheme.typography.labelMedium)
+            }
+        }
+
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = "Real-time Notification Sync",
@@ -838,4 +852,29 @@ fun BlogPostsScreen(userStore: UserStore) {
         }
     }
 
+    if (showClearFeedConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showClearFeedConfirmation = false },
+            title = { Text("Clear Feed") },
+            text = { Text("Are you sure you want to clear the feed and reset all cached messages, polls, and votes?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    coroutineScope.launch {
+                        userStore.saveFirebaseBlogPosts("[]")
+                        userStore.saveHiddenNotifications("[]")
+                        userStore.savePinnedNotifications("[]")
+                        userStore.savePollVote("{}")
+                    }
+                    showClearFeedConfirmation = false
+                }) {
+                    Text("Clear Feed", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearFeedConfirmation = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 }

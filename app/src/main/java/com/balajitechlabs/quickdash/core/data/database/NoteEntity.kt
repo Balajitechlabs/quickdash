@@ -4,7 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.UUID
 
-@Entity(tableName = "notes")
+import androidx.room.Index
+
+@Entity(tableName = "notes", indices = [Index(value = ["timestamp"])])
 data class NoteEntity(
     @PrimaryKey val id: String = UUID.randomUUID().toString(),
     val text: String,

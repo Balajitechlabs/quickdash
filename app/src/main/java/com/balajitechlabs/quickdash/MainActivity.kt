@@ -1,6 +1,7 @@
 package com.balajitechlabs.quickdash
 
 import com.balajitechlabs.quickdash.features.dashboard.presentation.FloatingDialogActivity
+import com.balajitechlabs.quickdash.core.utils.AppLogger
 
 import android.content.ClipboardManager
 import android.content.Context
@@ -34,7 +35,6 @@ import com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.launch
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -64,16 +64,22 @@ class MainActivity : FragmentActivity() {
 
         userStore = UserStore(this)
         
-        // Force app locale configuration context from Datastore
-        try {
-            val langCode = runBlocking { userStore.appLanguage.first() }
-            val locale = Locale(langCode)
-            Locale.setDefault(locale)
-            val config = resources.configuration
-            config.setLocale(locale)
-            resources.updateConfiguration(config, resources.displayMetrics)
-        } catch (_: Exception) {
-            // Fallback to system default locale
+        // Apply saved locale — do NOT use runBlocking on the main thread here.
+        // DataStore IO on the main thread causes an ANR / deadlock in release builds.
+        // We launch async and accept that the first frame may use the system locale;
+        // this is invisible to the user since the Activity hasn't rendered yet.
+        lifecycleScope.launch {
+            try {
+                val langCode = userStore.appLanguage.first()
+                if (langCode.isNotBlank()) {
+                val locale = Locale.forLanguageTag(langCode)
+                    Locale.setDefault(locale)
+                    val config = resources.configuration
+                    config.setLocale(locale)
+                    @Suppress("DEPRECATION")
+                    resources.updateConfiguration(config, resources.displayMetrics)
+                }
+            } catch (_: Exception) { /* keep system locale */ }
         }
 
         val shortcutAction = intent?.action
@@ -232,23 +238,6 @@ class MainActivity : FragmentActivity() {
             e.printStackTrace()
         }
 
-        // OneSignal registration loop disabled
-        // try {
-        //     lifecycleScope.launch {
-        //         var checked = 0
-        //         while (checked < 10) {
-        //             val id = com.onesignal.OneSignal.User.pushSubscription.id ?: ""
-        //             if (id.isNotEmpty()) {
-        //                 userStore.saveOnesignalId(id)
-        //                 break
-        //             }
-        //             kotlinx.coroutines.delay(2000)
-        //             checked++
-        //         }
-        //     }
-        // } catch (e: Exception) {
-        //     e.printStackTrace()
-        // }
 
         setContent {
             val themeMode by userStore.themeMode.collectAsState(initial = "SYSTEM")
@@ -346,16 +335,20 @@ class MainActivity : FragmentActivity() {
         // Overlay / Bubble Service logic
         lifecycleScope.launch {
             userStore.bubbleEnabled.collect { enabled ->
-                if (enabled) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (Settings.canDrawOverlays(this@MainActivity)) {
+                try {
+                    if (enabled) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (Settings.canDrawOverlays(this@MainActivity)) {
+                                startService(Intent(this@MainActivity, FloatingBubbleService::class.java))
+                            }
+                        } else {
                             startService(Intent(this@MainActivity, FloatingBubbleService::class.java))
                         }
                     } else {
-                        startService(Intent(this@MainActivity, FloatingBubbleService::class.java))
+                        stopService(Intent(this@MainActivity, FloatingBubbleService::class.java))
                     }
-                } else {
-                    stopService(Intent(this@MainActivity, FloatingBubbleService::class.java))
+                } catch (e: Exception) {
+                    com.balajitechlabs.quickdash.core.utils.AppLogger.e("MainActivity", "Failed to start/stop FloatingBubbleService", e)
                 }
             }
         }
@@ -412,7 +405,7 @@ class MainActivity : FragmentActivity() {
             clipboard.addPrimaryClipChangedListener(clipboardListener)
             saveClipboardData()
         } catch (e: Exception) {
-            // Ignore
+            AppLogger.e("MainActivity", "Failed to add primary clip changed listener", e)
         }
     }
 
@@ -422,7 +415,7 @@ class MainActivity : FragmentActivity() {
             val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             clipboard.removePrimaryClipChangedListener(clipboardListener)
         } catch (e: Exception) {
-            // Ignore
+            AppLogger.e("MainActivity", "Failed to remove primary clip listener", e)
         }
     }
     
@@ -431,7 +424,7 @@ class MainActivity : FragmentActivity() {
         try {
             unregisterReceiver(closeAppReceiver)
         } catch (e: Exception) {
-            // Ignore if not registered
+            AppLogger.e("MainActivity", "Failed to unregister closeAppReceiver", e)
         }
     }
 
@@ -460,7 +453,7 @@ class MainActivity : FragmentActivity() {
                 }
             }
         } catch (e: Exception) {
-            // Ignore clipboard read errors
+            AppLogger.e("MainActivity", "Clipboard read error or worker flow launch failure", e)
         }
     }
 

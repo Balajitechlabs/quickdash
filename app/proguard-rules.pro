@@ -1,5 +1,5 @@
 # ======================================================================
-# QuickDash R8 / ProGuard rules — Stable Release v4.3.0
+# QuickDash R8 / ProGuard rules — Stable Release v4.4.0
 # ======================================================================
 # These rules are carefully audited to prevent runtime crashes in the
 # minified release APK.  Every rule has a comment explaining WHY it is
@@ -62,6 +62,9 @@
 -keep @androidx.room.Entity class * { *; }
 -keep @androidx.room.Dao interface * { *; }
 -keep class * extends androidx.room.RoomDatabase { *; }
+# Room uses annotation processors — keep generated _Impl classes
+-keep class **_Impl { *; }
+-keep class **Dao_Impl { *; }
 
 # ======================================================================
 # 7. DEPENDENCY INJECTION CONTAINER & CORE SINGLETONS
@@ -78,6 +81,8 @@
 -keep class com.balajitechlabs.quickdash.core.utils.LogManager { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.AppLogger { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.UpdateManager** { *; }
+-keep class com.balajitechlabs.quickdash.core.utils.UpdateState { *; }
+-keep class com.balajitechlabs.quickdash.core.utils.UpdateState$* { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.ShakeDetector { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.QRCodeGenerator { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.BackupRestoreManager { *; }
@@ -85,6 +90,14 @@
 -keep class com.balajitechlabs.quickdash.core.utils.ShareUtils { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.DialogLauncher { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.GoogleDriveSyncManager { *; }
+-keep class com.balajitechlabs.quickdash.core.utils.DiagnosticLogger { *; }
+-keep class com.balajitechlabs.quickdash.core.utils.IntentUtilsKt { *; }
+# MySavedStateRegistryOwner is used by FloatingBubbleService to host
+# Compose overlays — R8 strips it as unused because it's only referenced
+# within the same file via private visibility.
+-keep class com.balajitechlabs.quickdash.core.services.MySavedStateRegistryOwner { *; }
+# BackupCrypto uses reflection for encryption key derivation
+-keep class com.balajitechlabs.quickdash.core.utils.BackupCrypto { *; }
 
 # Telegram feature singletons
 -keep class com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker { *; }
@@ -108,6 +121,11 @@
 -keep class com.balajitechlabs.quickdash.features.wifi.presentation.WifiEntry { *; }
 -keep class com.balajitechlabs.quickdash.features.chat.presentation.Country { *; }
 -keep class com.balajitechlabs.quickdash.features.notes.domain.model.Note { *; }
+-keep class com.balajitechlabs.quickdash.features.clipboard.presentation.ActionableItem { *; }
+-keep class com.balajitechlabs.quickdash.features.insta.presentation.GithubProfileCache { *; }
+-keep class com.balajitechlabs.quickdash.features.qr.presentation.QrHistoryItem { *; }
+-keep class com.balajitechlabs.quickdash.features.dashboard.presentation.ToolDef { *; }
+-keep class com.balajitechlabs.quickdash.features.dashboard.presentation.ToolDef$* { *; }
 
 # Enums used throughout CustomComponents (SwitchStyle, SliderStyle, ShapeStyle)
 # and PaymentTargetApp.  R8 strips enum valueOf/values() which are used
@@ -116,6 +134,11 @@
 -keep class com.balajitechlabs.quickdash.core.ui.components.SwitchStyle { *; }
 -keep class com.balajitechlabs.quickdash.core.ui.components.SliderStyle { *; }
 -keep class com.balajitechlabs.quickdash.core.ui.components.ShapeStyle { *; }
+-keep class com.balajitechlabs.quickdash.features.dashboard.presentation.QuickTool { *; }
+# CalcKey is a private sealed class — R8 inlines object subclasses and
+# strips the hierarchy, breaking when-exhaustiveness at runtime.
+-keep class com.balajitechlabs.quickdash.features.calculator.presentation.CalcKey { *; }
+-keep class com.balajitechlabs.quickdash.features.calculator.presentation.CalcKey$* { *; }
 -keepclassmembers enum * {
     public static **[] values();
     public static ** valueOf(java.lang.String);
@@ -150,6 +173,9 @@
 # from these anonymous classes, causing Gson to return raw Object
 # instead of the parameterized type → ClassCastException at runtime.
 -keep class com.google.gson.** { *; }
+# Keep both with and without allowobfuscation to ensure R8 full mode
+# preserves generic signatures of anonymous TypeToken subclasses.
+-keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
 -keep class * extends com.google.gson.reflect.TypeToken { *; }
 -keepclassmembers class * {
     @com.google.gson.annotations.SerializedName <fields>;
@@ -171,11 +197,6 @@
 -dontwarn com.google.firebase.**
 -dontwarn com.google.android.gms.**
 
-# ======================================================================
-# 13. ONESIGNAL (kept even though disabled — prevents missing-class warnings)
-# ======================================================================
--keep class com.onesignal.** { *; }
--dontwarn com.onesignal.**
 
 # ======================================================================
 # 14. OKHTTP / RETROFIT / OKIO / COROUTINES
@@ -196,19 +217,38 @@
 -dontwarn com.google.zxing.**
 
 # ======================================================================
-# 16. ANDROIDX SECURITY / BIOMETRIC / DATASTORE
+# 15b. ML KIT CODE SCANNER (play-services-code-scanner)
 # ======================================================================
-# EncryptedSharedPreferences uses reflection for AES key generation.
+# GmsBarcodeScanning uses internal GMS classes loaded via reflection.
+# Without these rules R8 strips com.google.android.gms.internal.mlkit_code_scanner.*
+# causing NullPointerException at GmsBarcodeScanning.getClient() call time.
+# This was the PRIMARY crash on first launch in release builds.
+-keep class com.google.mlkit.** { *; }
+-keep class com.google.android.gms.internal.mlkit_code_scanner.** { *; }
+-keep class com.google.android.gms.vision.** { *; }
+-dontwarn com.google.mlkit.**
+-dontwarn com.google.android.gms.internal.mlkit_code_scanner.**
+
+# ======================================================================
+# 16. ANDROIDX SECURITY / BIOMETRIC / DATASTORE (CRITICAL)
+# ======================================================================
+# EncryptedSharedPreferences uses reflection for AES key generation via Tink.
+# Without keeping these classes, release builds crash immediately on first
+# launch with a NoClassDefFoundError inside EncryptedPrefsHelper.init().
 -keep class androidx.security.crypto.** { *; }
 -dontwarn androidx.security.crypto.**
 -dontwarn androidx.biometric.**
 -dontwarn androidx.datastore.**
-# Keep the Tink crypto library used internally by EncryptedSharedPreferences
+# Keep the ENTIRE Tink crypto library — EncryptedSharedPreferences uses
+# Tink internally via reflection and class-loading.  Stripping any Tink
+# class causes a hard crash on encrypted prefs initialization in release.
 -keep class com.google.crypto.tink.** { *; }
+-keep class com.google.crypto.tink.subtle.** { *; }
+-keep class com.google.crypto.tink.proto.** { *; }
 -dontwarn com.google.crypto.tink.**
 
 # ======================================================================
-# 17. JETPACK COMPOSE RUNTIME STABILITY
+# 17. JETPACK COMPOSE RUNTIME STABILITY (CRITICAL)
 # ======================================================================
 # Compose compiler generates $stable metadata fields and uses reflection
 # for recomposition scoping.  Stripping these causes random crashes.
@@ -219,6 +259,14 @@
 -dontwarn androidx.compose.material3.**
 -dontwarn androidx.compose.foundation.**
 -dontwarn androidx.compose.animation.**
+# Keep all Compose top-level composable functions and their lambdas.
+# R8 can strip Compose function references it considers unreachable due
+# to inlining by the Compose compiler plugin.
+-keep class com.balajitechlabs.quickdash.**Kt { *; }
+-keep class com.balajitechlabs.quickdash.**Kt$* { *; }
+# Keep PaymentModeSwitcher Composable (stripped by R8 as unused)
+-keep class com.balajitechlabs.quickdash.core.ui.components.PaymentModeSwitcherKt { *; }
+-keep class com.balajitechlabs.quickdash.core.ui.components.ComposableSingletons$PaymentModeSwitcherKt { *; }
 
 # ======================================================================
 # 18. KOTLIN METADATA & REFLECTION
@@ -303,3 +351,52 @@
 # ======================================================================
 -dontwarn androidx.palette.**
 -dontwarn androidx.appcompat.**
+
+# ======================================================================
+# 28. ADDITIONAL SAFETY RULES FOR STARTUP CRASHES
+# ======================================================================
+# Keep Kotlinx Coroutines internals that might be stripped incorrectly by R8.
+# These are required for the coroutine dispatcher machinery to function in
+# the release build — stripping them causes silent hangs or immediate crashes.
+-keep class kotlinx.coroutines.** { *; }
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+-keep class kotlin.coroutines.** { *; }
+
+# Keep DataStore classes (prevents initialization crashes when minified).
+# DataStore uses reflection to find the singleton instance via the
+# preferencesDataStore delegate — stripping classes breaks this.
+-keep class androidx.datastore.** { *; }
+-keep class androidx.datastore.preferences.** { *; }
+-keep class androidx.datastore.preferences.core.** { *; }
+
+# Keep Lifecycle classes — required by Activity and Compose runtime.
+-keep class androidx.lifecycle.** { *; }
+-keep class * implements androidx.lifecycle.LifecycleObserver { *; }
+
+# Keep AndroidX Core App internals
+-keep class androidx.core.app.** { *; }
+
+# Keep all Fragments and Activities implicitly
+-keep class * extends androidx.fragment.app.Fragment { *; }
+-keep class * extends android.app.Activity { *; }
+
+# ======================================================================
+# 29. ANDROIDX SAVEDSTATE / LIFECYCLE (FLOATING SERVICE)
+# ======================================================================
+# MySavedStateRegistryOwner in FloatingBubbleService implements
+# SavedStateRegistryOwner.  Without these rules R8 strips the interface
+# implementations, causing a ClassCastException in the Compose overlay.
+-keep class androidx.savedstate.** { *; }
+-dontwarn androidx.savedstate.**
+-keep class * implements androidx.savedstate.SavedStateRegistryOwner { *; }
+
+# ======================================================================
+# 30. WEBVIEW (QuickWebScreen)
+# ======================================================================
+# WebViewClient / WebChromeClient subclasses are instantiated at runtime
+# via the WebView native bridge. R8 will strip anonymous subclasses.
+-keep class * extends android.webkit.WebViewClient { *; }
+-keep class * extends android.webkit.WebChromeClient { *; }
+-keep class android.webkit.** { *; }
+-dontwarn android.webkit.**

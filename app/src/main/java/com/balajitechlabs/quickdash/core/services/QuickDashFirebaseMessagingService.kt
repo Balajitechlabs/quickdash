@@ -21,44 +21,6 @@ class QuickDashFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.d(TAG, "From: ${remoteMessage.from}")
 
-        // OneSignal uses the "custom" key in the data payload.
-        // If this is a OneSignal notification, capture it for the feed and ignore so OneSignal can handle system notification natively.
-        if (remoteMessage.data.containsKey("custom")) {
-            Log.d(TAG, "Capturing OneSignal notification in custom FCM service.")
-            val title = remoteMessage.data["title"] ?: remoteMessage.notification?.title ?: "New Update"
-            val body = remoteMessage.data["alert"] ?: remoteMessage.data["body"] ?: remoteMessage.notification?.body ?: ""
-            val timestamp = System.currentTimeMillis()
-
-            if (body.isNotBlank()) {
-                val userStore = com.balajitechlabs.quickdash.core.data.UserStore(applicationContext)
-                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
-                    try {
-                        val rawJson = userStore.firebaseBlogPosts.first()
-                        val listType = object : com.google.gson.reflect.TypeToken<MutableList<Map<String, Any>>>() {}.type
-                        val gson = com.google.gson.Gson()
-                        val list: MutableList<Map<String, Any>> = gson.fromJson(rawJson, listType) ?: mutableListOf()
-                        
-                        val isDuplicate = list.any { 
-                            (it["title"] as? String)?.trim() == title.trim() && 
-                            (it["body"] as? String)?.trim() == body.trim() &&
-                            Math.abs(System.currentTimeMillis() - ((it["timestamp"] as? Number)?.toLong() ?: 0L)) < 600000L
-                        }
-                        if (!isDuplicate) {
-                            val newPost = mapOf(
-                                "title" to title,
-                                "body" to body,
-                                "timestamp" to timestamp
-                            )
-                            list.add(0, newPost)
-                            userStore.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-            }
-            return
-        }
 
         val title = remoteMessage.notification?.title ?: remoteMessage.data["title"] ?: "New Announcement"
         val body = remoteMessage.notification?.body ?: remoteMessage.data["body"] ?: ""

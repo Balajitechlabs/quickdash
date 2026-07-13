@@ -67,6 +67,8 @@ fun QrHistoryDialog(
         }
     }
 
+    var showClearConfirmation by remember { mutableStateOf(false) }
+
     val periods = listOf("All", "Today", "This Week", "This Month")
     var selectedPeriod by remember { mutableStateOf("All") }
 
@@ -408,7 +410,7 @@ fun QrHistoryDialog(
             if (items.isNotEmpty() && selectedTab == 0) {
                 TextButton(
                     onClick = {
-                        onClearHistory()
+                        showClearConfirmation = true
                     },
                     colors = ButtonDefaults.textButtonColors(
                         contentColor = MaterialTheme.colorScheme.error
@@ -421,4 +423,25 @@ fun QrHistoryDialog(
             }
         }
     )
+
+    if (showClearConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showClearConfirmation = false },
+            title = { Text("Clear QR History") },
+            text = { Text("Are you sure you want to clear all QR payment generator history?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    onClearHistory()
+                    showClearConfirmation = false
+                }) {
+                    Text("Clear All", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearConfirmation = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 }

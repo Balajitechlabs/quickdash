@@ -92,6 +92,7 @@ fun SetupScreen(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(top = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {

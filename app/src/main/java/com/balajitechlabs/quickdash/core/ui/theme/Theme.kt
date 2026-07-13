@@ -21,7 +21,10 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
-import com.balajitechlabs.quickdash.core.data.UserStore
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import com.balajitechlabs.quickdash.core.data.dataStore
 import com.balajitechlabs.quickdash.core.ui.components.getCustomShape
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.googlefonts.GoogleFont
@@ -157,15 +160,18 @@ fun QuickDashTheme(
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
-    val userStore = remember { UserStore(context) }
+    // Use context.dataStore directly (it's the app-wide singleton via the `by preferencesDataStore`
+    // delegate) rather than creating a new UserStore instance here. Multiple UserStore instances
+    // wrapping the same DataStore file cause IllegalStateException crashes in release builds.
+    val prefs by context.dataStore.data.collectAsState(initial = androidx.datastore.preferences.core.emptyPreferences())
 
-    val seedColorHex by userStore.seedColor.collectAsState(initial = "#1E88E5")
-    val shapeStyle by userStore.shapeStyle.collectAsState(initial = "Rounded")
-    val cornerRadius by userStore.cornerRadius.collectAsState(initial = 16f)
-    val borderWidth by userStore.borderWidth.collectAsState(initial = 1f)
-    val fontScale by userStore.fontScale.collectAsState(initial = 1f)
-    val showShadow by userStore.showShadow.collectAsState(initial = true)
-    val fontFamilyName by userStore.fontFamilyKey.collectAsState(initial = "system")
+    val seedColorHex = prefs[stringPreferencesKey("seed_color")] ?: "#1E88E5"
+    val shapeStyle = prefs[stringPreferencesKey("shape_style")] ?: "Rounded"
+    val cornerRadius = prefs[floatPreferencesKey("corner_radius")] ?: 16f
+    val borderWidth = prefs[floatPreferencesKey("border_width")] ?: 1f
+    val fontScale = prefs[floatPreferencesKey("font_scale")] ?: 1f
+    val showShadow = prefs[booleanPreferencesKey("show_shadow")] ?: true
+    val fontFamilyName = prefs[stringPreferencesKey("font_family_key")] ?: "system"
 
     val selectedFontFamily = remember(fontFamilyName) {
         when (fontFamilyName.uppercase()) {

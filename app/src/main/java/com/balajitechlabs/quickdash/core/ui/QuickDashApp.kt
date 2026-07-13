@@ -58,10 +58,6 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.BadgedBox
@@ -83,6 +79,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -190,9 +187,15 @@ fun QuickDashApp(
     val navigationStack = remember { mutableStateListOf<QuickDashUiState>(QuickDashUiState.Dashboard) }
     val uiState = navigationStack.lastOrNull() ?: QuickDashUiState.Dashboard
 
+    var showNotificationPopup by remember { mutableStateOf(false) }
+    var showSettingsPopupHoisted by remember { mutableStateOf(false) }
     var backPressedTime by remember { mutableStateOf(0L) }
     androidx.activity.compose.BackHandler {
-        if (navigationStack.size > 1) {
+        if (showSettingsPopupHoisted) {
+            showSettingsPopupHoisted = false
+        } else if (showNotificationPopup) {
+            showNotificationPopup = false
+        } else if (navigationStack.size > 1) {
             navigationStack.removeLast()
         } else {
             val currentTime = System.currentTimeMillis()
@@ -209,44 +212,53 @@ fun QuickDashApp(
     var selectingCountry by remember { mutableStateOf(false) }
     var processedShortcut by remember(shortcutAction) { mutableStateOf(shortcutAction) }
 
-    val barcodeScanner = remember { com.google.mlkit.vision.codescanner.GmsBarcodeScanning.getClient(appContext) }
+    // NOTE: GmsBarcodeScanning.getClient() must NOT be called eagerly at composition time.
+    // In release builds, GMS internal initialization classes are loaded on-demand by GMS.
+    // Calling getClient() in remember{} runs immediately during first composition and crashes
+    // with NullPointerException if any GMS internal class is not yet loaded.
+    // Solution: create the scanner lazily INSIDE the lambda, only when the user triggers a scan.
     val triggerScanQr = remember {
         {
-            barcodeScanner.startScan()
-                .addOnSuccessListener { barcode ->
-                    var rawValue = (barcode.rawValue ?: "").trim()
-                    rawValue = rawValue.replace(Regex("[\\p{Cc}\\p{Cf}]"), "")
-                    if (rawValue.startsWith("upi://") || rawValue.startsWith("gpay://") || rawValue.startsWith("phonepe://") || rawValue.startsWith("paytmmp://") || rawValue.startsWith("bhim://")) {
-                        try {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue)).apply {
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            try {
+                val scanner = com.google.mlkit.vision.codescanner.GmsBarcodeScanning.getClient(appContext)
+                scanner.startScan()
+                    .addOnSuccessListener { barcode ->
+                        var rawValue = (barcode.rawValue ?: "").trim()
+                        rawValue = rawValue.replace(Regex("[\\p{Cc}\\p{Cf}]"), "")
+                        if (rawValue.startsWith("upi://") || rawValue.startsWith("gpay://") || rawValue.startsWith("phonepe://") || rawValue.startsWith("paytmmp://") || rawValue.startsWith("bhim://")) {
+                            try {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue)).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                appContext.startActivity(intent)
+                            } catch (e: Exception) {
+                                val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                                cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned UPI", rawValue))
+                                android.widget.Toast.makeText(appContext, "Failed to launch payment app. Copied link.", android.widget.Toast.LENGTH_LONG).show()
                             }
-                            appContext.startActivity(intent)
-                        } catch (e: Exception) {
-                            val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                            cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned UPI", rawValue))
-                            android.widget.Toast.makeText(appContext, "Failed to launch payment app. Copied link.", android.widget.Toast.LENGTH_LONG).show()
-                        }
-                    } else if (rawValue.startsWith("http://") || rawValue.startsWith("https://")) {
-                        try {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue)).apply {
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        } else if (rawValue.startsWith("http://") || rawValue.startsWith("https://")) {
+                            try {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue)).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                appContext.startActivity(intent)
+                            } catch (e: Exception) {
+                                val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                                cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned Link", rawValue))
+                                android.widget.Toast.makeText(appContext, "Scanned: $rawValue (Copied)", android.widget.Toast.LENGTH_LONG).show()
                             }
-                            appContext.startActivity(intent)
-                        } catch (e: Exception) {
+                        } else {
                             val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                            cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned Link", rawValue))
+                            cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned QR", rawValue))
                             android.widget.Toast.makeText(appContext, "Scanned: $rawValue (Copied)", android.widget.Toast.LENGTH_LONG).show()
                         }
-                    } else {
-                        val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                        cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned QR", rawValue))
-                        android.widget.Toast.makeText(appContext, "Scanned: $rawValue (Copied)", android.widget.Toast.LENGTH_LONG).show()
                     }
-                }
-                .addOnFailureListener {
-                    android.widget.Toast.makeText(appContext, "Scan cancelled or failed", android.widget.Toast.LENGTH_SHORT).show()
-                }
+                    .addOnFailureListener {
+                        android.widget.Toast.makeText(appContext, "Scan cancelled or failed", android.widget.Toast.LENGTH_SHORT).show()
+                    }
+            } catch (e: Exception) {
+                android.widget.Toast.makeText(appContext, "QR scanner unavailable. Please update Google Play Services.", android.widget.Toast.LENGTH_LONG).show()
+            }
             Unit
         }
     }
@@ -265,7 +277,7 @@ fun QuickDashApp(
         }
     }
 
-    var showNotificationPreview by remember { mutableStateOf(false) }
+    // showNotificationPopup is passed in as a parameter
 
     LaunchedEffect(processedShortcut) {
         val action = processedShortcut ?: return@LaunchedEffect
@@ -273,7 +285,7 @@ fun QuickDashApp(
         navigationStack.add(QuickDashUiState.Dashboard)
         val targetState = when (action) {
             "com.balajitechlabs.quickdash.ACTION_VIEW_NOTIFICATION" -> {
-                showNotificationPreview = true
+                showNotificationPopup = true
                 QuickDashUiState.Dashboard
             }
             "com.balajitechlabs.quickdash.ACTION_QUICK_UPI", "com.balajitechlabs.quickdash.ACTION_SHOW_QR" -> {
@@ -454,7 +466,9 @@ fun QuickDashApp(
             }
         },
         onConvertToFullScreen = onConvertToFullScreen,
-        onNavigateToSystemLogs = { navigateTo(QuickDashUiState.SystemLogs) }
+        onNavigateToSystemLogs = { navigateTo(QuickDashUiState.SystemLogs) },
+        showNotificationPopup = showNotificationPopup,
+        onToggleNotificationPopup = { showNotificationPopup = it }
     )
 }
 
@@ -498,15 +512,16 @@ fun QuickDashContent(
     bubbleEnabled: Boolean = true,
     onToggleBubble: (Boolean) -> Unit = {},
     onConvertToFullScreen: (() -> Unit)? = null,
-    onNavigateToSystemLogs: () -> Unit = {}
+    onNavigateToSystemLogs: () -> Unit = {},
+    showNotificationPopup: Boolean = false,
+    onToggleNotificationPopup: (Boolean) -> Unit = {}
 ) {
     if (uiState is QuickDashUiState.Onboarding) {
         OnboardingScreen(userStore = userStore, onComplete = onOnboardingComplete)
         return
     }
 
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val blogDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    var showSettingsPopup by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -577,83 +592,19 @@ fun QuickDashContent(
     }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-        ModalNavigationDrawer(
-            drawerState = blogDrawerState,
-            gesturesEnabled = drawerState.isClosed,
-            scrimColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.28f),
-            drawerContent = {
-                ModalDrawerSheet(
-                    modifier = Modifier.fillMaxHeight().width(320.dp),
-                    drawerContainerColor = MaterialTheme.colorScheme.surface,
-                    drawerShape = RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp)
-                ) {
-                    BlogPostsScreen(userStore = userStore)
-                }
-            }
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-            ModalNavigationDrawer(
-            drawerState = drawerState,
-            gesturesEnabled = false,
-            scrimColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.28f),
-            drawerContent = {
-                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                    ModalDrawerSheet(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(320.dp),
-                        drawerContainerColor = androidx.compose.ui.graphics.Color.Transparent,
-                        drawerShape = RoundedCornerShape(topStart = 24.dp, bottomStart = 24.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    brush = androidx.compose.ui.graphics.Brush.verticalGradient(
-                                        colors = listOf(
-                                            MaterialTheme.colorScheme.surface,
-                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
-                                            MaterialTheme.colorScheme.surface
-                                        )
-                                    )
-                                )
-                        ) {
-                            com.balajitechlabs.quickdash.features.settings.presentation.SettingsScreen(
-                                userStore = userStore,
-                                themeMode = themeMode,
-                                dynamicColor = dynamicColor,
-                                bubbleEnabled = bubbleEnabled,
-                                onChangeThemeMode = onChangeThemeMode,
-                                onToggleDynamicColor = onToggleDynamicColor,
-                                onToggleBubble = onToggleBubble,
-                                onTriggerConfetti = {
-                                    settingsConfettiType = it
-                                    settingsConfettiKey++
-                                },
-                                onBackToHome = { scope.launch { drawerState.close() } },
-                                onNavigateToSystemLogs = {
-                                    scope.launch { drawerState.close() }
-                                    onNavigateToSystemLogs()
-                                },
-                                onManageUpiIds = {
-                                    scope.launch { drawerState.close() }
-                                    onManageUpiIds()
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-        ) {
-        val borderWidth = com.balajitechlabs.quickdash.core.ui.theme.LocalBorderWidth.current
-        val showShadow = com.balajitechlabs.quickdash.core.ui.theme.LocalShowShadow.current
-        val cardShape = MaterialTheme.shapes.medium
+            val borderWidth = com.balajitechlabs.quickdash.core.ui.theme.LocalBorderWidth.current
+            val showShadow = com.balajitechlabs.quickdash.core.ui.theme.LocalShowShadow.current
+            val cardShape = MaterialTheme.shapes.medium
 
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-            Box(
-                modifier = if (isFloating) Modifier.fillMaxWidth().wrapContentHeight().animateContentSize() else Modifier.fillMaxSize()
-            ) {
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                Box(
+                    modifier = if (isFloating) Modifier.fillMaxWidth().wrapContentHeight().animateContentSize() else Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
                 Surface(
                     modifier = if (isFloating) {
                         Modifier
@@ -661,9 +612,8 @@ fun QuickDashContent(
                             .fillMaxWidth()
                             .wrapContentHeight()
                             .then(if (showShadow) Modifier.shadow(8.dp, cardShape) else Modifier)
-                            .blur(if (drawerState.isOpen) 12.dp else 0.dp)
                     } else {
-                        Modifier.fillMaxSize().blur(if (drawerState.isOpen) 12.dp else 0.dp)
+                        Modifier.fillMaxSize()
                     },
             tonalElevation = 6.dp,
             shadowElevation = if (showShadow) 8.dp else 0.dp,
@@ -673,8 +623,7 @@ fun QuickDashContent(
         ) {
             Column(
                 modifier = Modifier
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
+                    .then(if (!isFloating) Modifier.statusBarsPadding().navigationBarsPadding() else Modifier)
                     .padding(
                         start = if (isFloating) 12.dp else 24.dp,
                         end = if (isFloating) 12.dp else 24.dp,
@@ -682,7 +631,7 @@ fun QuickDashContent(
                         bottom = if (isFloating) 8.dp else 16.dp
                     )
                     .fillMaxWidth()
-                    .then(if (isFloating) Modifier.fillMaxHeight() else Modifier),
+                    .then(if (isFloating) Modifier.wrapContentHeight() else Modifier),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
@@ -697,7 +646,10 @@ fun QuickDashContent(
                     ) {
                         if (uiState != QuickDashUiState.Dashboard) {
                             FilledTonalIconButton(
-                                onClick = onBackToHome,
+                                onClick = {
+                                    playClickVibration(context, hapticEnabled)
+                                    onBackToHome()
+                                },
                                 modifier = Modifier.size(40.dp)
                             ) {
                                 Icon(
@@ -709,7 +661,10 @@ fun QuickDashContent(
                         } else {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 IconButton(
-                                    onClick = { scope.launch { blogDrawerState.open() } },
+                                    onClick = {
+                                        playClickVibration(context, hapticEnabled)
+                                        onToggleNotificationPopup(true)
+                                    },
                                     modifier = Modifier.size(36.dp)
                                 ) {
                                     BadgedBox(
@@ -772,11 +727,17 @@ fun QuickDashContent(
                                     .clickable {
                                         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as? android.media.AudioManager
                                         audioManager?.playSoundEffect(android.media.AudioManager.FX_KEY_CLICK, 0.3f)
-                                        val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
+                                        val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                                            (context.getSystemService(android.os.VibratorManager::class.java))?.defaultVibrator
+                                        } else {
+                                            @Suppress("DEPRECATION")
+                                            context.getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
+                                        }
                                         if (vibrator != null && vibrator.hasVibrator()) {
                                             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                                                 vibrator.vibrate(android.os.VibrationEffect.createPredefined(android.os.VibrationEffect.EFFECT_CLICK))
                                             } else {
+                                                @Suppress("DEPRECATION")
                                                 vibrator.vibrate(20L)
                                             }
                                         }
@@ -796,7 +757,10 @@ fun QuickDashContent(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 if (isFloating && onConvertToFullScreen != null) {
                                     IconButton(
-                                        onClick = { showFullScreenPrompt = true },
+                                        onClick = {
+                                            playClickVibration(context, hapticEnabled)
+                                            showFullScreenPrompt = true
+                                        },
                                         modifier = Modifier.size(36.dp)
                                     ) {
                                         Icon(
@@ -809,7 +773,10 @@ fun QuickDashContent(
                                     Spacer(modifier = Modifier.width(8.dp))
                                 }
                                 FilledTonalIconButton(
-                                    onClick = { scope.launch { drawerState.open() } },
+                                    onClick = {
+                                        playClickVibration(context, hapticEnabled)
+                                        showSettingsPopup = true
+                                    },
                                     modifier = Modifier.size(40.dp)
                                 ) {
                                     Icon(
@@ -821,7 +788,10 @@ fun QuickDashContent(
                             }
                         } else if (uiState == QuickDashUiState.WhatsApp && !showChatSettings) {
                             FilledTonalIconButton(
-                                onClick = { onToggleChatSettings(true) },
+                                onClick = {
+                                    playClickVibration(context, hapticEnabled)
+                                    onToggleChatSettings(true)
+                                },
                                 modifier = Modifier.size(40.dp)
                             ) {
                                 Icon(
@@ -845,11 +815,15 @@ fun QuickDashContent(
                 AnimatedContent(
                     targetState = uiState,
                     transitionSpec = {
-                        val tweenSpec = tween<Float>(150)
-                        fadeIn(animationSpec = tweenSpec) togetherWith 
-                                fadeOut(animationSpec = tweenSpec) using
-                                androidx.compose.animation.SizeTransform(clip = false) { _, _ -> snap() }
+                        val duration = 300
+                        (fadeIn(animationSpec = tween(duration, easing = androidx.compose.animation.core.LinearOutSlowInEasing)) +
+                                scaleIn(initialScale = 0.95f, animationSpec = tween(duration, easing = androidx.compose.animation.core.LinearOutSlowInEasing)))
+                            .togetherWith(
+                                fadeOut(animationSpec = tween(duration, easing = androidx.compose.animation.core.FastOutLinearInEasing)) +
+                                scaleOut(targetScale = 0.95f, animationSpec = tween(duration, easing = androidx.compose.animation.core.FastOutLinearInEasing))
+                            )
                     },
+                    contentAlignment = Alignment.Center,
                     label = "screenTransition",
                     modifier = Modifier.fillMaxWidth()
                 ) { state ->
@@ -876,10 +850,12 @@ fun QuickDashContent(
                             )
                         is QuickDashUiState.EnterAmount ->
                             EnterAmountScreen(
+                                usePaypal = usePaypal,
                                 recentAmounts = recentAmounts,
                                 upiIds = state.upiIds,
                                 defaultUpiId = state.defaultUpiId,
                                 defaultPaymentApp = defaultPaymentApp,
+                                isFloating = isFloating,
                                 qrHistoryJson = qrHistoryJson,
                                 onClearQrHistory = onClearQrHistory,
                                 onScanQr = onScanQr,
@@ -898,6 +874,7 @@ fun QuickDashContent(
                                 payUrl = state.payUrl,
                                 confettiType = confettiType,
                                 hapticLevel = hapticLevel,
+                                isFloating = isFloating,
                                 onQrShown = onQrShown,
                                 onRestoreBrightness = onRestoreBrightness,
                                 onDismiss = onDismiss
@@ -981,6 +958,7 @@ fun QuickDashContent(
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = {
+                            playClickVibration(appContext, hapticEnabled)
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://razorpay.me/@balajitechlabs"))
                             appContext.startActivity(intent)
                         },
@@ -1003,9 +981,159 @@ fun QuickDashContent(
             }
         }
 
+        // ─── Settings Popup Dialog ────────────────────────────────────────
+        if (showSettingsPopup) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.5f))
+                    .clickable(
+                        interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                        indication = null
+                    ) { showSettingsPopup = false },
+                contentAlignment = Alignment.Center
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth(0.94f)
+                        .fillMaxHeight(0.90f)
+                        .clickable(
+                            interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                            indication = null
+                        ) { /* consume clicks inside */ },
+                    shape = RoundedCornerShape(24.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 8.dp
+                ) {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        // Popup Header
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp, vertical = 14.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Settings",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Surface(
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clickable { showSettingsPopup = false }
+                            ) {
+                                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                    Text(
+                                        text = "✕",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                        androidx.compose.material3.HorizontalDivider(
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                        )
+                        // Settings content
+                        Box(modifier = Modifier.weight(1f)) {
+                            com.balajitechlabs.quickdash.features.settings.presentation.SettingsScreen(
+                                userStore = userStore,
+                                themeMode = themeMode,
+                                dynamicColor = dynamicColor,
+                                bubbleEnabled = bubbleEnabled,
+                                onChangeThemeMode = onChangeThemeMode,
+                                onToggleDynamicColor = onToggleDynamicColor,
+                                onToggleBubble = onToggleBubble,
+                                onTriggerConfetti = {
+                                    settingsConfettiType = it
+                                    settingsConfettiKey++
+                                },
+                                onBackToHome = { showSettingsPopup = false },
+                                onNavigateToSystemLogs = {
+                                    showSettingsPopup = false
+                                    onNavigateToSystemLogs()
+                                },
+                                onManageUpiIds = {
+                                    showSettingsPopup = false
+                                    onManageUpiIds()
+                                }
+                            )
+                        }
+                    }
+                }
+            }
         }
-    }
-}
+        if (showNotificationPopup) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.5f))
+                    .clickable(
+                        interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                        indication = null
+                    ) { onToggleNotificationPopup(false) },
+                contentAlignment = Alignment.Center
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth(0.92f)
+                        .fillMaxHeight(0.82f)
+                        .clickable(
+                            interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                            indication = null
+                        ) { /* consume clicks inside popup */ },
+                    shape = RoundedCornerShape(24.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 8.dp
+                ) {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        // Header
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp, vertical = 14.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Notifications",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Surface(
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clickable { onToggleNotificationPopup(false) }
+                            ) {
+                                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                    Text(
+                                        text = "✕",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                        androidx.compose.material3.HorizontalDivider(
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                        )
+                        // Notifications list
+                        Box(modifier = Modifier.weight(1f)) {
+                            BlogPostsScreen(userStore = userStore)
+                        }
+                    }
+                }
+            }
+        }
+
 
         if (triggerEmojiConfetti && confettiEnabled) {
             val context = LocalContext.current
@@ -1159,6 +1287,7 @@ fun QuickDashContent(
             confirmButton = {
                 Button(
                     onClick = {
+                        playClickVibration(context, hapticEnabled)
                         showFullScreenPrompt = false
                         onConvertToFullScreen?.invoke()
                     }
@@ -1168,7 +1297,10 @@ fun QuickDashContent(
             },
             dismissButton = {
                 TextButton(
-                    onClick = { showFullScreenPrompt = false }
+                    onClick = {
+                        playClickVibration(context, hapticEnabled)
+                        showFullScreenPrompt = false
+                    }
                 ) {
                     Text("Stay in floating dialog")
                 }
@@ -1176,14 +1308,15 @@ fun QuickDashContent(
         )
     }
 }
-}
-}
-}
-}
-}
 
-
+        } // Surface
+    } // Box (inner)
+} // CompositionLocalProvider (inner)
+} // Box (outer)
+} // CompositionLocalProvider (outer)
 @Composable
+
+
 fun UpdateTag() {
     val context = LocalContext.current
     val currentVersionName = remember {
@@ -1248,6 +1381,57 @@ fun UpdateTag() {
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
                         fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
+        UpdateState.Checking -> {
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.wrapContentSize()
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(12.dp),
+                        strokeWidth = 1.5.dp,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Checking…",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
+        is UpdateState.Error -> {
+            Surface(
+                color = MaterialTheme.colorScheme.errorContainer,
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .wrapContentSize()
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable {
+                        UpdateManager.checkForUpdates(context, manual = true)
+                    }
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                ) {
+                    Text(
+                        text = "Retry ↺",
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
@@ -1356,13 +1540,20 @@ fun PaymentModeSwitcherButton(
     usePaypal: Boolean,
     onTogglePaypal: (Boolean) -> Unit
 ) {
+    val context = LocalContext.current
+    val userStore = remember { UserStore(context) }
+    val hapticEnabled by userStore.hapticEnabled.collectAsState(initial = true)
+
     Surface(
         color = MaterialTheme.colorScheme.primary,
         shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp),
         modifier = Modifier
             .size(width = 44.dp, height = 32.dp)
             .clip(androidx.compose.foundation.shape.RoundedCornerShape(10.dp))
-            .clickable { onTogglePaypal(!usePaypal) }
+            .clickable {
+                playClickVibration(context, hapticEnabled)
+                onTogglePaypal(!usePaypal)
+            }
     ) {
         Box(
             contentAlignment = Alignment.Center,
@@ -1385,4 +1576,44 @@ fun PaymentModeSwitcherButton(
             }
         }
     }
+}
+
+fun playClickVibration(context: Context, hapticEnabled: Boolean) {
+    if (!hapticEnabled) return
+    try {
+        val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            (context.getSystemService(android.os.VibratorManager::class.java))?.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
+        }
+        if (vibrator != null && vibrator.hasVibrator()) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                vibrator.vibrate(android.os.VibrationEffect.createPredefined(android.os.VibrationEffect.EFFECT_CLICK))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(15L)
+            }
+        }
+    } catch (_: Exception) {}
+}
+
+fun playExplosionVibration(context: Context, hapticEnabled: Boolean) {
+    if (!hapticEnabled) return
+    try {
+        val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            (context.getSystemService(android.os.VibratorManager::class.java))?.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
+        }
+        if (vibrator != null && vibrator.hasVibrator()) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                vibrator.vibrate(android.os.VibrationEffect.createPredefined(android.os.VibrationEffect.EFFECT_DOUBLE_CLICK))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(longArrayOf(0, 15, 80, 20), -1)
+            }
+        }
+    } catch (_: Exception) {}
 }

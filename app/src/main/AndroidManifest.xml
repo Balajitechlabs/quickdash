@@ -12,7 +12,15 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-
+    <!-- Package Visibility Queries for App Sharing / Backup Features -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="*/*" />
+        </intent>
+        <package android:name="com.whatsapp" />
+        <package android:name="org.telegram.messenger" />
+    </queries>
     <application
         android:name=".QuickDashApplication"
         android:allowBackup="true"
@@ -54,7 +62,7 @@
         <service
             android:name=".core.quicktile.QuickTileService"
             android:exported="true"
-            android:icon="@mipmap/ic_launcher_round"
+            android:icon="@drawable/ic_quickdash_tile"
             android:label="@string/quick_tile_title"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <meta-data

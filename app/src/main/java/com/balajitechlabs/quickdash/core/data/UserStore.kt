@@ -109,6 +109,7 @@ class UserStore(private val context: Context) {
         val FCM_TOKEN_KEY = stringPreferencesKey("fcm_token")
         val ONESIGNAL_ID_KEY = stringPreferencesKey("onesignal_id")
         val SHOW_IMAGE_PREVIEWS_KEY = booleanPreferencesKey("show_image_previews")
+        val ADVANCED_THUMBNAIL_KEY = booleanPreferencesKey("advanced_thumbnail")
         
         // Google Drive / Profile
         val GOOGLE_PROFILE_NAME_KEY = stringPreferencesKey("google_profile_name")
@@ -127,6 +128,7 @@ class UserStore(private val context: Context) {
         val TIMER_HISTORY_KEY = stringPreferencesKey("timer_history")
         val GOOGLE_PROFILE_EMAIL_KEY = stringPreferencesKey("google_profile_email")
         val SERVER_CREDENTIALS_KEY = stringPreferencesKey("server_credentials")
+        val SHOW_TOOL_DESCRIPTIONS_KEY = booleanPreferencesKey("show_tool_descriptions")
     }
 
     val fcmToken: Flow<String> = context.dataStore.data.map { preferences ->
@@ -136,6 +138,16 @@ class UserStore(private val context: Context) {
     suspend fun saveFcmToken(token: String) {
         context.dataStore.edit { preferences ->
             preferences[FCM_TOKEN_KEY] = token
+        }
+    }
+
+    val showToolDescriptions: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[SHOW_TOOL_DESCRIPTIONS_KEY] ?: true
+    }
+
+    suspend fun saveShowToolDescriptions(show: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[SHOW_TOOL_DESCRIPTIONS_KEY] = show
         }
     }
 
@@ -191,6 +203,16 @@ class UserStore(private val context: Context) {
     suspend fun saveShowImagePreviews(show: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[SHOW_IMAGE_PREVIEWS_KEY] = show
+        }
+    }
+
+    val advancedThumbnail: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[ADVANCED_THUMBNAIL_KEY] ?: false
+    }
+
+    suspend fun saveAdvancedThumbnail(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[ADVANCED_THUMBNAIL_KEY] = enabled
         }
     }
 
@@ -282,7 +304,7 @@ class UserStore(private val context: Context) {
     }
 
     val bubbleEnabled: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[BUBBLE_ENABLED_KEY] ?: true
+        preferences[BUBBLE_ENABLED_KEY] ?: false
     }
 
     val lastTelegramUpdateId: Flow<Long> = context.dataStore.data.map { preferences ->
@@ -532,25 +554,19 @@ class UserStore(private val context: Context) {
     }
 
     // Advanced Features Flows & Methods
-    val notesHistory: Flow<String> = flow {
-        emit(EncryptedPrefsHelper.getString(NOTES_HISTORY_KEY.name, "[]") ?: "[]")
-    }
+    val notesHistory: Flow<String> = EncryptedPrefsHelper.getStringFlow(NOTES_HISTORY_KEY.name, "[]")
 
     suspend fun saveNotesHistory(json: String) {
         EncryptedPrefsHelper.putString(NOTES_HISTORY_KEY.name, json)
     }
 
-    val clipboardHistory: Flow<String> = flow {
-        emit(EncryptedPrefsHelper.getString(CLIPBOARD_HISTORY_KEY.name, "[]") ?: "[]")
-    }
+    val clipboardHistory: Flow<String> = EncryptedPrefsHelper.getStringFlow(CLIPBOARD_HISTORY_KEY.name, "[]")
 
     suspend fun saveClipboardHistory(json: String) {
         EncryptedPrefsHelper.putString(CLIPBOARD_HISTORY_KEY.name, json)
     }
 
-    val clipboardPinned: Flow<String> = flow {
-        emit(EncryptedPrefsHelper.getString(CLIPBOARD_PINNED_KEY.name, "[]") ?: "[]")
-    }
+    val clipboardPinned: Flow<String> = EncryptedPrefsHelper.getStringFlow(CLIPBOARD_PINNED_KEY.name, "[]")
 
     suspend fun saveClipboardPinned(json: String) {
         EncryptedPrefsHelper.putString(CLIPBOARD_PINNED_KEY.name, json)
@@ -572,9 +588,7 @@ class UserStore(private val context: Context) {
         preferences[WIFI_SSID_KEY] ?: ""
     }
 
-    val wifiPassword: Flow<String> = flow {
-        emit(EncryptedPrefsHelper.getString("wifi_password", "") ?: "")
-    }
+    val wifiPassword: Flow<String> = EncryptedPrefsHelper.getStringFlow("wifi_password", "")
 
     suspend fun saveWifiCredentials(ssid: String, password: String) {
         context.dataStore.edit { preferences ->
@@ -1007,9 +1021,7 @@ class UserStore(private val context: Context) {
     }
 
     // GitHub Access Token
-    val githubAccessToken: Flow<String> = kotlinx.coroutines.flow.flow {
-        emit(EncryptedPrefsHelper.getString("github_access_token", "") ?: "")
-    }
+    val githubAccessToken: Flow<String> = EncryptedPrefsHelper.getStringFlow("github_access_token", "")
 
     suspend fun saveGithubAccessToken(token: String) {
         EncryptedPrefsHelper.putString("github_access_token", token)
@@ -1038,14 +1050,10 @@ class UserStore(private val context: Context) {
     }
 
     // Server Credentials
-    val serverCredentials: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[SERVER_CREDENTIALS_KEY] ?: "{}"
-    }
+    val serverCredentials: Flow<String> = EncryptedPrefsHelper.getStringFlow("server_credentials", "{}")
 
     suspend fun saveServerCredentials(json: String) {
-        context.dataStore.edit { preferences ->
-            preferences[SERVER_CREDENTIALS_KEY] = json
-        }
+        EncryptedPrefsHelper.putString("server_credentials", json)
     }
 
     suspend fun exportToJson(): String {

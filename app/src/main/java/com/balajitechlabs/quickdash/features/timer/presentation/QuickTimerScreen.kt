@@ -128,9 +128,9 @@ private fun StopwatchContent(userStore: UserStore, scope: kotlinx.coroutines.Cor
 
     LaunchedEffect(isRunning) {
         if (isRunning) {
-            val startTime = System.currentTimeMillis() - elapsed
+            val startTime = android.os.SystemClock.elapsedRealtime() - elapsed
             while (isRunning) {
-                elapsed = System.currentTimeMillis() - startTime
+                elapsed = android.os.SystemClock.elapsedRealtime() - startTime
                 delay(16L)
             }
         }
@@ -281,10 +281,11 @@ private fun CountdownContent(userStore: UserStore, scope: kotlinx.coroutines.Cor
     var showCustomInput by remember { mutableStateOf(false) }
 
     val alarmManager = remember { context.getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager }
-    val alarmIntent = remember {
+    val timerId = remember { java.util.Random().nextInt(99999) + 1000 }
+    val alarmIntent = remember(timerId) {
         android.app.PendingIntent.getBroadcast(
             context,
-            0,
+            timerId,
             android.content.Intent(context, TimerAlarmReceiver::class.java),
             android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE
         )
@@ -292,25 +293,25 @@ private fun CountdownContent(userStore: UserStore, scope: kotlinx.coroutines.Cor
 
     LaunchedEffect(isRunning) {
         if (isRunning) {
-            val triggerTime = System.currentTimeMillis() + remainingMs
+            val triggerTime = android.os.SystemClock.elapsedRealtime() + remainingMs
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 alarmManager.setExactAndAllowWhileIdle(
-                    android.app.AlarmManager.RTC_WAKEUP,
+                    android.app.AlarmManager.ELAPSED_REALTIME_WAKEUP,
                     triggerTime,
                     alarmIntent
                 )
             } else {
                 alarmManager.setExact(
-                    android.app.AlarmManager.RTC_WAKEUP,
+                    android.app.AlarmManager.ELAPSED_REALTIME_WAKEUP,
                     triggerTime,
                     alarmIntent
                 )
             }
 
             val startRemaining = remainingMs
-            val startTime = System.currentTimeMillis()
+            val startTime = android.os.SystemClock.elapsedRealtime()
             while (isRunning && remainingMs > 0L) {
-                val elapsed = System.currentTimeMillis() - startTime
+                val elapsed = android.os.SystemClock.elapsedRealtime() - startTime
                 remainingMs = (startRemaining - elapsed).coerceAtLeast(0L)
                 if (remainingMs == 0L) {
                     isRunning = false; finished = true
@@ -463,6 +464,7 @@ private fun TimerHistoryContent(userStore: UserStore, isFloating: Boolean) {
         catch (_: Exception) { emptyList() }
     }
     val scope = rememberCoroutineScope()
+    var showClearAllConfirmation by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -487,7 +489,7 @@ private fun TimerHistoryContent(userStore: UserStore, isFloating: Boolean) {
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.clickable {
-                        scope.launch { userStore.saveTimerHistory("[]") }
+                        showClearAllConfirmation = true
                     }
                 )
             }
@@ -574,6 +576,29 @@ private fun TimerHistoryContent(userStore: UserStore, isFloating: Boolean) {
                 }
             }
         }
+    }
+
+    if (showClearAllConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showClearAllConfirmation = false },
+            title = { Text("Clear Timer History") },
+            text = { Text("Are you sure you want to clear all timer history sessions?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    scope.launch {
+                        userStore.saveTimerHistory("[]")
+                    }
+                    showClearAllConfirmation = false
+                }) {
+                    Text("Clear All", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearAllConfirmation = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
 

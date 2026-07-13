@@ -33,6 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -45,6 +47,8 @@ import com.balajitechlabs.quickdash.core.utils.ShareUtils
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.zIndex
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import android.content.Context
 import android.os.Vibrator
 import android.os.VibrationEffect
@@ -62,6 +66,7 @@ fun ShowQrScreen(
     showShareButton: Boolean = true,
     confettiType: String = "Default",
     hapticLevel: String = "Crisp",
+    isFloating: Boolean = false,
     onQrShown: () -> Unit,
     onRestoreBrightness: () -> Unit,
     onDismiss: () -> Unit
@@ -99,9 +104,14 @@ fun ShowQrScreen(
     // Scale-in animation for the QR
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
+        triggerFeedback()
         visible = true
         showConfetti = true
         confettiTriggerKey++
+    }
+    var zoomScale by remember { mutableStateOf(1f) }
+    val transformState = rememberTransformableState { zoomChange, _, _ ->
+        zoomScale = (zoomScale * zoomChange).coerceIn(0.5f, 3.5f)
     }
     val qrScale by animateFloatAsState(
         targetValue = if (visible) 1f else 0.8f,
@@ -115,7 +125,7 @@ fun ShowQrScreen(
     val currencyPrefix = "₹"
     val idTypeLabel = "UPI ID"
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.then(if (isFloating) Modifier.fillMaxWidth().wrapContentHeight() else Modifier.fillMaxSize())) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -136,9 +146,10 @@ fun ShowQrScreen(
         Box(
             modifier = Modifier
                 .graphicsLayer {
-                    scaleX = qrScale
-                    scaleY = qrScale
-                },
+                    scaleX = qrScale * zoomScale
+                    scaleY = qrScale * zoomScale
+                }
+                .transformable(state = transformState),
             contentAlignment = Alignment.Center
         ) {
             Box(

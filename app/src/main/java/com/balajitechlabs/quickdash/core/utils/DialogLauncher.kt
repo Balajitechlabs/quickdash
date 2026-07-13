@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import com.balajitechlabs.quickdash.features.dashboard.presentation.FloatingDialogActivity
 
+import com.balajitechlabs.quickdash.core.utils.safeStartActivity
+
 object DialogLauncher {
     fun open(context: Context, allowMultiple: Boolean = false) {
         val intent = Intent(context, FloatingDialogActivity::class.java).apply {
@@ -13,6 +15,6 @@ object DialogLauncher {
                 addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
             }
         }
-        context.startActivity(intent)
+        context.safeStartActivity(intent)
     }
 }

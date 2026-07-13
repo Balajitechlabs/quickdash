@@ -28,6 +28,7 @@ import kotlin.math.sqrt
 private sealed class CalcKey {
     data class Digit(val ch: String) : CalcKey()
     data class Op(val ch: String) : CalcKey()
+    data class ScientificOp(val name: String) : CalcKey()
     object Clear : CalcKey()
     object Backspace : CalcKey()
     object Equals : CalcKey()
@@ -38,59 +39,98 @@ private sealed class CalcKey {
 }
 
 private fun evaluate(expression: String): String = try {
-    val cleaned = expression.replace("×", "*").replace("÷", "/")
-    val result = evalExpr(cleaned)
-    result.setScale(8, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toPlainString()
+    val cleaned = expression.replace("×", "*")
+        .replace("÷", "/")
+        .replace("π", "3.141592653589793")
+        .replace(Regex("(?<![a-zA-Z0-9.])e(?![a-zA-Z0-9.])"), "2.718281828459045")
+    val parser = Parser(cleaned)
+    val result = parser.parse()
+    if (result.isNaN() || result.isInfinite()) "Error"
+    else java.math.BigDecimal(result).setScale(8, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toPlainString()
 } catch (_: Exception) { "Error" }
 
-private fun evalExpr(expr: String): java.math.BigDecimal {
-    val tokens = tokenize(expr)
-    val mulDiv = mutableListOf<Any>()
-    var i = 0
-    while (i < tokens.size) {
-        val tok = tokens[i]
-        if (tok is java.math.BigDecimal) {
-            if (mulDiv.isNotEmpty() && (mulDiv.last() == "*" || mulDiv.last() == "/")) {
-                val op = mulDiv.removeLast() as String
-                val left = mulDiv.removeLast() as java.math.BigDecimal
-                mulDiv.add(if (op == "*") left.multiply(tok) else left.divide(tok, 12, java.math.RoundingMode.HALF_UP))
-            } else mulDiv.add(tok)
-        } else mulDiv.add(tok)
-        i++
-    }
-    if (mulDiv.isEmpty()) return java.math.BigDecimal.ZERO
-    var result = mulDiv.first() as java.math.BigDecimal
-    var j = 1
-    while (j < mulDiv.size) {
-        val op = mulDiv[j] as String
-        val right = mulDiv[j + 1] as java.math.BigDecimal
-        result = if (op == "+") result.add(right) else result.subtract(right)
-        j += 2
-    }
-    return result
-}
+private class Parser(private val str: String) {
+    private var pos = -1
+    private var ch = 0
 
-private fun tokenize(expr: String): List<Any> {
-    val tokens = mutableListOf<Any>()
-    var i = 0; val s = expr.trim()
-    while (i < s.length) {
-        when {
-            s[i].isDigit() || s[i] == '.' -> {
-                val start = i
-                while (i < s.length && (s[i].isDigit() || s[i] == '.')) i++
-                tokens.add(java.math.BigDecimal(s.substring(start, i)))
+    private fun nextChar() {
+        ch = if (++pos < str.length) str[pos].code else -1
+    }
+
+    private fun eat(charToEat: Int): Boolean {
+        while (ch == ' '.code) nextChar()
+        if (ch == charToEat) {
+            nextChar()
+            return true
+        }
+        return false
+    }
+
+    fun parse(): Double {
+        nextChar()
+        val x = parseExpression()
+        if (pos < str.length) throw RuntimeException("Unexpected: " + ch.toChar())
+        return x
+    }
+
+    private fun parseExpression(): Double {
+        var x = parseTerm()
+        while (true) {
+            when {
+                eat('+'.code) -> x += parseTerm()
+                eat('-'.code) -> x -= parseTerm()
+                else -> return x
             }
-            s[i] == '-' && (tokens.isEmpty() || tokens.last() is String) -> {
-                val start = i++
-                while (i < s.length && (s[i].isDigit() || s[i] == '.')) i++
-                tokens.add(java.math.BigDecimal(s.substring(start, i)))
-            }
-            s[i] in listOf('+', '-', '*', '/') -> { tokens.add(s[i].toString()); i++ }
-            s[i] == ' ' -> i++
-            else -> i++
         }
     }
-    return tokens
+
+    private fun parseTerm(): Double {
+        var x = parseFactor()
+        while (true) {
+            when {
+                eat('*'.code) -> x *= parseFactor()
+                eat('/'.code) -> x /= parseFactor()
+                else -> return x
+            }
+        }
+    }
+
+    private fun parseFactor(): Double {
+        if (eat('+'.code)) return parseFactor()
+        if (eat('-'.code)) return -parseFactor()
+
+        var x: Double
+        val startPos = this.pos
+        if (eat('('.code)) {
+            x = parseExpression()
+            eat(')'.code)
+        } else if (ch >= '0'.code && ch <= '9'.code || ch == '.'.code) {
+            while (ch >= '0'.code && ch <= '9'.code || ch == '.'.code || ch == 'e'.code || ch == 'E'.code ||
+                ((ch == '+'.code || ch == '-'.code) && (pos > 0 && (str[pos - 1] == 'e' || str[pos - 1] == 'E')))) {
+                nextChar()
+            }
+            x = str.substring(startPos, this.pos).toDouble()
+        } else if (ch >= 'a'.code && ch <= 'z'.code || ch == '√'.code) {
+            while (ch >= 'a'.code && ch <= 'z'.code || ch == '√'.code) nextChar()
+            val func = str.substring(startPos, this.pos)
+            x = parseFactor()
+            x = when (func) {
+                "sqrt", "√" -> Math.sqrt(x)
+                "sin" -> Math.sin(Math.toRadians(x))
+                "cos" -> Math.cos(Math.toRadians(x))
+                "tan" -> Math.tan(Math.toRadians(x))
+                "ln" -> Math.log(x)
+                "log" -> Math.log10(x)
+                else -> throw RuntimeException("Unknown function: $func")
+            }
+        } else {
+            throw RuntimeException("Unexpected: " + ch.toChar())
+        }
+
+        if (eat('^'.code)) x = Math.pow(x, parseFactor())
+
+        return x
+    }
 }
 
 // ── Screen ───────────────────────────────────────────────────────────────────
@@ -104,6 +144,7 @@ fun QuickCalculatorScreen(isFloating: Boolean = false) {
     var history by remember { mutableStateOf(listOf<String>()) }
     var showHistory by remember { mutableStateOf(false) }
     var justEvaluated by remember { mutableStateOf(false) }
+    var isScientific by remember { mutableStateOf(false) }
 
     fun handleKey(key: CalcKey) {
         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -151,6 +192,32 @@ fun QuickCalculatorScreen(isFloating: Boolean = false) {
                 expression = expression.trimEnd().trimEnd { it in "+-×÷*/" } + key.ch
                 display = "0"
             }
+            is CalcKey.ScientificOp -> {
+                justEvaluated = false
+                if (key.name == "(") {
+                    expression += "("
+                    display = "0"
+                } else if (key.name == ")") {
+                    expression += ")"
+                    display = "0"
+                } else if (key.name in listOf("π", "e")) {
+                    if (display == "0" || justEvaluated) {
+                        display = key.name
+                        expression = if (justEvaluated) key.name else expression.dropLastWhile { it.isDigit() || it == '.' } + key.name
+                    } else {
+                        display += key.name
+                        expression += key.name
+                    }
+                } else {
+                    if (key.name == "^") {
+                        expression += "^"
+                        display = "0"
+                    } else {
+                        expression = expression + key.name + "("
+                        display = "0"
+                    }
+                }
+            }
             CalcKey.Equals -> {
                 if (expression.isBlank()) return
                 val result = evaluate(expression)
@@ -167,6 +234,12 @@ fun QuickCalculatorScreen(isFloating: Boolean = false) {
         listOf(CalcKey.Digit("4"), CalcKey.Digit("5"), CalcKey.Digit("6"), CalcKey.Op("-")),
         listOf(CalcKey.Digit("1"), CalcKey.Digit("2"), CalcKey.Digit("3"), CalcKey.Op("+")),
         listOf(CalcKey.Sqrt, CalcKey.Digit("0"), CalcKey.Dot, CalcKey.Equals)
+    )
+
+    val scientificRows: List<List<CalcKey>> = listOf(
+        listOf(CalcKey.ScientificOp("sin"), CalcKey.ScientificOp("cos"), CalcKey.ScientificOp("tan"), CalcKey.ScientificOp("^")),
+        listOf(CalcKey.ScientificOp("ln"), CalcKey.ScientificOp("log"), CalcKey.ScientificOp("π"), CalcKey.ScientificOp("e")),
+        listOf(CalcKey.ScientificOp("("), CalcKey.ScientificOp(")"), CalcKey.Sqrt, CalcKey.Percent)
     )
 
     val btnSize = if (isFloating) 58.dp else 70.dp
@@ -310,8 +383,50 @@ fun QuickCalculatorScreen(isFloating: Boolean = false) {
             }
         }
 
+        // Mode Selector Row
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            FilterChip(
+                selected = !isScientific,
+                onClick = { isScientific = false },
+                label = { Text("Basic", style = MaterialTheme.typography.labelSmall) }
+            )
+            FilterChip(
+                selected = isScientific,
+                onClick = { isScientific = true },
+                label = { Text("Scientific", style = MaterialTheme.typography.labelSmall) }
+            )
+        }
+
         // ── Keypad ───────────────────────────────────────────────────────────
         Spacer(modifier = Modifier.height(4.dp))
+
+        val actualBtnSize = if (isScientific) (if (isFloating) 44.dp else 56.dp) else btnSize
+        val actualFontSize = if (isScientific) (if (isFloating) 14.sp else 18.sp) else fontSize
+
+        if (isScientific) {
+            scientificRows.forEach { row ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    row.forEach { key ->
+                        CalcButton(
+                            key = key,
+                            size = actualBtnSize,
+                            fontSize = actualFontSize,
+                            onClick = { handleKey(key) }
+                        )
+                    }
+                }
+            }
+        }
 
         rows.forEach { row ->
             Row(
@@ -322,12 +437,17 @@ fun QuickCalculatorScreen(isFloating: Boolean = false) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 row.forEach { key ->
-                    CalcButton(
-                        key = key,
-                        size = btnSize,
-                        fontSize = fontSize,
-                        onClick = { handleKey(key) }
-                    )
+                    val isDuplicate = isScientific && (key == CalcKey.Sqrt || key == CalcKey.Percent)
+                    if (isDuplicate) {
+                        Spacer(modifier = Modifier.size(actualBtnSize))
+                    } else {
+                        CalcButton(
+                            key = key,
+                            size = actualBtnSize,
+                            fontSize = actualFontSize,
+                            onClick = { handleKey(key) }
+                        )
+                    }
                 }
             }
         }
@@ -353,11 +473,12 @@ private fun CalcButton(
         CalcKey.Equals -> "="
         is CalcKey.Digit -> key.ch
         is CalcKey.Op -> key.ch
+        is CalcKey.ScientificOp -> key.name
     }
 
     val isOp = key is CalcKey.Op
     val isEquals = key is CalcKey.Equals
-    val isFunc = key is CalcKey.Clear || key is CalcKey.ToggleSign || key is CalcKey.Percent || key is CalcKey.Sqrt
+    val isFunc = key is CalcKey.Clear || key is CalcKey.ToggleSign || key is CalcKey.Percent || key is CalcKey.Sqrt || key is CalcKey.ScientificOp
 
     when {
         isEquals -> Button(

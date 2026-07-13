@@ -106,19 +106,23 @@ jobs:
           files: |
             app/build/outputs/apk/release/quickdash-app-v${{ env.VERSION_NAME }}.apk
 
-      - name: Update README Download Link
+      - name: Update README Download Link and Tag Name
         if: github.ref == 'refs/heads/main'
         run: |
-          NEW_URL="https://github.com/${{ github.repository }}/releases/download/v${{ env.VERSION_NAME }}-${{ github.run_number }}/quickdash-app-v${{ env.VERSION_NAME }}.apk"
-          echo "Updating README download link to: $NEW_URL"
+          NEW_TAG="v${{ env.VERSION_NAME }}-${{ github.run_number }}"
+          NEW_URL="https://github.com/${{ github.repository }}/releases/download/${NEW_TAG}/quickdash-app-v${{ env.VERSION_NAME }}.apk"
+          echo "Updating README to download link: $NEW_URL and tag: $NEW_TAG"
           
           # Replace the release APK link in README
-          sed -i -E "s|href=\"https://github.com/[^/]+/[^/]+/releases/download/[^/]+/[^\"]+\"|href=\"$NEW_URL\"|g" README.md
+          sed -i -E "s|https://github.com/[^/]+/[^/]+/releases/download/[^/]+/quickdash-app-v[0-9.]+\.apk|$NEW_URL|g" README.md
+          
+          # Replace the Latest Tag text in README
+          sed -i -E "s|\*\*Latest Tag: \`v[0-9.-]+\`\*\*|\*\*Latest Tag: \`${NEW_TAG}\`\*\*|g" README.md
           
           # Configure Git and commit the change
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add README.md
-          git commit -m "chore: update README download link for v${{ env.VERSION_NAME }} [skip ci]" || echo "No changes to commit"
+          git commit -m "chore: update README download link and tag to ${NEW_TAG} [skip ci]" || echo "No changes to commit"
           git push
 

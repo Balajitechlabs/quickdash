@@ -30,7 +30,25 @@ class QuickDashApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        
+
+        // ── CRASH CAPTURE — Must be FIRST thing in Application.onCreate() ──────
+        // This runs before Firebase/Telegram handlers are set up, so it catches
+        // crashes that happen during Application initialization itself.
+        // The crash file is written to getExternalFilesDir() which is readable
+        // via Android's built-in Files app even in release builds.
+        val earlyDefaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            try {
+                val stackTrace = android.util.Log.getStackTraceString(throwable)
+                val msg = "THREAD: ${thread.name}\n\n$stackTrace"
+                val dir = getExternalFilesDir(null) ?: filesDir
+                val crashFile = java.io.File(dir, "quickdash_crash.txt")
+                crashFile.writeText(msg)
+            } catch (_: Exception) {}
+            earlyDefaultHandler?.uncaughtException(thread, throwable)
+        }
+        // ── END CRASH CAPTURE ────────────────────────────────────────────────────
+
         container = AppContainerImpl(this)
         
         try { LogManager.init(this) } catch (_: Exception) {}
@@ -64,6 +82,7 @@ class QuickDashApplication : Application() {
         }
         
         // Setup Global Exception Handler for Telegram Crash Reporting
+        // NOTE: This replaces our early handler; errors from here onwards go to Telegram.
         val defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
             reportCrashToTelegram(thread, exception)

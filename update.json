@@ -1,8 +1,8 @@
 {
-  "versionCode": 104,
-  "versionName": "4.3.0",
+  "versionCode": 105,
+  "versionName": "4.4.0",
   "releaseUrl": "https://github.com/Balajitechlabs/quickdash/releases/latest",
-  "apkUrl": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/quickdash_v4.3.0.apk",
-  "announcementTitle": "🚀 QuickDash v4.3.0 is Here!",
-  "announcementBody": "New Features: Floating Web Browser, Crash Logger, Data Backup/Restore, WhatsApp QR Scanner, PayPal Support, and beautifully snappy Floating Window Animations!"
+  "apkUrl": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/quickdash-app-v4.4.0.apk",
+  "announcementTitle": "🚀 QuickDash v4.4.0 is Here!",
+  "announcementBody": "New Features: Refactored Clipboard Layout with 100% full-width items, native Vector Logo in Control Center, and seamless Backup and sharing on Android 11+!"
 }

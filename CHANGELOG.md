@@ -2,6 +2,14 @@
 
 All notable changes to **QuickDash** will be documented in this file.
 
+## [4.4.0] - 2026-07-13
+### Added
+- **Refactored Clipboard Layout:** Upgraded ClipboardItemCard to a vertical column layout. Long clipboard items now occupy full width, resolving overlapping and text-squishing issues.
+- **Native Vector Logo in Control Center:** Overwrote the Settings Tile icon with the official double-layered vector brand icon.
+- **Package Visibility Queries:** Fused package visibility rules in AndroidManifest.xml to allow seamless JSON backup transfers to WhatsApp, Telegram, and other messaging channels.
+- **Backup & Restore Toast Feedback:** Integrated visual Toast notifications confirming success or failure for local data backups and restores.
+- **Play Protect R8 WebView Fix:** Redesigned WebView keep rules in R8 to prevent anonymous subclasses from getting stripped in release builds.
+
 ## [4.3.0] - 2026-07-12
 ### Added
 - **Dynamic Centered Window Animations:** Overhauled the main floating window transition animations using `SizeTransform` and spring animations for a sleek, minimizing center-reveal effect when switching tools.

@@ -31,6 +31,7 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.cancel
 import kotlin.math.abs
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.Box
@@ -61,6 +62,40 @@ class MySavedStateRegistryOwner : SavedStateRegistryOwner {
 
 
 class FloatingBubbleService : Service() {
+    private val serviceScope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.IO)
+
+    private fun triggerVibration(duration: Long, amplitude: Int = android.os.VibrationEffect.DEFAULT_AMPLITUDE) {
+        try {
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
+            if (vibrator != null && vibrator.hasVibrator()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    vibrator.vibrate(android.os.VibrationEffect.createOneShot(duration, amplitude))
+                } else {
+                    @Suppress("DEPRECATION")
+                    vibrator.vibrate(duration)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun triggerDoubleVibration() {
+        try {
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
+            if (vibrator != null && vibrator.hasVibrator()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    vibrator.vibrate(android.os.VibrationEffect.createWaveform(longArrayOf(0, 15, 100, 15), intArrayOf(0, 255, 0, 255), -1))
+                } else {
+                    @Suppress("DEPRECATION")
+                    vibrator.vibrate(longArrayOf(0, 15, 100, 15), -1)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     private lateinit var windowManager: WindowManager
     private lateinit var floatingView: View
     private lateinit var params: WindowManager.LayoutParams
@@ -101,8 +136,20 @@ class FloatingBubbleService : Service() {
 
         startForeground(101, notification)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
+            com.balajitechlabs.quickdash.core.utils.AppLogger.e("FloatingBubbleService", "Overlay permission not granted. Stopping service.")
+            stopSelf()
+            return
+        }
+
         // ── Inflate layout ────────────────────────────────────────────
         floatingView = LayoutInflater.from(this).inflate(R.layout.layout_floating_bubble, null)
+
+        val containerViewGroup = floatingView.findViewById<android.view.ViewGroup>(R.id.layout_bubble_container)
+        containerViewGroup.layoutTransition = android.animation.LayoutTransition().apply {
+            enableTransitionType(android.animation.LayoutTransition.CHANGING)
+            setDuration(200)
+        }
 
         val layoutFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
@@ -147,7 +194,7 @@ class FloatingBubbleService : Service() {
         fun launchSection(section: String) {
             collapseMenu()
             val intent = Intent(this@FloatingBubbleService, FloatingDialogActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 putExtra("launch_section", section)
             }
             startActivity(intent)
@@ -223,27 +270,39 @@ class FloatingBubbleService : Service() {
 
         // ── Menu item clicks ──────────────────────────────────────────
         floatingView.findViewById<View>(R.id.btn_menu_upi).setOnClickListener {
+            triggerVibration(10)
             launchSection("com.balajitechlabs.quickdash.ACTION_QUICK_UPI")
         }
         floatingView.findViewById<View>(R.id.btn_menu_chat).setOnClickListener {
+            triggerVibration(10)
             launchSection("com.balajitechlabs.quickdash.ACTION_QUICK_CHAT")
         }
         floatingView.findViewById<View>(R.id.btn_menu_search).setOnClickListener {
+            triggerVibration(10)
             launchSection("com.balajitechlabs.quickdash.ACTION_QUICK_SEARCH")
         }
         floatingView.findViewById<View>(R.id.btn_menu_notes).setOnClickListener {
+            triggerVibration(10)
             launchSection("com.balajitechlabs.quickdash.ACTION_QUICK_NOTES")
         }
         floatingView.findViewById<View>(R.id.btn_menu_calculator).setOnClickListener {
+            triggerVibration(10)
             launchSection("com.balajitechlabs.quickdash.ACTION_QUICK_CALCULATOR")
         }
         floatingView.findViewById<View>(R.id.btn_menu_timer).setOnClickListener {
+            triggerVibration(10)
             launchSection("com.balajitechlabs.quickdash.ACTION_QUICK_TIMER")
         }
         floatingView.findViewById<View>(R.id.btn_menu_settings).setOnClickListener {
+            triggerVibration(10)
             launchSection("com.balajitechlabs.quickdash.ACTION_QUICK_SETTINGS")
         }
+        floatingView.findViewById<View>(R.id.btn_menu_web).setOnClickListener {
+            triggerVibration(10)
+            launchSection("com.balajitechlabs.quickdash.ACTION_QUICK_WEB")
+        }
         floatingView.findViewById<View>(R.id.btn_menu_close).setOnClickListener {
+            triggerVibration(10)
             collapseMenu()
         }
 
@@ -284,19 +343,19 @@ class FloatingBubbleService : Service() {
                     } else if (xDiff < 10 && yDiff < 10) {
                         val currentTime = System.currentTimeMillis()
                         if (currentTime - lastTapTime < 300) {
-                            // Double tap → disable bubble
                             singleTapRunnable?.let { tapHandler.removeCallbacks(it) }
                             lastTapTime = 0L
+                            triggerDoubleVibration()
                             val userStore = com.balajitechlabs.quickdash.core.data.UserStore(this@FloatingBubbleService)
-                            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                            serviceScope.launch {
                                 userStore.setBubbleEnabled(false)
                             }
                             sendBroadcast(Intent("com.balajitechlabs.quickdash.CLOSE_APP"))
                             stopSelf()
                         } else {
-                            // Single tap → toggle menu
                             lastTapTime = currentTime
                             singleTapRunnable = Runnable {
+                                triggerVibration(20)
                                 if (bubbleMenu.visibility == View.VISIBLE) collapseMenu() else expandMenu()
                             }
                             tapHandler.postDelayed(singleTapRunnable!!, 300)
@@ -311,6 +370,7 @@ class FloatingBubbleService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        serviceScope.cancel()
         if (::floatingView.isInitialized) {
             try { windowManager.removeView(floatingView) } catch (_: Exception) {}
         }

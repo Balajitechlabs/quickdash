@@ -2,6 +2,7 @@ package com.balajitechlabs.quickdash.features.search.presentation
 
 import android.content.Intent
 import android.net.Uri
+import com.balajitechlabs.quickdash.core.utils.safeStartActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -120,11 +121,11 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
         try {
             val encoded = java.net.URLEncoder.encode(q, "UTF-8")
             val uri = Uri.parse(selectedEngine.second + encoded)
-            val intent = Intent(Intent.ACTION_VIEW, uri).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            context.startActivity(intent)
-        } catch (e: Exception) { e.printStackTrace() }
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            context.safeStartActivity(intent, "No browser found to open search link")
+        } catch (e: Exception) {
+            com.balajitechlabs.quickdash.core.utils.AppLogger.e("QuickSearchScreen", "Failed to search", e)
+        }
         onDismiss()
     }
 

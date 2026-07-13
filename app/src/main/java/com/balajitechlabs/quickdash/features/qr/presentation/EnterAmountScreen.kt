@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -62,6 +63,7 @@ fun EnterAmountScreen(
     defaultUpiId: String,
     defaultPaymentApp: String,
     usePaypal: Boolean = false,
+    isFloating: Boolean = false,
     qrHistoryJson: String,
     onClearQrHistory: () -> Unit,
     onScanQr: () -> Unit,
@@ -86,7 +88,7 @@ fun EnterAmountScreen(
     
     val categories = listOf("Personal", "Business", "Dining", "Groceries", "Services", "Other")
     var selectedCategory by remember { mutableStateOf("Other") }
-
+ 
     val idTypeLabel = if (usePaypal) "PayPal ID" else "UPI ID"
     val idIcon = if (usePaypal) R.drawable.ic_paypal else R.drawable.ic_upi_pay
     val currencySymbol = if (usePaypal) "$" else "₹"
@@ -97,15 +99,15 @@ fun EnterAmountScreen(
             recentAmounts
         }
     }
-
+ 
     // Amount validation (Declared at the top level of composable)
     val amountDouble = amountInput.toDoubleOrNull()
     val isAmountValid = amountInput.isEmpty() || (amountDouble != null && amountDouble > 0)
     val isAmountError = !isAmountValid && amountInput.isNotEmpty()
-
+ 
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .then(if (isFloating) Modifier.fillMaxWidth().wrapContentHeight() else Modifier.fillMaxSize())
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,

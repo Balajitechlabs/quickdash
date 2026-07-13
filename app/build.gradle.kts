@@ -30,8 +30,8 @@ android {
         applicationId = "com.balajitechlabs.quickdash"
         minSdk = 24
         targetSdk = 35
-        versionCode = 104
-        versionName = "4.3.0"
+        versionCode = 105
+        versionName = "4.4.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -52,14 +52,17 @@ android {
             "TG_CHAT_ID",
             "\"${localProperties.getProperty("TG_CHAT_ID", "")}\""
         )
-        buildConfigField(
-            "String",
-            "ONESIGNAL_APP_ID",
-            "\"${localProperties.getProperty("ONESIGNAL_APP_ID", "12d6faa7-b7b1-497d-b5d7-af1204458711")}\""
-        )
     }
 
     signingConfigs {
+//        getByName("debug") {
+//            storeFile = rootProject.file("quickdash.jks")
+//            storePassword = "quickdash"
+//            keyAlias = "quickdash"
+//            keyPassword = "quickdash"
+//            enableV1Signing = true
+//            enableV2Signing = true
+//        }
         create("release") {
             if (keystoreProperties.isNotEmpty()) {
                 storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
@@ -83,8 +86,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            isShrinkResources = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -130,7 +133,6 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-config")
-    implementation("com.onesignal:OneSignal:[5.0.0, 5.99.99]")
     implementation("io.coil-kt:coil-compose:2.6.0")
 
     // Room Database

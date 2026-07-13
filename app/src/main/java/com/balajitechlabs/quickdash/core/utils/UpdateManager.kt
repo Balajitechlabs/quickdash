@@ -18,8 +18,13 @@ import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 
+import kotlinx.coroutines.flow.first
+import com.balajitechlabs.quickdash.core.data.UserStore
+
 sealed interface UpdateState {
     object Idle : UpdateState
+    object Checking : UpdateState
+    data class Error(val message: String) : UpdateState
     data class UpdateAvailable(val versionName: String, val apkUrl: String, val versionCode: Int) : UpdateState
     data class Downloading(val versionName: String, val progress: Int) : UpdateState
     data class ReadyToInstall(val versionName: String, val fileName: String) : UpdateState
@@ -99,18 +104,40 @@ object UpdateManager {
         if (!manual && now - lastCheckTime < 5000) return
         lastCheckTime = now
 
+        updateState = UpdateState.Checking
+
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
                 val currentVersionName = packageInfo.versionName ?: "0.0.0"
-                // Assuming version names are like "3.2.4"
                 
                 val url = URL("https://api.github.com/repos/balajitechlabs/quickdash/releases/latest")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.connectTimeout = 5000
                 connection.readTimeout = 5000
                 connection.setRequestProperty("Accept", "application/vnd.github.v3+json")
-                val responseText = connection.inputStream.bufferedReader().readText()
+
+                // Inject Github access token if set to avoid rate limit issues
+                try {
+                    val userStore = UserStore(context)
+                    val token = userStore.githubAccessToken.first()
+                    if (!token.isNullOrBlank()) {
+                        connection.setRequestProperty("Authorization", "Bearer $token")
+                    }
+                } catch (_: Exception) {}
+
+                val responseCode = connection.responseCode
+                val responseText = if (responseCode in 200..299) {
+                    connection.inputStream.bufferedReader().readText()
+                } else {
+                    val err = connection.errorStream?.bufferedReader()?.readText() ?: ""
+                    val message = if (responseCode == 403 && err.contains("rate limit")) {
+                        "Rate limit exceeded. Please configure a GitHub Token in Advanced Settings."
+                    } else {
+                        "HTTP $responseCode: $err"
+                    }
+                    throw Exception(message)
+                }
                 connection.disconnect()
 
                 val json = JSONObject(responseText)
@@ -131,11 +158,7 @@ object UpdateManager {
                 }
 
                 val activeFileName = "QuickDash-v$remoteVersionName.apk"
-                
-                // Compare versions (simple string compare works if lengths are equal, e.g. 3.2.4 > 3.2.3, but better to compare components)
                 val isNewer = isVersionNewer(currentVersionName, remoteVersionName)
-                
-                // Clean obsolete APKs
                 cleanObsoleteApks(context, if (isNewer) activeFileName else null)
 
                 if (isNewer && apkUrl.isNotEmpty()) {
@@ -156,12 +179,8 @@ object UpdateManager {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                updateState = UpdateState.Error(e.localizedMessage ?: "Failed to check for updates")
                 hasLocalApk = hasDownloadedApk(context)
-                if (manual) {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        Toast.makeText(context, "Failed to check for updates.", Toast.LENGTH_SHORT).show()
-                    }
-                }
             }
         }
     }

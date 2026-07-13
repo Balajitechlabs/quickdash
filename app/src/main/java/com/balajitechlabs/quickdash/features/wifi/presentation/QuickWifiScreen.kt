@@ -1,6 +1,7 @@
 package com.balajitechlabs.quickdash.features.wifi.presentation
 
 import android.Manifest
+import com.balajitechlabs.quickdash.core.utils.AppLogger
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -114,17 +115,32 @@ fun QuickWifiScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss
                     ssid = current
                     password = if (current == savedSsid) savedPassword else ""
                 }
-            } catch (e: Exception) { /* ignore */ }
+            } catch (e: Exception) { AppLogger.e("QuickWifiScreen", "Failed to retrieve Wi-Fi SSID", e) }
         } else if (!locationPermissionGranted) {
             launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 
+    // Helper function to escape special characters (\, ;, :, ") in Wi-Fi strings
+    fun escapeWifiString(input: String): String {
+        val sb = StringBuilder()
+        for (c in input) {
+            if (c == '\\' || c == ';' || c == ':' || c == '"') {
+                sb.append('\\')
+            }
+            sb.append(c)
+        }
+        return sb.toString()
+    }
+
+    val escapedSsid = escapeWifiString(ssid)
+    val escapedPassword = escapeWifiString(password)
+
     // Regenerate QR whenever inputs change
     val wifiString = if (isHidden) {
-        "WIFI:S:$ssid;T:$encryptionType;P:$password;H:true;;"
+        "WIFI:S:$escapedSsid;T:$encryptionType;P:$escapedPassword;H:true;;"
     } else {
-        "WIFI:S:$ssid;T:$encryptionType;P:$password;;"
+        "WIFI:S:$escapedSsid;T:$encryptionType;P:$escapedPassword;;"
     }
 
     val primaryColor = MaterialTheme.colorScheme.primary.toArgb()

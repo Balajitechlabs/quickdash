@@ -9,7 +9,10 @@ import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,6 +33,18 @@ fun QuickWebScreen(
     var isLoading by remember { mutableStateOf(true) }
     var progress by remember { mutableStateOf(0f) }
 
+    DisposableEffect(webView) {
+        onDispose {
+            webView?.apply {
+                stopLoading()
+                loadUrl("about:blank")
+                clearHistory()
+                removeAllViews()
+                destroy()
+            }
+        }
+    }
+
     BackHandler(enabled = canGoBack) {
         webView?.goBack()
     }
@@ -46,14 +61,14 @@ fun QuickWebScreen(
                 onClick = { webView?.goBack() },
                 enabled = canGoBack
             ) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
             
             IconButton(
                 onClick = { webView?.goForward() },
                 enabled = canGoForward
             ) {
-                Icon(Icons.Default.ArrowForward, contentDescription = "Forward")
+                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Forward")
             }
 
             IconButton(

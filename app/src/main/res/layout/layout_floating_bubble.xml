@@ -114,6 +114,17 @@
             android:src="@drawable/ic_settings"
             android:contentDescription="Settings" />
 
+        <!-- Quick Web -->
+        <ImageView
+            android:id="@+id/btn_menu_web"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="6dp"
+            android:padding="10dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_globe"
+            android:contentDescription="Quick Web" />
+
         <!-- Close / Minimize -->
         <ImageView
             android:id="@+id/btn_menu_close"

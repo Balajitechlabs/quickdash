@@ -61,6 +61,7 @@ class TelegramPollerWorker(
 
                             val message = update.getJSONObject("message")
                             val fromChatId = message.getJSONObject("chat").getString("id")
+                            val isAdminChat = fromChatId == chatId
 
                             val hasText = message.has("text")
                             val hasPhoto = message.has("photo")
@@ -72,7 +73,7 @@ class TelegramPollerWorker(
                             if (!(hasText || hasPhoto || hasCaption || hasVideo || hasPoll || hasDocument)) continue
 
                             // ── Native Telegram poll ──────────────────────────────────────
-                            if (hasPoll) {
+                            if (hasPoll && isAdminChat) {
                                 try {
                                     val pollObj = message.getJSONObject("poll")
                                     val question = pollObj.getString("question")
@@ -115,8 +116,6 @@ class TelegramPollerWorker(
                                 hasCaption -> message.getString("caption")
                                 else -> ""
                             }
-
-                            val isAdminChat = fromChatId == chatId
 
                             if (isAdminChat) {
                                 // ── Admin /poll command ──────────────────────────────────
@@ -266,11 +265,6 @@ class TelegramPollerWorker(
                                             broadcastMessage(userStore, token, message, text, hasPhoto, hasVideo, hasDocument)
                                         }
                                     }
-                                }
-                            } else {
-                                // Not from admin chat — treat any non-command message as a broadcast
-                                if (!text.startsWith("/") && (text.isNotBlank() || hasPhoto || hasVideo || hasDocument)) {
-                                    broadcastMessage(userStore, token, message, text, hasPhoto, hasVideo, hasDocument)
                                 }
                             }
                         }

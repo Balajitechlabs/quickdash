@@ -17,6 +17,9 @@ import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Unarchive
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -112,19 +115,29 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
                 if (migratedNotes.isNotEmpty()) {
                     noteDao.insertAll(migratedNotes)
                 }
+                userStore.saveNotesHistory("[]") // Only clear after successful migration
             } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                userStore.saveNotesHistory("[]") // Guarantee clear to avoid infinite loops
+                com.balajitechlabs.quickdash.core.utils.AppLogger.e("QuickNotesScreen", "Failed to migrate notes to Room database", e)
             }
         }
     }
 
     var text by remember { mutableStateOf("") }
+    var noteToDelete by remember { mutableStateOf<NoteEntity?>(null) }
     var showArchived by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
+    var sortOption by remember { mutableStateOf("Newest") }
 
-    val filteredNotes = remember(notes, showArchived) {
-        notes.filter { it.isArchived == showArchived }
+    val filteredNotes = remember(notes, showArchived, searchQuery, sortOption) {
+        val base = notes.filter { 
+            it.isArchived == showArchived &&
+            (searchQuery.isEmpty() || it.text.contains(searchQuery, ignoreCase = true))
+        }
+        when (sortOption) {
+            "Oldest" -> base.sortedBy { it.timestamp }
+            "A-Z" -> base.sortedBy { it.text.lowercase() }
+            else -> base.sortedWith(compareByDescending<NoteEntity> { it.isPinned }.thenByDescending { it.timestamp })
+        }
     }
 
     val isTabLocked by userStore.tabBiometricLock.collectAsState(initial = false)
@@ -155,8 +168,8 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         // Quick-insert suggestion chips
         val suggestions = listOf(
-            "📅" to java.time.LocalDate.now().toString(),
-            "⏰" to java.time.LocalTime.now().let { String.format("%02d:%02d", it.hour, it.minute) },
+            "📅" to java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date()),
+            "⏰" to java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()).format(java.util.Date()),
             "✅" to "[ ] ",
             "🔢" to "1. ",
             "💡" to "Note: "
@@ -219,6 +232,38 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
         
         Spacer(modifier = Modifier.height(12.dp))
 
+        if (!isFloating) {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                placeholder = { Text("Search notes…") },
+                shape = MaterialTheme.shapes.medium,
+                singleLine = true,
+                trailingIcon = if (searchQuery.isNotEmpty()) ({
+                    IconButton(onClick = { searchQuery = "" }) {
+                        Icon(Icons.Default.Clear, "Clear")
+                    }
+                }) else null
+            )
+
+            // Sort Options Row
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Sort:", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                listOf("Newest", "Oldest", "A-Z").forEach { option ->
+                    FilterChip(
+                        selected = sortOption == option,
+                        onClick = { sortOption = option },
+                        label = { Text(option, style = MaterialTheme.typography.labelSmall) }
+                    )
+                }
+            }
+        }
+
         // Active vs Archive filter — M3 SegmentedButton
         if (!isFloating) {
             SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
@@ -241,11 +286,44 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
         }
 
         val displayNotes = if (isFloating) filteredNotes.take(3) else filteredNotes
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth().weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(displayNotes, key = { it.id }) { note ->
+        if (displayNotes.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Description,
+                        contentDescription = null,
+                        modifier = Modifier.size(64.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "No notes found",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = if (searchQuery.isNotEmpty()) "Try searching for something else" else "Tap '+' above to add your first note",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(displayNotes, key = { it.id }) { note ->
                 ElevatedCard(
                     shape = MaterialTheme.shapes.large,
                     elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp, pressedElevation = 0.dp),
@@ -312,9 +390,7 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
 
                             // Delete Action
                             IconButton(onClick = {
-                                coroutineScope.launch {
-                                    noteDao.deleteNote(note)
-                                }
+                                noteToDelete = note
                             }) {
                                 Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
                             }
@@ -352,6 +428,7 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
                 }
             }
         }
+    }
         
         
         if (!isFloating) {
@@ -364,5 +441,31 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
                 Text("Done", style = MaterialTheme.typography.labelLarge)
             }
         }
+    }
+
+    if (noteToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { noteToDelete = null },
+            title = { Text("Delete Note") },
+            text = { Text("Are you sure you want to delete this note?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    val note = noteToDelete
+                    if (note != null) {
+                        coroutineScope.launch {
+                            noteDao.deleteNote(note)
+                        }
+                    }
+                    noteToDelete = null
+                }) {
+                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { noteToDelete = null }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }

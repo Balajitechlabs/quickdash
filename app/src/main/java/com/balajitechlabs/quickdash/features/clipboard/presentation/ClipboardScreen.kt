@@ -236,6 +236,7 @@ fun ClipboardScreen(
 
     val isTabLocked by userStore.tabBiometricLock.collectAsState(initial = false)
     var isUnlocked by remember { mutableStateOf(false) }
+    var showClearAllConfirmation by remember { mutableStateOf(false) }
 
     // ── Biometric lock screen ─────────────────────────────────────────────
     if (isTabLocked && !isUnlocked) {
@@ -310,7 +311,7 @@ fun ClipboardScreen(
             }
             if (clipboardItems.isNotEmpty()) {
                 FilledTonalIconButton(
-                    onClick = { coroutineScope.launch { userStore.saveClipboardHistory("[]") } },
+                    onClick = { showClearAllConfirmation = true },
                     colors = IconButtonDefaults.filledTonalIconButtonColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer,
                         contentColor = MaterialTheme.colorScheme.onErrorContainer
@@ -377,7 +378,8 @@ fun ClipboardScreen(
 
         // ── Clipboard entries ─────────────────────────────────────────────
         val displayItems = if (isFloating) filteredItems.take(5) else filteredItems
-        LazyColumn(
+        if (filteredItems.isNotEmpty()) {
+            LazyColumn(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
@@ -442,6 +444,30 @@ fun ClipboardScreen(
                 )
             }
         }
+        }
+    }
+
+    if (showClearAllConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showClearAllConfirmation = false },
+            title = { Text("Clear Clipboard History") },
+            text = { Text("Are you sure you want to clear all items in your clipboard history?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    coroutineScope.launch {
+                        userStore.saveClipboardHistory("[]")
+                    }
+                    showClearAllConfirmation = false
+                }) {
+                    Text("Clear All", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearAllConfirmation = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
 
@@ -471,85 +497,85 @@ fun ClipboardItemCard(
             else MaterialTheme.colorScheme.surfaceContainerLow
         )
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 12.dp, vertical = 10.dp)
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                // Clipboard Text
+            // Clipboard Text (Full Width)
+            Text(
+                text = if (sensitive && !revealed) "🔒 Sensitive content hidden" else item,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = if (revealed || !sensitive) 8 else 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(enabled = sensitive) { onToggleReveal() }
+            )
+            
+            // Sensitive subtitle
+            if (sensitive) {
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = if (sensitive && !revealed) "🔒 Sensitive content hidden" else item,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = if (revealed || !sensitive) 3 else 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.clickable(enabled = sensitive) { onToggleReveal() }
+                    text = if (revealed) "Tap to hide" else "Tap to reveal",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.clickable { onToggleReveal() }
                 )
-                
-                // Sensitive subtitle
-                if (sensitive) {
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = if (revealed) "Tap to hide" else "Tap to reveal",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.clickable { onToggleReveal() }
-                    )
-                }
+            }
 
-                // Action Chips Row
-                if (!sensitive || revealed) {
-                    val actions = remember(item) { parseClipboardContent(item, context) }
-                    if (actions.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                        LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            items(actions) { action ->
-                                AssistChip(
-                                    onClick = {
+            // Action Chips Row (e.g. Call number)
+            if (!sensitive || revealed) {
+                val actions = remember(item) { parseClipboardContent(item, context) }
+                if (actions.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        items(actions) { action ->
+                            AssistChip(
+                                onClick = {
+                                    try {
+                                        context.startActivity(action.intent)
+                                    } catch (e: Exception) {
                                         try {
+                                            action.intent.setPackage(null)
                                             context.startActivity(action.intent)
-                                        } catch (e: Exception) {
-                                            try {
-                                                action.intent.setPackage(null)
-                                                context.startActivity(action.intent)
-                                            } catch (ex: Exception) {
-                                                ex.printStackTrace()
-                                            }
+                                        } catch (ex: Exception) {
+                                            ex.printStackTrace()
                                         }
-                                    },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = action.icon,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(16.dp),
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                    },
-                                    label = {
-                                        Text(
-                                            text = action.label,
-                                            style = MaterialTheme.typography.labelMedium
-                                        )
                                     }
-                                )
-                            }
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = action.icon,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        text = action.label,
+                                        style = MaterialTheme.typography.labelMedium
+                                    )
+                                }
+                            )
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+            Spacer(modifier = Modifier.height(2.dp))
 
-            // Action Buttons Row
+            // Action Buttons Row (At the bottom)
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(2.dp)
+                horizontalArrangement = Arrangement.End
             ) {
                 // Pin/Unpin
                 IconButton(
@@ -573,6 +599,8 @@ fun ClipboardItemCard(
                     )
                 }
 
+                Spacer(modifier = Modifier.width(8.dp))
+
                 // Share
                 IconButton(
                     onClick = {
@@ -590,6 +618,8 @@ fun ClipboardItemCard(
                     Icon(Icons.Default.Share, "Share", modifier = Modifier.size(18.dp))
                 }
 
+                Spacer(modifier = Modifier.width(8.dp))
+
                 // Copy
                 IconButton(
                     onClick = {
@@ -600,6 +630,8 @@ fun ClipboardItemCard(
                 ) {
                     Icon(Icons.Default.ContentCopy, "Copy", modifier = Modifier.size(18.dp))
                 }
+
+                Spacer(modifier = Modifier.width(8.dp))
 
                 // Delete
                 IconButton(
