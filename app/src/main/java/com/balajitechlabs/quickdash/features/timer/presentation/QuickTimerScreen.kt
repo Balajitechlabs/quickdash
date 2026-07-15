@@ -294,18 +294,62 @@ private fun CountdownContent(userStore: UserStore, scope: kotlinx.coroutines.Cor
     LaunchedEffect(isRunning) {
         if (isRunning) {
             val triggerTime = android.os.SystemClock.elapsedRealtime() + remainingMs
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarmManager.setExactAndAllowWhileIdle(
-                    android.app.AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    triggerTime,
-                    alarmIntent
-                )
-            } else {
-                alarmManager.setExact(
-                    android.app.AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    triggerTime,
-                    alarmIntent
-                )
+            try {
+                val canScheduleExact = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    alarmManager.canScheduleExactAlarms()
+                } else {
+                    true
+                }
+
+                if (canScheduleExact) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        alarmManager.setExactAndAllowWhileIdle(
+                            android.app.AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                            triggerTime,
+                            alarmIntent
+                        )
+                    } else {
+                        alarmManager.setExact(
+                            android.app.AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                            triggerTime,
+                            alarmIntent
+                        )
+                    }
+                } else {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        alarmManager.setAndAllowWhileIdle(
+                            android.app.AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                            triggerTime,
+                            alarmIntent
+                        )
+                    } else {
+                        alarmManager.set(
+                            android.app.AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                            triggerTime,
+                            alarmIntent
+                        )
+                    }
+                }
+            } catch (e: SecurityException) {
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        alarmManager.setAndAllowWhileIdle(
+                            android.app.AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                            triggerTime,
+                            alarmIntent
+                        )
+                    } else {
+                        alarmManager.set(
+                            android.app.AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                            triggerTime,
+                            alarmIntent
+                        )
+                    }
+                } catch (ex: Exception) {
+                    ex.printStackTrace()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
 
             val startRemaining = remainingMs

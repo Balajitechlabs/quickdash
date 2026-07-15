@@ -51,6 +51,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -196,7 +197,7 @@ fun QuickDashApp(
         } else if (showNotificationPopup) {
             showNotificationPopup = false
         } else if (navigationStack.size > 1) {
-            navigationStack.removeLast()
+            navigationStack.removeAt(navigationStack.lastIndex)
         } else {
             val currentTime = System.currentTimeMillis()
             if (currentTime - backPressedTime < 2000) {
@@ -455,7 +456,7 @@ fun QuickDashApp(
         onOnboardingComplete = {
             scope.launch {
                 userStore.setOnboardingComplete()
-                navigationStack.removeLast()
+                navigationStack.removeAt(navigationStack.lastIndex)
                 navigationStack.add(QuickDashUiState.Dashboard)
             }
         },
@@ -1275,6 +1276,123 @@ fun QuickDashContent(
                 showWhatsNewOnLaunch = false
                 scope.launch {
                     userStore.saveLastSeenVersion(versionName)
+                }
+            }
+        )
+    }
+
+    val updateState = UpdateManager.updateState
+    val showUpdateDialog = remember(updateState) { mutableStateOf(true) }
+
+    if (updateState is UpdateState.UpdateAvailable && showUpdateDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showUpdateDialog.value = false },
+            title = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically, 
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_cloud_download),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Text("Update Available! 🚀", fontWeight = FontWeight.Bold)
+                }
+            },
+            text = {
+                Text(
+                    text = "A new version (v${updateState.versionName}) of QuickDash is available. Update now to get the latest features and stability fixes.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showUpdateDialog.value = false
+                        UpdateManager.startDownload(context, updateState.apkUrl, updateState.versionName)
+                    }
+                ) {
+                    Text("Download & Update")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showUpdateDialog.value = false }) {
+                    Text("Later")
+                }
+            }
+        )
+    }
+
+    if (updateState is UpdateState.Downloading) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically, 
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    CircularProgressIndicator(
+                        progress = { updateState.progress / 100f },
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                        strokeWidth = 3.dp,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text("Downloading Update...", fontWeight = FontWeight.Bold)
+                }
+            },
+            text = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp), 
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Downloading version v${updateState.versionName} (${updateState.progress}%)",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    LinearProgressIndicator(
+                        progress = { updateState.progress / 100f },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {}
+        )
+    }
+
+    if (updateState is UpdateState.ReadyToInstall) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically, 
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_check_circle_fill),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Text("Update Ready! 🎉", fontWeight = FontWeight.Bold)
+                }
+            },
+            text = {
+                Text(
+                    text = "Version v${updateState.versionName} has been successfully downloaded. Click below to install it.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        UpdateManager.installApk(context, updateState.fileName)
+                    }
+                ) {
+                    Text("Install Now")
                 }
             }
         )

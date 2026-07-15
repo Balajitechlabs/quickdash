@@ -42,7 +42,7 @@ object AppLogger {
         val currentList = _logs.value.toMutableList()
         currentList.add(0, logLine) // add to top
         if (currentList.size > MAX_LOGS) {
-            currentList.removeLast()
+            currentList.removeAt(currentList.lastIndex)
         }
         _logs.value = currentList
     }
