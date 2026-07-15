@@ -10,9 +10,9 @@
 
 <br>
 
-[![Download APK](https://img.shields.io/badge/Download%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Balajitechlabs/quickdash/releases/download/v4.4.1-1/quickdash-app-v4.4.1.apk)
+[![Download APK](https://img.shields.io/badge/Download%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Balajitechlabs/quickdash/releases/download/v4.4.1-10/quickdash-app-v4.4.1.apk)
 
-**Latest Tag: `v4.4.1-1`**
+**Latest Tag: `v4.4.1-10`**
 
 <br>
 
