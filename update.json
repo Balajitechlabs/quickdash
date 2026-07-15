@@ -1,8 +1,8 @@
 {
-  "versionCode": 105,
-  "versionName": "4.4.0",
+  "versionCode": 106,
+  "versionName": "4.4.1",
   "releaseUrl": "https://github.com/Balajitechlabs/quickdash/releases/latest",
-  "apkUrl": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/quickdash-app-v4.4.0.apk",
-  "announcementTitle": "🚀 QuickDash v4.4.0 is Here!",
-  "announcementBody": "New Features: Refactored Clipboard Layout with 100% full-width items, native Vector Logo in Control Center, and seamless Backup and sharing on Android 11+!"
+  "apkUrl": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/quickdash-app-v4.4.1.apk",
+  "announcementTitle": "🚀 QuickDash v4.4.1 is Here!",
+  "announcementBody": "Stability Hotfix: Resolved a removeLast() crash on older Android versions, fixed exact-alarm scheduling security exceptions on Android 14+, resolved WebView rendering issues, and added clean in-app update notification prompts!"
 }

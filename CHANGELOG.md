@@ -2,6 +2,13 @@
 
 All notable changes to **QuickDash** will be documented in this file.
 
+## [4.4.1] - 2026-07-15
+### Fixed
+- **removeLast() NoSuchMethodError Crash:** Replaced Java 21 `removeLast()` calls in navigation stack and logger with standard `removeAt(list.lastIndex)` to support older Android versions.
+- **Timer Exact-Alarm Security Exception:** Integrated runtime checks for `canScheduleExactAlarms()` and structured exception catching. Timer alarms now fall back gracefully to inexact alarms instead of throwing a `SecurityException` on Android 13/14+.
+- **Quick Web Layout & Cookies:** Resolved WebView loading issues by eliminating manual layout param constraints, and enabled full cookie, mixed-content, and URL handling support.
+- **In-App Auto-Updates:** Integrated prompt dialogs, download progress indicators, and installer handoffs directly within the main App scaffold.
+
 ## [4.4.0] - 2026-07-13
 ### Added
 - **Refactored Clipboard Layout:** Upgraded ClipboardItemCard to a vertical column layout. Long clipboard items now occupy full width, resolving overlapping and text-squishing issues.

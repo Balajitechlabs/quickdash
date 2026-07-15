@@ -10,13 +10,13 @@
 
 <br>
 
-[![Download APK](https://img.shields.io/badge/Download%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Balajitechlabs/quickdash/releases/download/v4.4.0-6/quickdash-app-v4.4.0.apk)
+[![Download APK](https://img.shields.io/badge/Download%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Balajitechlabs/quickdash/releases/download/v4.4.1-1/quickdash-app-v4.4.1.apk)
 
-**Latest Tag: `v4.4.0-6`**
+**Latest Tag: `v4.4.1-1`**
 
 <br>
 
-![Version](https://img.shields.io/badge/Version-4.4.0-blue?style=flat-square)
+![Version](https://img.shields.io/badge/Version-4.4.1-blue?style=flat-square)
 ![Kotlin](https://img.shields.io/badge/Kotlin-100%25-blue.svg?logo=kotlin&style=flat-square)
 ![Android](https://img.shields.io/badge/Android-13.0%2B-green.svg?logo=android&style=flat-square)
 ![Compose](https://img.shields.io/badge/Jetpack_Compose-Material_3-purple.svg?style=flat-square)

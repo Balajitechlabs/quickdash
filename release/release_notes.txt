@@ -1,6 +1,6 @@
-Release Notes - QuickDash v2.0.1
+Release Notes - QuickDash v4.4.1
 
-* Branded App Launcher Icon: Fully integrated the brand logo as the app launcher icon using adaptive icon layers. This ensures a clean look with the exact dark-blue background (#060D1D) and safe zone scaling, completely removing any white background plates or square borders.
-* Brand-Accurate Tool Icons: Added official vector icons for WhatsApp (brand green) and Instagram (brand pink/gradient) on the tool selection dashboard.
-* Saturated Menu Theme: Saturated the dashboard menu dialog fallback colors with a custom Gold/Orange (#FE9F06) and Navy (#060D1D) palette matching the QuickDash logo, making the main page look as vibrant as the tools inside.
-* Clean QR Code Share Footer: Fixed the footer logo in the shared QR code image to use the updated brand icon instead of the legacy icon with a white square container.
+* removeLast() NoSuchMethodError Crash Fixed: Replaced Java 21 removeLast() calls in the navigation stack and logger with standard, backward-compatible removeAt(list.lastIndex) calls to support all Android devices.
+* Timer Exact-Alarm Security Exception Fixed: Integrated runtime canScheduleExactAlarms() checks and caught all SecurityException triggers on Android 13/14+. Timer alarms now fall back gracefully to inexact alarms instead of causing a crash when exact alarm permissions are denied.
+* Quick Web WebView Layout Fixed: Resolved rendering issues by removing manual MATCH_PARENT layout parameters, and enabled cookie, mixed-content, and URL redirect handling.
+* In-App Auto-Updates: Added prominent update notifications, download progress dialogs, and installer triggers directly inside the app.
