@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
@@ -42,14 +43,25 @@ class FloatingDialogActivity : FragmentActivity() {
     private var isFullScreen by mutableStateOf(false)
     private var currentAction by mutableStateOf<String?>(null)
 
+    private val captureReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == "com.balajitechlabs.quickdash.CAPTURE_WINDOW") {
+                captureAndSaveWindowScreenshot()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         userStore = UserStore(this)
         currentAction = intent?.getStringExtra("launch_section") ?: intent?.action
 
-        // NOTE: DiagnosticLogger crash-log sharing is intentionally deferred to onResume().
-        // Calling startActivity() from onCreate() in a singleInstancePerTask Activity
-        // before the window is attached causes IllegalStateException on Android 10+.
+        val captureFilter = android.content.IntentFilter("com.balajitechlabs.quickdash.CAPTURE_WINDOW")
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(captureReceiver, captureFilter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(captureReceiver, captureFilter)
+        }
 
         val config = resources.configuration
         val isLargeScreen = config.smallestScreenWidthDp >= 600
@@ -135,7 +147,7 @@ class FloatingDialogActivity : FragmentActivity() {
                                             isLandscape && isLargeScreen -> 0.65f
                                             isLandscape -> 0.70f
                                             isLargeScreen -> 0.75f
-                                            else -> 0.90f // 90% width fraction to allow generous horizontal layout
+                                            else -> 0.90f
                                         }
                                         val maxDp = if (isLargeScreen) 560.dp else 480.dp
                                         Modifier
@@ -144,6 +156,16 @@ class FloatingDialogActivity : FragmentActivity() {
                                             .wrapContentHeight()
                                     }
                                 )
+                                .pointerInput(Unit) {
+                                    awaitPointerEventScope {
+                                        while (true) {
+                                            val event = awaitPointerEvent()
+                                            if (event.changes.size >= 4) {
+                                                captureAndSaveWindowScreenshot()
+                                            }
+                                        }
+                                    }
+                                }
                                 .clickable(
                                     interactionSource = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
                                     indication = null
@@ -239,6 +261,13 @@ class FloatingDialogActivity : FragmentActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            unregisterReceiver(captureReceiver)
+        } catch (_: Exception) {}
+    }
+
     override fun onPause() {
         super.onPause()
         try {
@@ -302,7 +331,34 @@ class FloatingDialogActivity : FragmentActivity() {
             }
             startActivity(Intent.createChooser(intent, "Share Diagnostic Log"))
         } catch (e: Exception) {
-            android.widget.Toast.makeText(this, "Error sharing log: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+            AppLogger.e("FloatingDialogActivity", "Failed to share log file", e)
+        }
+    }
+
+    private fun captureAndSaveWindowScreenshot() {
+        try {
+            val rootView = window.decorView.rootView
+            rootView.isDrawingCacheEnabled = true
+            val bitmap = android.graphics.Bitmap.createBitmap(rootView.drawingCache)
+            rootView.isDrawingCacheEnabled = false
+
+            val filename = "QuickDash_Window_${System.currentTimeMillis()}.png"
+            val cv = android.content.ContentValues().apply {
+                put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                put(android.provider.MediaStore.MediaColumns.MIME_TYPE, "image/png")
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                    put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/QuickDash")
+                }
+            }
+            val uri = contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv)
+            uri?.let {
+                contentResolver.openOutputStream(it)?.use { s ->
+                    bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, s)
+                }
+                android.widget.Toast.makeText(this, "📸 Floating Window Screenshot Saved!", android.widget.Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            android.widget.Toast.makeText(this, "Screenshot failed: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
         }
     }
 }

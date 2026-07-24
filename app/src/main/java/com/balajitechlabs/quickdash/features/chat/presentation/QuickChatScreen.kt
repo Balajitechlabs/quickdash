@@ -679,9 +679,9 @@ fun QuickChatScreen(
                     }
                     val iconRes = when (tab) {
                         "WhatsApp" -> R.drawable.ic_whatsapp
-                        "Telegram" -> R.drawable.ic_share
-                        "Signal" -> R.drawable.ic_quickdash_tile
-                        else -> R.drawable.ic_phone
+                        "Telegram" -> R.drawable.ic_telegram
+                        "Signal" -> R.drawable.ic_signal
+                        else -> R.drawable.ic_sms
                     }
                     Card(
                         onClick = { selectedTab = tab },
@@ -696,27 +696,15 @@ fun QuickChatScreen(
                         )
                     ) {
                         Box(
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Icon(
-                                    painter = painterResource(iconRes),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp),
-                                    tint = if (isSelected) color else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = tab,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = if (isSelected) color else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
+                            Icon(
+                                painter = painterResource(iconRes),
+                                contentDescription = tab,
+                                modifier = Modifier.size(24.dp),
+                                tint = Color.Unspecified
+                            )
                         }
                     }
                 }

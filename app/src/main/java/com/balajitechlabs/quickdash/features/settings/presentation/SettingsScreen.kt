@@ -400,24 +400,7 @@ fun SettingsScreen(
                 }
             )
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "Star PocketOps on GitHub",
-                subtitle = "Support the original open-source project that inspired QuickDash",
-                iconVector = Icons.Default.StarBorder,
-                onClick = {
-                    triggerFeedback()
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/IIXII-L192/PocketOps-app"))
-                    context.startActivity(intent)
-                }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "Shared Access",
-                subtitle = "60-rate limit of the tab",
-                iconVector = Icons.Default.Info,
-                onClick = { triggerFeedback() }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+
             // ── Donate Banner ──────────────────────────────────────────
             Card(
                 modifier = Modifier
@@ -709,7 +692,7 @@ fun SettingsScreen(
 
             PreferenceItem(
                 title = "Quick Settings Tile",
-                subtitle = "Tap here to add or manage in system tray",
+                subtitle = "Tap to add QuickDash tile to system quick settings panel",
                 iconVector = Icons.Default.SettingsSystemDaydream,
                 onClick = {
                     if (Build.VERSION.SDK_INT >= 33) {
@@ -729,6 +712,38 @@ fun SettingsScreen(
                         } catch (e: Exception) {
                             // API fallback
                         }
+                    } else {
+                        android.widget.Toast.makeText(context, "Pull down top notification shade, tap Edit ✏️ to add QuickDash Tile", android.widget.Toast.LENGTH_LONG).show()
+                    }
+                }
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+
+            PreferenceItem(
+                title = "Scan QR Code Tile",
+                subtitle = "Tap to add instant QR Scanner tile to system quick settings panel",
+                iconVector = Icons.Default.QrCodeScanner,
+                onClick = {
+                    if (Build.VERSION.SDK_INT >= 33) {
+                        try {
+                            val manager = context.getSystemService(Context.STATUS_BAR_SERVICE) as android.app.StatusBarManager
+                            val componentName = android.content.ComponentName(
+                                context,
+                                "com.balajitechlabs.quickdash.core.quicktile.QrScannerTileService"
+                            )
+                            manager.requestAddTileService(
+                                componentName,
+                                "Scan QR Code",
+                                android.graphics.drawable.Icon.createWithResource(context, R.drawable.ic_qr_code_2),
+                                { executor -> executor.run() },
+                                { result -> }
+                            )
+                        } catch (e: Exception) {
+                            // API fallback
+                        }
+                    } else {
+                        android.widget.Toast.makeText(context, "Pull down top notification shade, tap Edit ✏️ to add Scan QR Code Tile", android.widget.Toast.LENGTH_LONG).show()
                     }
                 }
             )

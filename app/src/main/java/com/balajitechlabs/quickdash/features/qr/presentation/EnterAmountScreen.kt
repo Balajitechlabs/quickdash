@@ -83,8 +83,8 @@ fun EnterAmountScreen(
         )
     }
     var showHistoryDialog by remember { mutableStateOf(false) }
-    var useCircularDots by remember { mutableStateOf(false) }
-    var useGradient by remember { mutableStateOf(false) }
+    var useCircularDots by remember { mutableStateOf(true) }
+    var useGradient by remember { mutableStateOf(true) }
     
     val categories = listOf("Personal", "Business", "Dining", "Groceries", "Services", "Other")
     var selectedCategory by remember { mutableStateOf("Other") }
@@ -316,7 +316,7 @@ fun EnterAmountScreen(
                             SuggestionChip(
                                 onClick = { 
                                     amountInput = amount
-                                    onGenerateQr(amountInput, noteInput, selectedUpiId, selectedTargetApp, selectedCategory, useCircularDots, useGradient)
+                                    onGenerateQr(amount, noteInput, selectedUpiId, selectedTargetApp, selectedCategory, useCircularDots, useGradient)
                                 },
                                 label = {
                                     Text(
@@ -364,133 +364,7 @@ fun EnterAmountScreen(
             }
         }
 
-        // SECTION 3: TARGET PAYMENT APP SELECTOR
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            ),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.15f))
-        ) {
-            Column(
-                modifier = Modifier.padding(14.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = "Select Payment App (Target)",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                ) {
-                    PaymentTargetApp.values().forEach { app ->
-                        val isSelected = selectedTargetApp == app
-                        val chipColor = when (app) {
-                            PaymentTargetApp.ANY -> MaterialTheme.colorScheme.primary
-                            PaymentTargetApp.GPAY -> Color(0xFF1A73E8) // Google Pay blue
-                            PaymentTargetApp.PHONEPE -> Color(0xFF5F259F) // PhonePe purple
-                            PaymentTargetApp.PAYTM -> Color(0xFF00B9F5) // Paytm light blue
-                            PaymentTargetApp.BHIM -> Color(0xFFE27F22) // BHIM orange
-                        }
-                        
-                        SuggestionChip(
-                            onClick = { selectedTargetApp = app },
-                            label = {
-                                Text(
-                                    text = app.displayName,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
-                                )
-                            },
-                            colors = SuggestionChipDefaults.suggestionChipColors(
-                                containerColor = if (isSelected) chipColor.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                                labelColor = if (isSelected) chipColor else MaterialTheme.colorScheme.onSurfaceVariant
-                            ),
-                            border = if (isSelected) BorderStroke(1.5.dp, chipColor) else BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)),
-                            shape = RoundedCornerShape(10.dp)
-                        )
-                    }
-                }
-            }
-        }
 
-        // SECTION: CATEGORY SELECTOR
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            ),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.15f))
-        ) {
-            Column(
-                modifier = Modifier.padding(14.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = "Select Category",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                ) {
-                    categories.forEach { category ->
-                        val isSelected = selectedCategory == category
-                        FilterChip(
-                            selected = isSelected,
-                            onClick = { selectedCategory = category },
-                            label = { Text(category) }
-                        )
-                    }
-                }
-            }
-        }
-
-        // SECTION: QR DESIGN CUSTOMIZATION
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.15f))
-        ) {
-            Column(modifier = Modifier.padding(14.dp)) {
-                Text(
-                    text = "QR Design Customization",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    FilterChip(
-                        selected = useCircularDots,
-                        onClick = { useCircularDots = !useCircularDots },
-                        label = { Text("Circular Dots") }
-                    )
-                    FilterChip(
-                        selected = useGradient,
-                        onClick = { useGradient = !useGradient },
-                        label = { Text("Gradient Colors") }
-                    )
-                }
-            }
-        }
 
         Spacer(modifier = Modifier.height(4.dp))
 

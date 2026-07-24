@@ -243,20 +243,54 @@ fun QuickSocialScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Platform selector chips
+        // Platform selector chips with minimalist icons
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             platforms.forEach { platform ->
                 val isSelected = selectedPlatform == platform
-                FilterChip(
-                    selected = isSelected,
+                val iconRes = when (platform) {
+                    "Instagram" -> R.drawable.ic_instagram
+                    "Facebook" -> R.drawable.ic_facebook
+                    "X (Twitter)" -> R.drawable.ic_twitter
+                    "LinkedIn" -> R.drawable.ic_linkedin
+                    "GitHub" -> R.drawable.ic_github
+                    else -> R.drawable.ic_globe
+                }
+                val brandColor = when (platform) {
+                    "Instagram" -> Color(0xFFE4405F)
+                    "Facebook" -> Color(0xFF1877F2)
+                    "X (Twitter)" -> Color(0xFF1DA1F2)
+                    "LinkedIn" -> Color(0xFF0A66C2)
+                    else -> MaterialTheme.colorScheme.primary
+                }
+                Card(
                     onClick = { selectedPlatform = platform; githubError = null },
-                    label = { Text(platform) }
-                )
+                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier.weight(1f),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (isSelected) brandColor.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                    ),
+                    border = BorderStroke(
+                        width = if (isSelected) 2.dp else 1.dp,
+                        color = if (isSelected) brandColor else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.15f)
+                    )
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(iconRes),
+                            contentDescription = platform,
+                            modifier = Modifier.size(24.dp),
+                            tint = Color.Unspecified
+                        )
+                    }
+                }
             }
         }
 

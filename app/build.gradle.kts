@@ -30,13 +30,12 @@ android {
         applicationId = "com.balajitechlabs.quickdash"
         minSdk = 24
         targetSdk = 35
-        versionCode = 106
-        versionName = "4.4.1"
+        versionCode = 500
+        versionName = "5.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // Inject Telegram secrets from local.properties into BuildConfig
-        // These are NOT embedded as plain strings — they come from the gitignored local.properties
         buildConfigField(
             "String",
             "TG_BOT_TOKEN",
@@ -52,6 +51,22 @@ android {
             "TG_CHAT_ID",
             "\"${localProperties.getProperty("TG_CHAT_ID", "")}\""
         )
+
+        // Ensure full support for 64-bit & 32-bit architectures (no missing native library crashes)
+        ndk {
+            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64"))
+        }
+    }
+
+    val isBuildingBundle = gradle.startParameter.taskNames.any { it.contains("bundle", ignoreCase = true) }
+
+    splits {
+        abi {
+            isEnable = !isBuildingBundle
+            reset()
+            include("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
+            isUniversalApk = true
+        }
     }
 
     signingConfigs {
@@ -158,6 +173,9 @@ dependencies {
     // Jetpack Glance App Widget & Google Fonts
     implementation("androidx.glance:glance-appwidget:1.1.0")
     implementation("androidx.compose.ui:ui-text-google-fonts:1.6.0")
+
+    // MediaPipe LLM Inference (on-device AI with Gemma / Phi models)
+    implementation("com.google.mediapipe:tasks-genai:0.10.22")
 
     
     testImplementation(libs.junit)

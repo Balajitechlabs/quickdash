@@ -4,91 +4,89 @@
 
 # QuickDash ⚡
 
-**The Ultimate Floating Utility Hub for Android**
+**The Ultimate Floating Utility Hub & Quick Settings Productivity Suite for Android**
 <br>
-*Never switch apps again. All your essential tools, floating beautifully on your screen.*
-
-<br>
-
-[![Download APK](https://img.shields.io/badge/Download%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Balajitechlabs/quickdash/releases/download/v4.4.1-10/quickdash-app-v4.4.1.apk)
-
-**Latest Tag: `v4.4.1-10`**
+*Never switch apps again. All your essential tools floating beautifully on your screen.*
 
 <br>
 
-![Version](https://img.shields.io/badge/Version-4.4.1-blue?style=flat-square)
-![Kotlin](https://img.shields.io/badge/Kotlin-100%25-blue.svg?logo=kotlin&style=flat-square)
-![Android](https://img.shields.io/badge/Android-13.0%2B-green.svg?logo=android&style=flat-square)
-![Compose](https://img.shields.io/badge/Jetpack_Compose-Material_3-purple.svg?style=flat-square)
-![Architecture](https://img.shields.io/badge/Architecture-Room_DB_%7C_DataStore-orange.svg?style=flat-square)
-![License](https://img.shields.io/badge/License-Custom_Fork_License-red.svg?style=flat-square)
+[![Download APK](https://img.shields.io/badge/Download%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Balajitechlabs/quickdash/releases/latest)
+
+**Latest Tag: `v5.0.0`**
+
+<br>
+
+![Version](https://img.shields.io/badge/Version-5.0.0-blue?style=for-the-badge)
+![Kotlin](https://img.shields.io/badge/Kotlin-100%25-blue.svg?logo=kotlin&style=for-the-badge)
+![Android](https://img.shields.io/badge/Android-7.0%2B-green.svg?logo=android&style=for-the-badge)
+![Compose](https://img.shields.io/badge/Jetpack_Compose-Material_3-purple.svg?style=for-the-badge)
+![License](https://img.shields.io/badge/License-Open_Source-red.svg?style=for-the-badge)
 
 </div>
 
 ---
 
-## 📸 Screenshots
-<p align="center">
-  <img src="screenshots/1.jpg" width="18%" alt="Screenshot 1" style="border-radius: 12px; margin: 5px;">
-  <img src="screenshots/2.jpg" width="18%" alt="Screenshot 2" style="border-radius: 12px; margin: 5px;">
-  <img src="screenshots/3.jpg" width="18%" alt="Screenshot 3" style="border-radius: 12px; margin: 5px;">
-  <img src="screenshots/4.jpg" width="18%" alt="Screenshot 4" style="border-radius: 12px; margin: 5px;">
-  <img src="screenshots/5.jpg" width="18%" alt="Screenshot 5" style="border-radius: 12px; margin: 5px;">
-</p>
+## 🚀 What's New in v5.0.0
+
+QuickDash **v5.0.0** is a major release introducing powerful system-wide Quick Settings Tiles, minimalist vector icon launchers, custom QR styling, and floating window screenshot tools!
+
+- 💳 **Minimalist Quick Collect**: Universal UPI & PayPal QR generators with stylized circular dots and custom gradient styling.
+- 📷 **Inbuilt QR Scanner Quick Tile**: Add a dedicated **Scan QR Code** tile to your Android notification shade. Tapping it instantly opens Google ML Kit scanner on behalf of QuickDash.
+- 💬 **Pure Icon Social & Chat Hub**: Minimalist app icon launchers for WhatsApp, Telegram, Signal, Instagram, Facebook, X, LinkedIn, and GitHub.
+- 📸 **Floating Window Screenshot Button**: Dedicated camera action button (`📷`) in the floating window top bar to capture high-res screenshots of ONLY the floating widget container.
+- 🧮 **Modal Calculator History**: Calculation history presented in a clean modal pop-up window with single-tap expression reuse.
+- 🎨 **White Canvas & PDF Export Annotator**: Draw annotations on a clean white canvas, choose background colors, and export directly as PDF.
 
 ---
-
-## 🚀 What is QuickDash?
-
-**QuickDash** is a hyper-productive Android utility application engineered to drastically save your time and screen real estate. Instead of minimizing your current game, video, or app to open your notes, calculator, or QR generator, QuickDash lives as a **Floating Bubble** on your screen. Tap the bubble, and a gorgeous, blurred dashboard appears instantly with snappy `SizeTransform` animations, adapting dynamically to whatever tool you select.
 
 ## ✨ Core Features
 
-### 🟢 The Floating Dashboard & Compliance
+### 🟢 Floating Dashboard & System Overlays
 - **System-Wide Overlay:** Accessible over any app, game, or video.
-- **Glassmorphic UI & Dynamic Animations:** Stunning Material 3 design with beautiful background blurs. Windows instantly snap and resize based on the tool.
-- **App Lock:** Secure the dashboard using native device Biometrics (Fingerprint/Face).
-- **100% Privacy Enforced:** Built without commercial third-party trackers. No Google Sign-In, no external ad SDKs. Total anonymity.
+- **Glassmorphic Material 3 UI:** Snappy Jetpack Compose animations with dark mode, system accent colors, and custom shapes.
+- **Biometric Security:** Lock your floating dashboard using native fingerprint or face authentication.
+- **100% On-Device Privacy:** No cloud tracking or ad SDKs. Your payment handles, notes, and clipboard history stay strictly on your phone.
 
-### 🛠 Elite Productivity Tools
-- **📝 Quick Notes:** Jot down thoughts instantly. Backed by **Room Database** for crash-safe, persistent storage. Pin your most important notes to the top.
-- **🌐 Quick Web (Floating Browser):** A mini floating browser inside the dashboard to search and navigate links without switching apps.
-- **📋 Smart Clipboard Manager:** Track and retrieve your recently copied items. Features a dedicated Pinned section with one-click actions (Pin, Share, Copy, Delete).
-- **⏱️ Advanced Timer:** Stopwatches with lap records and countdowns stored in a clean history log.
-- **📊 Live Traffic Monitor:** View real-time device traffic alongside editable server credentials.
-- **💾 Data Backup & Restore:** Export all your preferences, notes, and configs to a single JSON file and restore anytime.
-
-### 💳 Fast Payments & Connectivity
-- **PayPal & UPI Switcher:** Tap a single toggle to instantly flip your QR generator between PayPal payment links and UPI targets.
-- **Categorized Target Divisions:** Set up customizable Division Slots (e.g. Groceries, Dining) for rapid payment target generation.
-- **Wi-Fi Sharer:** Generate a Wi-Fi share QR with a direct scan-to-connect option natively built into the history logs.
-
-### 💬 Frictionless Communication
-- **WhatsApp Live QR Scanner:** Scan a friend's WhatsApp QR with Google ML Kit to instantly launch their chat without saving the number.
-- **Direct Chat Launcher:** Fully supports **WhatsApp, Telegram, Signal, and SMS** with tab-specific prefilled message templates. Enter a number and jump straight to the chat.
-
-### 🎨 State-of-the-art Personalization
-- **Custom Font Families:** Hot-swap between Poppins, Space Grotesk, and Nunito on the fly.
-- **11 Built-in Themes & Dynamic Color:** Handcrafted Material 3 palettes, plus Android 12+ wallpaper-based Monet styling.
-- **Haptic Engine:** Premium localized vibration responses across the entire UI.
-
-### 📣 Developer Zero-Cost Infrastructure
-- **Diagnostic Crash Logger:** A built-in terminal that intercepts uncaught exceptions and logs them to the System Logs Screen for one-click sharing.
-- **Telegram Bot Integration:** Intercepts remote broadcast announcements and collects app feedback without relying on expensive Firebase server architecture.
+### 🛠️ Integrated Utility Suite
+1. **💳 Quick Collect:** Instant UPI & PayPal payment QR generator with custom dot patterns, gradient themes, and preset amount chips.
+2. **💬 Quick Chat:** Prefilled direct chat launcher for WhatsApp, Telegram, Signal, and SMS.
+3. **📸 Quick Social Access:** Minimalist vector icon launcher for Instagram, Facebook, X, LinkedIn, and GitHub profiles.
+4. **🌐 Quick Translator:** Instant language translation using Google Translate API with Text-To-Speech.
+5. **📋 Smart Clipboard:** Track copied text, pin sensitive passwords, and auto-clean clipboard contents.
+6. **📝 Quick Notes:** Crash-safe offline notes powered by Room Database with markdown support.
+7. **💱 Quick Converter:** Live currency exchange rate converter (INR ₹ to USD $ default) and unit converter.
+8. **🛠️ Quick Capture:** Screen recorder with foreground service notifications and canvas annotator.
+9. **🔍 Quick Search:** Multi-engine web search (Google, DuckDuckGo, YouTube, GitHub, Wikipedia).
+10. **📶 Quick Wi-Fi:** Encrypted QR generator for sharing Wi-Fi credentials effortlessly.
+11. **🧮 Quick Calculator:** Scientific expression calculator with modal history dialog.
+12. **⏱️ Quick Timer:** Stopwatch with lap records and countdown timer.
 
 ---
 
-## 💻 Developer Setup & Building
+## 🛠️ Building & Installation
 
-Looking to build QuickDash from source? Please refer to our dedicated **[SETUP.md](SETUP.md)** for instructions on cloning, configuring required Telegram Bot credentials, and compiling via Android Studio.
+### Prerequisites
+- Android Studio Ladybug / Jellyfish or latest Command-Line Tools
+- JDK 17 / OpenJDK 21
+- Android SDK 35 (Android 15)
+
+### Build Debug APK
+```bash
+./gradlew assembleDebug
+```
+
+### Build Production Release Bundle (AAB)
+```bash
+./gradlew bundleRelease
+```
+
+The output `.aab` will be generated at `app/build/outputs/bundle/release/app-release.aab`.
 
 ---
 
-## 📝 License
-This project operates under a **Custom Open Source Fork License**. All derivative works must comply with the terms defined in the [LICENSE](LICENSE) file (including maintaining 100% open-source visibility and implementing major functional changes).
+## 📜 Privacy & Security
+- **Data Safety**: No personal data sold or transmitted.
+- **Privacy Policy**: Read our official privacy policy at [privacy_policy.html](privacy_policy.html).
 
-<br>
-
-<div align="center">
-  <p>Made with ❤️ by <strong>BalajiTechLabs</strong></p>
-</div>
+---
+© 2026 BalajiTechLabs. All Rights Reserved.

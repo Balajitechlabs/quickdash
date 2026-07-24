@@ -38,6 +38,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.zIndex
@@ -103,6 +104,9 @@ import com.balajitechlabs.quickdash.features.notes.presentation.QuickNotesScreen
 import com.balajitechlabs.quickdash.features.search.presentation.QuickSearchScreen
 import com.balajitechlabs.quickdash.features.search.presentation.QuickWebScreen
 import com.balajitechlabs.quickdash.features.wifi.presentation.QuickWifiScreen
+import com.balajitechlabs.quickdash.features.converter.presentation.QuickConverterScreen
+import com.balajitechlabs.quickdash.features.translator.presentation.QuickTranslatorScreen
+import com.balajitechlabs.quickdash.features.capture.presentation.QuickCaptureScreen
 import com.balajitechlabs.quickdash.features.dashboard.presentation.QuickTool
 import com.balajitechlabs.quickdash.features.settings.presentation.SystemLogsScreen
 import com.balajitechlabs.quickdash.features.qr.presentation.SetupScreen
@@ -138,6 +142,9 @@ sealed interface QuickDashUiState {
     data object Clipboard : QuickDashUiState
     data object Calculator : QuickDashUiState
     data object Timer : QuickDashUiState
+    data object Converter : QuickDashUiState
+    data object Translator : QuickDashUiState
+    data object Capture : QuickDashUiState
     data object FirebaseSetup : QuickDashUiState
     data object BlogPosts : QuickDashUiState
 }
@@ -296,9 +303,16 @@ fun QuickDashApp(
                     QuickDashUiState.Setup(isManaging = false)
                 }
             }
-            "com.balajitechlabs.quickdash.ACTION_SCAN_QR" -> {
-                triggerScanQr()
-                QuickDashUiState.Dashboard
+            "com.balajitechlabs.quickdash.ACTION_SCAN_QR", "scan_qr" -> {
+                scope.launch {
+                    kotlinx.coroutines.delay(200)
+                    triggerScanQr()
+                }
+                if (activeIds.isNotEmpty()) {
+                    QuickDashUiState.EnterAmount(activeIds, activeDefaultId ?: activeIds.first())
+                } else {
+                    QuickDashUiState.Setup(isManaging = false)
+                }
             }
             "com.balajitechlabs.quickdash.ACTION_QUICK_CHAT" -> QuickDashUiState.WhatsApp
             "com.balajitechlabs.quickdash.ACTION_QUICK_INSTA" -> QuickDashUiState.Instagram
@@ -430,11 +444,13 @@ fun QuickDashApp(
                 QuickTool.INSTAGRAM -> QuickDashUiState.Instagram
                 QuickTool.NOTES -> QuickDashUiState.Notes
                 QuickTool.SEARCH -> QuickDashUiState.Search
-                QuickTool.WEB -> QuickDashUiState.Web
                 QuickTool.WIFI -> QuickDashUiState.Wifi
                 QuickTool.CLIPBOARD -> QuickDashUiState.Clipboard
                 QuickTool.CALCULATOR -> QuickDashUiState.Calculator
                 QuickTool.TIMER -> QuickDashUiState.Timer
+                QuickTool.CONVERTER -> QuickDashUiState.Converter
+                QuickTool.TRANSLATOR -> QuickDashUiState.Translator
+                QuickTool.CAPTURE -> QuickDashUiState.Capture
             }
             navigateTo(targetState)
         },
@@ -603,7 +619,7 @@ fun QuickDashContent(
 
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Box(
-                    modifier = if (isFloating) Modifier.fillMaxWidth().wrapContentHeight().animateContentSize() else Modifier.fillMaxSize(),
+                    modifier = if (isFloating) Modifier.fillMaxWidth().wrapContentHeight().animateContentSize(animationSpec = androidx.compose.animation.core.spring(stiffness = androidx.compose.animation.core.Spring.StiffnessHigh, dampingRatio = androidx.compose.animation.core.Spring.DampingRatioNoBouncy)) else Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                 Surface(
@@ -708,6 +724,9 @@ fun QuickDashContent(
                                 QuickDashUiState.Clipboard -> "Clipboard"
                                 QuickDashUiState.Calculator -> "Calculator"
                                 QuickDashUiState.Timer -> "Timer"
+                                QuickDashUiState.Converter -> "Quick Converter"
+                                QuickDashUiState.Translator -> "Quick Translator"
+                                QuickDashUiState.Capture -> "Quick Capture"
                                 is QuickDashUiState.Setup,
                                 is QuickDashUiState.EnterAmount,
                                 is QuickDashUiState.ShowQr -> "Quick Collect"
@@ -760,6 +779,22 @@ fun QuickDashContent(
                                     IconButton(
                                         onClick = {
                                             playClickVibration(context, hapticEnabled)
+                                            val intent = Intent("com.balajitechlabs.quickdash.CAPTURE_WINDOW").setPackage(context.packageName)
+                                            context.sendBroadcast(intent)
+                                        },
+                                        modifier = Modifier.size(36.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.CameraAlt,
+                                            contentDescription = "Capture Floating Window Screenshot",
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    IconButton(
+                                        onClick = {
+                                            playClickVibration(context, hapticEnabled)
                                             showFullScreenPrompt = true
                                         },
                                         modifier = Modifier.size(36.dp)
@@ -771,7 +806,7 @@ fun QuickDashContent(
                                             modifier = Modifier.size(18.dp)
                                         )
                                     }
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
                                 }
                                 FilledTonalIconButton(
                                     onClick = {
@@ -948,6 +983,9 @@ fun QuickDashContent(
                                 userStore = userStore,
                                 isFloating = isFloating
                             )
+                        QuickDashUiState.Converter -> QuickConverterScreen()
+                        QuickDashUiState.Translator -> QuickTranslatorScreen()
+                        QuickDashUiState.Capture -> QuickCaptureScreen()
                         else -> {
                             // Phase 4+ screens placeholders
                         }

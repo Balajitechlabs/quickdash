@@ -2,9 +2,10 @@ package com.balajitechlabs.quickdash.features.onboarding.presentation.steps
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.QrCode
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.ContentPaste
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.QrCode
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -26,7 +27,7 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Welcome to QuickDash",
+            text = "Welcome to QuickDash v5.0.0 🚀",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
@@ -36,18 +37,18 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(6.dp))
 
         Text(
-            text = "Your system-wide productivity hub for fast actions, QR payments, and deep customization.",
+            text = "Welcome to the major v5.0.0 update! Let's walk through your new floating tools, quick tiles, and setup steps.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(28.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         FeatureHighlightCard(
             icon = Icons.Default.QrCode,
-            title = "Quick Collect Payments",
-            description = "Generate UPI & PayPal QR codes instantly with saved targets.",
+            title = "Minimalist Quick Collect",
+            description = "Generate universal UPI & PayPal payment QR codes instantly in a compact floating card.",
             accentColor = MaterialTheme.colorScheme.primary,
             delayMillis = 0
         )
@@ -55,9 +56,9 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(10.dp))
 
         FeatureHighlightCard(
-            icon = Icons.Default.ContentPaste,
-            title = "Smart Clipboard",
-            description = "Auto-detect phone numbers, emails, and links. Pin sensitive data.",
+            icon = Icons.Default.QrCodeScanner,
+            title = "Inbuilt QR Scanner Tile",
+            description = "New Quick Settings Tile to scan payment QR codes directly from your notification bar.",
             accentColor = MaterialTheme.colorScheme.secondary,
             delayMillis = 80
         )
@@ -65,9 +66,9 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(10.dp))
 
         FeatureHighlightCard(
-            icon = Icons.Default.Search,
-            title = "Multi-Engine Search",
-            description = "Search across Google, DuckDuckGo, Bing & custom engines instantly.",
+            icon = Icons.Default.Send,
+            title = "Pure Icon Social & Chat Hub",
+            description = "Instant deep-links for WhatsApp, Telegram, Signal, Instagram, Facebook & X with minimalist vector icons.",
             accentColor = MaterialTheme.colorScheme.tertiary,
             delayMillis = 160
         )
@@ -75,29 +76,27 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(10.dp))
 
         FeatureHighlightCard(
-            icon = Icons.Default.Send,
-            title = "Direct Chat Shortcuts",
-            description = "Prefill messages and jump straight into WhatsApp, Telegram & more.",
+            icon = Icons.Default.AutoAwesome,
+            title = "On-Device Offline AI",
+            description = "Private text translation and summarization running 100% locally on your phone.",
             accentColor = MaterialTheme.colorScheme.error,
             delayMillis = 240
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
         Button(
             onClick = onNext,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp),
+                .height(54.dp),
             shape = MaterialTheme.shapes.large
         ) {
             Text(
-                text = "Get Started",
+                text = "Continue Setup Step-by-Step",
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
+                fontSize = 15.sp
             )
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
     }
 }

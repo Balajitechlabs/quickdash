@@ -19,6 +19,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import com.balajitechlabs.quickdash.R
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -60,11 +62,11 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
     
     val engines = remember(customEnginesJson) {
         val defaultEngines = listOf(
-            "🔍 Google" to "https://www.google.com/search?q=",
-            "🦆 DuckDuckGo" to "https://duckduckgo.com/?q=",
-            "▶️ YouTube" to "https://www.youtube.com/results?search_query=",
-            "🐙 GitHub" to "https://github.com/search?q=",
-            "📖 Wikipedia" to "https://en.wikipedia.org/wiki/Special:Search?search="
+            "Google" to "https://www.google.com/search?q=",
+            "DuckDuckGo" to "https://duckduckgo.com/?q=",
+            "YouTube" to "https://www.youtube.com/results?search_query=",
+            "GitHub" to "https://github.com/search?q=",
+            "Wikipedia" to "https://en.wikipedia.org/wiki/Special:Search?search="
         )
         val customList = try {
             val type = object : TypeToken<List<Map<String, String>>>() {}.type
@@ -145,9 +147,25 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 engines.forEach { engine ->
+                    val isSelected = selectedEngine == engine
+                    val iconRes = when (engine.first) {
+                        "Google" -> R.drawable.ic_search
+                        "DuckDuckGo" -> R.drawable.ic_globe
+                        "YouTube" -> R.drawable.ic_share
+                        "GitHub" -> R.drawable.ic_github
+                        else -> R.drawable.ic_note
+                    }
                     FilterChip(
-                        selected = selectedEngine == engine,
+                        selected = isSelected,
                         onClick = { selectedEngine = engine },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(iconRes),
+                                contentDescription = engine.first,
+                                modifier = Modifier.size(16.dp),
+                                tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
                         label = { Text(engine.first, style = MaterialTheme.typography.labelSmall) },
                         shape = RoundedCornerShape(12.dp)
                     )

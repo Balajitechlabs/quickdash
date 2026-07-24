@@ -134,7 +134,11 @@ class FloatingBubbleService : Service() {
             .setSilent(true)
             .build()
 
-        startForeground(101, notification)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(101, notification, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+        } else {
+            startForeground(101, notification)
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
             com.balajitechlabs.quickdash.core.utils.AppLogger.e("FloatingBubbleService", "Overlay permission not granted. Stopping service.")

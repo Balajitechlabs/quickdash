@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Backspace
 import androidx.compose.material.icons.filled.History
@@ -302,36 +303,66 @@ fun QuickCalculatorScreen(isFloating: Boolean = false) {
                     }
                 }
 
-                // History dropdown
-                AnimatedVisibility(
-                    visible = showHistory && history.isNotEmpty(),
-                    enter = expandVertically(spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)) + fadeIn(),
-                    exit = shrinkVertically(spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)) + fadeOut()
+    if (showHistory) {
+        AlertDialog(
+            onDismissRequest = { showHistory = false },
+            title = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Text("Calculation History", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    if (history.isNotEmpty()) {
+                        TextButton(onClick = { history = emptyList(); showHistory = false }) {
+                            Text("Clear", color = MaterialTheme.colorScheme.error)
+                        }
+                    }
+                }
+            },
+            text = {
+                if (history.isEmpty()) {
+                    Text("No past calculations yet.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                } else {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .heightIn(max = 120.dp)
-                            .padding(top = 6.dp),
-                        reverseLayout = false
+                            .heightIn(max = 240.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(history) { entry ->
-                            Text(
-                                text = entry,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                textAlign = TextAlign.End,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 1.dp)
-                            )
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                                onClick = {
+                                    val parts = entry.split("=")
+                                    if (parts.size == 2) {
+                                        display = parts[1].trim()
+                                        expression = parts[1].trim()
+                                    }
+                                    showHistory = false
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = entry,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.padding(12.dp)
+                                )
+                            }
                         }
                     }
-                    HorizontalDivider(
-                        modifier = Modifier.padding(top = 8.dp),
-                        color = MaterialTheme.colorScheme.outlineVariant
-                    )
                 }
+            },
+            confirmButton = {
+                TextButton(onClick = { showHistory = false }) {
+                    Text("Close")
+                }
+            }
+        )
+    }
 
                 Spacer(modifier = Modifier.height(4.dp))
 

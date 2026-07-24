@@ -16,6 +16,7 @@
 -keep class com.balajitechlabs.quickdash.core.services.QuickDashFirebaseMessagingService { *; }
 -keep class com.balajitechlabs.quickdash.core.services.QuickDashNotificationListenerService { *; }
 -keep class com.balajitechlabs.quickdash.core.quicktile.QuickTileService { *; }
+-keep class com.balajitechlabs.quickdash.core.quicktile.QrScannerTileService { *; }
 
 # ======================================================================
 # 2. GLANCE APP WIDGET (registered in AndroidManifest.xml as receiver)
@@ -400,3 +401,11 @@
 -keep class * extends android.webkit.WebChromeClient { *; }
 -keep class android.webkit.** { *; }
 -dontwarn android.webkit.**
+
+# ======================================================================
+# 31. ANNOTATION PROCESSORS & CODEGEN (AutoValue, Javapoet, javax.lang.model)
+# ======================================================================
+-dontwarn javax.lang.model.**
+-dontwarn autovalue.shaded.**
+-dontwarn com.google.auto.value.**
+-dontwarn com.squareup.javapoet.**

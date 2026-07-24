@@ -162,7 +162,7 @@ fun ShowQrScreen(
                     bitmap = qrBitmap.asImageBitmap(),
                     contentDescription = "Payment QR Code",
                     modifier = Modifier
-                        .size(220.dp)
+                        .size(if (isFloating) 180.dp else 220.dp)
                         .clip(RoundedCornerShape(12.dp)),
                     filterQuality = FilterQuality.None
                 )
@@ -328,7 +328,7 @@ fun ShowQrScreen(
             }
 
             nl.dionsegijn.konfetti.compose.KonfettiView(
-                modifier = Modifier.fillMaxSize().zIndex(100f),
+                modifier = Modifier.matchParentSize().zIndex(100f),
                 parties = partyList,
                 updateListener = object : nl.dionsegijn.konfetti.compose.OnParticleSystemUpdateListener {
                     override fun onParticleSystemEnded(system: nl.dionsegijn.konfetti.core.PartySystem, activeSystems: Int) {

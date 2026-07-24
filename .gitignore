@@ -38,3 +38,5 @@ Release*Notes.md
 # IDE and OS
 /.idea/
 .DS_Store
+.gradle_home/
+.local/
