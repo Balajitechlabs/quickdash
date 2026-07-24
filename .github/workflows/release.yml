@@ -58,15 +58,23 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           if [ -f "keystore.jks" ]; then
-            echo "Building signed APKs and Bundle..."
-            ./gradlew clean assembleRelease bundleRelease \
+            echo "Building signed APK splits..."
+            ./gradlew clean assembleRelease \
+              -Pandroid.injected.signing.store.file=$(pwd)/keystore.jks \
+              -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
+              -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
+              -Pandroid.injected.signing.key.password=$KEY_PASSWORD
+            
+            echo "Building signed Play Bundle (.aab)..."
+            ./gradlew bundleRelease \
               -Pandroid.injected.signing.store.file=$(pwd)/keystore.jks \
               -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
               -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
               -Pandroid.injected.signing.key.password=$KEY_PASSWORD
           else
-            echo "No keystore provided, building unsigned APKs and Bundle..."
-            ./gradlew clean assembleRelease bundleRelease
+            echo "No keystore provided, building unsigned APK splits and Bundle..."
+            ./gradlew clean assembleRelease
+            ./gradlew bundleRelease
           fi
 
       - name: Get App Version
@@ -79,28 +87,16 @@ jobs:
         run: |
           mkdir -p release_artifacts
           
-          # Copy APKs
-          if [ -f "app/build/outputs/apk/release/app-universal-release.apk" ]; then
-            cp app/build/outputs/apk/release/app-universal-release.apk release_artifacts/app-universal-release.apk
-          fi
-          if [ -f "app/build/outputs/apk/release/app-arm64-v8a-release.apk" ]; then
-            cp app/build/outputs/apk/release/app-arm64-v8a-release.apk release_artifacts/app-arm64-v8a-release.apk
-          fi
-          if [ -f "app/build/outputs/apk/release/app-armeabi-v7a-release.apk" ]; then
-            cp app/build/outputs/apk/release/app-armeabi-v7a-release.apk release_artifacts/app-armeabi-v7a-release.apk
-          fi
-
-          # Fallback for single APK if splits are disabled
-          if [ -f "app/build/outputs/apk/release/app-release.apk" ]; then
-            cp app/build/outputs/apk/release/app-release.apk release_artifacts/quickdash-v${{ env.VERSION_NAME }}-universal.apk
-          fi
+          # Copy all generated split APKs
+          cp app/build/outputs/apk/release/*.apk release_artifacts/ 2>/dev/null || true
 
           # Copy Play Bundle (.aab)
           if [ -f "app/build/outputs/bundle/release/app-release.aab" ]; then
             cp app/build/outputs/bundle/release/app-release.aab release_artifacts/app-release.aab
           fi
 
-          ls -l release_artifacts/
+          echo "Final release artifacts collected:"
+          ls -lh release_artifacts/
 
       - name: Create GitHub Release
         id: create_release
