@@ -3,9 +3,6 @@ name: Deploy Showcase Website to Custom Subdomain
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'website/**'
-      - '.github/workflows/deploy-website.yml'
   workflow_dispatch:
 
 permissions:
