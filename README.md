@@ -12,7 +12,7 @@
 
 [![Download APK](https://img.shields.io/badge/Download%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Balajitechlabs/quickdash/releases/latest)
 
-**Latest Tag: `v5.0.0-12`**
+**Latest Tag: `v5.0.0-14`**
 
 <br>
 
