@@ -409,6 +409,16 @@ const closeChange = document.getElementById('close-changelog');
 if (closePriv)  closePriv.addEventListener('click', () => closeModal(modalPrivacy));
 if (closeChange)closeChange.addEventListener('click', () => closeModal(modalChangelog));
 
+// Mobile changelog trigger
+const linkChangelogMob = document.getElementById('link-changelog-mob');
+if (linkChangelogMob) {
+  linkChangelogMob.addEventListener('click', e => {
+    e.preventDefault();
+    openModal(modalChangelog);
+    if (mobDrawer) mobDrawer.classList.remove('open');
+  });
+}
+
 // Backdrop click close
 [modalPrivacy, modalChangelog].forEach(m => {
   if (m) {
@@ -417,3 +427,22 @@ if (closeChange)closeChange.addEventListener('click', () => closeModal(modalChan
     });
   }
 });
+
+/* ─── Mobile Drawer Toggle ─── */
+const btnMobMenu  = document.getElementById('btn-mobile-menu');
+const mobDrawer   = document.getElementById('mobile-drawer');
+const iconMobMenu = document.getElementById('icon-mobile-menu');
+
+if (btnMobMenu && mobDrawer) {
+  btnMobMenu.addEventListener('click', () => {
+    const isOpen = mobDrawer.classList.toggle('open');
+    if (iconMobMenu) iconMobMenu.textContent = isOpen ? 'close' : 'menu';
+  });
+
+  mobDrawer.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      mobDrawer.classList.remove('open');
+      if (iconMobMenu) iconMobMenu.textContent = 'menu';
+    });
+  });
+}

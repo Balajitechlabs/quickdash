@@ -66,15 +66,40 @@
       <a href="#themes" class="nav-link">Themes</a>
       <a href="#specs" class="nav-link">Specs</a>
       <a href="#" id="link-changelog" class="nav-link">Changelog</a>
-      <a href="#" id="link-privacy" class="nav-link">Privacy</a>
+      <a href="privacy.html" id="link-privacy" class="nav-link">Privacy</a>
     </nav>
 
     <div class="nav-actions">
-      <a href="https://github.com/Balajitechlabs/quickdash" target="_blank" class="btn btn-ghost">
+      <a href="https://github.com/Balajitechlabs/quickdash" target="_blank" class="btn btn-ghost hide-mobile">
         <span class="ms">code</span> GitHub
       </a>
-      <a href="#downloads" class="btn btn-primary">
+      <a href="#downloads" class="btn btn-primary hide-mobile">
         <span class="ms">download</span> Download
+      </a>
+      <button id="btn-mobile-menu" class="mobile-toggle" aria-label="Toggle Navigation Menu">
+        <span class="ms" id="icon-mobile-menu">menu</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Drawer Menu -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <nav class="mobile-drawer-nav">
+      <a href="#demo" class="m-link">⚡ Live Demo</a>
+      <a href="#features" class="m-link">✨ Features</a>
+      <a href="#downloads" class="m-link">📥 Downloads</a>
+      <a href="#screenshots" class="m-link">📸 Screenshots</a>
+      <a href="#themes" class="m-link">🎨 Themes</a>
+      <a href="#specs" class="m-link">📊 Tech Specs</a>
+      <a href="#" id="link-changelog-mob" class="m-link">📜 Changelog</a>
+      <a href="privacy.html" class="m-link">🔒 Privacy Policy</a>
+    </nav>
+    <div class="mobile-drawer-actions">
+      <a href="#downloads" class="btn btn-primary btn-full">
+        <span class="ms">download</span> Download APK
+      </a>
+      <a href="https://github.com/Balajitechlabs/quickdash" target="_blank" class="btn btn-ghost btn-full">
+        <span class="ms">code</span> View on GitHub
       </a>
     </div>
   </div>
@@ -104,8 +129,11 @@
       </p>
 
       <div class="hero-btns">
+        <a href="https://play.google.com/apps/testing/com.balajitechlabs.quickdash" target="_blank" class="btn btn-primary btn-lg">
+          <span class="ms">android</span> Join Google Play Beta
+        </a>
         <a href="#downloads" class="btn btn-green btn-lg">
-          <span class="ms">download</span> Get APK Free
+          <span class="ms">download</span> Direct APK Free
         </a>
         <a href="#demo" class="btn btn-ghost btn-lg">
           <span class="ms">touch_app</span> Live Demo
@@ -509,39 +537,51 @@
         </a>
       </div>
 
-      <!-- AAB -->
-      <div class="apk-card reveal reveal-delay-3">
+      <!-- Google Play Closed Beta Card -->
+      <div class="apk-card rec reveal">
+        <span class="rec-badge">Play Store Beta</span>
         <div class="apk-header">
-          <span class="ms" style="color:var(--purple)">shop</span>
+          <span class="ms" style="color:var(--green)">android</span>
           <div>
-            <h3>Play Bundle (.aab)</h3>
-            <div class="apk-file">app-release.aab</div>
+            <h3>Google Play Beta</h3>
+            <div class="apk-file">com.balajitechlabs.quickdash</div>
           </div>
         </div>
-        <p class="apk-desc">Official Google Play Console deployment format. Dynamic Delivery slices and delivers only the libs your specific device needs — smallest footprint.</p>
+        <p class="apk-desc">Official Google Play Store closed beta track. Join our testing group and get auto-updates directly from Google Play!</p>
         <div class="compat-row">
-          <span class="compat-chip">Play Console</span>
-          <span class="compat-chip">Dynamic Delivery</span>
+          <span class="compat-chip">Auto Updates</span>
+          <span class="compat-chip">Google Verified</span>
           <span class="compat-chip">Official</span>
         </div>
-        <a href="https://github.com/Balajitechlabs/quickdash/releases/latest" target="_blank" class="btn btn-ghost apk-btn">
-          <span class="ms">download</span> Download .aab
+        <a href="https://play.google.com/apps/testing/com.balajitechlabs.quickdash" target="_blank" class="btn btn-primary apk-btn">
+          <span class="ms">touch_app</span> Join Play Store Beta
         </a>
       </div>
     </div>
 
-    <!-- Terminal ADB Box -->
-    <div style="margin-top:32px;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;" class="reveal">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span class="ms" style="color:var(--green);font-size:1.4rem;">terminal</span>
+    <!-- Terminal ADB & QR Code Bar -->
+    <div style="margin-top:32px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;" class="reveal">
+      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="ms" style="color:var(--green);font-size:1.4rem;">terminal</span>
+          <div>
+            <div style="font-size:0.75rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;">Quick Install via ADB / Shizuku</div>
+            <code style="font-family:var(--mono);font-size:0.85rem;color:var(--green);margin-top:2px;display:block;">adb install -r app-universal-release.apk</code>
+          </div>
+        </div>
+        <button id="btn-copy-adb" class="btn btn-ghost" style="padding:6px 14px;font-size:0.78rem;">
+          <span class="ms" style="font-size:0.9rem;">content_copy</span> Copy Command
+        </button>
+      </div>
+
+      <!-- Desktop QR Scan Box -->
+      <div class="hide-mobile" style="background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px 18px;display:flex;align-items:center;gap:12px;">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://quickdash.balajitechlab.com" alt="Scan QR Code" style="width:58px;height:58px;border-radius:8px;background:#fff;padding:4px;">
         <div>
-          <div style="font-size:0.75rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;">Quick Install via ADB / Shizuku</div>
-          <code style="font-family:var(--mono);font-size:0.85rem;color:var(--green);margin-top:2px;display:block;">adb install -r app-universal-release.apk</code>
+          <div style="font-size:0.75rem;font-weight:700;color:var(--text-1);">Scan to Open on Phone</div>
+          <div style="font-size:0.68rem;color:var(--text-3);margin-top:2px;">Point camera to open site on Android</div>
         </div>
       </div>
-      <button id="btn-copy-adb" class="btn btn-ghost" style="padding:6px 14px;font-size:0.78rem;">
-        <span class="ms" style="font-size:0.9rem;">content_copy</span> Copy Command
-      </button>
     </div>
   </div>
 </section>
@@ -716,10 +756,11 @@
         <a href="#specs">Specs &amp; License</a>
       </div>
       <div class="footer-col">
-        <h4>Project</h4>
+        <h4>Community &amp; Code</h4>
         <a href="https://github.com/Balajitechlabs/quickdash" target="_blank">GitHub Repository</a>
-        <a href="https://github.com/Balajitechlabs/quickdash/releases" target="_blank">All Releases</a>
-        <a href="https://github.com/Balajitechlabs/quickdash/issues" target="_blank">Report a Bug</a>
+        <a href="https://reddit.com/r/balajitechlabs" target="_blank">Reddit r/balajitechlabs</a>
+        <a href="https://play.google.com/apps/testing/com.balajitechlabs.quickdash" target="_blank">Join Play Store Beta</a>
+        <a href="https://github.com/Balajitechlabs/quickdash/issues" target="_blank">Report a Bug / Idea</a>
         <a href="https://keepandroidopen.org" target="_blank">KeepAndroidOpen.org</a>
       </div>
     </div>
