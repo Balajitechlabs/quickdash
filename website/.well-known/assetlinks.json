@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.balajitechlabs.quickdash",
+      "sha256_cert_fingerprints": [
+        "19:2A:44:FB:06:5F:B6:BA:CD:FE:84:89:C8:BB:51:D5:71:BE:62:3C:A9:A7:28:B7:8D:17:F1:C0:D3:53:C9:46"
+      ]
+    }
+  }
+]

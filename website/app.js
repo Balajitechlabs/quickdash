@@ -446,3 +446,31 @@ if (btnMobMenu && mobDrawer) {
     });
   });
 }
+
+/* ─── Telegram Suggestion Form Handler ─── */
+const contactForm = document.getElementById('telegram-contact-form');
+const feedbackStatus = document.getElementById('feedback-status');
+const btnSubmitFeedback = document.getElementById('btn-submit-feedback');
+
+if (contactForm) {
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('feedback-name').value.trim() || 'Anonymous Visitor';
+    const message = document.getElementById('feedback-message').value.trim();
+
+    if (!message) return;
+
+    const text = `💡 *QuickDash Website Suggestion*\n\n👤 *From:* ${name}\n💬 *Message:*\n${message}\n\n🌐 *Source:* quickdash.balajitechlab.com`;
+
+    feedbackStatus.style.display = 'block';
+    feedbackStatus.style.background = 'rgba(52,211,153,0.15)';
+    feedbackStatus.style.color = '#34D399';
+    feedbackStatus.style.border = '1px solid rgba(52,211,153,0.3)';
+    feedbackStatus.innerHTML = '✅ <strong>Opening Telegram...</strong> Send your suggestion directly to our Telegram group/bot!';
+
+    setTimeout(() => {
+      window.open(`https://t.me/share/url?url=${encodeURIComponent(text)}`, '_blank');
+      contactForm.reset();
+    }, 800);
+  });
+}

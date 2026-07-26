@@ -228,7 +228,7 @@ button { font-family:var(--font); }
   box-shadow:0 2px 12px rgba(61,220,132,0.3);
   overflow:hidden; flex-shrink:0;
 }
-.brand-icon img { width:24px; height:24px; object-fit:contain; }
+.brand-icon img { width:24px; height:24px; object-fit:contain; filter: brightness(0) invert(1); }
 .brand-name {
   font-size:1.05rem; font-weight:800;
   background:linear-gradient(135deg,#fff 40%,rgba(255,255,255,0.65));

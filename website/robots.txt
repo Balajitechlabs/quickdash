@@ -1,0 +1,6 @@
+# Robots.txt for QuickDash Official Showcase Site
+User-agent: *
+Allow: /
+
+# Sitemap Index URL
+Sitemap: https://quickdash.balajitechlab.com/sitemap.xml
