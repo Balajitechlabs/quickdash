@@ -1,5 +1,5 @@
 # ======================================================================
-# QuickDash R8 / ProGuard rules — Stable Release v4.4.0
+# QuickDash R8 / ProGuard rules — Stable Release v5.0.1
 # ======================================================================
 # These rules are carefully audited to prevent runtime crashes in the
 # minified release APK.  Every rule has a comment explaining WHY it is
@@ -409,3 +409,10 @@
 -dontwarn autovalue.shaded.**
 -dontwarn com.google.auto.value.**
 -dontwarn com.squareup.javapoet.**
+
+# ======================================================================
+# 32. GOOGLE PLAY CORE APIs (In-App Updates & In-App Reviews)
+# ======================================================================
+-keep class com.google.android.play.core.** { *; }
+-keep interface com.google.android.play.core.** { *; }
+-dontwarn com.google.android.play.core.**

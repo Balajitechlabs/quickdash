@@ -11,18 +11,36 @@
 <br>
 
 [![Download APK](https://img.shields.io/badge/Download%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Balajitechlabs/quickdash/releases/latest)
+[![Obtainium](https://img.shields.io/badge/Add%20to-Obtainium-000000?style=for-the-badge&logo=github&logoColor=white)](obtainium://app/https://github.com/Balajitechlabs/quickdash)
 
 **Latest Tag: `v5.0.0-14`**
 
 <br>
 
-![Version](https://img.shields.io/badge/Version-5.0.0-blue?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-5.0.1-blue?style=for-the-badge)
+![Stars](https://img.shields.io/github/stars/Balajitechlabs/quickdash?style=for-the-badge&logo=github&color=gold)
+![F-Droid](https://img.shields.io/badge/F--Droid-Ready-3DDC84?style=for-the-badge&logo=f-droid&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/Kotlin-100%25-blue.svg?logo=kotlin&style=for-the-badge)
 ![Android](https://img.shields.io/badge/Android-7.0%2B-green.svg?logo=android&style=for-the-badge)
 ![Compose](https://img.shields.io/badge/Jetpack_Compose-Material_3-purple.svg?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-Open_Source-red.svg?style=for-the-badge)
 
 </div>
+
+---
+
+## 🚀 What's New in v5.0.1
+
+QuickDash **v5.0.1** is an official maintenance release focusing on **Android 16 readiness**, **16 KB memory page size alignment**, **Google Play Core API integrations**, and **F-Droid distribution support**!
+
+- 🎯 **Android 16 Readiness (Target SDK 36)**: Compiled against `targetSdk = 36` (Android 16 API Level 36) with full 64-bit/32-bit ABI compatibility.
+- ⚡ **16 KB Memory Page Size Alignment**: Enabled uncompressed 16 KB page alignment for all native C/C++ libraries (`useLegacyPackaging = false`), eliminating crash warnings on modern Android 16 devices.
+- 🔄 **Google Play In-App Updates API**: Integrated `com.google.android.play:app-update-ktx:2.1.0`. Users get 1-tap in-app prompts when a new release is available on Play Store.
+- ⭐ **Google Play In-App Reviews API**: Integrated `com.google.android.play:review-ktx:2.0.2`. Requests a native 5-star rating sheet directly inside the app.
+- 🧩 **Upgraded Jetpack Glance Engine**: Upgraded `androidx.glance:glance-appwidget` to `1.1.1` to resolve Play Console dependency warnings.
+- 📱 **Android 15/16 Predictive Back Animations**: Enabled `android:enableOnBackInvokedCallback="true"` for smooth back-swipe gesture animations.
+- 📱 **Large Screen & Foldable Support**: Enabled `android:resizeableActivity="true"` in `AndroidManifest.xml` for ChromeOS, tablets, and foldables.
+- 🤖 **F-Droid Distribution Recipe**: Added official F-Droid build recipe metadata at `metadata/com.balajitechlabs.quickdash.yml`.
 
 ---
 
@@ -63,12 +81,24 @@ QuickDash **v5.0.0** is a major release introducing powerful system-wide Quick S
 
 ---
 
+## 🏗️ Technical Architecture & Specifications
+
+- **Language & Runtime:** 100% Kotlin 2.2 with Jetpack Compose & Material Design 3 Expressive
+- **Target SDK:** API 36 (Android 16) · **Compile SDK:** API 37 · **Min SDK:** API 24 (Android 7.0+)
+- **Memory & ABI Compatibility:** 16 KB page-aligned native library packaging (`useLegacyPackaging = false`) for `arm64-v8a`, `armeabi-v7a`, `x86`, `x86_64`
+- **Play Store Core APIs:** Integrated Google Play In-App Updates (`app-update-ktx`) & In-App Reviews (`review-ktx`)
+- **System Overlays & Tiles:** Foreground Service with Special Use / Media Projection & Quick Settings `TileService`
+- **Local Persistence:** Room Database 2.6, EncryptedSharedPreferences, and Jetpack DataStore
+- **Open Source & Privacy:** 100% On-Device, Telemetry-Free, F-Droid metadata ready
+
+---
+
 ## 🛠️ Building & Installation
 
 ### Prerequisites
 - Android Studio Ladybug / Jellyfish or latest Command-Line Tools
 - JDK 17 / OpenJDK 21
-- Android SDK 35 (Android 15)
+- Android SDK 36 (Android 16)
 
 ### Build Debug APK
 ```bash
@@ -85,8 +115,19 @@ The output `.aab` will be generated at `app/build/outputs/bundle/release/app-rel
 ---
 
 ## 📜 Privacy & Security
-- **Data Safety**: No personal data sold or transmitted.
-- **Privacy Policy**: Read our official privacy policy at [privacy_policy.html](privacy_policy.html).
+- **Data Safety**: No personal data sold or transmitted. 100% on-device processing.
+- **Privacy Policy**: Read our official privacy policy at [quickdash.balajitechlab.com/privacy.html](https://quickdash.balajitechlab.com/privacy.html).
 
 ---
+
+## ⚖️ License & Open Source Attribution
+
+QuickDash is an open-source project published under a custom copyleft license. 
+
+- **Original Base Project:** Fork of [PocketOps](https://github.com/IIXII-L192/PocketOps-app.git) by Aakarsh / IIXII™.
+- **Modifications & Enhancements:** Includes >30% major functional additions (Quick Collect payment QR generator, ML Kit QR Quick Settings tile, pure vector icon launchers, container screenshot button, white canvas annotator with PDF export, Android 16 target SDK 36, 16 KB page alignment, Google Play Core APIs, and F-Droid build recipe).
+- **Compliance:** All original copyright notices and license terms are preserved in [LICENSE](LICENSE).
+
+---
+
 © 2026 BalajiTechLabs. All Rights Reserved.

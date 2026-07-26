@@ -2,11 +2,11 @@ package com.balajitechlabs.quickdash.features.onboarding.presentation.steps
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,7 +27,7 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Welcome to QuickDash v5.0.0 🚀",
+            text = "Welcome to QuickDash v5.0.1 🚀",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
@@ -37,7 +37,7 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(6.dp))
 
         Text(
-            text = "Welcome to the major v5.0.0 update! Let's walk through your new floating tools, quick tiles, and setup steps.",
+            text = "Welcome to the v5.0.1 update! Featuring Android 16 readiness, 16 KB page size alignment, Play Core APIs, and F-Droid support.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth()
@@ -66,7 +66,7 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(10.dp))
 
         FeatureHighlightCard(
-            icon = Icons.Default.Send,
+            icon = Icons.AutoMirrored.Filled.Send,
             title = "Pure Icon Social & Chat Hub",
             description = "Instant deep-links for WhatsApp, Telegram, Signal, Instagram, Facebook & X with minimalist vector icons.",
             accentColor = MaterialTheme.colorScheme.tertiary,

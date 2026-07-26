@@ -4,6 +4,34 @@ All major updates, feature additions, bug fixes, and system improvements for **Q
 
 ---
 
+## [5.0.1] - 2026-07-26 (Android 16 & Google Play Release) 🛡️
+
+### 🐛 FIXED (What We Fixed)
+- **16 KB Page Alignment Crash Warning**: Fixed Google Play Console 16 KB memory page size alignment warning by adding `packaging { jniLibs { useLegacyPackaging = false } }` for native JNI `.so` libraries.
+- **Glance & Protobuf SDK Warnings**: Fixed Play Console critical notes on `glance-appwidget-proto` and `glance-appwidget-external-protobuf` by upgrading `androidx.glance:glance-appwidget` from `1.1.0` to `1.1.1`.
+- **AAPT Manifest Attribute Spelling**: Fixed AAPT resource compilation failure by updating XML attribute spelling to `android:resizeableActivity="true"`.
+- **Mobile Website Horizontal Overflow**: Fixed right-side empty space on mobile screens by adding `max-width: 100vw`, `overflow-x: hidden !important` on `html`/`body`, and constraining `.device-glow` and `.mesh-orb-1` bounds.
+- **Mobile Countdown Timer Visibility**: Fixed hidden deadline timer on mobile devices by removing `display: none` on `.s-timer` and applying a compact responsive unit layout.
+
+### 🔄 UPDATED (What We Updated)
+- **Target SDK 36 (Android 16)**: Updated target SDK from `35` to **`36`** (Android 16 API Level 36) and compile SDK to **`37`**.
+- **Version Number Bump**: Updated version name to **`5.0.1`** and version code to **`501`** across `build.gradle.kts`, `README.md`, `index.html`, and `privacy.html`.
+- **Technical Architecture Documentation**: Updated prerequisites and architecture specifications in `README.md` to reflect Android 16 target, 16 KB page size alignment, and Play Core APIs.
+
+### ⚡ ADDED (What We Added)
+- **Google Play In-App Updates API**: Added `com.google.android.play:app-update-ktx:2.1.0` and integrated `checkForPlayAppUpdate()` in `MainActivity.kt` for 1-tap in-app update prompts.
+- **Google Play In-App Reviews API**: Added `com.google.android.play:review-ktx:2.0.2` and integrated `requestPlayInAppReview()` in `MainActivity.kt` for native 5-star rating sheets.
+- **Android 15/16 Predictive Back Animations**: Added `android:enableOnBackInvokedCallback="true"` in `AndroidManifest.xml` for back-swipe gesture navigation.
+- **Large Screen & Foldable Support**: Added `android:resizeableActivity="true"` for ChromeOS, tablets, and foldables.
+- **Automated Firebase Crashlytics Logging**: Integrated automatic non-fatal exception recording in `AppLogger.kt` (`FirebaseCrashlytics.getInstance().recordException()`).
+- **Official F-Droid Build Recipe**: Created `metadata/com.balajitechlabs.quickdash.yml` for automated F-Droid store catalog inclusion.
+- **Multilingual Store Listings**: Generated translated Google Play Store listings in 5 languages (Hindi, Spanish, Portuguese, French, German) saved to `~/Desktop/PlayStore_Translations.md`.
+- **Website Mobile Navigation Drawer**: Added glassmorphic slide-out drawer menu and hamburger toggle button to `website/index.html`.
+- **Website Desktop QR Scan Widget**: Added a QR code scanner widget to `website/index.html` allowing desktop visitors to open the site directly on mobile.
+- **Website Play Store Beta Integration**: Added a "Join Google Play Beta" hero button and dedicated card to `website/index.html`.
+
+---
+
 ## [5.0.0] - 2026-07-24 (Major Version Release) 🚀
 
 ### 🚀 Major Highlights

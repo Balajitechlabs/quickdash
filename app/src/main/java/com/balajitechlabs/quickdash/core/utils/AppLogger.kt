@@ -24,6 +24,14 @@ object AppLogger {
         Log.e(tag, message, throwable)
         val errorMsg = if (throwable != null) "$message\n${throwable.stackTraceToString()}" else message
         appendLog("ERROR", tag, errorMsg)
+        
+        try {
+            if (throwable != null) {
+                com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().recordException(throwable)
+            } else {
+                com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().log("[$tag] $message")
+            }
+        } catch (_: Exception) { /* Crashlytics disabled or not initialized */ }
     }
     
     fun i(tag: String, message: String) {

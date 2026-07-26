@@ -29,9 +29,9 @@ android {
     defaultConfig {
         applicationId = "com.balajitechlabs.quickdash"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 500
-        versionName = "5.0.0"
+        targetSdk = 36
+        versionCode = 501
+        versionName = "5.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -93,6 +93,9 @@ android {
     }
 
     packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "META-INF/DEPENDENCIES"
@@ -171,8 +174,12 @@ dependencies {
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
     // Jetpack Glance App Widget & Google Fonts
-    implementation("androidx.glance:glance-appwidget:1.1.0")
+    implementation("androidx.glance:glance-appwidget:1.1.1")
     implementation("androidx.compose.ui:ui-text-google-fonts:1.6.0")
+
+    // Google Play Core APIs: In-App Updates & In-App Reviews
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
+    implementation("com.google.android.play:review-ktx:2.0.2")
 
     // MediaPipe LLM Inference (on-device AI with Gemma / Phi models)
     implementation("com.google.mediapipe:tasks-genai:0.10.22")

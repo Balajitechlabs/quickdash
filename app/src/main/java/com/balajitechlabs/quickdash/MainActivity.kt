@@ -126,6 +126,10 @@ class MainActivity : FragmentActivity() {
 
         androidx.core.content.pm.ShortcutManagerCompat.addDynamicShortcuts(this, listOf(searchShortcut, notesShortcut, wifiShortcut, calcShortcut, timerShortcut))
         
+        // Google Play Store APIs: In-App Updates & In-App Reviews
+        checkForPlayAppUpdate()
+        requestPlayInAppReview()
+        
         // Enqueue the Telegram Poller to check for broadcasts every 15 minutes
         val pollerRequest = PeriodicWorkRequestBuilder<TelegramPollerWorker>(15, TimeUnit.MINUTES).build()
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
@@ -468,5 +472,41 @@ class MainActivity : FragmentActivity() {
         layoutParams.screenBrightness =
             android.view.WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
         window.attributes = layoutParams
+    }
+
+    private fun checkForPlayAppUpdate() {
+        try {
+            val appUpdateManager = com.google.android.play.core.appupdate.AppUpdateManagerFactory.create(this)
+            val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+            appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+                if (appUpdateInfo.updateAvailability() == com.google.android.play.core.install.model.UpdateAvailability.UPDATE_AVAILABLE
+                    && appUpdateInfo.isUpdateTypeAllowed(com.google.android.play.core.install.model.AppUpdateType.FLEXIBLE)
+                ) {
+                    appUpdateManager.startUpdateFlowForResult(
+                        appUpdateInfo,
+                        this,
+                        com.google.android.play.core.appupdate.AppUpdateOptions.defaultOptions(com.google.android.play.core.install.model.AppUpdateType.FLEXIBLE),
+                        9901
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            AppLogger.e("MainActivity", "In-App Update check skipped", e)
+        }
+    }
+
+    private fun requestPlayInAppReview() {
+        try {
+            val manager = com.google.android.play.core.review.ReviewManagerFactory.create(this)
+            val request = manager.requestReviewFlow()
+            request.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val reviewInfo = task.result
+                    manager.launchReviewFlow(this, reviewInfo)
+                }
+            }
+        } catch (e: Exception) {
+            AppLogger.e("MainActivity", "In-App Review request skipped", e)
+        }
     }
 }
