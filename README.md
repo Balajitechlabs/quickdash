@@ -13,7 +13,7 @@
 [![Download APK](https://img.shields.io/badge/Download%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Balajitechlabs/quickdash/releases/latest)
 [![Obtainium](https://img.shields.io/badge/Add%20to-Obtainium-000000?style=for-the-badge&logo=github&logoColor=white)](obtainium://app/https://github.com/Balajitechlabs/quickdash)
 
-**Latest Tag: `v5.0.0-14`**
+**Latest Tag: `v5.0.1-17`**
 
 <br>
 
