@@ -17,13 +17,20 @@ export default function Blog() {
 
   useEffect(() => {
     let cancelled = false
-    fetch('/api/reading/posts')
-      .then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`)
-        return r.json()
-      })
-      .then(data => { if (!cancelled) { setPosts(data); setLoading(false) } })
-      .catch(e => { if (!cancelled) { setError(e.message); setLoading(false) } })
+    const loadPosts = async () => {
+      try {
+        let res = await fetch('/api/reading/posts')
+        if (!res.ok) {
+          res = await fetch('/api/reading/posts.json')
+        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const data = await res.json()
+        if (!cancelled) { setPosts(data); setLoading(false) }
+      } catch (e) {
+        if (!cancelled) { setError(e.message); setLoading(false) }
+      }
+    }
+    loadPosts()
     return () => { cancelled = true }
   }, [])
 

@@ -28,7 +28,7 @@ export default function Footer() {
           <a href="https://github.com/Balajitechlabs/quickdash/discussions" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--body-font)', fontSize: 13, color: 'var(--md-on-surface-variant)' }}>
             Discussions
           </a>
-          <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.mischief" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--body-font)', fontSize: 13, color: 'var(--md-on-surface-variant)' }}>
+          <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--body-font)', fontSize: 13, color: 'var(--md-on-surface-variant)' }}>
             Play Store
           </a>
         </nav>

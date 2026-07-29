@@ -44,6 +44,11 @@ Release*Notes.md
 /.idea/
 .DS_Store
 .gradle_home/
-.local/
 keystore.b64
 gs.b64
+
+# Website
+website/node_modules/
+website/dist/
+website/server/node_modules/
+

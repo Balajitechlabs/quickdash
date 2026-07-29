@@ -13,7 +13,7 @@
   <a href="https://github.com/Balajitechlabs/quickdash/releases/latest
     <img src="https://img.shields.io/badge/Download_APK-2ea44f?style=for-the-badge&logo=android&logoColor=white" alt="Download APK">
   </a>
-  <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.mischief">
+  <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash">
     <img src="https://img.shields.io/badge/Play_Store-414141?style=for-the-badge&logo=googleplay&logoColor=white" alt="Play Store">
   </a>
   <a href="obtainium://app/https://github.com/Balajitechlabs/quickdash">
@@ -62,7 +62,7 @@ QuickDash is an **Android floating overlay utility hub** — a single persistent
 Grab the latest APK from [GitHub Releases](https://github.com/Balajitechlabs/quickdash/releases/latest).
 
 ### Option 2: Play Store (Beta)
-Join the beta on [Google Play](https://play.google.com/store/apps/details?id=com.balajitechlabs.mischief).
+Join the beta on [Google Play](https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash).
 
 ### Option 3: Obtainium / F-Droid
 - **Obtainium**: Add `https://github.com/Balajitechlabs/quickdash` to receive auto-updates.
@@ -153,5 +153,5 @@ QuickDash is published under the **PocketOps Custom Open Source Fork License**.
   <a href="https://quickdash.balajitechlab.com">Website</a> ·
   <a href="https://github.com/Balajitechlabs/quickdash/issues">Issues</a> ·
   <a href="https://github.com/Balajitechlabs/quickdash/discussions">Discussions</a> ·
-  <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.mischief">Play Store</a>
+  <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash">Play Store</a>
 </p>

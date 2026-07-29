@@ -1,0 +1,20 @@
+[
+  {
+    "id": "v5-1-1-release",
+    "title": "QuickDash v5.1.1 Released with Android 16 Support",
+    "date": "2026-07-29",
+    "excerpt": "Full support for Android 16 (API level 36), 16 KB memory page alignment, 1-tap Google Play In-App Updates, and enhanced floating bubble tools."
+  },
+  {
+    "id": "v5-0-0-major-highlights",
+    "title": "Introducing QuickDash v5.0.0 — Major Architecture & Quick Tile Upgrade",
+    "date": "2026-07-24",
+    "excerpt": "Inbuilt Quick Settings QR Scanner tile, custom stylized QR code generation, floating window screenshot action, and pure icon launcher grid."
+  },
+  {
+    "id": "privacy-first-architecture",
+    "title": "Why QuickDash operates 100% On-Device with Zero Telemetry",
+    "date": "2026-07-15",
+    "excerpt": "A deep dive into how QuickDash manages clipboard security, floating window overlays, and UPI QR code generation without any cloud dependency or user tracking."
+  }
+]

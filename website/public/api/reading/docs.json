@@ -1,0 +1,26 @@
+[
+  {
+    "id": "overlay-permission",
+    "section": "Core Setup",
+    "title": "Display Over Other Apps (SYSTEM_ALERT_WINDOW)",
+    "content": "QuickDash requires the SYSTEM_ALERT_WINDOW permission to display floating tools over other Android applications.\n\nHow to enable:\n1. Open QuickDash and tap 'Grant Overlay Permission'.\n2. Locate QuickDash in the system list and toggle 'Allow display over other apps'.\n3. Return to QuickDash to start using floating bubble tools."
+  },
+  {
+    "id": "quick-settings-tile",
+    "section": "Core Setup",
+    "title": "Adding Quick Settings Tiles (Android 13+)",
+    "content": "QuickDash provides two Quick Settings tiles:\n- QuickDash Hub: Launches the main floating dashboard menu.\n- Scan QR Code: Directly opens your preferred UPI payment app scanner.\n\nTo add tiles:\n1. Swipe down twice from the top of your screen to open Quick Settings.\n2. Tap the Edit (pencil) icon.\n3. Drag 'QuickDash Hub' or 'Scan QR Code' into your active tile list."
+  },
+  {
+    "id": "upi-qr-generator",
+    "section": "Features",
+    "title": "Quick Collect (UPI & Payment QR Generator)",
+    "content": "Generate custom payment QR codes instantly on-screen.\n- Supports any valid VPA / UPI ID (e.g. name@upi, number@paytm).\n- Custom styling: Dot shapes, color gradients, and optional payment note.\n- Direct launch buttons for GPay, PhonePe, Paytm, and BHIM."
+  },
+  {
+    "id": "floating-translator",
+    "section": "Features",
+    "title": "Quick Translator & Screen Reader",
+    "content": "Translate text on-screen instantly using the floating translation tool.\n- Auto-detect source text with manual paste support.\n- Instant 1-tap translation to your target language.\n- Direct link to Google Translate app for full-page translations."
+  }
+]

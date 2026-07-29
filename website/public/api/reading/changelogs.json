@@ -1,0 +1,36 @@
+[
+  {
+    "version": "5.1.1",
+    "date": "2026-07-29",
+    "notes": "Android 16 & Maintenance Release",
+    "highlights": [
+      "Targeted SDK 36 (Android 16) with 16 KB memory page size alignment for native JNI libraries.",
+      "Integrated Google Play In-App Updates (app-update-ktx) for 1-tap update prompts.",
+      "Added Android 15/16 Predictive Back-Swipe gesture navigation support.",
+      "Fixed Glance & Protobuf SDK dependencies.",
+      "Enhanced website mobile drawer and desktop QR scanner widget."
+    ]
+  },
+  {
+    "version": "5.0.0",
+    "date": "2026-07-24",
+    "notes": "Major Feature Update",
+    "highlights": [
+      "Added QrScannerTileService for direct QR scanning from Quick Settings.",
+      "Replaced text labels with sleek native vector icons in Quick Social & Quick Chat.",
+      "Stylized custom QR code generation with dot shapes and gradient palettes.",
+      "Added floating window screenshot action (📷) for capturing tool containers.",
+      "Added Save as PDF export to Annotator Canvas."
+    ]
+  },
+  {
+    "version": "4.4.1",
+    "date": "2026-07-12",
+    "notes": "Security & UI Update",
+    "highlights": [
+      "Updated launch styles, floating window dialog animations, and biometric lock.",
+      "Enhanced clipboard manager with sensitive data guard and auto-clear timer.",
+      "Added live currency converter and scientific expression calculator."
+    ]
+  }
+]

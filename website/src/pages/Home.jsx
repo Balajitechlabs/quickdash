@@ -1,4 +1,11 @@
 import { useState, useRef, useEffect, useCallback, createContext, useContext, useMemo } from 'react'
+import { Link } from 'react-router-dom'
+
+function trackEvent(action, label) {
+  if (typeof gtag !== 'undefined') {
+    gtag('event', action, { event_label: label })
+  }
+}
 
 const features = [
   { id: 'translator', name: 'Translator', icon: '🔤', desc: 'Instant on-screen translation between 100+ languages. Runs on-device, no data sent to the cloud.' },
@@ -147,10 +154,14 @@ function FAQ() {
   const faqs = [
     { q: 'What is QuickDash?', a: 'QuickDash is a floating overlay utility hub for Android featuring 12 tools — UPI QR, translator, clipboard, notes, calculator, Wi-Fi sharing, and more. All tools run on-device with zero tracking.' },
     { q: 'Is QuickDash free?', a: 'Yes, QuickDash is 100% free and open source, with no ads or telemetry of any kind.' },
+    { q: 'Does it collect my data?', a: 'No. QuickDash collects zero data. No analytics, no telemetry, no network requests. Everything runs entirely on your device.' },
     { q: 'Does it work on Android 16?', a: 'Yes, QuickDash v5.1.1 targets Android 16 (SDK 36) with 16KB page alignment for full compatibility.' },
     { q: 'Does it require root?', a: 'No. QuickDash uses the standard SYSTEM_ALERT_WINDOW overlay permission. Works on stock non-rooted Android 7.0 through Android 16.' },
+    { q: 'How do I update?', a: 'The app checks for updates automatically on launch. Tap the version badge in the header or go to Settings > About > Check for Updates to download the latest APK directly.' },
+    { q: 'Can I customize which tools appear?', a: 'Yes. Open the Tool Drawer, tap the edit icon, and toggle which tools you want visible in your floating dock.' },
     { q: 'How do I uninstall?', a: 'Long-press the app icon and drag to Uninstall, or go to Settings > Apps > QuickDash > Uninstall.' },
     { q: 'How do I enable overlay permission?', a: 'Go to Settings > Apps > QuickDash > Display over other apps and toggle it on. The app will guide you if needed.' },
+    { q: 'How do I report a bug?', a: 'Open a GitHub Issue at github.com/Balajitechlabs/quickdash/issues, message us on Telegram, or email quickdash@balajitechlab.com.' },
   ]
   const [openIdx, setOpenIdx] = useState(0)
 
@@ -161,7 +172,10 @@ function FAQ() {
         {faqs.map((f, i) => (
           <div key={i} className="card" style={{ padding: 0, overflow: 'hidden' }}>
             <button
-              onClick={() => setOpenIdx(openIdx === i ? null : i)}
+              onClick={() => {
+                trackEvent('faq_toggle', openIdx === i ? 'close' : 'open', f.q)
+                setOpenIdx(openIdx === i ? null : i)
+              }}
               aria-expanded={openIdx === i}
               aria-controls={`faq-answer-${i}`}
               style={{
@@ -200,6 +214,7 @@ function Gallery() {
   const images = useMemo(() => Array.from({ length: total }, (_, i) => ({
     src: `/assets/gallery/shot_${i + 1}.png`,
     alt: `QuickDash screenshot ${i + 1} — feature overview`,
+    label: `screenshot_${i + 1}`,
   })), [])
 
   return (
@@ -208,11 +223,49 @@ function Gallery() {
       <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 12, scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}>
         {images.map((img, i) => (
           <div key={i} style={{ flex: '0 0 auto', scrollSnapAlign: 'start' }}>
-            <Screenshot src={img.src} alt={img.alt} priority={i < 3} onOpen={setLightbox} />
+            <Screenshot src={img.src} alt={img.alt} priority={i < 3} onOpen={() => { trackEvent('gallery_view', img.label); setLightbox(img.src); }} />
           </div>
         ))}
       </div>
       {lightbox && <Lightbox src={lightbox} onClose={() => setLightbox(null)} />}
+    </FadeInSection>
+  )
+}
+
+function Changelog() {
+  const [releases, setReleases] = useState([])
+
+  useEffect(() => {
+    fetch('https://api.github.com/repos/Balajitechlabs/quickdash/releases?per_page=5')
+      .then(r => r.ok ? r.json() : [])
+      .then(d => setReleases(d.slice(0, 3)))
+      .catch(() => {})
+  }, [])
+
+  return (
+    <FadeInSection as="section" aria-label="Recent releases changelog">
+      <h2 className="section-title">Changelog</h2>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {releases.length === 0 && <p className="card" style={{ fontSize: 13, color: 'var(--md-on-surface-variant)', textAlign: 'center', padding: 24 }}>Loading releases...</p>}
+        {releases.map((r, i) => (
+          <div key={r.id} className="card" style={{ padding: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8, flexWrap: 'wrap', gap: 4 }}>
+              <a href={r.html_url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--pixel-font)', fontSize: 9, color: 'var(--md-primary)', textDecoration: 'none' }} onClick={() => trackEvent('changelog_click', r.tag_name)}>
+                v{r.tag_name.replace('v', '')}
+              </a>
+              <span style={{ fontSize: 11, color: 'var(--md-on-surface-variant)' }}>
+                {new Date(r.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              </span>
+            </div>
+            <p style={{ fontSize: 13, color: 'var(--md-on-surface-variant)', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
+              {r.body ? r.body.split('\n').slice(0, 6).join('\n') : 'No changelog'}
+            </p>
+          </div>
+        ))}
+        <a href="https://github.com/Balajitechlabs/quickdash/releases" target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline" style={{ alignSelf: 'center' }} onClick={() => trackEvent('changelog_click', 'all_releases')}>
+          View all releases
+        </a>
+      </div>
     </FadeInSection>
   )
 }
@@ -225,6 +278,7 @@ function FeedbackForm() {
     const form = e.target
     const name = form.name.value
     const message = form.message.value
+    trackEvent('feedback_submit', 'github_issues')
     const body = `**Feedback from ${name}**\n\n${message}`
     const url = `https://github.com/Balajitechlabs/quickdash/issues/new?title=Feedback: ${encodeURIComponent(name)}&body=${encodeURIComponent(body)}&labels=feedback`
     window.open(url, '_blank', 'noopener')
@@ -238,7 +292,7 @@ function FeedbackForm() {
         <div className="card" style={{ textAlign: 'center', padding: 32 }}>
           <p style={{ fontFamily: 'var(--pixel-font)', fontSize: 14, color: 'var(--md-primary)', marginBottom: 8 }}>✓ THANK YOU</p>
           <p style={{ color: 'var(--md-on-surface-variant)', fontSize: 14, marginBottom: 16 }}>GitHub Issues opened in a new tab. Submit it there to reach us!</p>
-          <a href="https://github.com/Balajitechlabs/quickdash/issues/new" target="_blank" rel="noopener noreferrer" className="btn btn-sm">Open Issues Directly</a>
+          <a href="https://github.com/Balajitechlabs/quickdash/issues/new" target="_blank" rel="noopener noreferrer" className="btn btn-sm" onClick={() => trackEvent('feedback_submit', 'github_issues_direct')}>Open Issues Directly</a>
         </div>
       </FadeInSection>
     )
@@ -268,7 +322,7 @@ function FeedbackForm() {
           </button>
         </form>
         <p style={{ fontSize: 11, color: 'var(--md-on-surface-variant)', textAlign: 'center' }}>
-          Prefer Telegram? <a href="https://t.me/BalajiTechLabs" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--md-primary)' }}>Message us here</a>
+          Prefer Telegram? <a href="https://t.me/BalajiTechLabs" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--md-primary)' }} onClick={() => trackEvent('contact_click', 'telegram')}>Message us here</a>
         </p>
       </div>
     </FadeInSection>
@@ -278,7 +332,7 @@ function FeedbackForm() {
 function ThemePreview({ name, colors, onApply }) {
   return (
     <button
-      onClick={() => onApply(colors)}
+      onClick={() => { onApply(colors); trackEvent('theme_preview', name); }}
       className="card"
       style={{ padding: 16, cursor: 'pointer', textAlign: 'center', background: 'var(--md-surface)', border: '1px solid var(--md-outline)' }}
       title={`Apply ${name} theme`}
@@ -314,11 +368,11 @@ function Hero() {
         Zero tracking &bull; On-device processing &bull; Material Design 3
       </p>
       <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginTop: 12 }}>
-        <a href="https://github.com/Balajitechlabs/quickdash/releases/latest" className="btn" target="_blank" rel="noopener noreferrer" aria-label="Download QuickDash Universal APK">
+        <a href="https://github.com/Balajitechlabs/quickdash/releases/latest" className="btn" target="_blank" rel="noopener noreferrer" aria-label="Download QuickDash Universal APK" onClick={() => trackEvent('download_click', 'universal_apk')}>
           <img src="/assets/github.svg" alt="" width="14" height="14" aria-hidden="true" />
           DOWNLOAD APK
         </a>
-        <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.mischief" className="btn btn-outline" target="_blank" rel="noopener noreferrer" aria-label="Get QuickDash on Google Play Store">
+        <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash" className="btn btn-outline" target="_blank" rel="noopener noreferrer" aria-label="Get QuickDash on Google Play Store" onClick={() => trackEvent('download_click', 'play_store')}>
           <img src="/assets/play_store.svg" alt="" width="14" height="14" aria-hidden="true" />
           PLAY STORE (BETA)
         </a>
@@ -331,6 +385,14 @@ function Hero() {
 function GitHubRelease() {
   const [release, setRelease] = useState(null)
   const [commit, setCommit] = useState(null)
+  const [repo, setRepo] = useState(null)
+
+  useEffect(() => {
+    fetch('https://api.github.com/repos/Balajitechlabs/quickdash')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => setRepo(d))
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     fetch('https://api.github.com/repos/Balajitechlabs/quickdash/releases/latest')
@@ -348,22 +410,31 @@ function GitHubRelease() {
 
   return (
     <div style={{ marginTop: 20, display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', fontFamily: 'var(--body-font)', fontSize: 13 }}>
-      <a href="https://github.com/Balajitechlabs/quickdash/actions" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--md-on-surface-variant)', textDecoration: 'none', background: 'var(--md-surface-variant)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }}>
+      <a href="https://github.com/Balajitechlabs/quickdash/actions" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--md-on-surface-variant)', textDecoration: 'none', background: 'var(--md-surface-variant)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }} onClick={() => trackEvent('badge_click', 'build_status')}>
         <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#4caf50' }} />
         Build passing
       </a>
-      <a href="https://github.com/Balajitechlabs/quickdash/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--md-on-surface-variant)', textDecoration: 'none', background: 'var(--md-surface-variant)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }}>
-        <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#7c4dff' }} />
-        Custom OS Fork License
+      {repo && (
+        <a href="https://github.com/Balajitechlabs/quickdash/stargazers" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--md-on-surface-variant)', textDecoration: 'none', background: 'var(--md-surface-variant)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }} onClick={() => trackEvent('badge_click', 'stars')}>
+          ⭐ {repo.stargazers_count}
+        </a>
+      )}
+      {repo && (
+        <a href="https://github.com/Balajitechlabs/quickdash/issues" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--md-on-surface-variant)', textDecoration: 'none', background: 'var(--md-surface-variant)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }} onClick={() => trackEvent('badge_click', 'issues')}>
+          {repo.open_issues_count > 0 ? '🔴' : '🟢'} {repo.open_issues_count} issues
+        </a>
+      )}
+      <a href="https://github.com/Balajitechlabs/quickdash/security/policy" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--md-on-surface-variant)', textDecoration: 'none', background: 'var(--md-surface-variant)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }} onClick={() => trackEvent('badge_click', 'security')}>
+        🔒 Security
       </a>
       {release && (
-        <a href={release.html_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--md-on-surface-variant)', textDecoration: 'none', background: 'var(--md-surface-variant)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }}>
+        <a href={release.html_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--md-on-surface-variant)', textDecoration: 'none', background: 'var(--md-surface-variant)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }} onClick={() => trackEvent('badge_click', 'latest_release')}>
           <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#4caf50', animation: 'pulse 2s infinite' }} />
           v{release.tag_name.replace('v', '')} — {new Date(release.published_at).toLocaleDateString()}
         </a>
       )}
       {commit && (
-        <a href={commit.html_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--md-on-surface-variant)', textDecoration: 'none', background: 'var(--md-surface-variant)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }}>
+        <a href={commit.html_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--md-on-surface-variant)', textDecoration: 'none', background: 'var(--md-surface-variant)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }} onClick={() => trackEvent('badge_click', 'latest_commit')}>
           <span style={{ fontFamily: 'var(--mono-font)', fontSize: 10 }}>{commit.sha.slice(0, 7)}</span>
         </a>
       )}
@@ -466,11 +537,37 @@ export default function Home() {
 
         <div className="pixel-divider" role="separator" />
 
+        <Changelog />
+
+        <div className="pixel-divider" role="separator" />
+
         <FAQ />
 
         <div className="pixel-divider" role="separator" />
 
         <FeedbackForm />
+
+        <div className="pixel-divider" role="separator" />
+
+        <FadeInSection as="section" aria-label="Get help and support">
+          <h2 className="section-title">Get Help</h2>
+          <div className="card" style={{ textAlign: 'center', padding: 24 }}>
+            <p style={{ fontSize: 14, color: 'var(--md-on-surface-variant)', marginBottom: 16, lineHeight: 1.7 }}>
+              Found a bug? Have a feature request? Need help using QuickDash?
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <a href="https://github.com/Balajitechlabs/quickdash/issues/new" target="_blank" rel="noopener noreferrer" className="btn btn-sm" onClick={() => trackEvent('contact_click', 'github_issues')}>
+                🐛 GitHub Issues
+              </a>
+              <a href="https://t.me/BalajiTechLabs" target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline" onClick={() => trackEvent('contact_click', 'telegram')}>
+                💬 Telegram
+              </a>
+              <a href="mailto:quickdash@balajitechlab.com" className="btn btn-sm btn-outline" onClick={() => trackEvent('contact_click', 'email')}>
+                ✉️ Email
+              </a>
+            </div>
+          </div>
+        </FadeInSection>
 
         <div className="pixel-divider" role="separator" />
 
@@ -480,7 +577,7 @@ export default function Home() {
             <p style={{ color: 'var(--md-on-surface-variant)', fontSize: 14, marginBottom: 12 }}>
               QuickDash collects zero data. No analytics, no telemetry, no network requests from the app itself. Everything runs on-device.
             </p>
-            <a href="/privacy" className="btn btn-sm btn-outline">Full Privacy Policy</a>
+            <Link to="/privacy" className="btn btn-sm btn-outline">Full Privacy Policy</Link>
           </div>
         </FadeInSection>
 
@@ -491,7 +588,7 @@ export default function Home() {
           <div className="card" style={{ fontSize: 13, color: 'var(--md-on-surface-variant)', lineHeight: 1.7 }}>
             <p>QuickDash is a fork of <strong>PocketOps</strong> by <strong>Aakarsh (L192) / IIXII™</strong> under the PocketOps Custom Open Source Fork License.</p>
             <p style={{ marginTop: 8 }}>
-              View the original project: <a href="https://github.com/L192/PocketOps" target="_blank" rel="noopener noreferrer">github.com/L192/PocketOps</a>
+              View the original project: <a href="https://github.com/L192/PocketOps" target="_blank" rel="noopener noreferrer" onClick={() => trackEvent('external_link', 'pocketops_github')}>github.com/L192/PocketOps</a>
             </p>
           </div>
         </FadeInSection>
@@ -541,16 +638,17 @@ function formatNum(n) {
 function DownloadCard({ icon, title, desc, github, playStore, label, wide }) {
   const href = github
     ? 'https://github.com/Balajitechlabs/quickdash/releases/latest'
-    : 'https://play.google.com/store/apps/details?id=com.balajitechlabs.mischief'
+    : 'https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash'
   const btnLabel = label || (github ? 'DOWNLOAD' : 'PLAY STORE')
   const imgSrc = github ? '/assets/github.svg' : '/assets/play_store.svg'
+  const trackLabel = github ? (label === 'DOWNLOAD ARM64' ? 'arm64_apk' : 'universal_apk') : 'play_store'
 
   return (
     <div className="card" style={{ textAlign: 'center', ...(wide ? { gridColumn: '1 / -1' } : {}) }}>
       <div style={{ fontSize: 48, marginBottom: 8 }}>{icon}</div>
       <h3 style={{ fontFamily: 'var(--pixel-font)', fontSize: 11, color: 'var(--md-primary)', marginBottom: 8 }}>{title}</h3>
       <p style={{ fontSize: 13, color: 'var(--md-on-surface-variant)', marginBottom: 16 }}>{desc}</p>
-      <a href={href} className={`btn btn-sm${playStore ? ' btn-outline' : ''}`} target="_blank" rel="noopener noreferrer" aria-label={`Download QuickDash ${title}`}>
+      <a href={href} className={`btn btn-sm${playStore ? ' btn-outline' : ''}`} target="_blank" rel="noopener noreferrer" aria-label={`Download QuickDash ${title}`} onClick={() => trackEvent('download_click', trackLabel)}>
         <img src={imgSrc} alt="" width="12" height="12" aria-hidden="true" />
         {btnLabel}
       </a>
@@ -563,6 +661,7 @@ function ThemePresets() {
   const [activeTheme, setActiveTheme] = useState(null)
 
   const applyTheme = useCallback((colors, name) => {
+    trackEvent('theme_preview', name)
     setPreview(colors)
     setActiveTheme(name)
     setTimeout(() => {

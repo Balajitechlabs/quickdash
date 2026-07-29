@@ -5,13 +5,22 @@ export default function Docs() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const load = () => {
+  const load = async () => {
     setLoading(true)
     setError(null)
-    fetch('/api/reading/docs')
-      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() })
-      .then(data => { setSections(data); setLoading(false) })
-      .catch(e => { setError(e.message); setLoading(false) })
+    try {
+      let res = await fetch('/api/reading/docs')
+      if (!res.ok) {
+        res = await fetch('/api/reading/docs.json')
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const data = await res.json()
+      setSections(data)
+      setLoading(false)
+    } catch (e) {
+      setError(e.message)
+      setLoading(false)
+    }
   }
 
   useEffect(load, [])

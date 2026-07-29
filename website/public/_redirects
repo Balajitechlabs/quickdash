@@ -1,2 +1,3 @@
 /downloads/*  https://github.com/Balajitechlabs/quickdash/releases/latest/download/:splat  302
 /api/v1/update.json  /api/v1/update.json  200
+/*  /index.html  200

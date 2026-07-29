@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/downloads/:path*",
+      "destination": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/:path*"
+    },
+    {
+      "source": "/((?!api/|assets/|favicon|site.webmanifest).*)" ,
+      "destination": "/index.html"
+    }
+  ]
+}

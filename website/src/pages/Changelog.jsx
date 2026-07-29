@@ -5,13 +5,22 @@ export default function Changelog() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const load = () => {
+  const load = async () => {
     setLoading(true)
     setError(null)
-    fetch('/api/reading/changelogs')
-      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() })
-      .then(data => { setLogs(data); setLoading(false) })
-      .catch(e => { setError(e.message); setLoading(false) })
+    try {
+      let res = await fetch('/api/reading/changelogs')
+      if (!res.ok) {
+        res = await fetch('/api/reading/changelogs.json')
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const data = await res.json()
+      setLogs(data)
+      setLoading(false)
+    } catch (e) {
+      setError(e.message)
+      setLoading(false)
+    }
   }
 
   useEffect(load, [])
