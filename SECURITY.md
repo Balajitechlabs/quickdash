@@ -6,7 +6,7 @@ QuickDash takes security seriously. If you discover a security vulnerability, pl
 
 ### How to Report
 
-1. **Email**: [balajitech.labs@gmail.com](mailto:balajitech.labs@gmail.com)
+1. **Email**: [quickdash@balajitechlab.com](mailto:quickdash@balajitechlab.com)
 2. **GitHub**: Use the [Security Advisory](https://github.com/Balajitechlabs/quickdash/security/advisories/new) form (preferred).
 
 You should receive a response within **48 hours**. If not, follow up via email.
