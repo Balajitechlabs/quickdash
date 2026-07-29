@@ -1,0 +1,15 @@
+{
+  "name": "QuickDash — 12 Floating Tools for Android",
+  "short_name": "QuickDash",
+  "description": "Floating overlay utility hub for Android. 12 tools, zero tracking.",
+  "icons": [
+    { "src": "assets/logo.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "theme_color": "#1c1b1f",
+  "background_color": "#1c1b1f",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "id": "com.balajitechlabs.quickdash"
+}

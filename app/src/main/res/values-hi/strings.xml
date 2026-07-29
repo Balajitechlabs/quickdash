@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">QuickDash</string>
+    <string name="quick_tile_title">QuickDash</string>
+    <string name="quick_tile_subtitle">टूल्स खोलने के लिए टैप करें</string>
+    <string name="shortcut_long_label">QR कोड दिखाएं</string>
+    <string name="shortcut_quick_upi_short">त्वरित संग्रह</string>
+    <string name="shortcut_quick_upi_long">त्वरित संग्रह QR जनरेटर खोलें</string>
+    <string name="shortcut_quick_chat_short">त्वरित चैट</string>
+    <string name="shortcut_quick_chat_long">सीधा WhatsApp चैट</string>
+    <string name="shortcut_quick_insta_short">त्वरित इंस्टा</string>
+    <string name="shortcut_quick_insta_long">त्वरित प्रोफ़ाइल खोज</string>
+    <string name="shortcut_quick_calc_short">कैलकुलेटर</string>
+    <string name="shortcut_quick_calc_long">त्वरित कैलकुलेटर</string>
+    <string name="shortcut_quick_timer_short">टाइमर</string>
+    <string name="shortcut_quick_timer_long">स्टॉपवॉच और उलटी गिनती</string>
+</resources>

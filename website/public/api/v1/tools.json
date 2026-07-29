@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "tools": [
+    { "id": "ai", "name": "AI Quick Action", "icon": "smart_button", "category": "ai" },
+    { "id": "calculator", "name": "Quick Calculator", "icon": "calculate", "category": "utility" },
+    { "id": "clipboard", "name": "Smart Clipboard", "icon": "content_paste", "category": "utility" },
+    { "id": "notes", "name": "Quick Notes", "icon": "note_add", "category": "utility" },
+    { "id": "qr", "name": "QR Generator & Scanner", "icon": "qr_code_2", "category": "utility" },
+    { "id": "translator", "name": "Quick Translator", "icon": "translate", "category": "ai" },
+    { "id": "wifi", "name": "Wi-Fi & Speed Test", "icon": "wifi", "category": "network" },
+    { "id": "timer", "name": "Timer & Stopwatch", "icon": "timer", "category": "utility" }
+  ]
+}

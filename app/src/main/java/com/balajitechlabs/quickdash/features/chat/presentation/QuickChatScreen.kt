@@ -52,13 +52,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import com.balajitechlabs.quickdash.R
-import com.balajitechlabs.quickdash.core.data.UserStore
+import androidx.hilt.navigation.compose.hiltViewModel
 
 data class Country(val code: String, val iso: String, val name: String, val flag: String)
 
 @Composable
 fun QuickChatScreen(
-    userStore: UserStore,
+    viewModel: QuickChatViewModel = hiltViewModel(),
     showSettings: Boolean,
     onToggleSettings: (Boolean) -> Unit,
     selectingCountry: Boolean,
@@ -68,11 +68,11 @@ fun QuickChatScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    // Collect settings from DataStore
-    val defaultCode by userStore.chatDefaultCode.collectAsState(initial = "91")
-    val defaultIso by userStore.chatDefaultIso.collectAsState(initial = "IN")
-    val historyList by userStore.chatHistory.collectAsState(initial = emptyList())
-    val pauseHistory by userStore.chatPauseHistory.collectAsState(initial = false)
+    // Collect settings from ViewModel
+    val defaultCode by viewModel.chatDefaultCode.collectAsState(initial = "91")
+    val defaultIso by viewModel.chatDefaultIso.collectAsState(initial = "IN")
+    val historyList by viewModel.chatHistory.collectAsState(initial = emptyList())
+    val pauseHistory by viewModel.chatPauseHistory.collectAsState(initial = false)
 
     var phoneNumber by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
@@ -382,7 +382,7 @@ fun QuickChatScreen(
                                     .fillMaxWidth()
                                     .clickable {
                                         scope.launch {
-                                            userStore.saveChatDefaultCountry(country.code, country.iso)
+                                            viewModel.saveChatDefaultCountry(country.code, country.iso)
                                             onToggleSelectingCountry(false)
                                             searchQuery = ""
                                         }
@@ -506,7 +506,7 @@ fun QuickChatScreen(
                         }
                         Switch(
                             checked = pauseHistory,
-                            onCheckedChange = { scope.launch { userStore.saveChatPauseHistory(it) } }
+                            onCheckedChange = { viewModel.saveChatPauseHistory(it) }
                         )
                     }
                 }
@@ -578,7 +578,7 @@ fun QuickChatScreen(
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            scope.launch { userStore.clearChatHistory() }
+                            viewModel.clearChatHistory()
                             showClearHistoryConfirm = false
                         }
                     ) {
@@ -836,7 +836,7 @@ fun QuickChatScreen(
                                 }
                             }
                         }) {
-                            Icon(Icons.Default.QrCodeScanner, "Scan QR")
+                            Icon(Icons.Filled.QrCodeScanner, "Scan QR")
                         }
                     }
                 },
@@ -892,7 +892,7 @@ fun QuickChatScreen(
                     if (isValid) {
                         scope.launch {
                             val flagToSave = if (isUsername) "👤" else activeFlag
-                            userStore.saveChatNumberToHistory(
+                            viewModel.saveChatNumberToHistory(
                                 if (isUsername) phoneNumber.trim() else finalNumber,
                                 flagToSave
                             )

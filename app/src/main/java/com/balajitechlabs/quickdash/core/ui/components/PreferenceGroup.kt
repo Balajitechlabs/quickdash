@@ -58,7 +58,7 @@ fun PreferenceGroup(
             )
             if (onHeaderClick != null) {
                 Icon(
-                    imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                    imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                     contentDescription = if (expanded) "Collapse" else "Expand",
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(20.dp)

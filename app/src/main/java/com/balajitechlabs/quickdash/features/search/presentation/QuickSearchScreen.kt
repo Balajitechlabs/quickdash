@@ -42,7 +42,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 
 @Composable
-fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
+fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel, onDismiss: () -> Unit) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val gson = Gson()
@@ -50,7 +50,7 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
     var query by remember { mutableStateOf("") }
     var showAddEngineDialog by remember { mutableStateOf(false) }
 
-    val searchHistoryJson by userStore.searchHistory.collectAsState(initial = "[]")
+    val searchHistoryJson by mainViewModel.settingsRepository.searchHistory.collectAsState(initial = "[]")
     val searchHistory = remember(searchHistoryJson) {
         try {
             val type = object : TypeToken<List<String>>() {}.type
@@ -58,7 +58,7 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
         } catch (e: Exception) { emptyList() }
     }
 
-    val customEnginesJson by userStore.customSearchEngines.collectAsState(initial = "[]")
+    val customEnginesJson by mainViewModel.settingsRepository.customSearchEngines.collectAsState(initial = "[]")
     
     val engines = remember(customEnginesJson) {
         val defaultEngines = listOf(
@@ -118,7 +118,7 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
     fun doSearch(q: String) {
         if (q.isBlank()) return
         coroutineScope.launch {
-            userStore.addSearchHistory(q)
+            mainViewModel.settingsRepository.addSearchHistory(q)
         }
         try {
             val encoded = java.net.URLEncoder.encode(q, "UTF-8")
@@ -171,7 +171,7 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
                     )
                 }
                 IconButton(onClick = { showAddEngineDialog = true }) {
-                    Icon(androidx.compose.material.icons.Icons.Default.Add, contentDescription = "Add Engine")
+                    Icon(androidx.compose.material.icons.Icons.Filled.Add, contentDescription = "Add Engine")
                 }
             }
 
@@ -188,8 +188,9 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
                         .size(28.dp)
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f), CircleShape)
                 ) {
+                    @Suppress("DEPRECATION")
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        imageVector = Icons.Filled.KeyboardArrowLeft,
                         contentDescription = "Scroll Left",
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
@@ -210,8 +211,9 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
                         .size(28.dp)
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f), CircleShape)
                 ) {
+                    @Suppress("DEPRECATION")
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
+                        imageVector = Icons.Filled.KeyboardArrowRight,
                         contentDescription = "Scroll Right",
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
@@ -226,11 +228,11 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
                 onValueChange = { query = it },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text("Search ${selectedEngine.first}...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 trailingIcon = {
                     if (query.isNotEmpty()) {
                         IconButton(onClick = { query = "" }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Clear")
+                            Icon(Icons.Filled.Clear, contentDescription = "Clear")
                         }
                     }
                 },
@@ -274,7 +276,7 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
                             },
                             leadingContent = {
                                 Icon(
-                                    imageVector = if (isHistory) Icons.Default.History else Icons.Default.Search,
+                                    imageVector = if (isHistory) Icons.Filled.History else Icons.Filled.Search,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(18.dp)
@@ -297,7 +299,7 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
             modifier = Modifier.fillMaxWidth().height(52.dp),
             shape = RoundedCornerShape(16.dp)
         ) {
-            Icon(Icons.Default.Search, contentDescription = null)
+            Icon(Icons.Filled.Search, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
             Text("Search", style = MaterialTheme.typography.labelLarge)
         }
@@ -359,8 +361,9 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
                         .size(28.dp)
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f), CircleShape)
                 ) {
+                    @Suppress("DEPRECATION")
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        imageVector = Icons.Filled.KeyboardArrowLeft,
                         contentDescription = "Scroll Left",
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
@@ -381,8 +384,9 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
                         .size(28.dp)
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f), CircleShape)
                 ) {
+                    @Suppress("DEPRECATION")
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
+                        imageVector = Icons.Filled.KeyboardArrowRight,
                         contentDescription = "Scroll Right",
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
@@ -406,7 +410,7 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 TextButton(onClick = {
-                    coroutineScope.launch { userStore.clearSearchHistory() }
+                    coroutineScope.launch { mainViewModel.settingsRepository.clearSearchHistory() }
                 }) {
                     Text("Clear", color = MaterialTheme.colorScheme.error)
                 }
@@ -420,7 +424,7 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
                         headlineContent = { Text(item, style = MaterialTheme.typography.bodyMedium) },
                         leadingContent = {
                             Icon(
-                                Icons.Default.History,
+                                Icons.Filled.History,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -474,7 +478,7 @@ fun QuickSearchScreen(userStore: UserStore, onDismiss: () -> Unit) {
                             newList.add(mapOf("name" to engineName.trim(), "url" to engineUrl.trim()))
                             
                             coroutineScope.launch {
-                                userStore.saveCustomSearchEngines(gson.toJson(newList))
+                                mainViewModel.settingsRepository.saveCustomSearchEngines(gson.toJson(newList))
                             }
                             showAddEngineDialog = false
                         }

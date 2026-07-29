@@ -128,7 +128,7 @@ fun QuickWebScreen(
                         modifier = Modifier.size(36.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Refresh,
+                            imageVector = Icons.Filled.Refresh,
                             contentDescription = "Refresh",
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
@@ -157,7 +157,7 @@ fun QuickWebScreen(
                         trailingIcon = {
                             IconButton(onClick = { performNavigate(urlInput) }, modifier = Modifier.size(32.dp)) {
                                 Icon(
-                                    imageVector = Icons.Default.Search,
+                                    imageVector = Icons.Filled.Search,
                                     contentDescription = "Go",
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(18.dp)

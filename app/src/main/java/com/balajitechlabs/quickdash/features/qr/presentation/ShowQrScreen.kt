@@ -73,8 +73,10 @@ fun ShowQrScreen(
 ) {
     val context = LocalContext.current
 
+    @Suppress("DEPRECATION")
     val vibrator = remember { context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator }
 
+    @Suppress("DEPRECATION")
     fun triggerFeedback() {
         val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as? android.media.AudioManager
         audioManager?.playSoundEffect(android.media.AudioManager.FX_KEY_CLICK, 0.3f)

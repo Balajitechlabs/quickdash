@@ -1,0 +1,42 @@
+[
+  {
+    "id": "intro-quickdash",
+    "title": "Introducing QuickDash v5.1.1",
+    "category": "Release",
+    "date": "2026-07-28",
+    "excerpt": "QuickDash v5.1.1 targets Android 16, adds Play Store beta, and brings 16KB page alignment support.",
+    "content": "QuickDash v5.1.1 marks a major milestone for the project. This release targets Android 16 (SDK 36) and includes 16KB page alignment for improved performance on newer devices. We've also integrated Play Store beta distribution alongside our existing F-Droid recipe, making it easier than ever to get QuickDash on your device. The floating toolbar has been refined with smoother animations and better memory management. As always, QuickDash remains completely open source with zero tracking."
+  },
+  {
+    "id": "material-you-design",
+    "title": "Material You Design in QuickDash",
+    "category": "Design",
+    "date": "2026-07-20",
+    "excerpt": "How QuickDash uses Material Design 3 dynamic colors for a seamless floating experience.",
+    "content": "QuickDash embraces Material Design 3's dynamic color system, pulling accent colors directly from your device wallpaper. Every component from the floating toolbar to the settings panel uses Material You theming to feel native and personalized. The floating toolbar uses adaptive surface colors that respond to light and dark mode automatically. We've carefully balanced transparency and elevation to ensure readability over any app without being intrusive."
+  },
+  {
+    "id": "upi-qr-feature",
+    "title": "UPI QR Payments Made Instant",
+    "category": "Features",
+    "date": "2026-07-15",
+    "excerpt": "QuickDash's UPI QR generator works without switching apps. All on-device, zero server uploads.",
+    "content": "The UPI QR generator in QuickDash is one of its most popular features. It supports flexible alpha-numeric UPI handles allowing digits and special symbols. You can generate QR codes for any UPI ID instantly from the floating toolbar. The QR code is rendered locally on your device — no data is sent to any server. We've also added support for payment amount presets and custom notes, making it perfect for quick peer-to-peer payments."
+  },
+  {
+    "id": "floating-translator",
+    "title": "On-Screen Translation with the Floating Translator",
+    "category": "Features",
+    "date": "2026-07-10",
+    "excerpt": "Translate text from any app without leaving it using on-device OCR and translation.",
+    "content": "The floating translator in QuickDash lets you select and translate text from any app on your screen. It uses on-device OCR to capture text from the screen region you select, then translates it using your device's built-in translation engine. This means translations work offline and your text never leaves your device. The translated result appears in a compact popup within the floating toolbar, so you can continue reading without interruption."
+  },
+  {
+    "id": "open-source-values",
+    "title": "Why QuickDash Will Always Be Open Source",
+    "category": "Community",
+    "date": "2026-07-05",
+    "excerpt": "Transparency, privacy, and community ownership are core to QuickDash's mission.",
+    "content": "QuickDash is proudly open source under the PocketOps Custom Open Source Fork License. We believe that utility software should be transparent by default. Every line of code is available on GitHub for audit, fork, and contribution. There is zero tracking, zero analytics, and zero telemetry in QuickDash. The community has contributed translations, bug fixes, and feature suggestions that have shaped the app's direction. Open source isn't just a license — it's a commitment to our users that QuickDash will always put their privacy first."
+  }
+]

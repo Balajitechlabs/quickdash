@@ -27,7 +27,7 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Welcome to QuickDash v5.0.1 🚀",
+            text = "Welcome to QuickDash v5.1.1 🚀",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
@@ -37,7 +37,7 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(6.dp))
 
         Text(
-            text = "Welcome to the v5.0.1 update! Featuring Android 16 readiness, 16 KB page size alignment, Play Core APIs, and F-Droid support.",
+            text = "Welcome to the v5.1.1 update! Featuring Android 16 readiness, 16 KB page size alignment, Play Core APIs, and F-Droid support.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth()
@@ -46,7 +46,7 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(24.dp))
 
         FeatureHighlightCard(
-            icon = Icons.Default.QrCode,
+            icon = Icons.Filled.QrCode,
             title = "Minimalist Quick Collect",
             description = "Generate universal UPI & PayPal payment QR codes instantly in a compact floating card.",
             accentColor = MaterialTheme.colorScheme.primary,
@@ -56,7 +56,7 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(10.dp))
 
         FeatureHighlightCard(
-            icon = Icons.Default.QrCodeScanner,
+            icon = Icons.Filled.QrCodeScanner,
             title = "Inbuilt QR Scanner Tile",
             description = "New Quick Settings Tile to scan payment QR codes directly from your notification bar.",
             accentColor = MaterialTheme.colorScheme.secondary,
@@ -76,7 +76,7 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(10.dp))
 
         FeatureHighlightCard(
-            icon = Icons.Default.AutoAwesome,
+            icon = Icons.Filled.AutoAwesome,
             title = "On-Device Offline AI",
             description = "Private text translation and summarization running 100% locally on your phone.",
             accentColor = MaterialTheme.colorScheme.error,

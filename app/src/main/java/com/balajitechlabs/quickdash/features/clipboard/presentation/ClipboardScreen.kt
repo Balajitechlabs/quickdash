@@ -39,7 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.balajitechlabs.quickdash.core.data.UserStore
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
@@ -69,7 +69,7 @@ fun parseClipboardContent(text: String, context: Context): List<ActionableItem> 
                 ActionableItem(
                     label = "Call $matchedPhone",
                     value = matchedPhone,
-                    icon = Icons.Default.Call,
+                    icon = Icons.Filled.Call,
                     intent = intent
                 )
             )
@@ -88,7 +88,7 @@ fun parseClipboardContent(text: String, context: Context): List<ActionableItem> 
             ActionableItem(
                 label = "Email $matchedEmail",
                 value = matchedEmail,
-                icon = Icons.Default.Email,
+                icon = Icons.Filled.Email,
                 intent = intent
             )
         )
@@ -109,26 +109,26 @@ fun parseClipboardContent(text: String, context: Context): List<ActionableItem> 
         val (label, icon) = when {
             host.contains("youtube.com") || host.contains("youtu.be") -> {
                 intent.setPackage("com.google.android.youtube")
-                "Open YouTube" to Icons.Default.PlayArrow
+                "Open YouTube" to Icons.Filled.PlayArrow
             }
             host.contains("maps.google") || host.contains("google.com/maps") || host.contains("maps.app.goo.gl") -> {
                 intent.setPackage("com.google.android.apps.maps")
-                "Open Maps" to Icons.Default.LocationOn
+                "Open Maps" to Icons.Filled.LocationOn
             }
             host.contains("play.google.com") -> {
                 intent.setPackage("com.android.vending")
-                "Open Play Store" to Icons.Default.Info
+                "Open Play Store" to Icons.Filled.Info
             }
             host.contains("instagram.com") -> {
                 intent.setPackage("com.instagram.android")
-                "Open Instagram" to Icons.Default.Share
+                "Open Instagram" to Icons.Filled.Share
             }
             host.contains("twitter.com") || host.contains("x.com") -> {
                 intent.setPackage("com.twitter.android")
-                "Open X / Twitter" to Icons.Default.Share
+                "Open X / Twitter" to Icons.Filled.Share
             }
             finalUrl.startsWith("upi:") -> {
-                "UPI Payment" to Icons.Default.QrCode
+                "UPI Payment" to Icons.Filled.QrCode
             }
             else -> "Browse Link" to Icons.AutoMirrored.Filled.OpenInNew
         }
@@ -160,7 +160,7 @@ fun parseClipboardContent(text: String, context: Context): List<ActionableItem> 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClipboardScreen(
-    userStore: UserStore,
+    viewModel: ClipboardViewModel = hiltViewModel(),
     isFloating: Boolean = false,
     onTriggerConfetti: () -> Unit = {},
     onDismiss: () -> Unit
@@ -169,8 +169,8 @@ fun ClipboardScreen(
     val coroutineScope = rememberCoroutineScope()
 
 
-    val clipboardJson by userStore.clipboardHistory.collectAsState(initial = "[]")
-    val pinnedJson by userStore.clipboardPinned.collectAsState(initial = "[]")
+    val clipboardJson by viewModel.clipboardHistory.collectAsState(initial = "[]")
+    val pinnedJson by viewModel.clipboardPinned.collectAsState(initial = "[]")
 
     val gson = Gson()
     val listType = object : TypeToken<List<String>>() {}.type
@@ -234,7 +234,7 @@ fun ClipboardScreen(
         return false
     }
 
-    val isTabLocked by userStore.tabBiometricLock.collectAsState(initial = false)
+    val isTabLocked by viewModel.tabBiometricLock.collectAsState(initial = false)
     var isUnlocked by remember { mutableStateOf(false) }
     var showClearAllConfirmation by remember { mutableStateOf(false) }
 
@@ -254,7 +254,7 @@ fun ClipboardScreen(
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Icon(
-                        Icons.Default.Lock,
+                        Icons.Filled.Lock,
                         contentDescription = "Locked",
                         modifier = Modifier.size(40.dp),
                         tint = MaterialTheme.colorScheme.onPrimaryContainer
@@ -276,7 +276,7 @@ fun ClipboardScreen(
                 },
                 contentPadding = PaddingValues(horizontal = 32.dp, vertical = 12.dp)
             ) {
-                Icon(Icons.Default.Fingerprint, null, modifier = Modifier.size(20.dp))
+                Icon(Icons.Filled.Fingerprint, null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(8.dp))
                 Text("Unlock with Biometrics")
             }
@@ -301,6 +301,14 @@ fun ClipboardScreen(
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
+                if (com.balajitechlabs.quickdash.core.security.IncognitoManager.isIncognitoActive) {
+                    Text(
+                        "🕵️ Incognito Mode Active — History Paused",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 if (clipboardItems.isNotEmpty()) {
                     Text(
                         "${clipboardItems.size} item${if (clipboardItems.size > 1) "s" else ""}",
@@ -317,7 +325,7 @@ fun ClipboardScreen(
                         contentColor = MaterialTheme.colorScheme.onErrorContainer
                     )
                 ) {
-                    Icon(Icons.Default.Delete, contentDescription = "Clear all", modifier = Modifier.size(20.dp))
+                    Icon(Icons.Filled.Delete, contentDescription = "Clear all", modifier = Modifier.size(20.dp))
                 }
             }
         }
@@ -336,7 +344,7 @@ fun ClipboardScreen(
                         onClick = { selectedFilter = filter },
                         label = { Text(filter, style = MaterialTheme.typography.labelMedium) },
                         leadingIcon = if (selectedFilter == filter) ({
-                            Icon(Icons.Default.FilterList, null, modifier = Modifier.size(FilterChipDefaults.IconSize))
+                            Icon(Icons.Filled.FilterList, null, modifier = Modifier.size(FilterChipDefaults.IconSize))
                         }) else null
                     )
                 }
@@ -358,7 +366,7 @@ fun ClipboardScreen(
                     modifier = Modifier.size(72.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                        Icon(Icons.Default.ContentCopy, null, modifier = Modifier.size(32.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Icon(Icons.Filled.ContentCopy, null, modifier = Modifier.size(32.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
                 Text(
@@ -402,7 +410,7 @@ fun ClipboardScreen(
                         item = item,
                         pinnedItems = pinnedItems,
                         clipboardItems = clipboardItems,
-                        userStore = userStore,
+                        viewModel = viewModel,
                         onTriggerConfetti = onTriggerConfetti,
                         coroutineScope = coroutineScope,
                         gson = gson,
@@ -431,7 +439,7 @@ fun ClipboardScreen(
                     item = item,
                     pinnedItems = pinnedItems,
                     clipboardItems = clipboardItems,
-                    userStore = userStore,
+                    viewModel = viewModel,
                     onTriggerConfetti = onTriggerConfetti,
                     coroutineScope = coroutineScope,
                     gson = gson,
@@ -455,7 +463,7 @@ fun ClipboardScreen(
             confirmButton = {
                 TextButton(onClick = {
                     coroutineScope.launch {
-                        userStore.saveClipboardHistory("[]")
+                        viewModel.saveClipboardHistory("[]")
                     }
                     showClearAllConfirmation = false
                 }) {
@@ -476,7 +484,7 @@ fun ClipboardItemCard(
     item: String,
     pinnedItems: List<String>,
     clipboardItems: List<String>,
-    userStore: UserStore,
+    viewModel: ClipboardViewModel,
     onTriggerConfetti: () -> Unit,
     coroutineScope: kotlinx.coroutines.CoroutineScope,
     gson: com.google.gson.Gson,
@@ -586,13 +594,13 @@ fun ClipboardItemCard(
                             pinnedItems + item
                         }
                         coroutineScope.launch {
-                            userStore.saveClipboardPinned(gson.toJson(newList))
+                            viewModel.saveClipboardPinned(gson.toJson(newList))
                         }
                     },
                     modifier = Modifier.size(36.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.PushPin,
+                        imageVector = Icons.Filled.PushPin,
                         contentDescription = if (isPinned) "Unpin" else "Pin",
                         modifier = Modifier.size(18.dp),
                         tint = if (isPinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
@@ -615,7 +623,7 @@ fun ClipboardItemCard(
                     },
                     modifier = Modifier.size(36.dp)
                 ) {
-                    Icon(Icons.Default.Share, "Share", modifier = Modifier.size(18.dp))
+                    Icon(Icons.Filled.Share, "Share", modifier = Modifier.size(18.dp))
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -628,7 +636,7 @@ fun ClipboardItemCard(
                     },
                     modifier = Modifier.size(36.dp)
                 ) {
-                    Icon(Icons.Default.ContentCopy, "Copy", modifier = Modifier.size(18.dp))
+                    Icon(Icons.Filled.ContentCopy, "Copy", modifier = Modifier.size(18.dp))
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -637,15 +645,15 @@ fun ClipboardItemCard(
                 IconButton(
                     onClick = {
                         val newList = clipboardItems.toMutableList().apply { remove(item) }
-                        coroutineScope.launch { userStore.saveClipboardHistory(gson.toJson(newList)) }
+                        viewModel.saveClipboardHistory(gson.toJson(newList))
                         if (isPinned) {
                             val newPinned = pinnedItems.filter { it != item }
-                            coroutineScope.launch { userStore.saveClipboardPinned(gson.toJson(newPinned)) }
+                            viewModel.saveClipboardPinned(gson.toJson(newPinned))
                         }
                     },
                     modifier = Modifier.size(36.dp)
                 ) {
-                    Icon(Icons.Default.Delete, "Delete", modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.error)
+                    Icon(Icons.Filled.Delete, "Delete", modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.error)
                 }
             }
         }

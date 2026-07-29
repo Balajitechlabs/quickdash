@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 
+@Suppress("DEPRECATION")
 object EncryptedPrefsHelper {
     private lateinit var prefs: SharedPreferences
 

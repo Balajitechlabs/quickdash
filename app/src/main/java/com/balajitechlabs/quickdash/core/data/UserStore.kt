@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -15,11 +16,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import android.content.SharedPreferences
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_settings")
 
 class UserStore(private val context: Context) {
 
@@ -103,6 +100,13 @@ class UserStore(private val context: Context) {
         val SHAKE_TO_TRIGGER_KEY = booleanPreferencesKey("shake_to_trigger")
         val HAPTIC_DURATION_KEY = floatPreferencesKey("haptic_duration")
         val CUSTOM_BACKUP_PATH_KEY = stringPreferencesKey("custom_backup_path")
+        
+        // v5.1.0 Customizer & Sound Effects
+        val BUBBLE_SIZE_DP_KEY = floatPreferencesKey("bubble_size_dp")
+        val BUBBLE_OPACITY_ALPHA_KEY = floatPreferencesKey("bubble_opacity_alpha")
+        val BUBBLE_GLOW_COLOR_HEX_KEY = stringPreferencesKey("bubble_glow_color_hex")
+        val USE_DYNAMIC_WALLPAPER_COLOR_KEY = booleanPreferencesKey("use_dynamic_wallpaper_color")
+        val SOUND_EFFECTS_ENABLED_KEY = booleanPreferencesKey("sound_effects_enabled")
         val LAST_CLIPBOARD_CLEAN_TIME_KEY = longPreferencesKey("last_clipboard_clean_time")
         val QR_USE_EMOJI_OVERLAY_KEY = booleanPreferencesKey("qr_use_emoji_overlay")
         val WIFI_HOTSPOT_MODE_KEY = booleanPreferencesKey("wifi_hotspot_mode")
@@ -129,7 +133,46 @@ class UserStore(private val context: Context) {
         val GOOGLE_PROFILE_EMAIL_KEY = stringPreferencesKey("google_profile_email")
         val SERVER_CREDENTIALS_KEY = stringPreferencesKey("server_credentials")
         val SHOW_TOOL_DESCRIPTIONS_KEY = booleanPreferencesKey("show_tool_descriptions")
+        val PINNED_TOOLS_KEY = stringPreferencesKey("pinned_tools")
+        val BIOMETRIC_GUARD_ENABLED_KEY = booleanPreferencesKey("biometric_guard_enabled")
+        
+        val TOOL_ORDER_KEY = stringPreferencesKey("tool_order")
+        val FAVORITE_TOOLS_KEY = stringPreferencesKey("favorite_tools")
+        val INCOGNITO_MODE_KEY = booleanPreferencesKey("incognito_mode")
+        val VIBRATION_STRENGTH_KEY = intPreferencesKey("vibration_strength")
     }
+
+    // ── Incognito Mode (persisted, survives process death) ────────
+    val toolOrder: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[TOOL_ORDER_KEY] ?: ""
+    }
+
+    val favoriteTools: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[FAVORITE_TOOLS_KEY] ?: ""
+    }
+
+    suspend fun saveToolOrder(order: String) {
+        context.dataStore.edit { preferences ->
+            preferences[TOOL_ORDER_KEY] = order
+        }
+    }
+
+    suspend fun saveFavoriteTools(favorites: String) {
+        context.dataStore.edit { preferences ->
+            preferences[FAVORITE_TOOLS_KEY] = favorites
+        }
+    }
+
+    val incognitoMode: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[INCOGNITO_MODE_KEY] ?: false
+    }
+
+    suspend fun setIncognitoMode(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[INCOGNITO_MODE_KEY] = enabled
+        }
+    }
+
 
     val fcmToken: Flow<String> = context.dataStore.data.map { preferences ->
         preferences[FCM_TOKEN_KEY] ?: ""
@@ -196,6 +239,56 @@ class UserStore(private val context: Context) {
         }
     }
 
+    val bubbleSizeDp: Flow<Float> = context.dataStore.data.map { preferences ->
+        preferences[BUBBLE_SIZE_DP_KEY] ?: 60f
+    }
+
+    suspend fun saveBubbleSizeDp(sizeDp: Float) {
+        context.dataStore.edit { preferences ->
+            preferences[BUBBLE_SIZE_DP_KEY] = sizeDp
+        }
+    }
+
+    val bubbleOpacityAlpha: Flow<Float> = context.dataStore.data.map { preferences ->
+        preferences[BUBBLE_OPACITY_ALPHA_KEY] ?: 0.9f
+    }
+
+    suspend fun saveBubbleOpacityAlpha(alpha: Float) {
+        context.dataStore.edit { preferences ->
+            preferences[BUBBLE_OPACITY_ALPHA_KEY] = alpha
+        }
+    }
+
+    val bubbleGlowColorHex: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[BUBBLE_GLOW_COLOR_HEX_KEY] ?: "#3DDC84"
+    }
+
+    suspend fun saveBubbleGlowColorHex(colorHex: String) {
+        context.dataStore.edit { preferences ->
+            preferences[BUBBLE_GLOW_COLOR_HEX_KEY] = colorHex
+        }
+    }
+
+    val useDynamicWallpaperColor: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[USE_DYNAMIC_WALLPAPER_COLOR_KEY] ?: true
+    }
+
+    suspend fun saveUseDynamicWallpaperColor(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[USE_DYNAMIC_WALLPAPER_COLOR_KEY] = enabled
+        }
+    }
+
+    val soundEffectsEnabled: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[SOUND_EFFECTS_ENABLED_KEY] ?: true
+    }
+
+    suspend fun saveSoundEffectsEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[SOUND_EFFECTS_ENABLED_KEY] = enabled
+        }
+    }
+
     val showImagePreviews: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[SHOW_IMAGE_PREVIEWS_KEY] ?: true
     }
@@ -207,7 +300,7 @@ class UserStore(private val context: Context) {
     }
 
     val advancedThumbnail: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[ADVANCED_THUMBNAIL_KEY] ?: false
+        preferences[ADVANCED_THUMBNAIL_KEY] ?: true
     }
 
     suspend fun saveAdvancedThumbnail(enabled: Boolean) {
@@ -270,11 +363,11 @@ class UserStore(private val context: Context) {
         context.dataStore.data.map { preferences -> preferences[SHOW_UPI_ID_KEY] ?: true }
 
     val themeMode: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[THEME_MODE_KEY] ?: "AMOLED"
+        preferences[THEME_MODE_KEY] ?: "LIGHT"
     }
 
     val dynamicColor: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[DYNAMIC_COLOR_KEY] ?: false
+        preferences[DYNAMIC_COLOR_KEY] ?: true
     }
     // Flow for analytics enabled flag
     val analyticsEnabled: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -301,6 +394,43 @@ class UserStore(private val context: Context) {
 
     val isOnboardingComplete: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[IS_ONBOARDING_COMPLETE_KEY] ?: false
+    }
+
+    val pinnedToolsJson: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[PINNED_TOOLS_KEY] ?: "[]"
+    }
+
+    val biometricGuardEnabled: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[BIOMETRIC_GUARD_ENABLED_KEY] ?: false
+    }
+
+    suspend fun savePinnedToolsJson(json: String) {
+        context.dataStore.edit { preferences ->
+            preferences[PINNED_TOOLS_KEY] = json
+        }
+    }
+
+    suspend fun togglePinnedTool(toolName: String) {
+        val currentJson = pinnedToolsJson.first()
+        val gson = com.google.gson.Gson()
+        val type = object : com.google.gson.reflect.TypeToken<MutableList<String>>() {}.type
+        val list: MutableList<String> = try {
+            gson.fromJson(currentJson, type) ?: mutableListOf()
+        } catch (_: Exception) {
+            mutableListOf()
+        }
+        if (list.contains(toolName)) {
+            list.remove(toolName)
+        } else {
+            list.add(toolName)
+        }
+        savePinnedToolsJson(gson.toJson(list))
+    }
+
+    suspend fun setBiometricGuardEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[BIOMETRIC_GUARD_ENABLED_KEY] = enabled
+        }
     }
 
     val bubbleEnabled: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -643,7 +773,7 @@ class UserStore(private val context: Context) {
     }
 
     val fontFamilyKey: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[FONT_FAMILY_KEY] ?: "system"
+        preferences[FONT_FAMILY_KEY] ?: "SPACE_GROTESK"
     }
 
     val fontScale: Flow<Float> = context.dataStore.data.map { preferences ->
@@ -658,16 +788,20 @@ class UserStore(private val context: Context) {
         preferences[CONFETTI_TYPE_KEY] ?: "Default"
     }
 
+    val vibrationStrength: Flow<Int> = context.dataStore.data.map { preferences ->
+        preferences[VIBRATION_STRENGTH_KEY] ?: 100
+    }
+
     val showShadow: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[SHOW_SHADOW_KEY] ?: true
     }
 
     val secureMode: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[SECURE_MODE_KEY] ?: false
+        preferences[SECURE_MODE_KEY] ?: true
     }
 
     val maxBrightness: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[MAX_BRIGHTNESS_KEY] ?: false
+        preferences[MAX_BRIGHTNESS_KEY] ?: true
     }
 
     val emojiHeader: Flow<String> = context.dataStore.data.map { preferences ->
@@ -824,11 +958,17 @@ class UserStore(private val context: Context) {
     suspend fun saveShakeToTrigger(enabled: Boolean) {
         context.dataStore.edit { preferences -> preferences[SHAKE_TO_TRIGGER_KEY] = enabled }
     }
-
     suspend fun saveHapticDuration(duration: Float) {
-        context.dataStore.edit { preferences -> preferences[HAPTIC_DURATION_KEY] = duration }
+        context.dataStore.edit { preferences ->
+            preferences[HAPTIC_DURATION_KEY] = duration
+        }
     }
 
+    suspend fun saveVibrationStrength(strength: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[VIBRATION_STRENGTH_KEY] = strength
+        }
+    }
     suspend fun saveCustomBackupPath(path: String?) {
         context.dataStore.edit { preferences ->
             if (path == null) {

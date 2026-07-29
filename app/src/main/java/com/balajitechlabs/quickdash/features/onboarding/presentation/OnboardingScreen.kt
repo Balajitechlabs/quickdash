@@ -42,7 +42,7 @@ import androidx.compose.ui.zIndex
  */
 @Composable
 fun OnboardingScreen(
-    userStore: UserStore,
+    mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
     onComplete: () -> Unit
 ) {
     val context = LocalContext.current
@@ -50,18 +50,18 @@ fun OnboardingScreen(
 
     var step by remember { mutableIntStateOf(0) }
     var showConfetti by remember { mutableStateOf(false) }
-    val confettiEnabled by userStore.confettiEnabled.collectAsState(initial = true)
+    val confettiEnabled by mainViewModel.settingsRepository.confettiEnabled.collectAsState(initial = true)
 
     // --- Persisted state ---
-    val savedUpiIds by userStore.upiIds.collectAsState(initial = emptyList())
-    val savedDefaultUpiId by userStore.defaultUpiId.collectAsState(initial = null)
-    val savedPayeeName by userStore.payeeName.collectAsState(initial = null)
-    val themeMode by userStore.themeMode.collectAsState(initial = "SYSTEM")
-    val shapeStyle by userStore.shapeStyle.collectAsState(initial = "Rounded")
-    val cornerRadius by userStore.cornerRadius.collectAsState(initial = 16f)
-    val borderWidth by userStore.borderWidth.collectAsState(initial = 1f)
-    val fontFamilyName by userStore.fontFamilyKey.collectAsState(initial = "SYSTEM")
-    val fontScale by userStore.fontScale.collectAsState(initial = 1f)
+    val savedUpiIds by mainViewModel.settingsRepository.upiIds.collectAsState(initial = emptyList())
+    val savedDefaultUpiId by mainViewModel.settingsRepository.defaultUpiId.collectAsState(initial = null)
+    val savedPayeeName by mainViewModel.settingsRepository.payeeName.collectAsState(initial = null)
+    val themeMode by mainViewModel.settingsRepository.themeMode.collectAsState(initial = "SYSTEM")
+    val shapeStyle by mainViewModel.settingsRepository.shapeStyle.collectAsState(initial = "Rounded")
+    val cornerRadius by mainViewModel.settingsRepository.cornerRadius.collectAsState(initial = 16f)
+    val borderWidth by mainViewModel.settingsRepository.borderWidth.collectAsState(initial = 1f)
+    val fontFamilyName by mainViewModel.settingsRepository.fontFamilyKey.collectAsState(initial = "SYSTEM")
+    val fontScale by mainViewModel.settingsRepository.fontScale.collectAsState(initial = 1f)
 
     // --- Ephemeral permission state ---
     var notifGranted by remember { mutableStateOf(false) }
@@ -95,9 +95,9 @@ fun OnboardingScreen(
                     payeeName = savedPayeeName,
                     onSave = { ids, name, defaultId ->
                         scope.launch {
-                            userStore.saveUpiIds(ids)
-                            userStore.saveDefaultUpiId(defaultId)
-                            userStore.savePayeeName(name)
+                            mainViewModel.settingsRepository.saveUpiIds(ids)
+                            mainViewModel.settingsRepository.saveDefaultUpiId(defaultId)
+                            mainViewModel.settingsRepository.savePayeeName(name)
                             step = 4
                         }
                     },
@@ -108,7 +108,7 @@ fun OnboardingScreen(
                 4 -> ThemeStep(
                     currentTheme = themeMode,
                     onThemeSelected = { code ->
-                        scope.launch { userStore.saveThemeMode(code) }
+                        scope.launch { mainViewModel.settingsRepository.saveThemeMode(code) }
                     },
                     onBack = { step = 3 },
                     onNext = { step = 5 }
@@ -119,13 +119,13 @@ fun OnboardingScreen(
                     currentRadius = cornerRadius,
                     currentBorder = borderWidth,
                     onShapeSelected = { style ->
-                        scope.launch { userStore.saveShapeStyle(style) }
+                        scope.launch { mainViewModel.settingsRepository.saveShapeStyle(style) }
                     },
                     onRadiusChanged = { radius ->
-                        scope.launch { userStore.saveCornerRadius(radius) }
+                        scope.launch { mainViewModel.settingsRepository.saveCornerRadius(radius) }
                     },
                     onBorderChanged = { border ->
-                        scope.launch { userStore.saveBorderWidth(border) }
+                        scope.launch { mainViewModel.settingsRepository.saveBorderWidth(border) }
                     },
                     onBack = { step = 4 },
                     onNext = { step = 6 }
@@ -138,10 +138,10 @@ fun OnboardingScreen(
                     cornerRadius = cornerRadius,
                     borderWidth = borderWidth,
                     onFontFamilySelected = { code ->
-                        scope.launch { userStore.saveFontFamilyKey(code) }
+                        scope.launch { mainViewModel.settingsRepository.saveFontFamilyKey(code) }
                     },
                     onFontScaleChanged = { scale ->
-                        scope.launch { userStore.saveFontScale(scale) }
+                        scope.launch { mainViewModel.settingsRepository.saveFontScale(scale) }
                     },
                     onBack = { step = 5 },
                     onNext = { step = 7 }
@@ -213,7 +213,7 @@ fun OnboardingScreen(
 
 private fun sendWelcomeNotification(context: Context) {
     val notificationManager =
-        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
     val channelId = "quickdash_welcome"
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -224,7 +224,7 @@ private fun sendWelcomeNotification(context: Context) {
         ).apply {
             description = "Welcome message after setup"
         }
-        notificationManager.createNotificationChannel(channel)
+        notificationManager?.createNotificationChannel(channel)
     }
 
     val intent = Intent(context, MainActivity::class.java).apply {
@@ -247,7 +247,7 @@ private fun sendWelcomeNotification(context: Context) {
         .setContentIntent(pendingIntent)
 
     try {
-        notificationManager.notify(1001, builder.build())
+        notificationManager?.notify(1001, builder.build())
     } catch (_: SecurityException) {
         // Notification permission not granted
     }

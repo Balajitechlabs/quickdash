@@ -102,13 +102,14 @@ fun WifiHistoryDialog(
             ) {
                 Text("Saved Networks & Stats", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, contentDescription = "Close")
+                    Icon(Icons.Filled.Close, contentDescription = "Close")
                 }
             }
         },
         text = {
             Column(modifier = Modifier.fillMaxWidth().height(400.dp)) {
                 // Tab layout
+                @Suppress("DEPRECATION")
                 TabRow(selectedTabIndex = selectedTab) {
                     Tab(
                         selected = selectedTab == 0,
@@ -129,7 +130,7 @@ fun WifiHistoryDialog(
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Icon(
-                                    Icons.Default.Wifi,
+                                    Icons.Filled.Wifi,
                                     contentDescription = null,
                                     modifier = Modifier.size(48.dp),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
@@ -181,7 +182,7 @@ fun WifiHistoryDialog(
                                             )
                                         }
                                         IconButton(onClick = { onRemoveEntry(item.ssid) }) {
-                                            Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
+                                            Icon(Icons.Filled.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
                                         }
                                     }
                                 }
@@ -218,8 +219,9 @@ fun WifiHistoryDialog(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
+                                    @Suppress("DEPRECATION")
                                     Icon(
-                                        Icons.Default.TrendingUp,
+                                        Icons.Filled.TrendingUp,
                                         contentDescription = null,
                                         modifier = Modifier.size(36.dp),
                                         tint = MaterialTheme.colorScheme.primary
@@ -285,7 +287,7 @@ fun WifiHistoryDialog(
                         contentColor = MaterialTheme.colorScheme.error
                     )
                 ) {
-                    Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Filled.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text("Clear All")
                 }

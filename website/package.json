@@ -1,14 +1,21 @@
 {
   "name": "quickdash-showcase",
+  "private": true,
   "version": "1.0.0",
-  "description": "Showcase website for QuickDash Floating Utility Hub",
-  "main": "index.html",
+  "type": "module",
   "scripts": {
-    "start": "npx http-server -p 8080 -c-1",
-    "dev": "npx http-server -p 8080 -c-1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "server": "node server/index.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.0"
+  },
   "devDependencies": {
-    "http-server": "^14.1.1"
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.2"
   }
 }

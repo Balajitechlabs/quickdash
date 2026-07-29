@@ -107,13 +107,14 @@ fun QrHistoryDialog(
             ) {
                 Text("QR Payment History", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, contentDescription = "Close")
+                    Icon(Icons.Filled.Close, contentDescription = "Close")
                 }
             }
         },
         text = {
             Column(modifier = Modifier.fillMaxWidth().height(400.dp)) {
                 // Tab layout
+                @Suppress("DEPRECATION")
                 TabRow(selectedTabIndex = selectedTab) {
                     Tab(
                         selected = selectedTab == 0,
@@ -152,7 +153,7 @@ fun QrHistoryDialog(
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Icon(
-                                    Icons.Default.History,
+                                    Icons.Filled.History,
                                     contentDescription = null,
                                     modifier = Modifier.size(48.dp),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
@@ -302,8 +303,9 @@ fun QrHistoryDialog(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
+                                    @Suppress("DEPRECATION")
                                     Icon(
-                                        Icons.Default.TrendingUp,
+                                        Icons.Filled.TrendingUp,
                                         contentDescription = null,
                                         modifier = Modifier.size(36.dp),
                                         tint = MaterialTheme.colorScheme.primary
@@ -416,7 +418,7 @@ fun QrHistoryDialog(
                         contentColor = MaterialTheme.colorScheme.error
                     )
                 ) {
-                    Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Filled.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text("Clear All")
                 }

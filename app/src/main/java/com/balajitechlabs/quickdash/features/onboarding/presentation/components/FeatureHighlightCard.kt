@@ -53,7 +53,7 @@ fun FeatureHighlightCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        border = ButtonDefaults.outlinedButtonBorder,
+        border = ButtonDefaults.outlinedButtonBorder(enabled = true),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(

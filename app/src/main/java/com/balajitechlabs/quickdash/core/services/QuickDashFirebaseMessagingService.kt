@@ -13,10 +13,16 @@ import com.balajitechlabs.quickdash.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import android.util.Log
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class QuickDashFirebaseMessagingService : FirebaseMessagingService() {
+
+    @Inject
+    lateinit var settingsRepository: com.balajitechlabs.quickdash.core.data.SettingsRepository
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.d(TAG, "From: ${remoteMessage.from}")
@@ -29,11 +35,10 @@ class QuickDashFirebaseMessagingService : FirebaseMessagingService() {
         if (body.isNotBlank()) {
             sendNotification(title, body)
             
-            // Persist the message locally in UserStore
-            val userStore = com.balajitechlabs.quickdash.core.data.UserStore(applicationContext)
+            // Persist the message locally
             kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
                 try {
-                    val rawJson = userStore.firebaseBlogPosts.first()
+                    val rawJson = settingsRepository.firebaseBlogPosts.first()
                     val listType = object : com.google.gson.reflect.TypeToken<MutableList<Map<String, Any>>>() {}.type
                     val gson = com.google.gson.Gson()
                     val list: MutableList<Map<String, Any>> = gson.fromJson(rawJson, listType) ?: mutableListOf()
@@ -50,10 +55,11 @@ class QuickDashFirebaseMessagingService : FirebaseMessagingService() {
                             "timestamp" to timestamp
                         )
                         list.add(0, newPost)
-                        userStore.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
+                        settingsRepository.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().recordException(e)
                 }
             }
         }
@@ -61,12 +67,12 @@ class QuickDashFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         Log.d(TAG, "Refreshed token: $token")
-        val userStore = com.balajitechlabs.quickdash.core.data.UserStore(applicationContext)
         kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
             try {
-                userStore.saveFcmToken(token)
+                settingsRepository.saveFcmToken(token)
             } catch (e: Exception) {
                 e.printStackTrace()
+                com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().recordException(e)
             }
         }
         sendRegistrationToServer(token)
@@ -94,7 +100,7 @@ class QuickDashFirebaseMessagingService : FirebaseMessagingService() {
             .setSound(defaultSoundUri)
             .setContentIntent(pendingIntent)
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -102,10 +108,10 @@ class QuickDashFirebaseMessagingService : FirebaseMessagingService() {
                 "Push Notifications",
                 NotificationManager.IMPORTANCE_DEFAULT
             )
-            notificationManager.createNotificationChannel(channel)
+            notificationManager?.createNotificationChannel(channel)
         }
 
-        notificationManager.notify(0, notificationBuilder.build())
+        notificationManager?.notify(0, notificationBuilder.build())
     }
 
     companion object {

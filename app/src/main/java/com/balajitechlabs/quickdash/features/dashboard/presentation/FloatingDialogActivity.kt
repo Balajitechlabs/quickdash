@@ -35,9 +35,13 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Locale
+import dagger.hilt.android.AndroidEntryPoint
+import androidx.activity.viewModels
 
+@AndroidEntryPoint
 class FloatingDialogActivity : FragmentActivity() {
     private lateinit var userStore: UserStore
+    private val mainViewModel: com.balajitechlabs.quickdash.MainViewModel by viewModels()
     private var isAuthenticated by mutableStateOf(false)
     private var isAuthRequired by mutableStateOf(false)
     private var isFullScreen by mutableStateOf(false)
@@ -79,7 +83,7 @@ class FloatingDialogActivity : FragmentActivity() {
         // cached coroutine value, falling back to the system default locale on failure.
         lifecycleScope.launch {
             try {
-                val langCode = userStore.appLanguage.first()
+                val langCode = mainViewModel.settingsRepository.appLanguage.first()
                 if (langCode.isNotBlank()) {
                     val locale = Locale.forLanguageTag(langCode)
                     Locale.setDefault(locale)
@@ -92,7 +96,7 @@ class FloatingDialogActivity : FragmentActivity() {
         }
 
         lifecycleScope.launch {
-            val locked = userStore.isAppLocked.first()
+            val locked = mainViewModel.settingsRepository.isAppLocked.first()
             if (locked) {
                 isAuthRequired = true
                 showBiometricPrompt()
@@ -101,7 +105,7 @@ class FloatingDialogActivity : FragmentActivity() {
             }
 
             // Secure Mode Setup
-            userStore.secureMode.collect { secure ->
+            mainViewModel.settingsRepository.secureMode.collect { secure ->
                 if (secure) {
                     window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
                 } else {
@@ -111,11 +115,11 @@ class FloatingDialogActivity : FragmentActivity() {
         }
 
         setContent {
-            val themeMode by userStore.themeMode.collectAsState(initial = "SYSTEM")
-            val dynamicColor by userStore.dynamicColor.collectAsState(initial = false)
+            val themeMode by mainViewModel.settingsRepository.themeMode.collectAsState(initial = "SYSTEM")
+            val dynamicColor by mainViewModel.settingsRepository.dynamicColor.collectAsState(initial = false)
             val isDarkTheme = when (themeMode) {
                 "LIGHT" -> false
-                "DARK" -> true
+                "DARK", "AMOLED" -> true
                 else -> isSystemInDarkTheme()
             }
 
@@ -174,19 +178,19 @@ class FloatingDialogActivity : FragmentActivity() {
                                 }
                         ) {
                             QuickDashApp(
-                                userStore = userStore,
+                                mainViewModel = mainViewModel,
                                 shortcutAction = currentAction,
                                 themeMode = themeMode,
                                 dynamicColor = dynamicColor,
                                 isFloating = !isFullScreen,
                                 onToggleDynamicColor = { enabled ->
                                     lifecycleScope.launch {
-                                        userStore.saveDynamicColor(enabled)
+                                        mainViewModel.settingsRepository.saveDynamicColor(enabled)
                                     }
                                 },
                                 onChangeThemeMode = { nextMode ->
                                     lifecycleScope.launch {
-                                        userStore.saveThemeMode(nextMode)
+                                        mainViewModel.settingsRepository.saveThemeMode(nextMode)
                                     }
                                 },
                                 onQrShown = { maxBrightness() },
@@ -285,7 +289,7 @@ class FloatingDialogActivity : FragmentActivity() {
                 val text = clipboard.primaryClip?.getItemAt(0)?.text?.toString()
                 if (!text.isNullOrBlank()) {
                     lifecycleScope.launch {
-                        val historyJson = userStore.clipboardHistory.first()
+                        val historyJson = mainViewModel.settingsRepository.clipboardHistory.first()
                         val gson = Gson()
                         val listType = object : TypeToken<List<String>>() {}.type
                         val list: MutableList<String> = try {
@@ -296,7 +300,7 @@ class FloatingDialogActivity : FragmentActivity() {
                         
                         if (!list.contains(text)) {
                             list.add(0, text)
-                            userStore.saveClipboardHistory(gson.toJson(list.take(20)))
+                            mainViewModel.settingsRepository.saveClipboardHistory(gson.toJson(list.take(20)))
                             android.widget.Toast.makeText(this@FloatingDialogActivity, "Saved to QuickDash Clipboard", android.widget.Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -338,9 +342,9 @@ class FloatingDialogActivity : FragmentActivity() {
     private fun captureAndSaveWindowScreenshot() {
         try {
             val rootView = window.decorView.rootView
-            rootView.isDrawingCacheEnabled = true
-            val bitmap = android.graphics.Bitmap.createBitmap(rootView.drawingCache)
-            rootView.isDrawingCacheEnabled = false
+            val bitmap = android.graphics.Bitmap.createBitmap(rootView.width, rootView.height, android.graphics.Bitmap.Config.ARGB_8888)
+            val canvas = android.graphics.Canvas(bitmap)
+            rootView.draw(canvas)
 
             val filename = "QuickDash_Window_${System.currentTimeMillis()}.png"
             val cv = android.content.ContentValues().apply {

@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option java_package = "com.balajitechlabs.quickdash.core.data";
+option java_multiple_files = true;
+
+message HistoryPreferences {
+  repeated WifiHistoryEntry wifi_history = 1;
+  repeated QrHistoryEntry qr_history = 2;
+  repeated string search_history = 3;
+  
+  // Stored as JSON strings for now to maintain backward compatibility with caller serialization
+  string notification_history = 4;
+  string hidden_notifications = 5;
+  string pinned_notifications = 6;
+  string poll_votes = 7;
+}
+
+message WifiHistoryEntry {
+  string ssid = 1;
+  string password = 2;
+  string security_type = 3;
+  int32 share_count = 4;
+  int64 last_shared_at = 5;
+  int64 saved_at = 6;
+}
+
+message QrHistoryEntry {
+  string amount = 1;
+  string note = 2;
+  string upi_id = 3;
+  string target_app = 4;
+  string category = 5;
+  int64 timestamp = 6;
+}

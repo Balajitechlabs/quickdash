@@ -45,6 +45,8 @@ import androidx.compose.ui.zIndex
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.AlertDialog
@@ -113,12 +115,19 @@ import com.balajitechlabs.quickdash.features.qr.presentation.SetupScreen
 import com.balajitechlabs.quickdash.features.qr.presentation.ShowQrScreen
 import com.balajitechlabs.quickdash.features.qr.presentation.PaymentTargetApp
 import com.balajitechlabs.quickdash.features.settings.presentation.SettingsScreen
-import com.balajitechlabs.quickdash.features.onboarding.presentation.OnboardingScreen
+
 import com.balajitechlabs.quickdash.core.utils.QRCodeGenerator
 import com.balajitechlabs.quickdash.core.utils.UpdateManager
 import com.balajitechlabs.quickdash.core.utils.UpdateState
 import com.balajitechlabs.quickdash.core.ui.components.WhatsNewDialog
-import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import com.balajitechlabs.quickdash.features.eyedropper.presentation.QuickColorEyedropperScreen
+import com.balajitechlabs.quickdash.features.pomodoro.presentation.QuickPomodoroScreen
+import com.balajitechlabs.quickdash.features.password.presentation.QuickPasswordScreen
+import com.balajitechlabs.quickdash.features.discount.presentation.QuickDiscountScreen
+import com.balajitechlabs.quickdash.features.exchange.presentation.QuickExchangeScreen
+import com.balajitechlabs.quickdash.features.voicememos.presentation.QuickVoiceMemosScreen
+import com.balajitechlabs.quickdash.features.reminders.presentation.QuickRemindersScreen
+import com.balajitechlabs.quickdash.features.qr.presentation.QuickQrScannerScreen
 
 sealed interface QuickDashUiState {
     data object Onboarding : QuickDashUiState
@@ -147,11 +156,19 @@ sealed interface QuickDashUiState {
     data object Capture : QuickDashUiState
     data object FirebaseSetup : QuickDashUiState
     data object BlogPosts : QuickDashUiState
+    data object Eyedropper : QuickDashUiState
+    data object Pomodoro : QuickDashUiState
+    data object Password : QuickDashUiState
+    data object Discount : QuickDashUiState
+    data object Exchange : QuickDashUiState
+    data object VoiceMemos : QuickDashUiState
+    data object Reminders : QuickDashUiState
+    data object QrScanner : QuickDashUiState
 }
 
 @Composable
 fun QuickDashApp(
-    userStore: UserStore,
+    mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
     shortcutAction: String? = null,
     notificationTitle: String? = null,
     notificationMessage: String? = null,
@@ -167,25 +184,25 @@ fun QuickDashApp(
     onDismiss: () -> Unit = {},
     onConvertToFullScreen: (() -> Unit)? = null
 ) {
-    val savedUpiIds by userStore.upiIds.collectAsState(initial = emptyList())
-    val savedPaypalIds by userStore.paypalIds.collectAsState(initial = emptyList())
-    val usePaypal by userStore.usePaypal.collectAsState(initial = false)
-    val defaultPaymentApp by userStore.defaultPaymentApp.collectAsState(initial = "ANY")
-    val qrHistoryJson by userStore.qrHistory.collectAsState(initial = "[]")
+    val savedUpiIds by mainViewModel.settingsRepository.upiIds.collectAsState(initial = emptyList())
+    val savedPaypalIds by mainViewModel.settingsRepository.paypalIds.collectAsState(initial = emptyList())
+    val usePaypal by mainViewModel.settingsRepository.usePaypal.collectAsState(initial = false)
+    val defaultPaymentApp by mainViewModel.settingsRepository.defaultPaymentApp.collectAsState(initial = "ANY")
+    val qrHistoryJson by mainViewModel.settingsRepository.qrHistory.collectAsState(initial = "[]")
     
     // Choose active IDs based on mode
     val activeIds = if (usePaypal) savedPaypalIds else savedUpiIds
     
-    val savedDefaultUpiId by userStore.defaultUpiId.collectAsState(initial = null)
-    val savedDefaultPaypalId by userStore.defaultPaypalId.collectAsState(initial = null)
+    val savedDefaultUpiId by mainViewModel.settingsRepository.defaultUpiId.collectAsState(initial = null)
+    val savedDefaultPaypalId by mainViewModel.settingsRepository.defaultPaypalId.collectAsState(initial = null)
     val activeDefaultId = if (usePaypal) savedDefaultPaypalId ?: savedPaypalIds.firstOrNull() ?: "" else savedDefaultUpiId ?: savedUpiIds.firstOrNull() ?: ""
 
-    val savedPayeeName by userStore.payeeName.collectAsState(initial = null)
-    val recentAmounts by userStore.recentAmounts.collectAsState(initial = emptyList())
-    val showUpiId by userStore.showUpiId.collectAsState(initial = true)
+    val savedPayeeName by mainViewModel.settingsRepository.payeeName.collectAsState(initial = null)
+    val recentAmounts by mainViewModel.settingsRepository.recentAmounts.collectAsState(initial = emptyList())
+    val showUpiId by mainViewModel.settingsRepository.showUpiId.collectAsState(initial = true)
     
-    val bubbleEnabled by userStore.bubbleEnabled.collectAsState(initial = true)
-    val emojiHeaderVal by userStore.emojiHeader.collectAsState(initial = "🚀")
+    val bubbleEnabled by mainViewModel.settingsRepository.bubbleEnabled.collectAsState(initial = true)
+    val emojiHeaderVal by mainViewModel.settingsRepository.emojiHeader.collectAsState(initial = "🚀")
 
     val scope = rememberCoroutineScope()
     val qrColorVal = MaterialTheme.colorScheme.primary.toArgb()
@@ -277,13 +294,7 @@ fun QuickDashApp(
         }
     }
 
-    LaunchedEffect(Unit) {
-        val isOnboardingComplete = userStore.isOnboardingComplete.first()
-        if (!isOnboardingComplete) {
-            navigationStack.clear()
-            navigationStack.add(QuickDashUiState.Onboarding)
-        }
-    }
+
 
     // showNotificationPopup is passed in as a parameter
 
@@ -334,10 +345,10 @@ fun QuickDashApp(
 
 
     QuickDashContent(
-        userStore = userStore,
+        mainViewModel = mainViewModel,
         uiState = uiState,
         usePaypal = usePaypal,
-        onTogglePaypal = { scope.launch { userStore.saveUsePaypal(it) } },
+        onTogglePaypal = { scope.launch { mainViewModel.settingsRepository.saveUsePaypal(it) } },
         isFloating = isFloating,
         recentAmounts = recentAmounts,
         upiIds = activeIds,
@@ -345,7 +356,7 @@ fun QuickDashApp(
         showUpiId = showUpiId,
         themeMode = themeMode,
         dynamicColor = dynamicColor,
-        hapticEnabled = userStore.hapticEnabled.collectAsState(initial = true).value,
+        hapticEnabled = mainViewModel.settingsRepository.hapticEnabled.collectAsState(initial = true).value,
         onToggleDynamicColor = onToggleDynamicColor,
         onChangeThemeMode = onChangeThemeMode,
         payeeName = savedPayeeName,
@@ -355,18 +366,18 @@ fun QuickDashApp(
         onToggleSelectingCountry = { selectingCountry = it },
         defaultPaymentApp = defaultPaymentApp,
         qrHistoryJson = qrHistoryJson,
-        onClearQrHistory = { scope.launch { userStore.clearQrHistory() } },
+        onClearQrHistory = { scope.launch { mainViewModel.settingsRepository.clearQrHistory() } },
         onScanQr = triggerScanQr,
         onSaveUpiIds = { ids, name, defaultId ->
             scope.launch {
                 if (usePaypal) {
-                    userStore.savePaypalIds(ids)
-                    userStore.saveDefaultPaypalId(defaultId)
+                    mainViewModel.settingsRepository.savePaypalIds(ids)
+                    mainViewModel.settingsRepository.saveDefaultPaypalId(defaultId)
                 } else {
-                    userStore.saveUpiIds(ids)
-                    userStore.saveDefaultUpiId(defaultId)
+                    mainViewModel.settingsRepository.saveUpiIds(ids)
+                    mainViewModel.settingsRepository.saveDefaultUpiId(defaultId)
                 }
-                userStore.savePayeeName(name)
+                mainViewModel.settingsRepository.savePayeeName(name)
                 val wasManaging = (navigationStack.lastOrNull() as? QuickDashUiState.Setup)?.isManaging == true
                 if (navigationStack.isNotEmpty() && navigationStack.lastOrNull() is QuickDashUiState.Setup) {
                     navigationStack.removeAt(navigationStack.lastIndex)
@@ -378,7 +389,7 @@ fun QuickDashApp(
         },
         onGenerateQr = { amount, note, selectedId, targetApp, category, useCircularDots, useGradient ->
             if (amount.isNotBlank()) {
-                scope.launch { userStore.saveRecentAmount(amount) }
+                scope.launch { mainViewModel.settingsRepository.saveRecentAmount(amount) }
             }
 
             val payScheme = targetApp.schemePrefix
@@ -402,9 +413,9 @@ fun QuickDashApp(
             }
 
             scope.launch {
-                userStore.saveQrHistoryItem(amount, note, selectedId, targetApp.name, category)
+                mainViewModel.settingsRepository.saveQrHistoryItem(amount, note, selectedId, targetApp.name, category)
                 val bitmap = withContext(Dispatchers.Default) {
-                    val useEmoji = userStore.qrUseEmojiOverlay.first()
+                    val useEmoji = mainViewModel.settingsRepository.qrUseEmojiOverlay.first()
                     QRCodeGenerator.generateQRCode(
                         context = appContext,
                         text = payURL,
@@ -451,6 +462,14 @@ fun QuickDashApp(
                 QuickTool.CONVERTER -> QuickDashUiState.Converter
                 QuickTool.TRANSLATOR -> QuickDashUiState.Translator
                 QuickTool.CAPTURE -> QuickDashUiState.Capture
+                QuickTool.EYEDROPPER -> QuickDashUiState.Eyedropper
+                QuickTool.POMODORO -> QuickDashUiState.Pomodoro
+                QuickTool.PASSWORD -> QuickDashUiState.Password
+                QuickTool.DISCOUNT -> QuickDashUiState.Discount
+                QuickTool.EXCHANGE -> QuickDashUiState.Exchange
+                QuickTool.VOICEMEMOS -> QuickDashUiState.VoiceMemos
+                QuickTool.REMINDERS -> QuickDashUiState.Reminders
+                QuickTool.QRSCANNER -> QuickDashUiState.QrScanner
             }
             navigateTo(targetState)
         },
@@ -471,7 +490,7 @@ fun QuickDashApp(
         },
         onOnboardingComplete = {
             scope.launch {
-                userStore.setOnboardingComplete()
+                mainViewModel.settingsRepository.setOnboardingComplete()
                 navigationStack.removeAt(navigationStack.lastIndex)
                 navigationStack.add(QuickDashUiState.Dashboard)
             }
@@ -479,7 +498,7 @@ fun QuickDashApp(
         bubbleEnabled = bubbleEnabled,
         onToggleBubble = { enabled ->
             scope.launch {
-                userStore.setBubbleEnabled(enabled)
+                mainViewModel.settingsRepository.setBubbleEnabled(enabled)
             }
         },
         onConvertToFullScreen = onConvertToFullScreen,
@@ -492,7 +511,7 @@ fun QuickDashApp(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuickDashContent(
-    userStore: UserStore,
+    mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
     uiState: QuickDashUiState,
     usePaypal: Boolean = false,
     onTogglePaypal: (Boolean) -> Unit = {},
@@ -533,10 +552,7 @@ fun QuickDashContent(
     showNotificationPopup: Boolean = false,
     onToggleNotificationPopup: (Boolean) -> Unit = {}
 ) {
-    if (uiState is QuickDashUiState.Onboarding) {
-        OnboardingScreen(userStore = userStore, onComplete = onOnboardingComplete)
-        return
-    }
+
 
     var showSettingsPopup by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -545,21 +561,21 @@ fun QuickDashContent(
     var showWhatsNewOnLaunch by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        val lastSeen = userStore.lastSeenVersion.first()
+        val lastSeen = mainViewModel.settingsRepository.lastSeenVersion.first()
         val currentVersion = try {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            packageInfo.versionName ?: "2.2.6"
+            packageInfo.versionName ?: "5.1.1"
         } catch (e: Exception) {
-            "2.2.6"
+            "5.1.1"
         }
         if (lastSeen != currentVersion) {
             showWhatsNewOnLaunch = true
         }
 
         // Clipboard auto-clean interval execution check
-        val interval = userStore.clipboardAutocleanInterval.first()
-        val customDelay = userStore.clipboardClearDelay.first()
-        val lastClean = userStore.lastClipboardCleanTime.first()
+        val interval = mainViewModel.settingsRepository.clipboardAutocleanInterval.first()
+        val customDelay = mainViewModel.settingsRepository.clipboardClearDelay.first()
+        val lastClean = mainViewModel.settingsRepository.lastClipboardCleanTime.first()
         val now = System.currentTimeMillis()
         var shouldClean = false
         
@@ -578,21 +594,21 @@ fun QuickDashContent(
             shouldClean = true
         }
         if (shouldClean) {
-            userStore.saveClipboardHistory("[]")
-            userStore.saveLastClipboardCleanTime(now)
+            mainViewModel.settingsRepository.saveClipboardHistory("[]")
+            mainViewModel.settingsRepository.saveLastClipboardCleanTime(now)
         }
     }
-    val emojiHeaderVal by userStore.emojiHeader.collectAsState(initial = "🚀")
-    val qrUseEmojiOverlay by userStore.qrUseEmojiOverlay.collectAsState(initial = false)
-    val confettiEnabled by userStore.confettiEnabled.collectAsState(initial = true)
+    val emojiHeaderVal by mainViewModel.settingsRepository.emojiHeader.collectAsState(initial = "🚀")
+    val qrUseEmojiOverlay by mainViewModel.settingsRepository.qrUseEmojiOverlay.collectAsState(initial = false)
+    val confettiEnabled by mainViewModel.settingsRepository.confettiEnabled.collectAsState(initial = true)
     var triggerEmojiConfetti by remember { mutableStateOf(false) }
     var emojiConfettiKey by remember { mutableStateOf(0) }
     var settingsConfettiType by remember { mutableStateOf<String?>(null) }
     var settingsConfettiKey by remember { mutableStateOf(0) }
     var showFullScreenPrompt by remember { mutableStateOf(false) }
 
-    val rawPostsJson by userStore.firebaseBlogPosts.collectAsState(initial = "[]")
-    val hiddenJson by userStore.hiddenNotifications.collectAsState(initial = "[]")
+    val rawPostsJson by mainViewModel.settingsRepository.firebaseBlogPosts.collectAsState(initial = "[]")
+    val hiddenJson by mainViewModel.settingsRepository.hiddenNotifications.collectAsState(initial = "[]")
     val activeNotificationCount = remember(rawPostsJson, hiddenJson) {
         try {
             val gson = com.google.gson.Gson()
@@ -628,6 +644,7 @@ fun QuickDashContent(
                             .padding(horizontal = 16.dp, vertical = 16.dp)
                             .fillMaxWidth()
                             .wrapContentHeight()
+                            .animateContentSize(animationSpec = androidx.compose.animation.core.spring(dampingRatio = 0.85f, stiffness = 400f))
                             .then(if (showShadow) Modifier.shadow(8.dp, cardShape) else Modifier)
                     } else {
                         Modifier.fillMaxSize()
@@ -727,6 +744,14 @@ fun QuickDashContent(
                                 QuickDashUiState.Converter -> "Quick Converter"
                                 QuickDashUiState.Translator -> "Quick Translator"
                                 QuickDashUiState.Capture -> "Quick Capture"
+                                QuickDashUiState.Eyedropper -> "Quick Eyedropper"
+                                QuickDashUiState.Pomodoro -> "Quick Pomodoro"
+                                QuickDashUiState.Password -> "Quick Password"
+                                QuickDashUiState.Discount -> "Quick Discount"
+                                QuickDashUiState.Exchange -> "Quick Exchange"
+                                QuickDashUiState.VoiceMemos -> "Quick Voice Memos"
+                                QuickDashUiState.Reminders -> "Quick Reminders"
+                                QuickDashUiState.QrScanner -> "Quick QR Scanner"
                                 is QuickDashUiState.Setup,
                                 is QuickDashUiState.EnterAmount,
                                 is QuickDashUiState.ShowQr -> "Quick Collect"
@@ -847,34 +872,43 @@ fun QuickDashContent(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                val dashboardGridState = rememberLazyGridState()
+                val dashboardListState = rememberLazyListState()
+
                 // ── Animated Screen Content ──────────────────────
                 AnimatedContent(
                     targetState = uiState,
                     transitionSpec = {
-                        val duration = 300
-                        (fadeIn(animationSpec = tween(duration, easing = androidx.compose.animation.core.LinearOutSlowInEasing)) +
-                                scaleIn(initialScale = 0.95f, animationSpec = tween(duration, easing = androidx.compose.animation.core.LinearOutSlowInEasing)))
-                            .togetherWith(
-                                fadeOut(animationSpec = tween(duration, easing = androidx.compose.animation.core.FastOutLinearInEasing)) +
-                                scaleOut(targetScale = 0.95f, animationSpec = tween(duration, easing = androidx.compose.animation.core.FastOutLinearInEasing))
-                            )
+                        val isReturningToDashboard = targetState == QuickDashUiState.Dashboard
+                        if (isReturningToDashboard) {
+                            (slideInHorizontally(animationSpec = androidx.compose.animation.core.spring(dampingRatio = 0.85f, stiffness = 400f)) { -it / 3 } +
+                                    fadeIn(animationSpec = androidx.compose.animation.core.spring(stiffness = 400f)))
+                                .togetherWith(
+                                    slideOutHorizontally(animationSpec = androidx.compose.animation.core.spring(dampingRatio = 0.85f, stiffness = 400f)) { it } +
+                                            fadeOut(animationSpec = androidx.compose.animation.core.spring(stiffness = 400f))
+                                )
+                        } else {
+                            (slideInHorizontally(animationSpec = androidx.compose.animation.core.spring(dampingRatio = 0.85f, stiffness = 400f)) { it } +
+                                    fadeIn(animationSpec = androidx.compose.animation.core.spring(stiffness = 400f)))
+                                .togetherWith(
+                                    slideOutHorizontally(animationSpec = androidx.compose.animation.core.spring(dampingRatio = 0.85f, stiffness = 400f)) { -it / 3 } +
+                                            fadeOut(animationSpec = androidx.compose.animation.core.spring(stiffness = 400f))
+                                )
+                        }
                     },
                     contentAlignment = Alignment.Center,
                     label = "screenTransition",
                     modifier = Modifier.fillMaxWidth()
                 ) { state ->
                     when (state) {
-                        QuickDashUiState.Onboarding -> {
-                            // Handled top-level now, but fallback here just in case
-                            OnboardingScreen(
-                                userStore = userStore,
-                                onComplete = onOnboardingComplete
-                            )
-                        }
+
                         QuickDashUiState.Dashboard ->
                             DashboardScreen(
                                 hapticEnabled = hapticEnabled,
                                 isFloating = isFloating,
+                                mainViewModel = mainViewModel,
+                                gridState = dashboardGridState,
+                                listState = dashboardListState,
                                 onToolSelected = onToolSelected
                             )
                         is QuickDashUiState.Setup ->
@@ -899,8 +933,8 @@ fun QuickDashContent(
                                 onManageUpiIds = onManageUpiIds
                             )
                         is QuickDashUiState.ShowQr -> {
-                            val confettiType by userStore.confettiType.collectAsState(initial = "Default")
-                            val hapticLevel by userStore.hapticLevel.collectAsState(initial = "Crisp")
+                            val confettiType by mainViewModel.settingsRepository.confettiType.collectAsState(initial = "Default")
+                            val hapticLevel by mainViewModel.settingsRepository.hapticLevel.collectAsState(initial = "Crisp")
                             ShowQrScreen(
                                 amount = state.amount,
                                 qrBitmap = state.qrBitmap,
@@ -918,7 +952,6 @@ fun QuickDashContent(
                         }
                         QuickDashUiState.WhatsApp ->
                             QuickChatScreen(
-                                userStore = userStore,
                                 showSettings = showChatSettings,
                                 onToggleSettings = onToggleChatSettings,
                                 selectingCountry = selectingCountry,
@@ -927,12 +960,11 @@ fun QuickDashContent(
                             )
                         QuickDashUiState.Instagram ->
                             QuickSocialScreen(
-                                userStore = userStore,
+                                mainViewModel = mainViewModel,
                                 onDismiss = onDismiss
                             )
                         QuickDashUiState.Settings ->
                             SettingsScreen(
-                                userStore = userStore,
                                 themeMode = themeMode,
                                 dynamicColor = dynamicColor,
                                 bubbleEnabled = bubbleEnabled,
@@ -950,23 +982,21 @@ fun QuickDashContent(
                         QuickDashUiState.SystemLogs ->
                             SystemLogsScreen(onDismiss = onBackToHome)
                         QuickDashUiState.Notes ->
-                            QuickNotesScreen(userStore = userStore, isFloating = isFloating, onDismiss = onBackToHome)
+                            QuickNotesScreen(mainViewModel = mainViewModel, isFloating = isFloating, onDismiss = onBackToHome)
                         QuickDashUiState.Search -> {
-                            QuickSearchScreen(userStore = userStore, onDismiss = onBackToHome)
+                            QuickSearchScreen(mainViewModel = mainViewModel, onDismiss = onBackToHome)
                         }
                         QuickDashUiState.Web -> {
                             QuickWebScreen(onClose = onBackToHome)
                         }
                         QuickDashUiState.Wifi -> {
                             QuickWifiScreen(
-                                userStore = userStore,
                                 isFloating = isFloating,
                                 onDismiss = onBackToHome
                             )
                         }
                         QuickDashUiState.Clipboard ->
                             com.balajitechlabs.quickdash.features.clipboard.presentation.ClipboardScreen(
-                                userStore = userStore,
                                 isFloating = isFloating,
                                 onTriggerConfetti = {
                                     settingsConfettiType = "Default"
@@ -980,12 +1010,19 @@ fun QuickDashContent(
                             )
                         QuickDashUiState.Timer ->
                             com.balajitechlabs.quickdash.features.timer.presentation.QuickTimerScreen(
-                                userStore = userStore,
                                 isFloating = isFloating
                             )
                         QuickDashUiState.Converter -> QuickConverterScreen()
                         QuickDashUiState.Translator -> QuickTranslatorScreen()
-                        QuickDashUiState.Capture -> QuickCaptureScreen()
+                        QuickDashUiState.Capture -> QuickCaptureScreen(isFloating = isFloating)
+                        QuickDashUiState.Eyedropper -> QuickColorEyedropperScreen(isFloating = isFloating)
+                        QuickDashUiState.Pomodoro -> QuickPomodoroScreen(isFloating = isFloating)
+                        QuickDashUiState.Password -> QuickPasswordScreen(isFloating = isFloating)
+                        QuickDashUiState.Discount -> QuickDiscountScreen(isFloating = isFloating)
+                        QuickDashUiState.Exchange -> QuickExchangeScreen(isFloating = isFloating)
+                        QuickDashUiState.VoiceMemos -> QuickVoiceMemosScreen(isFloating = isFloating)
+                        QuickDashUiState.Reminders -> QuickRemindersScreen()
+                        QuickDashUiState.QrScanner -> QuickQrScannerScreen()
                         else -> {
                             // Phase 4+ screens placeholders
                         }
@@ -1081,7 +1118,6 @@ fun QuickDashContent(
                         // Settings content
                         Box(modifier = Modifier.weight(1f)) {
                             com.balajitechlabs.quickdash.features.settings.presentation.SettingsScreen(
-                                userStore = userStore,
                                 themeMode = themeMode,
                                 dynamicColor = dynamicColor,
                                 bubbleEnabled = bubbleEnabled,
@@ -1166,7 +1202,7 @@ fun QuickDashContent(
                         )
                         // Notifications list
                         Box(modifier = Modifier.weight(1f)) {
-                            BlogPostsScreen(userStore = userStore)
+                            BlogPostsScreen()
                         }
                     }
                 }
@@ -1301,7 +1337,7 @@ fun QuickDashContent(
     }
     if (showWhatsNewOnLaunch) {
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val versionName = packageInfo.versionName ?: "2.2.6"
+        val versionName = packageInfo.versionName ?: "5.1.1"
         
         LaunchedEffect(Unit) {
             settingsConfettiType = "Corner"
@@ -1313,7 +1349,7 @@ fun QuickDashContent(
             onDismiss = {
                 showWhatsNewOnLaunch = false
                 scope.launch {
-                    userStore.saveLastSeenVersion(versionName)
+                    mainViewModel.settingsRepository.saveLastSeenVersion(versionName)
                 }
             }
         )
@@ -1480,7 +1516,7 @@ fun UpdateTag() {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
             "v${packageInfo.versionName}"
         } catch (e: Exception) {
-            "v2.1.8"
+            "v5.1.1"
         }
     }
 

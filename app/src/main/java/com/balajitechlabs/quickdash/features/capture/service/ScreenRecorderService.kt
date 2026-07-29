@@ -104,34 +104,53 @@ class ScreenRecorderService : Service() {
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
         val filename = "QuickDash_REC_$timestamp.mp4"
 
-        mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            MediaRecorder(this)
-        } else {
-            @Suppress("DEPRECATION")
-            MediaRecorder()
+        // Configure MediaRecorder with robust audio fallback
+        var actualRecordAudio = recordAudio && androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) == android.content.pm.PackageManager.PERMISSION_GRANTED
+
+        val cacheFile = File(cacheDir, filename)
+        outputFilePath = cacheFile.absolutePath
+
+        fun configureRecorder(withAudio: Boolean): Boolean {
+            return try {
+                val recorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    MediaRecorder(this@ScreenRecorderService)
+                } else {
+                    @Suppress("DEPRECATION")
+                    MediaRecorder()
+                }
+                recorder.apply {
+                    if (withAudio) setAudioSource(MediaRecorder.AudioSource.MIC)
+                    setVideoSource(MediaRecorder.VideoSource.SURFACE)
+                    setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                    setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+                    if (withAudio) {
+                        setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+                        setAudioSamplingRate(44100)
+                        setAudioEncodingBitRate(128000)
+                    }
+                    setVideoSize(width, height)
+                    setVideoFrameRate(30)
+                    setVideoEncodingBitRate(calculateBitrate(width, height))
+                    setOutputFile(outputFilePath)
+                    prepare()
+                }
+                mediaRecorder = recorder
+                true
+            } catch (e: Exception) {
+                e.printStackTrace()
+                false
+            }
         }
 
-        // Configure MediaRecorder
-        mediaRecorder!!.apply {
-            if (recordAudio) setAudioSource(MediaRecorder.AudioSource.MIC)
-            setVideoSource(MediaRecorder.VideoSource.SURFACE)
-            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-            setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-            if (recordAudio) setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-            setVideoSize(width, height)
-            setVideoFrameRate(30)
-            setVideoEncodingBitRate(calculateBitrate(width, height))
-            if (recordAudio) {
-                setAudioSamplingRate(44100)
-                setAudioEncodingBitRate(128000)
-            }
+        if (!configureRecorder(actualRecordAudio) && actualRecordAudio) {
+            // Audio recording failed — retry without audio
+            configureRecorder(false)
+        }
 
-            // Save to app-specific cache first; move to MediaStore on stop
-            val cacheFile = File(cacheDir, filename)
-            outputFilePath = cacheFile.absolutePath
-            setOutputFile(outputFilePath)
-
-            prepare()
+        if (mediaRecorder == null) {
+            Toast.makeText(this, "Failed to start screen recorder engine", Toast.LENGTH_SHORT).show()
+            stopSelf()
+            return
         }
 
         // Acquire MediaProjection
@@ -250,8 +269,8 @@ class ScreenRecorderService : Service() {
                 description = "Active screen recording notification"
                 setShowBadge(false)
             }
-            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-                .createNotificationChannel(channel)
+            (getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager)
+                ?.createNotificationChannel(channel)
         }
     }
 

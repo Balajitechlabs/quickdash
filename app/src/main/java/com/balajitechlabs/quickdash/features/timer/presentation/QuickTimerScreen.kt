@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -63,9 +64,11 @@ data class TimerHistoryEntry(
     val detail: String = ""
 )
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuickTimerScreen(userStore: UserStore, isFloating: Boolean = false) {
+fun QuickTimerScreen(viewModel: QuickTimerViewModel = hiltViewModel(), isFloating: Boolean = false) {
     var selectedTab by remember { mutableIntStateOf(0) }
     val haptic = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
@@ -110,16 +113,16 @@ fun QuickTimerScreen(userStore: UserStore, isFloating: Boolean = false) {
 
         AnimatedContent(targetState = selectedTab, label = "tab") { tab ->
             when (tab) {
-                0 -> StopwatchContent(userStore = userStore, scope = scope, isFloating = isFloating)
-                1 -> CountdownContent(userStore = userStore, scope = scope, isFloating = isFloating)
-                else -> TimerHistoryContent(userStore = userStore, isFloating = isFloating)
+                0 -> StopwatchContent(viewModel = viewModel, scope = scope, isFloating = isFloating)
+                1 -> CountdownContent(viewModel = viewModel, scope = scope, isFloating = isFloating)
+                else -> TimerHistoryContent(viewModel = viewModel, isFloating = isFloating)
             }
         }
     }
 }
 
 @Composable
-private fun StopwatchContent(userStore: UserStore, scope: kotlinx.coroutines.CoroutineScope, isFloating: Boolean) {
+private fun StopwatchContent(viewModel: QuickTimerViewModel, scope: kotlinx.coroutines.CoroutineScope, isFloating: Boolean) {
     val haptic = LocalHapticFeedback.current
     var isRunning by remember { mutableStateOf(false) }
     var elapsed by remember { mutableLongStateOf(0L) }
@@ -192,7 +195,7 @@ private fun StopwatchContent(userStore: UserStore, scope: kotlinx.coroutines.Cor
                                 timestamp = System.currentTimeMillis(),
                                 detail = if (count > 0) "$count Laps" else "Standard Run"
                             )
-                            addTimerHistoryEntry(userStore, scope, entry)
+                            addTimerHistoryEntry(viewModel, scope, entry)
                         }
                         elapsed = 0L; laps = emptyList(); lastLapTime = 0L
                     }
@@ -202,7 +205,7 @@ private fun StopwatchContent(userStore: UserStore, scope: kotlinx.coroutines.Cor
                 contentPadding = PaddingValues(0.dp)
             ) {
                 Icon(
-                    imageVector = if (isRunning) Icons.Default.Flag else Icons.Default.Refresh,
+                    imageVector = if (isRunning) Icons.Filled.Flag else Icons.Filled.Refresh,
                     contentDescription = if (isRunning) "Lap" else "Reset",
                     modifier = Modifier.size(24.dp)
                 )
@@ -219,7 +222,7 @@ private fun StopwatchContent(userStore: UserStore, scope: kotlinx.coroutines.Cor
                 modifier = Modifier.size(72.dp)
             ) {
                 Icon(
-                    imageVector = if (isRunning) Icons.Default.Pause else Icons.Default.PlayArrow,
+                    imageVector = if (isRunning) Icons.Filled.Pause else Icons.Filled.PlayArrow,
                     contentDescription = if (isRunning) "Pause" else "Start",
                     modifier = Modifier.size(32.dp)
                 )
@@ -268,7 +271,7 @@ private val presetTimers = listOf(
 )
 
 @Composable
-private fun CountdownContent(userStore: UserStore, scope: kotlinx.coroutines.CoroutineScope, isFloating: Boolean) {
+private fun CountdownContent(viewModel: QuickTimerViewModel, scope: kotlinx.coroutines.CoroutineScope, isFloating: Boolean) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val haptic = LocalHapticFeedback.current
     var totalMs by remember { mutableLongStateOf(300_000L) }
@@ -365,7 +368,7 @@ private fun CountdownContent(userStore: UserStore, scope: kotlinx.coroutines.Cor
                         timestamp = System.currentTimeMillis(),
                         detail = formatCountdown(totalMs) + " Preset"
                     )
-                    addTimerHistoryEntry(userStore, scope, entry)
+                    addTimerHistoryEntry(viewModel, scope, entry)
                 }
                 delay(100L)
             }
@@ -472,7 +475,7 @@ private fun CountdownContent(userStore: UserStore, scope: kotlinx.coroutines.Cor
                 modifier = Modifier.size(64.dp),
                 contentPadding = PaddingValues(0.dp)
             ) {
-                Icon(Icons.Default.Refresh, contentDescription = "Reset", modifier = Modifier.size(24.dp))
+                Icon(Icons.Filled.Refresh, contentDescription = "Reset", modifier = Modifier.size(24.dp))
             }
 
             FloatingActionButton(
@@ -489,7 +492,7 @@ private fun CountdownContent(userStore: UserStore, scope: kotlinx.coroutines.Cor
                 modifier = Modifier.size(72.dp)
             ) {
                 Icon(
-                    imageVector = if (isRunning) Icons.Default.Pause else if (finished) Icons.Default.Refresh else Icons.Default.PlayArrow,
+                    imageVector = if (isRunning) Icons.Filled.Pause else if (finished) Icons.Filled.Refresh else Icons.Filled.PlayArrow,
                     contentDescription = null,
                     modifier = Modifier.size(32.dp)
                 )
@@ -499,8 +502,8 @@ private fun CountdownContent(userStore: UserStore, scope: kotlinx.coroutines.Cor
 }
 
 @Composable
-private fun TimerHistoryContent(userStore: UserStore, isFloating: Boolean) {
-    val historyJson by userStore.timerHistory.collectAsState(initial = "[]")
+private fun TimerHistoryContent(viewModel: QuickTimerViewModel, isFloating: Boolean) {
+    val historyJson by viewModel.timerHistory.collectAsState(initial = "[]")
     val gson = remember { Gson() }
     val listType = remember { object : TypeToken<List<TimerHistoryEntry>>() {}.type }
     val entries = remember(historyJson) {
@@ -548,7 +551,7 @@ private fun TimerHistoryContent(userStore: UserStore, isFloating: Boolean) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.History,
+                    imageVector = Icons.Filled.History,
                     contentDescription = null,
                     modifier = Modifier.size(48.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
@@ -579,7 +582,7 @@ private fun TimerHistoryContent(userStore: UserStore, isFloating: Boolean) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                imageVector = if (entry.type == "Stopwatch") Icons.Default.Flag else Icons.Default.Timer,
+                                imageVector = if (entry.type == "Stopwatch") Icons.Filled.Flag else Icons.Filled.Timer,
                                 contentDescription = entry.type,
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(24.dp)
@@ -605,11 +608,11 @@ private fun TimerHistoryContent(userStore: UserStore, isFloating: Boolean) {
                             IconButton(
                                 onClick = {
                                     val newList = entries.filter { it != entry }
-                                    scope.launch { userStore.saveTimerHistory(gson.toJson(newList)) }
+                                    viewModel.saveTimerHistory(gson.toJson(newList))
                                 }
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Close,
+                                    imageVector = Icons.Filled.Close,
                                     contentDescription = "Delete entry",
                                     tint = MaterialTheme.colorScheme.error,
                                     modifier = Modifier.size(18.dp)
@@ -630,7 +633,7 @@ private fun TimerHistoryContent(userStore: UserStore, isFloating: Boolean) {
             confirmButton = {
                 TextButton(onClick = {
                     scope.launch {
-                        userStore.saveTimerHistory("[]")
+                        viewModel.saveTimerHistory("[]")
                     }
                     showClearAllConfirmation = false
                 }) {
@@ -647,7 +650,7 @@ private fun TimerHistoryContent(userStore: UserStore, isFloating: Boolean) {
 }
 
 private fun addTimerHistoryEntry(
-    userStore: UserStore,
+    viewModel: QuickTimerViewModel,
     scope: kotlinx.coroutines.CoroutineScope,
     entry: TimerHistoryEntry
 ) {
@@ -655,10 +658,10 @@ private fun addTimerHistoryEntry(
         try {
             val gson = Gson()
             val listType = object : TypeToken<List<TimerHistoryEntry>>() {}.type
-            val currentJson = userStore.timerHistory.first()
-            val currentList = gson.fromJson<List<TimerHistoryEntry>>(currentJson, listType) ?: emptyList()
+            val currentJson = viewModel.timerHistory.first()
+            val currentList: List<TimerHistoryEntry> = gson.fromJson(currentJson, listType) ?: emptyList()
             val newList = (listOf(entry) + currentList).take(50)
-            userStore.saveTimerHistory(gson.toJson(newList))
+            viewModel.saveTimerHistory(gson.toJson(newList))
         } catch (e: Exception) {
             e.printStackTrace()
         }

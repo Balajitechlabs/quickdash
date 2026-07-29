@@ -1,0 +1,32 @@
+[
+  {
+    "id": "getting-started",
+    "title": "Getting Started with QuickDash",
+    "section": "Basics",
+    "content": "QuickDash is a floating overlay utility suite for Android. Once installed and granted the necessary permissions, a small floating button appears on your screen. Tap it to expand the toolbar and access all 12 tools.\n\nTo get started:\n1. Download QuickDash from GitHub Releases, Play Store, or F-Droid\n2. Grant overlay permission when prompted\n3. Grant notification access for the quick settings tile\n4. Tap the floating button to expand the toolbar\n5. Customize your tools in Settings"
+  },
+  {
+    "id": "permissions",
+    "title": "Required Permissions",
+    "section": "Basics",
+    "content": "QuickDash requires the following permissions to function:\n\n- SYSTEM_ALERT_WINDOW: Required to draw the floating toolbar overlay on top of other apps\n- NOTIFICATION_LISTENER: Required for the quick settings tile integration\n- POST_NOTIFICATIONS: Required for Android 13+ to show update notifications\n- CAMERA: Required for QR code scanning\n\nAll permissions are used exclusively for on-device functionality. No data is ever sent to any server."
+  },
+  {
+    "id": "floating-toolbar",
+    "title": "Using the Floating Toolbar",
+    "section": "Usage",
+    "content": "The floating toolbar is QuickDash's main interface. It appears as a small circular button on your screen that you can drag to any position.\n\nTap the button to expand it into a horizontal bar showing your enabled tools. Long-press and drag to move the toolbar. The toolbar automatically hides when not in use and reappears when you tap the floating button.\n\nYou can customize which tools appear in the toolbar and their order from the Settings screen."
+  },
+  {
+    "id": "tools-overview",
+    "title": "Tools Overview",
+    "section": "Usage",
+    "content": "QuickDash includes 12 essential tools:\n\n1. UPI QR Generator — Generate payment QR codes for any UPI ID\n2. Floating Translator — Select and translate text from any app\n3. Quick Notes — Take notes with Markdown support\n4. Calculator — Full-featured floating calculator with history\n5. Wi-Fi QR — Share Wi-Fi credentials as QR codes\n6. QR Scanner — Scan QR codes using your camera\n7. Clipboard Manager — Search and manage clipboard history\n8. Screen Dimmer — Adjust screen brightness from overlay\n9. Unit Converter — Convert between any units\n10. Text Extractor — Extract text from images via OCR\n11. Color Picker — Pick colors from the screen\n12. Quick Settings — Toggle system settings"
+  },
+  {
+    "id": "updates",
+    "title": "Updates & Release Channels",
+    "section": "Maintenance",
+    "content": "QuickDash offers multiple update channels:\n\nGitHub Releases: Latest stable APKs with full changelog. Recommended for most users.\n\nPlay Store Beta: Gradual rollout via Google Play's beta program. Requires opt-in.\n\nF-Droid: Open source release following F-Droid's verification process. May lag behind GitHub releases.\n\nIn-app update notifications will alert you when a new version is available."
+  }
+]

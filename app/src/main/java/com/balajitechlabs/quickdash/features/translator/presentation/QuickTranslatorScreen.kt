@@ -155,7 +155,7 @@ fun QuickTranslatorScreen() {
                         },
                         modifier = Modifier.padding(bottom = 4.dp)
                     ) {
-                        Icon(Icons.Default.SwapHoriz, "Swap languages", tint = MaterialTheme.colorScheme.primary)
+                        Icon(Icons.Filled.SwapHoriz, "Swap languages", tint = MaterialTheme.colorScheme.primary)
                     }
                     LanguageDropdown(selectedIndex = targetLanguageIndex, onSelect = { targetLanguageIndex = it }, label = "To", modifier = Modifier.weight(1f))
                 }
@@ -171,7 +171,7 @@ fun QuickTranslatorScreen() {
                     trailingIcon = {
                         if (inputText.isNotEmpty()) {
                             IconButton(onClick = { inputText = ""; translatedResult = "" }) {
-                                Icon(Icons.Default.Clear, "Clear")
+                                Icon(Icons.Filled.Clear, "Clear")
                             }
                         }
                     }
@@ -190,7 +190,7 @@ fun QuickTranslatorScreen() {
                             }
                         }
                     ) {
-                        Icon(Icons.Default.ContentPaste, null, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Filled.ContentPaste, null, modifier = Modifier.size(16.dp))
                         Spacer(Modifier.width(4.dp))
                         Text("Paste")
                     }
@@ -228,7 +228,7 @@ fun QuickTranslatorScreen() {
                                 Spacer(Modifier.width(8.dp))
                                 Text("Translating…")
                             } else {
-                                Icon(Icons.Default.Translate, null, modifier = Modifier.size(18.dp))
+                                Icon(Icons.Filled.Translate, null, modifier = Modifier.size(18.dp))
                                 Spacer(Modifier.width(6.dp))
                                 Text("Translate")
                             }
@@ -269,7 +269,7 @@ fun QuickTranslatorScreen() {
                                                 Icon(Icons.AutoMirrored.Filled.VolumeUp, "Listen", tint = MaterialTheme.colorScheme.onTertiaryContainer)
                                             }
                                             IconButton(onClick = { copyToClipboard(context, "Translation", translatedResult) }) {
-                                                Icon(Icons.Default.ContentCopy, "Copy", tint = MaterialTheme.colorScheme.onTertiaryContainer)
+                                                Icon(Icons.Filled.ContentCopy, "Copy", tint = MaterialTheme.colorScheme.onTertiaryContainer)
                                             }
                                         }
                                     }
@@ -338,6 +338,7 @@ fun QuickTranslatorScreen() {
     }
 }
 
+@Suppress("DEPRECATION")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LanguageDropdown(

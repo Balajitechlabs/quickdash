@@ -16,6 +16,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <!-- Package Visibility Queries for App Sharing & Payment Launchers -->
     <queries>
         <intent>
@@ -61,6 +63,18 @@
         </activity>
 
         <activity
+            android:name=".features.share.ShareReceiverActivity"
+            android:exported="true"
+            android:label="QuickDash Share"
+            android:theme="@style/Theme.QuickDash.Dialog">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".features.dashboard.presentation.FloatingDialogActivity"
             android:theme="@style/Theme.QuickDash.Dialog"
             android:excludeFromRecents="true"
@@ -70,10 +84,10 @@
             android:exported="false" />
 
         <service
-            android:name=".core.quicktile.QuickTileService"
+            android:name=".core.services.QuickTileService"
             android:exported="true"
-            android:icon="@drawable/ic_quickdash_tile"
-            android:label="@string/quick_tile_title"
+            android:icon="@mipmap/ic_launcher"
+            android:label="QuickDash Hub"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <meta-data
                 android:name="android.service.quicksettings.TOGGLEABLE_TILE"
@@ -116,6 +130,14 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <service
+            android:name=".core.services.SideBarDockService"
+            android:exported="false" />
+
+        <service
+            android:name=".core.services.ShakeDetectorService"
+            android:exported="false" />
 
         <service
             android:name=".core.services.QuickDashNotificationListenerService"

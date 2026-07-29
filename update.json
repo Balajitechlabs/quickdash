@@ -1,8 +1,18 @@
 {
-  "versionCode": 106,
-  "versionName": "4.4.1",
-  "releaseUrl": "https://github.com/Balajitechlabs/quickdash/releases/latest",
-  "apkUrl": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/quickdash-app-v4.4.1.apk",
-  "announcementTitle": "🚀 QuickDash v4.4.1 is Here!",
-  "announcementBody": "Stability Hotfix: Resolved a removeLast() crash on older Android versions, fixed exact-alarm scheduling security exceptions on Android 14+, resolved WebView rendering issues, and added clean in-app update notification prompts!"
+  "version_code": 511,
+  "latest_version": "5.1.1",
+  "min_version_code": 500,
+  "changelog": "• QuickDash v5.1.1 — Maintenance Release\n• Android 16 support & 16KB page alignment\n• Play Store beta integration\n• F-Droid distribution support\n• Performance improvements & bug fixes",
+  "apk_url": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/QuickDash-v5.1.1-universal.apk",
+  "release_url": "https://github.com/Balajitechlabs/quickdash/releases/latest",
+  "apk_sha256": "",
+  "critical_update": false,
+  "release_date": "2026-07-29",
+  "features": {
+    "ai_actions": true,
+    "pixel_design": true,
+    "pwa_offline": true,
+    "share_target": true,
+    "android_16": true
+  }
 }

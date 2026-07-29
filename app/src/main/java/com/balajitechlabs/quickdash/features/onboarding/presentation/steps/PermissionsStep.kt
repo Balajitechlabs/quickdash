@@ -60,7 +60,7 @@ fun PermissionsStep(
         onSkip = onSkip
     ) {
         PermissionExplanationCard(
-            icon = Icons.Default.Notifications,
+            icon = Icons.Filled.Notifications,
             title = "Notifications",
             description = "Instant alerts for payment QR confirmations & feature updates.",
             whyTitle = "Why we need this",
@@ -78,7 +78,7 @@ fun PermissionsStep(
         Spacer(modifier = Modifier.height(12.dp))
 
         PermissionExplanationCard(
-            icon = Icons.Default.Layers,
+            icon = Icons.Filled.Layers,
             title = "Floating Display Window",
             description = "Draw overlay widgets over other apps for 1-tap quick access.",
             whyTitle = "Why we need this",
@@ -103,7 +103,7 @@ fun PermissionsStep(
         Spacer(modifier = Modifier.height(12.dp))
 
         PermissionExplanationCard(
-            icon = Icons.Default.LocationOn,
+            icon = Icons.Filled.LocationOn,
             title = "Wi-Fi Location Access",
             description = "Read your current Wi-Fi SSID network name to create shareable QR codes.",
             whyTitle = "Why we need this",

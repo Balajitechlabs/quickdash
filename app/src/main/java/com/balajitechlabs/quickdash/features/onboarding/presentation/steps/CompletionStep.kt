@@ -84,7 +84,7 @@ fun CompletionStep(
                 strokeCap = StrokeCap.Round
             )
             Icon(
-                imageVector = Icons.Default.CheckCircle,
+                imageVector = Icons.Filled.CheckCircle,
                 contentDescription = null,
                 tint = Color(0xFF4CAF50),
                 modifier = Modifier

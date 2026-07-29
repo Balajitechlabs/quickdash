@@ -279,7 +279,7 @@ fun QuickCalculatorScreen(isFloating: Boolean = false) {
                             label = { Text("History", style = MaterialTheme.typography.labelSmall) },
                             leadingIcon = {
                                 Icon(
-                                    if (showHistory) Icons.Default.HistoryToggleOff else Icons.Default.History,
+                                    if (showHistory) Icons.Filled.HistoryToggleOff else Icons.Filled.History,
                                     null,
                                     modifier = Modifier.size(FilterChipDefaults.IconSize)
                                 )
@@ -299,7 +299,7 @@ fun QuickCalculatorScreen(isFloating: Boolean = false) {
                         ),
                         modifier = Modifier.size(36.dp)
                     ) {
-                        Icon(Icons.Default.Backspace, contentDescription = "Backspace", modifier = Modifier.size(18.dp))
+                        @Suppress("DEPRECATION") Icon(Icons.Filled.Backspace, contentDescription = "Backspace", modifier = Modifier.size(18.dp))
                     }
                 }
 

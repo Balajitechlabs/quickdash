@@ -61,7 +61,7 @@ data class GithubProfileCache(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuickSocialScreen(
-    userStore: UserStore,
+    mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
     onDismiss: () -> Unit
 ) {
     val context = LocalContext.current
@@ -102,7 +102,7 @@ fun QuickSocialScreen(
                 // Run network operations in IO thread and get result
                 val result = withContext(Dispatchers.IO) {
                     try {
-                        val token = userStore.githubAccessToken.first()
+                        val token = mainViewModel.settingsRepository.githubAccessToken.first()
                         
                         // 1. Fetch user general details
                         val userUrl = URL("https://api.github.com/users/$targetUsername")
@@ -304,7 +304,7 @@ fun QuickSocialScreen(
             shape = RoundedCornerShape(16.dp),
             leadingIcon = {
                 Icon(
-                    imageVector = Icons.Default.AlternateEmail,
+                    imageVector = Icons.Filled.AlternateEmail,
                     contentDescription = "Username Prefix",
                     modifier = Modifier.size(20.dp)
                 )
@@ -313,7 +313,7 @@ fun QuickSocialScreen(
                 if (username.isNotEmpty()) {
                     IconButton(onClick = { username = "" }) {
                         Icon(
-                            imageVector = Icons.Default.Close,
+                            imageVector = Icons.Filled.Close,
                             contentDescription = "Clear"
                         )
                     }
@@ -415,7 +415,7 @@ fun QuickSocialScreen(
                         overflow = TextOverflow.Ellipsis
                     )
                     IconButton(onClick = { showGithubProfile = false }) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
+                        Icon(Icons.Filled.Close, contentDescription = "Close")
                     }
                 }
             },
@@ -456,7 +456,7 @@ fun QuickSocialScreen(
                                         },
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Icon(Icons.Default.Link, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.primary)
+                                    Icon(Icons.Filled.Link, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.primary)
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text(
                                         text = profile.blogUrl,
@@ -553,7 +553,7 @@ fun QuickSocialScreen(
                         context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(profile.githubUrl)))
                     }
                 ) {
-                    Icon(Icons.Default.OpenInNew, contentDescription = null, modifier = Modifier.size(16.dp))
+                    @Suppress("DEPRECATION") Icon(Icons.Filled.OpenInNew, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(6.dp))
                     Text("Open Github Profile")
                 }

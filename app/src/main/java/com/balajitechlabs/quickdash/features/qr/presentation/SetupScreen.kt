@@ -57,7 +57,22 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import com.balajitechlabs.quickdash.R
-import com.balajitechlabs.quickdash.core.data.UserStore
+import androidx.hilt.navigation.compose.hiltViewModel
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.Switch
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.FilterChip
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarBorder
+import androidx.compose.material.icons.filled.CameraAlt
+import com.balajitechlabs.quickdash.features.dashboard.presentation.QuickTool
+import com.balajitechlabs.quickdash.features.dashboard.presentation.toolDefinitions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,6 +81,7 @@ fun SetupScreen(
     defaultUpiId: String?,
     payeeName: String?,
     usePaypal: Boolean = false,
+    viewModel: QrViewModel = hiltViewModel(),
     onSaveUpiIds: (List<String>, String, String) -> Unit
 ) {
     val currentUpiIds = remember(upiIds) { mutableStateListOf(*upiIds.toTypedArray()) }
@@ -105,6 +121,25 @@ fun SetupScreen(
 
         val context = LocalContext.current
         val coroutineScope = rememberCoroutineScope()
+
+        var cameraGranted by remember { 
+            mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) 
+        }
+        val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            cameraGranted = isGranted
+        }
+
+        val launchStyleFlow = viewModel.launchStyle.collectAsState(initial = "FLOATING")
+        var isFloating by remember(launchStyleFlow?.value) { mutableStateOf(launchStyleFlow?.value == "FLOATING") }
+
+        val favToolsFlow = viewModel.favoriteTools.collectAsState(initial = "")
+        val cs = androidx.compose.material3.MaterialTheme.colorScheme
+        val allTools = remember(cs) { toolDefinitions(usePaypal = usePaypal, cs = cs) }
+        var currentFavs by remember(favToolsFlow?.value) { 
+            val str = favToolsFlow?.value ?: ""
+            val initialSet = if (str.isEmpty()) emptySet() else str.split(",").mapNotNull { runCatching { QuickTool.valueOf(it) }.getOrNull() }.toSet()
+            mutableStateOf(initialSet)
+        }
 
         // SECTION 1: ACTIVE CONFIGURATION & ADDED IDS
         Card(
@@ -340,9 +375,72 @@ fun SetupScreen(
         Spacer(modifier = Modifier.height(4.dp))
 
         // Save button
+        // SECTION: LAUNCH STYLE
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Floating Dashboard", style = MaterialTheme.typography.titleMedium)
+                Text("Open dashboard as a floating window", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Switch(
+                checked = isFloating, 
+                onCheckedChange = { newVal -> 
+                    isFloating = newVal
+                    coroutineScope.launch {
+                        viewModel.saveLaunchStyle(if (isFloating) "FLOATING" else "FULL_SCREEN")
+                    }
+                }
+            )
+        }
+
+        // SECTION: CAMERA PERMISSION
+        if (!cameraGranted) {
+            Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
+                Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.CameraAlt, contentDescription = null, tint = MaterialTheme.colorScheme.onErrorContainer)
+                    Spacer(Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Camera Permission Needed", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onErrorContainer)
+                        Text("Required for QR Code scanner", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f))
+                    }
+                    Button(onClick = { cameraLauncher.launch(Manifest.permission.CAMERA) }) {
+                        Text("Grant")
+                    }
+                }
+            }
+        }
+
+        // SECTION: FAVORITE TOOLS
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text("Favorite Tools", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 8.dp))
+            Text("Select tools to appear in your Quick Favorites category.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 8.dp))
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(allTools) { def ->
+                    val isFav = currentFavs.contains(def.tool)
+                    FilterChip(
+                        selected = isFav,
+                        onClick = {
+                            val newFavs = if (isFav) currentFavs - def.tool else currentFavs + def.tool
+                            currentFavs = newFavs
+                            coroutineScope.launch {
+                                viewModel.saveFavoriteTools(newFavs.joinToString(",") { it.name })
+                            }
+                        },
+                        label = { Text(def.title) },
+                        leadingIcon = {
+                            Icon(if (isFav) Icons.Filled.Star else Icons.Outlined.StarBorder, contentDescription = null, modifier = Modifier.size(16.dp))
+                        }
+                    )
+                }
+            }
+        }
+
         Button(
             onClick = {
-                val finalDefault = if (selectedDefaultUpiId.isNotEmpty() && currentUpiIds.contains(selectedDefaultUpiId)) {
+                val finalDefault = if (selectedDefaultUpiId.isNotBlank() && currentUpiIds.contains(selectedDefaultUpiId)) {
                     selectedDefaultUpiId
                 } else {
                     currentUpiIds.firstOrNull() ?: ""

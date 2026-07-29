@@ -64,6 +64,7 @@ class MySavedStateRegistryOwner : SavedStateRegistryOwner {
 class FloatingBubbleService : Service() {
     private val serviceScope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.IO)
 
+    @Suppress("DEPRECATION")
     private fun triggerVibration(duration: Long, amplitude: Int = android.os.VibrationEffect.DEFAULT_AMPLITUDE) {
         try {
             val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
@@ -71,7 +72,6 @@ class FloatingBubbleService : Service() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     vibrator.vibrate(android.os.VibrationEffect.createOneShot(duration, amplitude))
                 } else {
-                    @Suppress("DEPRECATION")
                     vibrator.vibrate(duration)
                 }
             }
@@ -80,6 +80,7 @@ class FloatingBubbleService : Service() {
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun triggerDoubleVibration() {
         try {
             val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
@@ -87,7 +88,6 @@ class FloatingBubbleService : Service() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     vibrator.vibrate(android.os.VibrationEffect.createWaveform(longArrayOf(0, 15, 100, 15), intArrayOf(0, 255, 0, 255), -1))
                 } else {
-                    @Suppress("DEPRECATION")
                     vibrator.vibrate(longArrayOf(0, 15, 100, 15), -1)
                 }
             }
@@ -108,6 +108,17 @@ class FloatingBubbleService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (::floatingView.isInitialized) {
+            val bubbleImage = floatingView.findViewById<ImageView>(R.id.img_bubble)
+            bubbleImage?.setImageResource(R.drawable.ic_quickdash_tile)
+            bubbleImage?.setBackgroundResource(R.drawable.bg_bubble_circle)
+            val p = (10 * resources.displayMetrics.density).toInt()
+            bubbleImage?.setPadding(p, p, p, p)
+        }
+        return START_STICKY
+    }
+
     override fun onCreate() {
         super.onCreate()
 
@@ -122,8 +133,8 @@ class FloatingBubbleService : Service() {
                 description = "Keeps the QuickDash floating bubble alive"
                 setShowBadge(false)
             }
-            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-                .createNotificationChannel(channel)
+            (getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager)
+                ?.createNotificationChannel(channel)
         }
 
         val notification = NotificationCompat.Builder(this, channelId)
@@ -179,7 +190,9 @@ class FloatingBubbleService : Service() {
         val bubbleImage = floatingView.findViewById<ImageView>(R.id.img_bubble)
         val bubbleMenu  = floatingView.findViewById<View>(R.id.layout_bubble_menu)
 
-        bubbleImage.setImageResource(R.mipmap.ic_launcher_round)
+        bubbleImage.setImageResource(R.drawable.ic_quickdash_tile)
+        val p = (10 * resources.displayMetrics.density).toInt()
+        bubbleImage.setPadding(p, p, p, p)
         container.setBackgroundResource(0)
 
         // ── Helpers ───────────────────────────────────────────────────

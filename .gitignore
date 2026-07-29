@@ -23,6 +23,11 @@ keystore.properties
 google-services.json
 secrets.properties
 
+# Stale build artifacts
+build_output*.txt
+attached_assets/
+~/
+
 # Release packages and notes
 release/*.apk
 Release*Notes.md
@@ -40,3 +45,5 @@ Release*Notes.md
 .DS_Store
 .gradle_home/
 .local/
+keystore.b64
+gs.b64

@@ -16,7 +16,7 @@ class TimerAlarmReceiver : BroadcastReceiver() {
         val channelId = "quickdash_timer_channel"
         val notificationId = 1001
 
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -27,7 +27,7 @@ class TimerAlarmReceiver : BroadcastReceiver() {
                 description = "Notifies when your countdown timer completes"
                 enableVibration(true)
             }
-            notificationManager.createNotificationChannel(channel)
+            notificationManager?.createNotificationChannel(channel)
         }
 
         val launchIntent = Intent(context, MainActivity::class.java).apply {
@@ -55,7 +55,7 @@ class TimerAlarmReceiver : BroadcastReceiver() {
             .setVibrate(longArrayOf(0, 500, 250, 500))
             .build()
 
-        notificationManager.notify(notificationId, notification)
+        notificationManager?.notify(notificationId, notification)
 
         try {
             val ringtone = RingtoneManager.getRingtone(context, alarmUri)

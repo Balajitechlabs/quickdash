@@ -84,7 +84,7 @@ fun MarkdownText(text: String, modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss: () -> Unit) {
+fun QuickNotesScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel, isFloating: Boolean = false, onDismiss: () -> Unit) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     
@@ -94,7 +94,7 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
     val notes by noteDao.getAllNotes().collectAsState(initial = emptyList())
     
     // Migration Logic: Transfer old DataStore JSON notes to Room DB
-    val notesJson by userStore.notesHistory.collectAsState(initial = "")
+    val notesJson by mainViewModel.settingsRepository.notesHistory.collectAsState(initial = "")
     LaunchedEffect(notesJson) {
         if (notesJson.isNotBlank() && notesJson != "[]") {
             try {
@@ -115,7 +115,7 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
                 if (migratedNotes.isNotEmpty()) {
                     noteDao.insertAll(migratedNotes)
                 }
-                userStore.saveNotesHistory("[]") // Only clear after successful migration
+                mainViewModel.settingsRepository.saveNotesHistory("[]") // Only clear after successful migration
             } catch (e: Exception) {
                 com.balajitechlabs.quickdash.core.utils.AppLogger.e("QuickNotesScreen", "Failed to migrate notes to Room database", e)
             }
@@ -140,7 +140,7 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
         }
     }
 
-    val isTabLocked by userStore.tabBiometricLock.collectAsState(initial = false)
+    val isTabLocked by mainViewModel.settingsRepository.tabBiometricLock.collectAsState(initial = false)
     var isUnlocked by remember { mutableStateOf(false) }
 
     if (isTabLocked && !isUnlocked) {
@@ -149,7 +149,7 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(Icons.Default.Lock, contentDescription = "Locked", modifier = Modifier.size(64.dp))
+            Icon(Icons.Filled.Lock, contentDescription = "Locked", modifier = Modifier.size(64.dp))
             Spacer(modifier = Modifier.height(16.dp))
             Text("This tab is locked", style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(24.dp))
@@ -200,13 +200,13 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
                         if (noteText.isEmpty()) return@FilledTonalIconButton
                         coroutineScope.launch {
                             noteDao.insertNote(NoteEntity(text = noteText))
-                            userStore.incrementNotesSaved()
+                            mainViewModel.settingsRepository.incrementNotesSaved()
                         }
                         text = ""
                     },
                     modifier = Modifier.padding(end = 4.dp)
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Save note", modifier = Modifier.size(20.dp))
+                    Icon(Icons.Filled.Add, contentDescription = "Save note", modifier = Modifier.size(20.dp))
                 }
             }) else null
         )
@@ -217,7 +217,7 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
                 if (noteText.isEmpty()) return@Button
                 coroutineScope.launch {
                     noteDao.insertNote(NoteEntity(text = noteText))
-                    userStore.incrementNotesSaved()
+                    mainViewModel.settingsRepository.incrementNotesSaved()
                 }
                 text = ""
             },
@@ -225,7 +225,7 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
             shape = MaterialTheme.shapes.large,
             enabled = text.isNotBlank()
         ) {
-            Icon(Icons.Default.Add, contentDescription = "Add")
+            Icon(Icons.Filled.Add, contentDescription = "Add")
             Spacer(modifier = Modifier.width(8.dp))
             Text("Add Note")
         }
@@ -242,7 +242,7 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
                 singleLine = true,
                 trailingIcon = if (searchQuery.isNotEmpty()) ({
                     IconButton(onClick = { searchQuery = "" }) {
-                        Icon(Icons.Default.Clear, "Clear")
+                        Icon(Icons.Filled.Clear, "Clear")
                     }
                 }) else null
             )
@@ -297,7 +297,7 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
                     modifier = Modifier.padding(24.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Description,
+                        imageVector = Icons.Filled.Description,
                         contentDescription = null,
                         modifier = Modifier.size(64.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
@@ -351,7 +351,7 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
                                 }
                             }) {
                                 Icon(
-                                    Icons.Default.PushPin, 
+                                    Icons.Filled.PushPin, 
                                     contentDescription = "Pin",
                                     tint = if (note.isPinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -364,7 +364,7 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
                                 }
                             }) {
                                 Icon(
-                                    imageVector = if (note.isArchived) Icons.Default.Unarchive else Icons.Default.Archive, 
+                                    imageVector = if (note.isArchived) Icons.Filled.Unarchive else Icons.Filled.Archive, 
                                     contentDescription = "Archive",
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -382,7 +382,7 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
                                 } catch (e: Exception) { e.printStackTrace() }
                             }) {
                                 Icon(
-                                    Icons.Default.Share, 
+                                    Icons.Filled.Share, 
                                     contentDescription = "Export as Txt File",
                                     tint = MaterialTheme.colorScheme.primary
                                 )
@@ -392,7 +392,7 @@ fun QuickNotesScreen(userStore: UserStore, isFloating: Boolean = false, onDismis
                             IconButton(onClick = {
                                 noteToDelete = note
                             }) {
-                                Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
+                                Icon(Icons.Filled.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
                             }
                         }
                         

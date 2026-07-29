@@ -66,16 +66,16 @@ fun SystemLogsScreen(onDismiss: () -> Unit) {
                         val shareIntent = android.content.Intent.createChooser(sendIntent, "Share System Logs")
                         context.startActivity(shareIntent)
                     }) {
-                        Icon(Icons.Default.Share, contentDescription = "Share")
+                        Icon(Icons.Filled.Share, contentDescription = "Share")
                     }
                     IconButton(onClick = { refreshLogs() }) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+                        Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
                     }
                     IconButton(onClick = {
                         LogManager.clearLogs()
                         refreshLogs()
                     }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Clear")
+                        Icon(Icons.Filled.Delete, contentDescription = "Clear")
                     }
                 }
             )

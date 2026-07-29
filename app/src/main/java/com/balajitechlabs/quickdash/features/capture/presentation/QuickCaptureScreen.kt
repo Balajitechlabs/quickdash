@@ -58,7 +58,7 @@ enum class CaptureTab { RECORDER, ANNOTATOR }
 data class LinePath(val path: List<Offset>, val color: Color, val strokeWidth: Float)
 
 @Composable
-fun QuickCaptureScreen() {
+fun QuickCaptureScreen(isFloating: Boolean = false) {
     val context = LocalContext.current
     var selectedTab by remember { mutableStateOf(CaptureTab.RECORDER) }
 
@@ -88,7 +88,6 @@ fun QuickCaptureScreen() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-            // User granted screen capture — start the real recording service
             val startIntent = Intent(context, ScreenRecorderService::class.java).apply {
                 action = ScreenRecorderService.ACTION_START
                 putExtra(ScreenRecorderService.EXTRA_RESULT_CODE, result.resultCode)
@@ -165,7 +164,7 @@ fun QuickCaptureScreen() {
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .then(if (isFloating) Modifier.fillMaxWidth().wrapContentHeight() else Modifier.fillMaxSize())
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
@@ -352,7 +351,7 @@ fun QuickCaptureScreen() {
                                 .background(if (recordAudio) MaterialTheme.colorScheme.primaryContainer.copy(0.9f) else Color(0xFF3A3A3C))
                         ) {
                             Icon(
-                                if (recordAudio) Icons.Default.Mic else Icons.Default.MicOff,
+                                if (recordAudio) Icons.Filled.Mic else Icons.Filled.MicOff,
                                 "Toggle Mic",
                                 tint = if (recordAudio) MaterialTheme.colorScheme.onPrimaryContainer else Color(0xFF636366)
                             )
@@ -388,7 +387,7 @@ fun QuickCaptureScreen() {
                                 )
                         ) {
                             Icon(
-                                if (isRecording) Icons.Default.Stop else Icons.Default.FiberManualRecord,
+                                if (isRecording) Icons.Filled.Stop else Icons.Filled.FiberManualRecord,
                                 if (isRecording) "Stop Recording" else "Start Recording",
                                 tint = Color.White,
                                 modifier = Modifier.size(30.dp)
@@ -415,7 +414,7 @@ fun QuickCaptureScreen() {
                                 .background(if (isPaused) Color(0xFFFF9500).copy(0.3f) else if (isRecording) Color(0xFF3A3A3C) else Color.Transparent)
                         ) {
                             Icon(
-                                if (isPaused) Icons.Default.PlayArrow else Icons.Default.Pause,
+                                if (isPaused) Icons.Filled.PlayArrow else Icons.Filled.Pause,
                                 "Pause/Resume",
                                 tint = when {
                                     !isRecording -> Color(0xFF636366)
@@ -507,15 +506,15 @@ fun QuickCaptureScreen() {
                                     .clip(CircleShape)
                                     .background(if (isEraser) MaterialTheme.colorScheme.tertiaryContainer else Color.Transparent)
                             ) {
-                                Icon(Icons.Default.Edit, "Eraser", tint = if (isEraser) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant)
+                                Icon(Icons.Filled.Edit, "Eraser", tint = if (isEraser) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             // Undo
                             IconButton(onClick = { if (paths.isNotEmpty()) paths.removeAt(paths.lastIndex) }) {
-                                Icon(Icons.AutoMirrored.Filled.Undo, "Undo")
+                                @Suppress("DEPRECATION") Icon(Icons.Filled.Undo, "Undo")
                             }
                             // Clear
                             IconButton(onClick = { paths.clear() }) {
-                                Icon(Icons.Default.Delete, "Clear all")
+                                Icon(Icons.Filled.Delete, "Clear all")
                             }
                         }
                     }
@@ -619,7 +618,7 @@ fun QuickCaptureScreen() {
                             },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Icon(Icons.Default.Save, null, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Filled.Save, null, modifier = Modifier.size(16.dp))
                             Spacer(Modifier.width(4.dp))
                             Text("Save Image", fontSize = 12.sp)
                         }
@@ -631,7 +630,7 @@ fun QuickCaptureScreen() {
                             },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Icon(Icons.Default.PictureAsPdf, null, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Filled.PictureAsPdf, null, modifier = Modifier.size(16.dp))
                             Spacer(Modifier.width(4.dp))
                             Text("Save as PDF", fontSize = 12.sp)
                         }

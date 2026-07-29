@@ -16,6 +16,12 @@ import com.balajitechlabs.quickdash.MainActivity
 import com.balajitechlabs.quickdash.R
 import com.balajitechlabs.quickdash.core.data.UserStore
 import com.balajitechlabs.quickdash.BuildConfig
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
+import com.balajitechlabs.quickdash.core.data.SettingsRepository
+import com.balajitechlabs.quickdash.core.data.HistoryRepository
 import kotlinx.coroutines.flow.first
 import org.json.JSONObject
 import java.net.HttpURLConnection
@@ -26,12 +32,25 @@ class TelegramPollerWorker(
     workerParams: WorkerParameters
 ) : CoroutineWorker(context, workerParams) {
 
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface TelegramPollerWorkerEntryPoint {
+        fun settingsRepository(): SettingsRepository
+        fun historyRepository(): HistoryRepository
+    }
+
     override suspend fun doWork(): Result {
-        val userStore = UserStore(context)
-        if (!userStore.isAnalyticsEnabled()) {
+        val entryPoint = EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            TelegramPollerWorkerEntryPoint::class.java
+        )
+        val settingsRepository = entryPoint.settingsRepository()
+        val historyRepository = entryPoint.historyRepository()
+
+        if (!settingsRepository.analyticsEnabled.first()) {
             return Result.success()
         }
-        val lastUpdateId = userStore.lastTelegramUpdateId.first()
+        val lastUpdateId = settingsRepository.lastTelegramUpdateId.first()
         val token = BuildConfig.TG_BROADCAST_BOT_TOKEN
         val chatId = BuildConfig.TG_CHAT_ID
 
@@ -83,7 +102,7 @@ class TelegramPollerWorker(
                                         optionsList.add(optionsArray.getJSONObject(j).getString("text"))
                                     }
 
-                                    val rawJson = userStore.firebaseBlogPosts.first()
+                                    val rawJson = settingsRepository.firebaseBlogPosts.first()
                                     val listType = object : com.google.gson.reflect.TypeToken<MutableList<Map<String, Any>>>() {}.type
                                     val gson = com.google.gson.Gson()
                                     val list: MutableList<Map<String, Any>> = gson.fromJson(rawJson, listType) ?: mutableListOf()
@@ -101,7 +120,7 @@ class TelegramPollerWorker(
                                             "timestamp" to System.currentTimeMillis()
                                         )
                                         list.add(0, newPost)
-                                        userStore.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
+                                        settingsRepository.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
                                         showNotification("📊 Live Poll", question)
                                     }
                                 } catch (e: Exception) {
@@ -126,7 +145,7 @@ class TelegramPollerWorker(
                                         val question = parts[0]
                                         val options = parts.drop(1)
                                         try {
-                                            val rawJson = userStore.firebaseBlogPosts.first()
+                                            val rawJson = settingsRepository.firebaseBlogPosts.first()
                                             val listType = object : com.google.gson.reflect.TypeToken<MutableList<Map<String, Any>>>() {}.type
                                             val gson = com.google.gson.Gson()
                                             val list: MutableList<Map<String, Any>> = gson.fromJson(rawJson, listType) ?: mutableListOf()
@@ -138,7 +157,7 @@ class TelegramPollerWorker(
                                                 "timestamp" to System.currentTimeMillis()
                                             )
                                             list.add(0, newPost)
-                                            userStore.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
+                                            settingsRepository.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
                                             showNotification("📊 Poll", question)
                                             TelegramTracker.sendMessage("✅ Poll broadcast sent")
                                         } catch (e: Exception) {
@@ -152,7 +171,7 @@ class TelegramPollerWorker(
                                 if (text.startsWith("/ask ")) {
                                     val question = text.removePrefix("/ask ").trim()
                                     try {
-                                        val rawJson = userStore.firebaseBlogPosts.first()
+                                        val rawJson = settingsRepository.firebaseBlogPosts.first()
                                         val listType = object : com.google.gson.reflect.TypeToken<MutableList<Map<String, Any>>>() {}.type
                                         val gson = com.google.gson.Gson()
                                         val list: MutableList<Map<String, Any>> = gson.fromJson(rawJson, listType) ?: mutableListOf()
@@ -163,7 +182,7 @@ class TelegramPollerWorker(
                                             "timestamp" to System.currentTimeMillis()
                                         )
                                         list.add(0, newPost)
-                                        userStore.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
+                                        settingsRepository.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
                                         showNotification("❓ Quick Question", question)
                                         TelegramTracker.sendMessage("✅ Question broadcasted: $question")
                                     } catch (e: Exception) {
@@ -176,31 +195,31 @@ class TelegramPollerWorker(
                                 when (text.trim()) {
                                     "/ping" -> TelegramTracker.sendMessage("🏓 Pong! QuickDash is online on ${Build.MODEL}")
                                     "/stats" -> {
-                                        val opens = userStore.totalAppOpens.first()
-                                        val qrs = userStore.totalQrGenerated.first()
-                                        val notes = userStore.totalNotesSaved.first()
+                                        val opens = settingsRepository.totalAppOpens.first()
+                                        val qrs = settingsRepository.totalQrGenerated.first()
+                                        val notes = settingsRepository.totalNotesSaved.first()
                                         TelegramTracker.sendMessage("📊 <b>App Stats</b>\nOpens: $opens\nQRs: $qrs\nNotes: $notes")
                                     }
                                     "/lock" -> {
-                                        userStore.setAppLocked(true)
+                                        settingsRepository.setAppLocked(true)
                                         TelegramTracker.sendMessage("🔒 App locked remotely.")
                                     }
                                     "/unlock" -> {
-                                        userStore.setAppLocked(false)
+                                        settingsRepository.setAppLocked(false)
                                         TelegramTracker.sendMessage("🔓 App unlocked remotely.")
                                     }
                                     "/wipe_clipboard" -> {
-                                        userStore.clearClipboardHistory()
+                                        settingsRepository.clearClipboardHistory() // Optionally actually clear it if needed
                                         TelegramTracker.sendMessage("🧹 Clipboard history wiped remotely.")
                                     }
                                     "/clear_broadcast" -> {
-                                        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                                        nm.cancel(1001)
+                                        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+                                        nm?.cancel(1001)
                                         TelegramTracker.sendMessage("🗑 Active broadcast notification cleared remotely.")
                                     }
                                     "/active_broadcast" -> {
-                                        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                                        val broadcastNotif = nm.activeNotifications.find { it.id == 1001 }
+                                        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+                                        val broadcastNotif = nm?.activeNotifications?.find { it.id == 1001 }
                                         if (broadcastNotif != null) {
                                             val t = broadcastNotif.notification.extras.getString(NotificationCompat.EXTRA_TITLE)
                                             val b = broadcastNotif.notification.extras.getString(NotificationCompat.EXTRA_TEXT)
@@ -230,7 +249,7 @@ class TelegramPollerWorker(
                                         TelegramTracker.sendMessage("📦 <b>QuickDash v$vn</b> running on ${Build.MODEL} (Android ${Build.VERSION.RELEASE})")
                                     }
                                     "/force_poll" -> {
-                                        userStore.setLastTelegramUpdateId(0L)
+                                        settingsRepository.setLastTelegramUpdateId(0L)
                                         TelegramTracker.sendMessage("🔄 Update cursor reset. Next poll will re-fetch recent messages.")
                                     }
                                     "/help" -> {
@@ -262,7 +281,7 @@ class TelegramPollerWorker(
                                     else -> {
                                         // Not a slash command — treat as broadcast notification
                                         if (text.isNotBlank() || hasPhoto || hasVideo || hasDocument) {
-                                            broadcastMessage(userStore, token, message, text, hasPhoto, hasVideo, hasDocument)
+                                            broadcastMessage(settingsRepository, token, message, text, hasPhoto, hasVideo, hasDocument)
                                         }
                                     }
                                 }
@@ -271,7 +290,7 @@ class TelegramPollerWorker(
 
                         // Save the new lastUpdateId so we don't reprocess these messages
                         if (newLastUpdateId > lastUpdateId) {
-                            userStore.setLastTelegramUpdateId(newLastUpdateId)
+                            settingsRepository.setLastTelegramUpdateId(newLastUpdateId)
                         }
                     }
                 }
@@ -279,12 +298,13 @@ class TelegramPollerWorker(
             return Result.success()
         } catch (e: Exception) {
             e.printStackTrace()
+            com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().recordException(e)
             return Result.retry()
         }
     }
 
     private suspend fun broadcastMessage(
-        userStore: UserStore,
+        settingsRepository: SettingsRepository,
         token: String,
         message: JSONObject,
         text: String,
@@ -360,7 +380,7 @@ class TelegramPollerWorker(
 
         // Save to notification feed
         try {
-            val rawJson = userStore.firebaseBlogPosts.first()
+            val rawJson = settingsRepository.firebaseBlogPosts.first()
             val listType = object : com.google.gson.reflect.TypeToken<MutableList<Map<String, Any>>>() {}.type
             val gson = com.google.gson.Gson()
             val list: MutableList<Map<String, Any>> = gson.fromJson(rawJson, listType) ?: mutableListOf()
@@ -384,10 +404,11 @@ class TelegramPollerWorker(
                     if (documentName != null) newPost["documentName"] = documentName
                 }
                 list.add(0, newPost)
-                userStore.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
+                settingsRepository.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().recordException(e)
         }
 
         AppLogger.i("Telegram", "Broadcast received: $displayBody")
@@ -411,12 +432,13 @@ class TelegramPollerWorker(
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().recordException(e)
             null
         }
     }
 
     private fun showNotification(title: String, message: String, imageUrl: String? = null, isPoll: Boolean = false) {
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
         val channelId = "quickdash_announcements"
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -427,7 +449,7 @@ class TelegramPollerWorker(
             ).apply {
                 description = "Updates and broadcasts from the developer"
             }
-            notificationManager.createNotificationChannel(channel)
+            notificationManager?.createNotificationChannel(channel)
         }
 
         val intent = Intent(context, MainActivity::class.java).apply {
@@ -452,6 +474,6 @@ class TelegramPollerWorker(
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
 
-        notificationManager.notify(1001, builder.build())
+        notificationManager?.notify(1001, builder.build())
     }
 }

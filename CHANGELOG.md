@@ -4,7 +4,7 @@ All major updates, feature additions, bug fixes, and system improvements for **Q
 
 ---
 
-## [5.0.1] - 2026-07-26 (Android 16 & Google Play Release) 🛡️
+## [5.1.1] - 2026-07-26 (Android 16 & Google Play Release) 🛡️
 
 ### 🐛 FIXED (What We Fixed)
 - **16 KB Page Alignment Crash Warning**: Fixed Google Play Console 16 KB memory page size alignment warning by adding `packaging { jniLibs { useLegacyPackaging = false } }` for native JNI `.so` libraries.
@@ -15,7 +15,7 @@ All major updates, feature additions, bug fixes, and system improvements for **Q
 
 ### 🔄 UPDATED (What We Updated)
 - **Target SDK 36 (Android 16)**: Updated target SDK from `35` to **`36`** (Android 16 API Level 36) and compile SDK to **`37`**.
-- **Version Number Bump**: Updated version name to **`5.0.1`** and version code to **`501`** across `build.gradle.kts`, `README.md`, `index.html`, and `privacy.html`.
+- **Version Number Bump**: Updated version name to **`5.1.1`** and version code to **`511`** across `build.gradle.kts`, `README.md`, `index.html`, and `privacy.html`.
 - **Technical Architecture Documentation**: Updated prerequisites and architecture specifications in `README.md` to reflect Android 16 target, 16 KB page size alignment, and Play Core APIs.
 
 ### ⚡ ADDED (What We Added)

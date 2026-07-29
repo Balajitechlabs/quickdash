@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">QuickDash</string>
+    <string name="quick_tile_title">QuickDash</string>
+    <string name="quick_tile_subtitle">タップしてツールを開く</string>
+    <string name="shortcut_long_label">QRコードを表示</string>
+    <string name="shortcut_quick_upi_short">クイック集金</string>
+    <string name="shortcut_quick_upi_long">クイック集金QRジェネレーターを開く</string>
+    <string name="shortcut_quick_chat_short">クイックチャット</string>
+    <string name="shortcut_quick_chat_long">WhatsAppダイレクトチャット</string>
+    <string name="shortcut_quick_insta_short">クイックInsta</string>
+    <string name="shortcut_quick_insta_long">インスタントプロフィール検索</string>
+    <string name="shortcut_quick_calc_short">電卓</string>
+    <string name="shortcut_quick_calc_long">クイック電卓</string>
+    <string name="shortcut_quick_timer_short">タイマー</string>
+    <string name="shortcut_quick_timer_long">ストップウォッチとカウントダウン</string>
+</resources>

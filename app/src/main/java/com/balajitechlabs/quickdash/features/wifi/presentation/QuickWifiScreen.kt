@@ -1,5 +1,6 @@
 package com.balajitechlabs.quickdash.features.wifi.presentation
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import android.Manifest
 import com.balajitechlabs.quickdash.core.utils.AppLogger
 import android.content.Context
@@ -48,17 +49,18 @@ import kotlinx.coroutines.withContext
 
 data class WifiEntry(val ssid: String, val password: String, val savedAt: Long)
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuickWifiScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss: () -> Unit) {
+fun QuickWifiScreen(viewModel: WifiViewModel = hiltViewModel(), isFloating: Boolean = false, onDismiss: () -> Unit) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    val savedSsid by userStore.wifiSsid.collectAsState(initial = "")
-    val savedPassword by userStore.wifiPassword.collectAsState(initial = "")
-    val wifiHistoryJson by userStore.wifiHistory.collectAsState(initial = "[]")
-    val emojiHeader by userStore.emojiHeader.collectAsState(initial = "🚀")
-    val qrUseEmojiOverlay by userStore.qrUseEmojiOverlay.collectAsState(initial = false)
+    val savedSsid by viewModel.wifiSsid.collectAsState()
+    val savedPassword by viewModel.wifiPassword.collectAsState()
+    val wifiHistoryJson by viewModel.wifiHistoryJson.collectAsState()
+    val emojiHeader by viewModel.emojiHeader.collectAsState()
+    val qrUseEmojiOverlay by viewModel.qrUseEmojiOverlay.collectAsState()
 
     val wifiHistory = remember(wifiHistoryJson) {
         try {
@@ -78,7 +80,7 @@ fun QuickWifiScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss
     var password by remember { mutableStateOf("") }
     var encryptionType by remember { mutableStateOf("WPA") }
     var isHidden by remember { mutableStateOf(false) }
-    val savedHotspotMode by userStore.wifiHotspotMode.collectAsState(initial = false)
+    val savedHotspotMode by viewModel.wifiHotspotMode.collectAsState()
     var hotspotMode by remember(savedHotspotMode) { mutableStateOf(savedHotspotMode) }
     var showHistory by remember { mutableStateOf(false) }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -109,6 +111,7 @@ fun QuickWifiScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss
             try {
                 val wifiManager = context.applicationContext
                     .getSystemService(Context.WIFI_SERVICE) as WifiManager
+                @Suppress("DEPRECATION")
                 val info = wifiManager.connectionInfo
                 val current = info.ssid?.removeSurrounding("\"")
                 if (!current.isNullOrBlank() && current != "<unknown ssid>") {
@@ -180,7 +183,7 @@ fun QuickWifiScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss
             // History toggle
             IconButton(onClick = { showHistory = true }) {
                 Icon(
-                    imageVector = Icons.Default.History,
+                    imageVector = Icons.Filled.History,
                     contentDescription = "Show history",
                     tint = MaterialTheme.colorScheme.primary
                 )
@@ -200,7 +203,7 @@ fun QuickWifiScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        Icons.Default.Wifi,
+                        Icons.Filled.Wifi,
                         contentDescription = null,
                         tint = if (hotspotMode) MaterialTheme.colorScheme.onPrimaryContainer
                         else MaterialTheme.colorScheme.onSurfaceVariant
@@ -222,7 +225,7 @@ fun QuickWifiScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss
                         checked = hotspotMode,
                         onCheckedChange = {
                             hotspotMode = it
-                            coroutineScope.launch { userStore.saveWifiHotspotMode(it) }
+                            viewModel.saveWifiHotspotMode(it)
                         }
                     )
                 }
@@ -299,8 +302,9 @@ fun QuickWifiScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss
                         .size(28.dp)
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f), CircleShape)
                 ) {
+                    @Suppress("DEPRECATION")
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        imageVector = Icons.Filled.KeyboardArrowLeft,
                         contentDescription = "Scroll Left",
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
@@ -321,8 +325,9 @@ fun QuickWifiScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss
                         .size(28.dp)
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f), CircleShape)
                 ) {
+                    @Suppress("DEPRECATION")
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
+                        imageVector = Icons.Filled.KeyboardArrowRight,
                         contentDescription = "Scroll Right",
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
@@ -338,7 +343,7 @@ fun QuickWifiScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss
             label = { Text(if (hotspotMode) "Hotspot Name (SSID)" else "Network Name (SSID)") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            leadingIcon = { Icon(Icons.Default.Wifi, contentDescription = null) },
+            leadingIcon = { Icon(Icons.Filled.Wifi, contentDescription = null) },
             singleLine = true
         )
         Spacer(Modifier.height(8.dp))
@@ -348,11 +353,11 @@ fun QuickWifiScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+            leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
             trailingIcon = {
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
-                        if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                        if (passwordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
                         contentDescription = null
                     )
                 }
@@ -442,7 +447,7 @@ fun QuickWifiScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss
                 var user by remember { mutableStateOf("") }
                 var pass by remember { mutableStateOf("") }
                 
-                val serverJson by userStore.serverCredentials.collectAsState(initial = "{}")
+                val serverJson by viewModel.serverCredentials.collectAsState()
                 LaunchedEffect(serverJson) {
                     try {
                         val obj = com.google.gson.JsonParser.parseString(serverJson).asJsonObject
@@ -518,9 +523,7 @@ fun QuickWifiScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss
                                     addProperty("username", user)
                                     addProperty("password", pass)
                                 }
-                                coroutineScope.launch {
-                                    userStore.saveServerCredentials(obj.toString())
-                                }
+                                viewModel.saveServerCredentials(obj.toString())
                                 android.widget.Toast.makeText(context, "Server saved!", android.widget.Toast.LENGTH_SHORT).show()
                             },
                             modifier = Modifier.fillMaxWidth().height(36.dp),
@@ -597,9 +600,9 @@ fun QuickWifiScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss
         Button(
             onClick = {
                 coroutineScope.launch {
-                    userStore.saveWifiCredentials(ssid, password)
+                    viewModel.saveWifiCredentials(ssid, password)
                     if (ssid.isNotBlank()) {
-                        userStore.addWifiHistory(ssid, password, encryptionType)
+                        viewModel.addWifiHistory(ssid, password, encryptionType)
                     }
                 }
                 onDismiss()
@@ -607,7 +610,7 @@ fun QuickWifiScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss
             modifier = Modifier.fillMaxWidth().height(56.dp),
             shape = RoundedCornerShape(24.dp)
         ) {
-            Icon(Icons.Default.Save, contentDescription = null)
+            Icon(Icons.Filled.Save, contentDescription = null)
             Spacer(Modifier.width(8.dp))
             Text("Save Credentials")
         }
@@ -627,10 +630,10 @@ fun QuickWifiScreen(userStore: UserStore, isFloating: Boolean = false, onDismiss
         WifiHistoryDialog(
             historyJson = wifiHistoryJson,
             onClearHistory = {
-                coroutineScope.launch { userStore.clearWifiHistory() }
+                viewModel.clearWifiHistory()
             },
             onRemoveEntry = { targetSsid ->
-                coroutineScope.launch { userStore.removeWifiHistoryEntry(targetSsid) }
+                viewModel.removeWifiHistoryEntry(targetSsid)
             },
             onSelectNetwork = { selectedSsid, selectedPassword ->
                 ssid = selectedSsid

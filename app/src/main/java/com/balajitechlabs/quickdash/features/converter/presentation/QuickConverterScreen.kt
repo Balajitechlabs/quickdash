@@ -225,7 +225,7 @@ fun QuickConverterScreen() {
                     },
                     enabled = !isLoadingRates
                 ) {
-                    Icon(Icons.Default.Refresh, contentDescription = "Refresh rates", tint = MaterialTheme.colorScheme.primary)
+                    Icon(Icons.Filled.Refresh, contentDescription = "Refresh rates", tint = MaterialTheme.colorScheme.primary)
                 }
             }
 
@@ -275,7 +275,7 @@ fun QuickConverterScreen() {
                                 .clip(RoundedCornerShape(50))
                                 .background(MaterialTheme.colorScheme.primaryContainer)
                         ) {
-                            Icon(Icons.Default.SwapVert, "Swap currencies", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                            Icon(Icons.Filled.SwapVert, "Swap currencies", tint = MaterialTheme.colorScheme.onPrimaryContainer)
                         }
                     }
 
@@ -298,7 +298,7 @@ fun QuickConverterScreen() {
                                 Text(resultText, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
                             }
                             IconButton(onClick = { copyToClipboard(context, "Currency Conversion", resultText) }) {
-                                Icon(Icons.Default.ContentCopy, "Copy", tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                                Icon(Icons.Filled.ContentCopy, "Copy", tint = MaterialTheme.colorScheme.onPrimaryContainer)
                             }
                         }
                     }
@@ -359,7 +359,7 @@ fun QuickConverterScreen() {
                             },
                             modifier = Modifier.align(Alignment.Bottom)
                         ) {
-                            Icon(Icons.Default.SwapVert, "Swap units", tint = MaterialTheme.colorScheme.primary)
+                            Icon(Icons.Filled.SwapVert, "Swap units", tint = MaterialTheme.colorScheme.primary)
                         }
                         UnitDropdown(
                             units = selectedCategory.units,
@@ -393,7 +393,7 @@ fun QuickConverterScreen() {
                                 Text(unitResultText, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSecondaryContainer)
                             }
                             IconButton(onClick = { copyToClipboard(context, "Unit Conversion", unitResultText) }) {
-                                Icon(Icons.Default.ContentCopy, "Copy", tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                                Icon(Icons.Filled.ContentCopy, "Copy", tint = MaterialTheme.colorScheme.onSecondaryContainer)
                             }
                         }
                     }
@@ -410,7 +410,7 @@ private fun CurrencyDropdown(selectedIndex: Int, onSelect: (Int) -> Unit, modifi
         OutlinedCard(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth()) {
             Row(modifier = Modifier.padding(12.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Text(CURRENCY_DISPLAY[selectedIndex].second, fontWeight = FontWeight.Bold, fontSize = 12.sp, modifier = Modifier.weight(1f))
-                Icon(Icons.Default.ArrowDropDown, null)
+                Icon(Icons.Filled.ArrowDropDown, null)
             }
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
@@ -434,7 +434,7 @@ private fun UnitDropdown(units: List<String>, selectedIndex: Int, onSelect: (Int
             OutlinedCard(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth()) {
                 Row(modifier = Modifier.padding(10.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Text(if (selectedIndex in units.indices) units[selectedIndex] else "", fontSize = 11.sp, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
-                    Icon(Icons.Default.ArrowDropDown, null)
+                    Icon(Icons.Filled.ArrowDropDown, null)
                 }
             }
         }

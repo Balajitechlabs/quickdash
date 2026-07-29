@@ -132,7 +132,7 @@ jobs:
           echo "Updating README tag to: ${NEW_TAG} and button URL to: ${RELEASES_URL}"
           
           # Ensure Download APK badge links to releases/latest
-          sed -i -E "s|https://github.com/[^/]+/[^/]+/releases/(download/[^/]+/[a-zA-Z0-9._-]+\.apk\|latest)|$RELEASES_URL|g" README.md
+          sed -i -E "s|https://github.com/[^/]+/[^/]+/releases/download/[^ ]+|${RELEASES_URL}|g; s|https://github.com/[^/]+/[^/]+/releases/latest[^)]*|${RELEASES_URL}|g" README.md
           
           # Replace the Latest Tag text in README
           sed -i -E "s|\*\*Latest Tag: \`v[0-9.-]+\`\*\*|\*\*Latest Tag: \`${NEW_TAG}\`\*\*|g" README.md

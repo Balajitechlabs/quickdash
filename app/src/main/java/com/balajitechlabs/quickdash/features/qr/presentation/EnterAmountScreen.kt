@@ -127,14 +127,14 @@ fun EnterAmountScreen(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 IconButton(onClick = onScanQr) {
                     Icon(
-                        imageVector = Icons.Default.QrCodeScanner,
+                        imageVector = Icons.Filled.QrCodeScanner,
                         contentDescription = "Scan QR",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
                 IconButton(onClick = { showHistoryDialog = true }) {
                     Icon(
-                        imageVector = Icons.Default.History,
+                        imageVector = Icons.Filled.History,
                         contentDescription = "Payment History",
                         tint = MaterialTheme.colorScheme.primary
                     )

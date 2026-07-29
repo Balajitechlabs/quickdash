@@ -22,7 +22,9 @@ import com.balajitechlabs.quickdash.core.data.UserStore
 import com.balajitechlabs.quickdash.features.broadcast.data.TelegramPollerWorker
 import com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker
 import com.balajitechlabs.quickdash.features.dashboard.presentation.FloatingDialogActivity
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class QuickDashApplication : Application() {
     private var shakeDetector: ShakeDetector? = null
     private var sensorManager: SensorManager? = null
@@ -30,6 +32,7 @@ class QuickDashApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        com.balajitechlabs.quickdash.core.utils.CrashRecoveryHandler.init(this)
 
         // ── CRASH CAPTURE — Must be FIRST thing in Application.onCreate() ──────
         // This runs before Firebase/Telegram handlers are set up, so it catches

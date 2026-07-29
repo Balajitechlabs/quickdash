@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">QuickDash</string>
+    <string name="quick_tile_title">QuickDash</string>
+    <string name="quick_tile_subtitle">Appuyez pour ouvrir les outils</string>
+    <string name="shortcut_long_label">Afficher le code QR</string>
+    <string name="shortcut_quick_upi_short">Collecte rapide</string>
+    <string name="shortcut_quick_upi_long">Ouvrir le générateur QR de collecte</string>
+    <string name="shortcut_quick_chat_short">Chat rapide</string>
+    <string name="shortcut_quick_chat_long">Chat WhatsApp direct</string>
+    <string name="shortcut_quick_insta_short">Insta rapide</string>
+    <string name="shortcut_quick_insta_long">Recherche de profil instantanée</string>
+    <string name="shortcut_quick_calc_short">Calculatrice</string>
+    <string name="shortcut_quick_calc_long">Calculatrice rapide</string>
+    <string name="shortcut_quick_timer_short">Minuteur</string>
+    <string name="shortcut_quick_timer_long">Chronomètre et compte à rebours</string>
+</resources>

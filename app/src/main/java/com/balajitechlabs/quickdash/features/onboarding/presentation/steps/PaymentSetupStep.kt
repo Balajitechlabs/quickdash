@@ -78,7 +78,7 @@ fun PaymentSetupStep(
                 onClick = { usePaypal = false },
                 label = { Text("UPI", fontWeight = FontWeight.SemiBold) },
                 leadingIcon = if (!usePaypal) {
-                    { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                    { Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
                 } else null,
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(12.dp)
@@ -88,7 +88,7 @@ fun PaymentSetupStep(
                 onClick = { usePaypal = true },
                 label = { Text("PayPal", fontWeight = FontWeight.SemiBold) },
                 leadingIcon = if (usePaypal) {
-                    { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                    { Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
                 } else null,
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(12.dp)

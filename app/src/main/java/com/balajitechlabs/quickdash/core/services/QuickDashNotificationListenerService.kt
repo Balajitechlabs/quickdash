@@ -10,7 +10,15 @@ import kotlinx.coroutines.launch
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
+import javax.inject.Inject
+
+@AndroidEntryPoint
 class QuickDashNotificationListenerService : NotificationListenerService() {
+
+    @Inject
+    lateinit var historyRepository: com.balajitechlabs.quickdash.core.data.HistoryRepository
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         val packageName = sbn.packageName
@@ -35,19 +43,10 @@ class QuickDashNotificationListenerService : NotificationListenerService() {
         }
 
         val timestamp = System.currentTimeMillis()
-        val userStore = UserStore(applicationContext)
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                var currentJson = "[]"
-                try {
-                    userStore.notificationHistory.collect {
-                        currentJson = it
-                        throw Exception("stop")
-                    }
-                } catch (e: Exception) {
-                    if (e.message != "stop") throw e
-                }
+                val currentJson = historyRepository.notificationHistory.first()
 
                 val gson = Gson()
                 val listType = object : TypeToken<MutableList<Map<String, Any>>>() {}.type
@@ -63,7 +62,7 @@ class QuickDashNotificationListenerService : NotificationListenerService() {
                 list.add(0, item)
                 
                 // Keep last 50 notification logs
-                userStore.saveNotificationHistory(gson.toJson(list.take(50)))
+                historyRepository.saveNotificationHistory(gson.toJson(list.take(50)))
             } catch (e: Exception) {
                 e.printStackTrace()
             }

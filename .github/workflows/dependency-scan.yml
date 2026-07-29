@@ -1,0 +1,27 @@
+name: Dependency Security Scan
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+
+      - name: OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@v1.2.0
+        with:
+          project: QuickDash
+          path: .
+          format: HTML
+
+      - name: Upload Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: reports/

@@ -1,0 +1,101 @@
+package com.balajitechlabs.quickdash.core.data.migration
+
+import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import com.balajitechlabs.quickdash.core.data.HistoryRepository
+import com.balajitechlabs.quickdash.core.data.dataStore
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.first
+import org.json.JSONArray
+import javax.inject.Inject
+import javax.inject.Singleton
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+
+@Singleton
+class DataMigrationManager @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val historyRepository: HistoryRepository
+) {
+    companion object {
+        val HAS_MIGRATED_HISTORY_KEY = booleanPreferencesKey("has_migrated_history")
+        val SEARCH_HISTORY_KEY = stringPreferencesKey("search_history")
+        val WIFI_HISTORY_KEY = stringPreferencesKey("wifi_history")
+        val QR_HISTORY_KEY = stringPreferencesKey("qr_history")
+    }
+
+    suspend fun migrateLegacyHistoryIfNeeded(): Boolean {
+        val dataStore = context.dataStore
+        val preferences = dataStore.data.first()
+        val hasMigrated = preferences[HAS_MIGRATED_HISTORY_KEY] ?: false
+
+        if (hasMigrated) {
+            return true
+        }
+
+        try {
+            // Migrate Search History
+            val searchHistoryJson = preferences[SEARCH_HISTORY_KEY]
+            if (!searchHistoryJson.isNullOrBlank() && searchHistoryJson != "[]") {
+                val list = try {
+                    Gson().fromJson<List<String>>(
+                        searchHistoryJson,
+                        object : TypeToken<List<String>>() {}.type
+                    )
+                } catch (e: Exception) { emptyList() }
+                
+                list.reversed().forEach { query ->
+                    historyRepository.addSearchHistory(query)
+                }
+            }
+
+            // Migrate Wi-Fi History
+            val wifiHistoryJson = preferences[WIFI_HISTORY_KEY]
+            if (!wifiHistoryJson.isNullOrBlank() && wifiHistoryJson != "[]") {
+                try {
+                    val array = JSONArray(wifiHistoryJson)
+                    for (i in array.length() - 1 downTo 0) {
+                        val obj = array.getJSONObject(i)
+                        historyRepository.addWifiHistory(
+                            ssid = obj.optString("ssid", ""),
+                            password = obj.optString("password", ""),
+                            securityType = obj.optString("securityType", "WPA/WPA2")
+                        )
+                    }
+                } catch (e: Exception) { e.printStackTrace() }
+            }
+
+            // Migrate QR History
+            val qrHistoryJson = preferences[QR_HISTORY_KEY]
+            if (!qrHistoryJson.isNullOrBlank() && qrHistoryJson != "[]") {
+                try {
+                    val array = JSONArray(qrHistoryJson)
+                    for (i in array.length() - 1 downTo 0) {
+                        val obj = array.getJSONObject(i)
+                        historyRepository.saveQrHistoryItem(
+                            amount = obj.optString("amount", ""),
+                            note = obj.optString("note", ""),
+                            upiId = obj.optString("upiId", ""),
+                            targetApp = obj.optString("targetApp", ""),
+                            category = obj.optString("category", "General")
+                        )
+                    }
+                } catch (e: Exception) { e.printStackTrace() }
+            }
+
+            // Mark migration as complete and delete old strings to save space
+            dataStore.edit { prefs ->
+                prefs[HAS_MIGRATED_HISTORY_KEY] = true
+                prefs.remove(SEARCH_HISTORY_KEY)
+                prefs.remove(WIFI_HISTORY_KEY)
+                prefs.remove(QR_HISTORY_KEY)
+            }
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
+        }
+    }
+}

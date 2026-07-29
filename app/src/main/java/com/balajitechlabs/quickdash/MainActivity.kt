@@ -41,12 +41,25 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.WorkManager
 import com.balajitechlabs.quickdash.features.broadcast.data.TelegramPollerWorker
 import java.util.concurrent.TimeUnit
+import com.balajitechlabs.quickdash.features.onboarding.presentation.WelcomeOnboardingScreen
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import dagger.hilt.android.AndroidEntryPoint
+import androidx.activity.viewModels
+import com.balajitechlabs.quickdash.MainViewModel
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+
+@AndroidEntryPoint
 class MainActivity : FragmentActivity() {
-    private lateinit var userStore: UserStore
+    private val mainViewModel: MainViewModel by viewModels()
+
     private var isAuthenticated by mutableStateOf(false)
     private var isAuthRequired by mutableStateOf(false)
 
@@ -59,20 +72,19 @@ class MainActivity : FragmentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        userStore = UserStore(this)
-        
         // Apply saved locale — do NOT use runBlocking on the main thread here.
         // DataStore IO on the main thread causes an ANR / deadlock in release builds.
         // We launch async and accept that the first frame may use the system locale;
         // this is invisible to the user since the Activity hasn't rendered yet.
         lifecycleScope.launch {
             try {
-                val langCode = userStore.appLanguage.first()
+                val langCode = mainViewModel.appLanguage.first()
                 if (langCode.isNotBlank()) {
-                val locale = Locale.forLanguageTag(langCode)
+                    val locale = Locale.forLanguageTag(langCode)
                     Locale.setDefault(locale)
                     val config = resources.configuration
                     config.setLocale(locale)
@@ -102,7 +114,7 @@ class MainActivity : FragmentActivity() {
             
         val wifiShortcut = androidx.core.content.pm.ShortcutInfoCompat.Builder(this, "shortcut_wifi")
             .setShortLabel("Wi-Fi Share")
-            .setIcon(androidx.core.graphics.drawable.IconCompat.createWithResource(this, R.drawable.ic_shortcut_upi))
+            .setIcon(androidx.core.graphics.drawable.IconCompat.createWithResource(this, R.drawable.ic_shortcut_wifi))
             .setIntent(Intent(this, MainActivity::class.java).apply {
                 action = "com.balajitechlabs.quickdash.ACTION_SHOW_QR"
             })
@@ -126,9 +138,15 @@ class MainActivity : FragmentActivity() {
 
         androidx.core.content.pm.ShortcutManagerCompat.addDynamicShortcuts(this, listOf(searchShortcut, notesShortcut, wifiShortcut, calcShortcut, timerShortcut))
         
-        // Google Play Store APIs: In-App Updates & In-App Reviews
+        // Google Play Store APIs: In-App Updates & In-App Reviews (throttled)
         checkForPlayAppUpdate()
-        requestPlayInAppReview()
+        lifecycleScope.launch {
+            val opens = mainViewModel.settingsRepository.totalAppOpens.first()
+            // Only show review dialog: after 10+ opens AND every 20 opens (avoids Google suppression)
+            if (opens >= 10L && opens % 20L == 0L) {
+                requestPlayInAppReview()
+            }
+        }
         
         // Enqueue the Telegram Poller to check for broadcasts every 15 minutes
         val pollerRequest = PeriodicWorkRequestBuilder<TelegramPollerWorker>(15, TimeUnit.MINUTES).build()
@@ -155,7 +173,7 @@ class MainActivity : FragmentActivity() {
         }
 
         lifecycleScope.launch {
-            userStore.secureMode.collect { secure ->
+            mainViewModel.secureMode.collect { secure ->
                 if (secure) {
                     window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
                 } else {
@@ -165,8 +183,8 @@ class MainActivity : FragmentActivity() {
         }
 
         lifecycleScope.launch {
-            val onboarded = userStore.isOnboardingComplete.first()
-            val style = userStore.launchStyle.first()
+            val onboarded = mainViewModel.isOnboardingComplete.first()
+            val style = mainViewModel.launchStyle.first()
             val isShortcut = intent?.action != null && intent.action != Intent.ACTION_MAIN
 
             if (onboarded && style == "FLOATING_DIALOG" && !isShortcut) {
@@ -178,7 +196,7 @@ class MainActivity : FragmentActivity() {
                 return@launch
             }
 
-            val locked = userStore.isAppLocked.first()
+            val locked = mainViewModel.isAppLocked.first()
             if (locked) {
                 isAuthRequired = true
                 showBiometricPrompt()
@@ -187,45 +205,40 @@ class MainActivity : FragmentActivity() {
             }
             
             // Analytics Ping
-            val hasReported = userStore.hasReportedInstall.first()
+            val hasReported = mainViewModel.settingsRepository.hasReportedInstall.first()
             if (!hasReported) {
                 val model = Build.MODEL
                 val version = BuildConfig.VERSION_NAME
-                val count = userStore.totalAppOpens.first()
-                TelegramTracker.sendMessage("🎉 <b>New QuickDash Install!</b>\nDevice: $model\nVersion: $version\nApp Opens: $count")
-                userStore.setHasReportedInstall()
+                val count = mainViewModel.settingsRepository.totalAppOpens.first()
+                if (count > 0L) {
+                    TelegramTracker.sendBroadcastBotMessage("📲 <b>User Returned!</b>\nApp opened for the ${count + 1}th time.")
+                }
+                mainViewModel.settingsRepository.setHasReportedInstall()
             }
 
             // Clean up legacy/default demo profiles if present
-            val currentPayee = userStore.payeeName.first()
+            val currentPayee = mainViewModel.settingsRepository.payeeName.first()
             if (currentPayee == "BalajiTechLabs") {
-                userStore.savePayeeName("")
+                mainViewModel.settingsRepository.savePayeeName("")
             }
-            val currentIds = userStore.upiIds.first()
+            val currentIds = mainViewModel.settingsRepository.upiIds.first()
             if (currentIds == listOf("9344456571@kotakbank") || currentIds.contains("9344456571@kotakbank")) {
-                userStore.saveUpiIds(emptyList())
-                userStore.saveDefaultUpiId("")
+                mainViewModel.settingsRepository.saveUpiIds(emptyList())
+                mainViewModel.settingsRepository.saveDefaultUpiId("")
             }
 
             
             val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-            val lastActive = userStore.lastActiveDate.first()
-            if (today != lastActive) {
-                val model = Build.MODEL
-                val version = BuildConfig.VERSION_NAME
-                val count = userStore.totalAppOpens.first()
-                TelegramTracker.sendMessage("📊 <b>DAU Ping</b>: User Active Today\nDevice: $model\nVersion: $version\nApp Opens: $count")
-                userStore.setLastActiveDate(today)
+            val lastActive = mainViewModel.settingsRepository.lastActiveDate.first()
+            
+            if (lastActive != today) {
+                val count = mainViewModel.settingsRepository.totalAppOpens.first()
+                TelegramTracker.sendBroadcastBotMessage("🌅 <b>Daily Active User!</b>\nApp opened today (Total Opens: $count).")
+                mainViewModel.settingsRepository.setLastActiveDate(today)
             }
 
-            // Secure Mode Setup
-            userStore.secureMode.collect { secure ->
-                if (secure) {
-                    window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
-                } else {
-                    window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
-                }
-            }
+            // Secure Mode — handled by the dedicated lifecycleScope.launch block above (line 158)
+            // Removed duplicate collector that caused race condition with FLAG_SECURE
         }
 
         // Fetch and register FCM and OneSignal Diagnostics
@@ -234,7 +247,7 @@ class MainActivity : FragmentActivity() {
                 if (task.isSuccessful) {
                     val token = task.result ?: ""
                     lifecycleScope.launch {
-                        userStore.saveFcmToken(token)
+                        mainViewModel.settingsRepository.saveFcmToken(token)
                     }
                 }
             }
@@ -244,11 +257,21 @@ class MainActivity : FragmentActivity() {
 
 
         setContent {
-            val themeMode by userStore.themeMode.collectAsState(initial = "SYSTEM")
-            val dynamicColor by userStore.dynamicColor.collectAsState(initial = false)
+            val isMigrationComplete by mainViewModel.isMigrationComplete.collectAsState(initial = false)
+            if (!isMigrationComplete) {
+                QuickDashTheme {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+                return@setContent
+            }
+
+            val themeMode by mainViewModel.themeMode.collectAsState(initial = "SYSTEM")
+            val dynamicColor by mainViewModel.dynamicColor.collectAsState(initial = false)
             val isDarkTheme = when (themeMode) {
                 "LIGHT" -> false
-                "DARK" -> true
+                "DARK", "AMOLED" -> true
                 else -> isSystemInDarkTheme()
             }
 
@@ -258,59 +281,40 @@ class MainActivity : FragmentActivity() {
             val notificationImageUrl = intent?.getStringExtra("imageUrl")
             val notificationIsPoll = intent?.getBooleanExtra("isPoll", false) ?: false
 
-            QuickDashTheme(themeMode = themeMode, darkTheme = isDarkTheme, dynamicColor = dynamicColor) {
-                val lastSeenVersion by userStore.lastSeenVersion.collectAsState(initial = "")
-                var showUpdateDialog by androidx.compose.runtime.remember { mutableStateOf(false) }
+            androidx.compose.animation.Crossfade(
+                targetState = themeMode,
+                animationSpec = androidx.compose.animation.core.tween(400)
+            ) { currentThemeMode ->
+                QuickDashTheme(themeMode = currentThemeMode, darkTheme = isDarkTheme, dynamicColor = dynamicColor) {
+                val lastSeenVersion by mainViewModel.lastSeenVersion.collectAsState(initial = "")
 
                 androidx.compose.runtime.LaunchedEffect(lastSeenVersion) {
-                    if (lastSeenVersion.isNotEmpty() && lastSeenVersion != BuildConfig.VERSION_NAME) {
-                        showUpdateDialog = true
-                    } else if (lastSeenVersion.isEmpty()) {
-                        userStore.saveLastSeenVersion(BuildConfig.VERSION_NAME)
+                    if (lastSeenVersion != BuildConfig.VERSION_NAME) {
+                        mainViewModel.saveLastSeenVersion(BuildConfig.VERSION_NAME)
                     }
                 }
 
-                if (showUpdateDialog) {
-                    AlertDialog(
-                        onDismissRequest = {
-                            lifecycleScope.launch { userStore.saveLastSeenVersion(BuildConfig.VERSION_NAME) }
-                            showUpdateDialog = false
-                        },
-                        title = { Text("App Updated! 🎉") },
-                        text = { Text("Are you happy with this new version of QuickDash? Let us know!") },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                lifecycleScope.launch {
-                                    TelegramTracker.sendBroadcastBotMessage("🎉 User updated to v${BuildConfig.VERSION_NAME}\nHappy: Yes")
-                                    userStore.saveLastSeenVersion(BuildConfig.VERSION_NAME)
+                val isOnboardingComplete by mainViewModel.isOnboardingComplete.collectAsState(initial = true)
+
+                if (!isOnboardingComplete) {
+                    WelcomeOnboardingScreen(
+                        onFinishOnboarding = {
+                            lifecycleScope.launch {
+                                mainViewModel.setOnboardingComplete()
+                                val style = mainViewModel.launchStyle.first()
+                                if (style == "FLOATING_DIALOG") {
+                                    val dialogIntent = Intent(this@MainActivity, com.balajitechlabs.quickdash.features.dashboard.presentation.FloatingDialogActivity::class.java).apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                                    }
+                                    startActivity(dialogIntent)
+                                    finish()
                                 }
-                                showUpdateDialog = false
-                            }) { Text("Yes") }
-                        },
-                        dismissButton = {
-                            Row {
-                                TextButton(onClick = {
-                                    lifecycleScope.launch {
-                                        TelegramTracker.sendBroadcastBotMessage("📉 User updated to v${BuildConfig.VERSION_NAME}\nHappy: No")
-                                        userStore.saveLastSeenVersion(BuildConfig.VERSION_NAME)
-                                    }
-                                    showUpdateDialog = false
-                                }) { Text("No") }
-                                TextButton(onClick = {
-                                    lifecycleScope.launch {
-                                        TelegramTracker.sendBroadcastBotMessage("⏭ User updated to v${BuildConfig.VERSION_NAME}\nFeedback: Skipped")
-                                        userStore.saveLastSeenVersion(BuildConfig.VERSION_NAME)
-                                    }
-                                    showUpdateDialog = false
-                                }) { Text("Skip") }
                             }
                         }
                     )
-                }
-
-                if (isAuthenticated) {
+                } else if (isAuthenticated) {
                     QuickDashApp(
-                        userStore = userStore,
+                        mainViewModel = mainViewModel,
                         shortcutAction = shortcutAction,
                         notificationTitle = notificationTitle,
                         notificationMessage = notificationMessage,
@@ -320,25 +324,25 @@ class MainActivity : FragmentActivity() {
                         dynamicColor = dynamicColor,
                         onToggleDynamicColor = { enabled ->
                             lifecycleScope.launch {
-                                userStore.saveDynamicColor(enabled)
+                                mainViewModel.saveDynamicColor(enabled)
                             }
                         },
                         onChangeThemeMode = { nextMode ->
                             lifecycleScope.launch {
-                                userStore.saveThemeMode(nextMode)
+                                mainViewModel.saveThemeMode(nextMode)
                             }
                         },
                         onQrShown = { maxBrightness() },
                         onRestoreBrightness = { restoreBrightness() },
-                        onDismiss = { finish() }
                     )
                 }
             }
         }
+    }
 
-        // Overlay / Bubble Service logic
+    // Overlay / Bubble Service logic
         lifecycleScope.launch {
-            userStore.bubbleEnabled.collect { enabled ->
+            mainViewModel.bubbleEnabled.collect { enabled ->
                 try {
                     if (enabled) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -439,7 +443,7 @@ class MainActivity : FragmentActivity() {
                 val text = clipboard.primaryClip?.getItemAt(0)?.text?.toString()
                 if (!text.isNullOrBlank()) {
                     lifecycleScope.launch {
-                        val historyJson = userStore.clipboardHistory.first()
+                        val historyJson = mainViewModel.clipboardHistory.first()
                         val gson = Gson()
                         val listType = object : TypeToken<List<String>>() {}.type
                         val list: MutableList<String> = try {
@@ -450,7 +454,7 @@ class MainActivity : FragmentActivity() {
                         
                         if (!list.contains(text)) {
                             list.add(0, text)
-                            userStore.saveClipboardHistory(gson.toJson(list.take(20)))
+                            mainViewModel.saveClipboardHistory(gson.toJson(list.take(20)))
                             android.widget.Toast.makeText(this@MainActivity, "Saved to QuickDash Clipboard", android.widget.Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -476,19 +480,27 @@ class MainActivity : FragmentActivity() {
 
     private fun checkForPlayAppUpdate() {
         try {
+            // Using KTX-compatible coroutines API (com.google.android.play:app-update-ktx)
             val appUpdateManager = com.google.android.play.core.appupdate.AppUpdateManagerFactory.create(this)
-            val appUpdateInfoTask = appUpdateManager.appUpdateInfo
-            appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
-                if (appUpdateInfo.updateAvailability() == com.google.android.play.core.install.model.UpdateAvailability.UPDATE_AVAILABLE
-                    && appUpdateInfo.isUpdateTypeAllowed(com.google.android.play.core.install.model.AppUpdateType.FLEXIBLE)
-                ) {
+            appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
+                val isUpdateAvailable = appUpdateInfo.updateAvailability() ==
+                    com.google.android.play.core.install.model.UpdateAvailability.UPDATE_AVAILABLE
+                val isFlexible = appUpdateInfo.isUpdateTypeAllowed(
+                    com.google.android.play.core.install.model.AppUpdateType.FLEXIBLE
+                )
+                if (isUpdateAvailable && isFlexible) {
+                    @Suppress("DEPRECATION")
                     appUpdateManager.startUpdateFlowForResult(
                         appUpdateInfo,
                         this,
-                        com.google.android.play.core.appupdate.AppUpdateOptions.defaultOptions(com.google.android.play.core.install.model.AppUpdateType.FLEXIBLE),
+                        com.google.android.play.core.appupdate.AppUpdateOptions.defaultOptions(
+                            com.google.android.play.core.install.model.AppUpdateType.FLEXIBLE
+                        ),
                         9901
                     )
                 }
+            }.addOnFailureListener { e ->
+                AppLogger.e("MainActivity", "In-App Update check failed", e)
             }
         } catch (e: Exception) {
             AppLogger.e("MainActivity", "In-App Update check skipped", e)
@@ -497,12 +509,13 @@ class MainActivity : FragmentActivity() {
 
     private fun requestPlayInAppReview() {
         try {
+            // Uses com.google.android.play:review-ktx (already in build.gradle.kts)
             val manager = com.google.android.play.core.review.ReviewManagerFactory.create(this)
-            val request = manager.requestReviewFlow()
-            request.addOnCompleteListener { task ->
+            manager.requestReviewFlow().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val reviewInfo = task.result
-                    manager.launchReviewFlow(this, reviewInfo)
+                    manager.launchReviewFlow(this, task.result)
+                } else {
+                    AppLogger.e("MainActivity", "In-App Review request failed: ${task.exception?.message}")
                 }
             }
         } catch (e: Exception) {

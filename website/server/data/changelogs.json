@@ -1,0 +1,55 @@
+[
+  {
+    "version": "5.1.1",
+    "title": "Android 16 Support & Play Store Beta",
+    "date": "2026-07-28",
+    "highlights": [
+      "Target Android 16 (SDK 36) with full 16KB page alignment",
+      "Play Store beta integration alongside F-Droid",
+      "Secure Telegram suggestion flow with assetlinks",
+      "PWA manifest and enhanced showcase website",
+      "Improved mobile responsiveness and desktop QR scanner",
+      "Various stability fixes and performance improvements"
+    ],
+    "notes": "Required update for all users targeting Android 16 devices."
+  },
+  {
+    "version": "5.0.0",
+    "title": "Major Redesign & New Features",
+    "date": "2026-06-15",
+    "highlights": [
+      "Complete Material Design 3 redesign with dynamic colors",
+      "New floating calculator with history",
+      "Enhanced notes with Markdown support",
+      "Wi-Fi QR code generator",
+      "Redesigned settings with categorized layout",
+      "Improved clipboard manager with search",
+      "R8 rules cleanup for smaller APK size"
+    ]
+  },
+  {
+    "version": "4.4.1",
+    "title": "Stability Release",
+    "date": "2026-05-20",
+    "highlights": [
+      "Fix removeLast NoSuchMethodError on older Android",
+      "Fix exact alarm SecurityException on Android 14+",
+      "Fix WebView white screen on some devices",
+      "In-app update popup for new version notifications",
+      "Improved R8 keep rules for compatibility"
+    ],
+    "notes": "Recommended update for users experiencing crashes."
+  },
+  {
+    "version": "4.4.0",
+    "title": "Clipboard Redesign & Settings Tile Fix",
+    "date": "2026-04-28",
+    "highlights": [
+      "Clipboard manager redesign with visual previews",
+      "Fix quick settings tile toggle on some devices",
+      "Backup and restore for settings and data",
+      "Optimized database queries",
+      "R8 keep rules fixes"
+    ]
+  }
+]

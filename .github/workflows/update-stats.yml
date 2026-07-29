@@ -1,0 +1,38 @@
+name: Update Live Stats
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch GitHub Stats
+        run: |
+          RELEASE=$(curl -s https://api.github.com/repos/Balajitechlabs/quickdash/releases/latest)
+          TOTAL_DOWNLOADS=$(echo "$RELEASE" | jq '[.assets[].download_count] | add')
+          STARGAZERS=$(curl -s https://api.github.com/repos/Balajitechlabs/quickdash | jq '.stargazers_count')
+          FORKS=$(curl -s https://api.github.com/repos/Balajitechlabs/quickdash | jq '.forks_count')
+
+          mkdir -p website/public/api/v1
+          cat > website/public/api/v1/stats.json << EOF
+          {
+            "total_downloads": $TOTAL_DOWNLOADS,
+            "github_stars": $STARGAZERS,
+            "github_forks": $FORKS,
+            "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+
+      - name: Commit Stats
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add website/public/api/v1/stats.json
+          git commit -m "chore: update live stats [skip ci]" || echo "No changes"
+          git push

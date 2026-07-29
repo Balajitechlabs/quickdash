@@ -1,16 +1,15 @@
 Categories:
   - System
-  - Utilities
-License: Custom
+License: Apache-2.0
 AuthorName: BalajiTechLabs
 WebSite: https://quickdash.balajitechlab.com
 SourceCode: https://github.com/Balajitechlabs/quickdash
 IssueTracker: https://github.com/Balajitechlabs/quickdash/issues
 
-AutoUpdateMode: Version v%v
+AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 5.0.1
-CurrentVersionCode: 501
+CurrentVersion: 5.1.1
+CurrentVersionCode: 511
 
 Name: QuickDash
 Summary: 12 floating utility tools, QR payments, notes & translator running over any Android app
@@ -27,8 +26,8 @@ Description: |-
   - Quick Capture: On-screen screenshot and video recording
 
 Builds:
-  - versionName: 5.0.1
-    versionCode: 501
+  - versionName: 5.1.1
+    versionCode: 511
     commit: main
     subdir: app
     gradle:

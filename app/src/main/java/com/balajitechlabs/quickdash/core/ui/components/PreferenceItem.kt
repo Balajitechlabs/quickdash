@@ -33,14 +33,14 @@ fun PreferenceItem(
             Surface(
                 color = iconContainerColor,
                 shape = MaterialTheme.shapes.small,
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(44.dp)
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Icon(
                         imageVector = iconVector,
-                        contentDescription = null,
+                        contentDescription = title,
                         tint = iconColor,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(22.dp)
                     )
                 }
             }
@@ -49,20 +49,21 @@ fun PreferenceItem(
             Surface(
                 color = iconContainerColor,
                 shape = MaterialTheme.shapes.small,
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(44.dp)
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                     Icon(
                         painter = painterResource(iconRes),
-                        contentDescription = null,
+                        contentDescription = title,
                         tint = iconColor,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(22.dp)
                     )
                 }
             }
         })
         else -> null
     }
+
 
     ListItem(
         headlineContent = {

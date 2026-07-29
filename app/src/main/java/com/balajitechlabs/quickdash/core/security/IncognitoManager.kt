@@ -1,0 +1,24 @@
+package com.balajitechlabs.quickdash.core.security
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+
+/**
+ * 🕵️ Zero-Trace Incognito Mode Manager (`IncognitoManager.kt`).
+ * Toggles temporary suspension of clipboard history logging, search queries, and recent tool logs.
+ */
+object IncognitoManager {
+
+    var isIncognitoActive by mutableStateOf(false)
+        private set
+
+    fun setIncognito(enabled: Boolean) {
+        isIncognitoActive = enabled
+    }
+
+    fun toggleIncognito(): Boolean {
+        isIncognitoActive = !isIncognitoActive
+        return isIncognitoActive
+    }
+}

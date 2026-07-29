@@ -271,7 +271,7 @@ fun StyledSlider(
 }
 
 fun starShape(points: Int = 5, rounding: Float = 0.15f): Shape = object : Shape {
-    override fun createOutline(size: Size, dir: LayoutDirection, density: Density): Outline {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
         val path = Path()
         val w = size.width
         val h = size.height
@@ -299,7 +299,7 @@ fun starShape(points: Int = 5, rounding: Float = 0.15f): Shape = object : Shape 
 }
 
 fun cloverShape(points: Int = 4, rounding: Float = 0.4f): Shape = object : Shape {
-    override fun createOutline(size: Size, dir: LayoutDirection, density: Density): Outline {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
         val path = Path()
         val w = size.width
         val h = size.height
@@ -317,7 +317,7 @@ fun cloverShape(points: Int = 4, rounding: Float = 0.4f): Shape = object : Shape
 }
 
 fun heartShape(): Shape = object : Shape {
-    override fun createOutline(size: Size, dir: LayoutDirection, density: Density): Outline {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
         val path = Path()
         val width = size.width
         val height = size.height
@@ -332,7 +332,7 @@ fun heartShape(): Shape = object : Shape {
 }
 
 fun octagonShape(rounding: Float = 0.15f): Shape = object : Shape {
-    override fun createOutline(size: Size, dir: LayoutDirection, density: Density): Outline {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
         val path = Path()
         val w = size.width
         val h = size.height
@@ -351,7 +351,7 @@ fun octagonShape(rounding: Float = 0.15f): Shape = object : Shape {
 }
 
 fun pentagonShape(rounding: Float = 0.15f): Shape = object : Shape {
-    override fun createOutline(size: Size, dir: LayoutDirection, density: Density): Outline {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
         val path = Path()
         val w = size.width
         val h = size.height
@@ -366,7 +366,7 @@ fun pentagonShape(rounding: Float = 0.15f): Shape = object : Shape {
 }
 
 fun squircleShape(): Shape = object : Shape {
-    override fun createOutline(size: Size, dir: LayoutDirection, density: Density): Outline {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
         val path = Path()
         val w = size.width
         val h = size.height
@@ -381,7 +381,7 @@ fun squircleShape(): Shape = object : Shape {
 }
 
 fun smoothCornerShape(radiusDp: Float): Shape = object : Shape {
-    override fun createOutline(size: Size, dir: LayoutDirection, density: Density): Outline {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
         val path = Path()
         val w = size.width
         val h = size.height

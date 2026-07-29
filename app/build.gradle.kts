@@ -4,6 +4,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.protobuf)
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
 }
@@ -25,13 +28,14 @@ if (localPropertiesFile.exists()) {
 android {
     namespace = "com.balajitechlabs.quickdash"
     compileSdk = 37
+    ndkVersion = "28.0.13004108"
 
     defaultConfig {
         applicationId = "com.balajitechlabs.quickdash"
         minSdk = 24
         targetSdk = 36
-        versionCode = 501
-        versionName = "5.0.1"
+        versionCode = 511
+        versionName = "5.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -114,8 +118,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
@@ -123,29 +127,58 @@ android {
     }
 }
 
+
 ksp {
     arg("room.generateKotlin", "true")
+}
+
+protobuf {
+    protoc {
+        artifact = libs.protobuf.protoc.get().toString()
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                create("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
 }
 
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
-    implementation("androidx.compose.material:material-icons-extended:1.6.0")
+    implementation("androidx.compose.material:material-icons-extended") // Version managed by Compose BOM
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("com.airbnb.android:lottie-compose:6.6.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation("androidx.fragment:fragment-ktx:1.8.2")
-
-    implementation("androidx.datastore:datastore-preferences:1.2.0")
     implementation("com.google.zxing:core:3.5.4")
-    implementation("androidx.biometric:biometric:1.2.0-alpha05")
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.core)
+    implementation(libs.protobuf.javalite)
+
+    // Hilt & Navigation
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+
+    implementation("androidx.biometric:biometric:1.1.0") // Stable release — avoid alpha in production
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("androidx.work:work-runtime-ktx:2.10.0")
     implementation("nl.dionsegijn:konfetti-compose:2.0.4")
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    implementation("androidx.security:security-crypto:1.1.0")
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-messaging-ktx")
     implementation("com.google.firebase:firebase-analytics")
@@ -154,32 +187,28 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.6.0")
 
     // Room Database
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
+    val roomVersion = "2.7.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
 
-    // Google Sign-In & Google Drive API for Cloud Sync
+    // Google Sign-In (kept for future use)
     implementation("com.google.android.gms:play-services-auth:21.2.0")
-    implementation("com.google.api-client:google-api-client-android:2.2.0")
-    implementation("com.google.apis:google-api-services-drive:v3-rev20230822-2.0.0") {
-        exclude(group = "org.apache.httpcomponents")
-    }
-    implementation("com.google.auth:google-auth-library-oauth2-http:1.19.0")
 
     // Custom UI & Theme Upgrades
     implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
     implementation("androidx.graphics:graphics-shapes:1.0.1")
     implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
     // Jetpack Glance App Widget & Google Fonts
     implementation("androidx.glance:glance-appwidget:1.1.1")
     implementation("androidx.compose.ui:ui-text-google-fonts:1.6.0")
 
-    // Google Play Core APIs: In-App Updates & In-App Reviews
+    // Google Play Core APIs: In-App Updates, In-App Reviews & Play Integrity
     implementation("com.google.android.play:app-update-ktx:2.1.0")
     implementation("com.google.android.play:review-ktx:2.0.2")
+    implementation("com.google.android.play:integrity:1.4.0")
 
     // MediaPipe LLM Inference (on-device AI with Gemma / Phi models)
     implementation("com.google.mediapipe:tasks-genai:0.10.22")
@@ -193,3 +222,10 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        freeCompilerArgs.addAll(listOf("-Xmetadata-version=2.1.0", "-Xannotation-default-target=param-property"))
+    }
+}
+

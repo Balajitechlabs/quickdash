@@ -25,7 +25,7 @@ import androidx.compose.foundation.BorderStroke
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WhatsNewDialog(
-    versionName: String = "4.4.1",
+    versionName: String = "5.1.1",
     onDismiss: () -> Unit
 ) {
     var isInverted by remember { mutableStateOf(false) }
@@ -91,7 +91,7 @@ fun WhatsNewDialog(
                 border = BorderStroke(1.dp, primaryColor.copy(alpha = 0.4f))
             ) {
                 Icon(
-                    imageVector = Icons.Default.InvertColors,
+                    imageVector = Icons.Filled.InvertColors,
                     contentDescription = "Invert Colors",
                     modifier = Modifier.size(18.dp)
                 )
@@ -107,7 +107,7 @@ fun WhatsNewDialog(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Default.Info,
+                        imageVector = Icons.Filled.Info,
                         contentDescription = null,
                         tint = primaryColor,
                         modifier = Modifier.size(24.dp)

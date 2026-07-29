@@ -1,0 +1,11 @@
+#!/bin/bash
+# Pre-push hook: QuickDash Release Quality Gate
+
+echo "🔍 Running pre-push validation..."
+
+if grep -rn "TG_BOT_TOKEN.*=.*\".*\"" app/src/ --include="*.kt" 2>/dev/null; then
+  echo "❌ Hardcoded secrets detected! Blocking push."
+  exit 1
+fi
+
+echo "✅ Pre-push validation passed!"

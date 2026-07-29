@@ -126,8 +126,25 @@ private fun isLightColor(color: Color): Boolean {
 fun ColorScheme.toAmoled(): ColorScheme = copy(
     background = Color.Black,
     surface = Color.Black,
-    surfaceContainer = Color(0xFF0A0A0A),
-    surfaceContainerLow = Color.Black
+    surfaceVariant = Color.Black,
+    surfaceContainer = Color.Black,
+    surfaceContainerLow = Color.Black,
+    surfaceContainerHigh = Color.Black,
+    surfaceContainerHighest = Color.Black,
+    surfaceContainerLowest = Color.Black,
+    onSurface = Color.White,
+    onBackground = Color.White,
+    primary = Color(0xFF4FC3F7),
+    onPrimary = Color.Black,
+    primaryContainer = Color(0xFF003E6B),
+    onPrimaryContainer = Color(0xFFB3E5FC),
+    secondary = Color(0xFF80CBC4),
+    onSecondary = Color.Black,
+    secondaryContainer = Color(0xFF005048),
+    onSecondaryContainer = Color(0xFFB2DFDB),
+    outline = Color(0xFF444444),
+    outlineVariant = Color(0xFF333333),
+    scrim = Color.Black
 )
 
 private val provider = try {
@@ -171,7 +188,7 @@ fun QuickDashTheme(
     val borderWidth = prefs[floatPreferencesKey("border_width")] ?: 1f
     val fontScale = prefs[floatPreferencesKey("font_scale")] ?: 1f
     val showShadow = prefs[booleanPreferencesKey("show_shadow")] ?: true
-    val fontFamilyName = prefs[stringPreferencesKey("font_family_key")] ?: "system"
+    val fontFamilyName = prefs[stringPreferencesKey("font_family_key")] ?: "SPACE_GROTESK"
 
     val selectedFontFamily = remember(fontFamilyName) {
         when (fontFamilyName.uppercase()) {

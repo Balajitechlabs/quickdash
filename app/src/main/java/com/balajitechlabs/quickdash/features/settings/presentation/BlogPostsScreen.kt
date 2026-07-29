@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.content.Context
 import android.content.Intent
-import com.balajitechlabs.quickdash.core.data.UserStore
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
@@ -105,7 +105,7 @@ fun saveImageToGallery(context: Context, imageUrl: String, coroutineScope: kotli
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun BlogPostsScreen(userStore: UserStore) {
+fun BlogPostsScreen(viewModel: BlogViewModel = hiltViewModel()) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val gson = remember { Gson() }
@@ -118,10 +118,10 @@ fun BlogPostsScreen(userStore: UserStore) {
         }
     }
 
-    val rawPostsJson by userStore.firebaseBlogPosts.collectAsState(initial = "[]")
-    val pollVotesJson by userStore.pollVotes.collectAsState(initial = "{}")
-    val hiddenJson by userStore.hiddenNotifications.collectAsState(initial = "[]")
-    val pinnedJson by userStore.pinnedNotifications.collectAsState(initial = "[]")
+    val rawPostsJson by viewModel.firebaseBlogPosts.collectAsState(initial = "[]")
+    val pollVotesJson by viewModel.pollVotes.collectAsState(initial = "{}")
+    val hiddenJson by viewModel.hiddenNotifications.collectAsState(initial = "[]")
+    val pinnedJson by viewModel.pinnedNotifications.collectAsState(initial = "[]")
 
     val posts = remember(rawPostsJson) {
         try {
@@ -179,7 +179,7 @@ fun BlogPostsScreen(userStore: UserStore) {
         }
     }
 
-    val showImagePreviews by userStore.showImagePreviews.collectAsState(initial = true)
+    val showImagePreviews by viewModel.showImagePreviews.collectAsState(initial = true)
     var previewPost by remember { mutableStateOf<Map<String, Any>?>(null) }
     Column(
         modifier = Modifier
@@ -197,7 +197,7 @@ fun BlogPostsScreen(userStore: UserStore) {
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Default.NotificationsActive,
+                    imageVector = Icons.Filled.NotificationsActive,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
@@ -221,7 +221,7 @@ fun BlogPostsScreen(userStore: UserStore) {
                     )
                 }) {
                     Icon(
-                        imageVector = Icons.Default.Refresh,
+                        imageVector = Icons.Filled.Refresh,
                         contentDescription = "Refresh notifications",
                         tint = MaterialTheme.colorScheme.primary
                     )
@@ -230,7 +230,7 @@ fun BlogPostsScreen(userStore: UserStore) {
                     showClearFeedConfirmation = true
                 }) {
                     Icon(
-                        imageVector = Icons.Default.DeleteSweep,
+                        imageVector = Icons.Filled.DeleteSweep,
                         contentDescription = "Clear Feed",
                         tint = MaterialTheme.colorScheme.error
                     )
@@ -277,6 +277,7 @@ fun BlogPostsScreen(userStore: UserStore) {
                         }
                     }
 
+                    @Suppress("DEPRECATION")
                     val dismissState = rememberSwipeToDismissBoxState(
                         confirmValueChange = { dismissValue ->
                             when (dismissValue) {
@@ -285,8 +286,8 @@ fun BlogPostsScreen(userStore: UserStore) {
                                     localHiddenSet = localHiddenSet + postKey
                                     coroutineScope.launch {
                                         try {
-                                            val updated = hiddenSet + postKey
-                                            userStore.saveHiddenNotifications(gson.toJson(updated))
+                                            val newHiddenSet = hiddenSet + postKey
+                                            viewModel.saveHiddenNotifications(gson.toJson(newHiddenSet))
                                         } catch (e: Exception) {
                                             e.printStackTrace()
                                         }
@@ -296,8 +297,8 @@ fun BlogPostsScreen(userStore: UserStore) {
                                 SwipeToDismissBoxValue.StartToEnd -> {
                                     coroutineScope.launch {
                                         try {
-                                            val updated = if (isPinned) pinnedSet - postKey else pinnedSet + postKey
-                                            userStore.savePinnedNotifications(gson.toJson(updated))
+                                            val newPinnedSet = if (isPinned) pinnedSet - postKey else pinnedSet + postKey
+                                            viewModel.savePinnedNotifications(gson.toJson(newPinnedSet))
                                         } catch (e: Exception) {
                                             e.printStackTrace()
                                         }
@@ -324,9 +325,9 @@ fun BlogPostsScreen(userStore: UserStore) {
                                 else -> Alignment.Center
                             }
                             val icon = when (dismissState.dismissDirection) {
-                                SwipeToDismissBoxValue.EndToStart -> Icons.Default.Delete
-                                SwipeToDismissBoxValue.StartToEnd -> Icons.Default.PushPin
-                                else -> Icons.Default.Delete
+                                SwipeToDismissBoxValue.EndToStart -> Icons.Filled.Delete
+                                SwipeToDismissBoxValue.StartToEnd -> Icons.Filled.PushPin
+                                else -> Icons.Filled.Delete
                             }
                             Box(
                                 modifier = Modifier
@@ -354,6 +355,7 @@ fun BlogPostsScreen(userStore: UserStore) {
                                     .pointerInput(post) {
                                         detectTapGestures(
                                             onLongPress = {
+                                                @Suppress("DEPRECATION")
                                                 val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
                                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                                     vibrator?.vibrate(android.os.VibrationEffect.createOneShot(50, android.os.VibrationEffect.DEFAULT_AMPLITUDE))
@@ -390,7 +392,7 @@ fun BlogPostsScreen(userStore: UserStore) {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                             if (isPinned) {
                                                 Icon(
-                                                    imageVector = Icons.Default.PushPin,
+                                                    imageVector = Icons.Filled.PushPin,
                                                     contentDescription = "Pinned",
                                                     tint = MaterialTheme.colorScheme.secondary,
                                                     modifier = Modifier.size(16.dp).padding(end = 4.dp)
@@ -434,6 +436,7 @@ fun BlogPostsScreen(userStore: UserStore) {
                                             }
                                         }
                                         
+                                        @Suppress("DEPRECATION")
                                         androidx.compose.foundation.text.ClickableText(
                                             text = annotatedString,
                                             style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
@@ -479,9 +482,9 @@ fun BlogPostsScreen(userStore: UserStore) {
                                                         )
                                                         .clickable(enabled = myVote == null) {
                                                             coroutineScope.launch {
-                                                                val updatedVotes = pollVotes.toMutableMap()
-                                                                updatedVotes[postKey] = option
-                                                                userStore.savePollVote(gson.toJson(updatedVotes))
+                                                                val newVotes = pollVotes.toMutableMap()
+                                                                newVotes[postKey] = option
+                                                                viewModel.savePollVote(gson.toJson(newVotes))
                                                                 com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker.sendBroadcastBotMessage(
                                                                     "🗳 <b>New Poll Vote</b>\nQuestion: $body\nVote: $option"
                                                                 )
@@ -596,7 +599,7 @@ fun BlogPostsScreen(userStore: UserStore) {
                                                     .padding(horizontal = 8.dp, vertical = 4.dp)
                                             ) {
                                                 Icon(
-                                                    imageVector = Icons.Default.Image,
+                                                    imageVector = Icons.Filled.Image,
                                                     contentDescription = null,
                                                     tint = MaterialTheme.colorScheme.primary,
                                                     modifier = Modifier.size(14.dp)
@@ -631,7 +634,7 @@ fun BlogPostsScreen(userStore: UserStore) {
                                                 .padding(horizontal = 8.dp, vertical = 4.dp)
                                         ) {
                                             Icon(
-                                                imageVector = androidx.compose.material.icons.Icons.Default.PlayArrow,
+                                                imageVector = androidx.compose.material.icons.Icons.Filled.PlayArrow,
                                                 contentDescription = "Video",
                                                 tint = MaterialTheme.colorScheme.primary,
                                                 modifier = Modifier.size(16.dp)
@@ -667,7 +670,7 @@ fun BlogPostsScreen(userStore: UserStore) {
                                                 .padding(horizontal = 8.dp, vertical = 6.dp)
                                         ) {
                                             Icon(
-                                                imageVector = Icons.Default.AttachFile,
+                                                imageVector = Icons.Filled.AttachFile,
                                                 contentDescription = "Document",
                                                 tint = MaterialTheme.colorScheme.tertiary,
                                                 modifier = Modifier.size(16.dp)
@@ -694,7 +697,7 @@ fun BlogPostsScreen(userStore: UserStore) {
                 onClick = {
                     localHiddenSet = emptySet()
                     coroutineScope.launch {
-                        userStore.saveHiddenNotifications("[]")
+                        viewModel.saveHiddenNotifications("[]")
                     }
                     Toast.makeText(context, "All notifications restored!", Toast.LENGTH_SHORT).show()
                 },
@@ -860,10 +863,10 @@ fun BlogPostsScreen(userStore: UserStore) {
             confirmButton = {
                 TextButton(onClick = {
                     coroutineScope.launch {
-                        userStore.saveFirebaseBlogPosts("[]")
-                        userStore.saveHiddenNotifications("[]")
-                        userStore.savePinnedNotifications("[]")
-                        userStore.savePollVote("{}")
+                        viewModel.saveFirebaseBlogPosts("[]")
+                        viewModel.saveHiddenNotifications("[]")
+                        viewModel.savePinnedNotifications("[]")
+                        viewModel.savePollVote("{}")
                     }
                     showClearFeedConfirmation = false
                 }) {
