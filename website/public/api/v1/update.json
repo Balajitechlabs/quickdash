@@ -1,5 +1,5 @@
 {
-  "version_code": 511,
+  "version_code": 512,
   "latest_version": "5.1.1",
   "min_version_code": 500,
   "changelog": "• QuickDash v5.1.1 — Maintenance Release\n• Android 16 support & 16KB page alignment\n• Play Store beta integration\n• F-Droid distribution support\n• Performance improvements & bug fixes",
