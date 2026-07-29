@@ -394,14 +394,7 @@ export default function Home() {
 
         <FadeInSection as="section" aria-label="QuickDash statistics">
           <h2 className="section-title">Stats</h2>
-          <div className="grid-3">
-            {stats.map(s => (
-              <div key={s.label} className="card" style={{ textAlign: 'center' }}>
-                <p style={{ fontFamily: 'var(--pixel-font)', fontSize: 24, color: 'var(--md-primary)' }}>{s.value}</p>
-                <p style={{ fontFamily: 'var(--pixel-font)', fontSize: 8, color: 'var(--md-on-surface-variant)', marginTop: 8 }}>{s.label}</p>
-              </div>
-            ))}
-          </div>
+          <StatsBar />
         </FadeInSection>
 
         <div className="pixel-divider" role="separator" />
@@ -507,11 +500,43 @@ export default function Home() {
   )
 }
 
-const stats = [
-  { label: 'DOWNLOADS', value: '10K+' },
-  { label: 'TOOLS', value: '12' },
-  { label: 'ACTIVE USERS', value: '5K+' },
-]
+function StatsBar() {
+  const [stats, setStats] = useState({ downloads: null, tools: null, active_users: null })
+
+  useEffect(() => {
+    fetch('/api/v1/stats')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d) setStats(d) })
+      .catch(() => {})
+  }, [])
+
+  const items = [
+    { label: 'DOWNLOADS', value: stats.downloads != null ? formatNum(stats.downloads) : '...' },
+    { label: 'TOOLS', value: stats.tools != null ? String(stats.tools) : '...' },
+    { label: 'ACTIVE USERS', value: stats.active_users != null ? formatNum(stats.active_users) : '...' },
+  ]
+
+  return (
+    <div style={{
+      display: 'flex', justifyContent: 'center', gap: 48, flexWrap: 'wrap',
+      margin: '40px 0', padding: '24px 16px',
+      background: 'var(--md-surface-1)', borderRadius: 20
+    }}>
+      {items.map(s => (
+        <div key={s.label} style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--md-primary)' }}>{s.value}</div>
+          <div style={{ fontSize: 11, fontFamily: 'var(--pixel-font)', color: 'var(--md-on-surface-variant)', marginTop: 4, letterSpacing: 1 }}>{s.label}</div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function formatNum(n) {
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M+'
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'K+'
+  return String(n)
+}
 
 function DownloadCard({ icon, title, desc, github, playStore, label, wide }) {
   const href = github

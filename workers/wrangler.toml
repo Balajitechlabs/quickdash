@@ -3,7 +3,11 @@ main = "src/index.js"
 compatibility_date = "2025-04-01"
 workers_dev = false
 
-routes = ["quickdash.balajitechlab.com/api/v1/feedback", "quickdash.balajitechlab.com/api/v1/crash-report"]
+routes = [
+  "quickdash.balajitechlab.com/api/v1/feedback",
+  "quickdash.balajitechlab.com/api/v1/crash-report",
+  "quickdash.balajitechlab.com/api/v1/stats"
+]
 
 [[kv_namespaces]]
 binding = "QUICKDASH_KV"
