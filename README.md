@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Balajitechlabs/quickdash/releases/latest">
+  <a href="https://github.com/Balajitechlabs/quickdash/releases/latest
     <img src="https://img.shields.io/badge/Download_APK-2ea44f?style=for-the-badge&logo=android&logoColor=white" alt="Download APK">
   </a>
   <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.mischief">
