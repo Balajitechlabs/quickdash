@@ -4,8 +4,8 @@
   "min_version_code": 500,
   "changelog": "• QuickDash v5.1.1 — Maintenance Release\n• Android 16 support & 16KB page alignment\n• Play Store beta integration\n• F-Droid distribution support\n• Performance improvements & bug fixes",
   "apk_url": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-universal-release.apk",
-  "apk_size_bytes": 56413491,
-  "apk_sha256": "2c06d57ce1cda6ddcedb46748162a565b465922471fdfe5267062718a0650ef6",
+  "apk_size_bytes": 56095652,
+  "apk_sha256": "fd6d53722f047cbf819d2c796c5e4889d2e50499e26b301fd879b384c4e3383a",
   "release_date": "2026-07-29",
   "critical_update": false,
   "features": {
