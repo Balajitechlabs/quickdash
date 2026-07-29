@@ -58,7 +58,7 @@ object QuickDashApiClient {
                         latestVersion = data.latestVersion,
                         versionCode = data.versionCode,
                         changelog = data.changelog.ifEmpty { "Bug fixes and performance improvements." },
-                        apkUrl = data.apkUrl.ifEmpty { "https://quickdash.balajitechlab.com/downloads/QuickDash-v$APP_VERSION-universal.apk" },
+                        apkUrl = data.apkUrl.ifEmpty { "https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-universal-release.apk" },
                         sha256 = data.apkSha256,
                         isCritical = data.criticalUpdate
                     )

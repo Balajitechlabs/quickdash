@@ -3,6 +3,9 @@ name: Android Release Pipeline
 on:
   push:
     branches: [ main, master ]
+    paths-ignore:
+      - 'README.md'
+      - 'website/public/api/v1/update.json'
   workflow_dispatch:
 
 jobs:
@@ -98,6 +101,24 @@ jobs:
           echo "Final release artifacts collected:"
           ls -lh release_artifacts/
 
+      - name: Compute APK checksum and update update.json
+        run: |
+          APK_FILE="release_artifacts/app-universal-release.apk"
+          if [ -f "$APK_FILE" ]; then
+            SHA256=$(sha256sum "$APK_FILE" | cut -d' ' -f1)
+            SIZE=$(stat -c%s "$APK_FILE")
+            echo "APK SHA256: $SHA256"
+            echo "APK Size: $SIZE bytes"
+
+            jq --arg sha "$SHA256" --arg size "$SIZE" \
+              '.apk_sha256 = $sha | .apk_size_bytes = ($size | tonumber)' \
+              website/public/api/v1/update.json > website/public/api/v1/update.json.tmp
+            mv website/public/api/v1/update.json.tmp website/public/api/v1/update.json
+            echo "update.json updated"
+          else
+            echo "Warning: Universal APK not found at $APK_FILE"
+          fi
+
       - name: Create GitHub Release
         id: create_release
         if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
@@ -124,22 +145,22 @@ jobs:
           prerelease: false
           files: release_artifacts/*
 
-      - name: Update README Tag Name
+      - name: Update repo files after release
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         run: |
           NEW_TAG="v${{ env.VERSION_NAME }}-${{ github.run_number }}"
           RELEASES_URL="https://github.com/${{ github.repository }}/releases/latest"
-          echo "Updating README tag to: ${NEW_TAG} and button URL to: ${RELEASES_URL}"
-          
-          # Ensure Download APK badge links to releases/latest
+          echo "Updating README tag to: ${NEW_TAG}"
+
+          # Update README badge links
           sed -i -E "s|https://github.com/[^/]+/[^/]+/releases/download/[^ ]+|${RELEASES_URL}|g; s|https://github.com/[^/]+/[^/]+/releases/latest[^)]*|${RELEASES_URL}|g" README.md
-          
-          # Replace the Latest Tag text in README
+
+          # Replace the Latest Tag text
           sed -i -E "s|\*\*Latest Tag: \`v[0-9.-]+\`\*\*|\*\*Latest Tag: \`${NEW_TAG}\`\*\*|g" README.md
-          
-          # Configure Git and commit the change
+
+          # Configure Git and commit
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md
-          git commit -m "chore: update README release tag to ${NEW_TAG} [skip ci]" || echo "No changes to commit"
+          git add README.md website/public/api/v1/update.json
+          git commit -m "chore: update release tag and checksum to ${NEW_TAG}" || echo "No changes to commit"
           git push
