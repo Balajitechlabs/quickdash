@@ -2,7 +2,7 @@ name: Deploy Showcase Website to Custom Subdomain
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   workflow_dispatch:
 
 permissions:
