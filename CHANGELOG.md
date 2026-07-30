@@ -4,6 +4,16 @@ All major updates, feature additions, bug fixes, and system improvements for **Q
 
 ---
 
+## [5.1.3] - 2026-07-31 (Stability & Service Robustness Release) ⚡
+
+### 🐛 FIXED (What We Fixed)
+- **Quick Settings Tile Crash**: Resolved `ForegroundServiceStartNotAllowedException` on Android 12+ / 14+ / 16 when toggling QuickDash Hub floating bubble from notification shade.
+- **Service Foreground Promotion**: Wrapped `FloatingBubbleService` `startForeground()` in try-catch to prevent process crashes on restricted background starts.
+- **OWASP Dependency Check Action**: Resolved Docker container `JAVA_HOME` override error in `.github/workflows/dependency-scan.yml`.
+- **Nightly CI Build Pipeline**: Added automatic `google-services.json` decoding and `local.properties` generation for GitHub Actions Nightly builds.
+
+---
+
 ## [5.1.2] - 2026-07-31 (Code Quality & Security Release) 🔒
 
 ### 🐛 FIXED (What We Fixed)

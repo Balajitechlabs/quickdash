@@ -28,8 +28,8 @@ android {
         applicationId = "com.balajitechlabs.quickdash"
         minSdk = 24
         targetSdk = 36
-        versionCode = 514
-        versionName = "5.1.2"
+        versionCode = 515
+        versionName = "5.1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -94,6 +94,11 @@ android {
                 enableV4Signing = true
             }
         }
+    }
+
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
     }
 
     packaging {

@@ -1,5 +1,17 @@
 [
   {
+    "version": "5.1.3",
+    "date": "2026-07-31",
+    "notes": "Stability & Service Robustness Release",
+    "highlights": [
+      "Fixed Android 12+/14+ Quick Settings Tile ForegroundServiceStartNotAllowedException.",
+      "Wrapped FloatingBubbleService startForeground in safe try-catch for crash prevention.",
+      "Fixed OWASP Dependency Check CI workflow Docker container execution.",
+      "Resolved GitHub Actions Nightly build pipeline configuration.",
+      "Performance improvements & UI polish across all 12 floating tools."
+    ]
+  },
+  {
     "version": "5.1.2",
     "date": "2026-07-31",
     "notes": "Master Plan A+ Release — Security, Architecture & Testing",

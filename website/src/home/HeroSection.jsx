@@ -38,7 +38,7 @@ function GitHubRelease() {
       
       <a href="https://github.com/Balajitechlabs/quickdash/releases" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'version')}>
         <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#2196f3', animation: 'pulse 2s infinite' }} />
-        {release ? `v${release.tag_name.replace('v', '')}` : 'v5.1.2 Latest'}
+        {release ? `v${release.tag_name.replace('v', '')}` : 'v5.1.3 Latest'}
       </a>
 
       <a href="https://github.com/Balajitechlabs/quickdash/security/policy" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'security')}>

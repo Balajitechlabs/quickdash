@@ -41,15 +41,28 @@ class QuickTileService : TileService() {
 
             if (newStatus) {
                 val intent = Intent(context, FloatingBubbleService::class.java)
-                if (Build.VERSION_CODES.O <= Build.VERSION.SDK_INT) {
-                    context.startForegroundService(intent)
-                } else {
-                    context.startService(intent)
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        context.startForegroundService(intent)
+                    } else {
+                        context.startService(intent)
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.w("QuickTileService", "Could not start foreground service from tile, trying startService fallback", e)
+                    try {
+                        context.startService(intent)
+                    } catch (e2: Exception) {
+                        android.util.Log.e("QuickTileService", "Failed to start FloatingBubbleService from tile", e2)
+                    }
                 }
                 tile.state = Tile.STATE_ACTIVE
             } else {
                 val intent = Intent(context, FloatingBubbleService::class.java)
-                context.stopService(intent)
+                try {
+                    context.stopService(intent)
+                } catch (e: Exception) {
+                    android.util.Log.e("QuickTileService", "Failed to stop FloatingBubbleService", e)
+                }
                 tile.state = Tile.STATE_INACTIVE
             }
             tile.updateTile()

@@ -1,8 +1,8 @@
 {
-  "version_code": 514,
-  "latest_version": "5.1.2",
+  "version_code": 515,
+  "latest_version": "5.1.3",
   "min_version_code": 500,
-  "changelog": "• QuickDash v5.1.2 — Code Quality & Security Release\n• 27 crash-prone catch blocks fixed with proper error logging\n• Keystore passwords moved to environment variables\n• Improved Telegram install notification with device details\n• Worker API tests added (rate limiting, CORS, feedback)\n• Website a11y improvements (SkipLink, focus management, aria-live)\n• Shared useApi hook extracted for Blog/Docs/Changelog\n• Performance improvements & bug fixes",
+  "changelog": "• QuickDash v5.1.3 — Stability & Service Robustness Release\n• Fixed Android 12+/14+ Quick Settings Tile ForegroundServiceStartNotAllowedException\n• Wrapped FloatingBubbleService startForeground in try-catch for crash prevention\n• Configured OWASP Dependency Check CI workflow Docker container\n• Resolved GitHub Actions Nightly build pipeline configuration\n• Performance improvements & UI polish across all 12 floating tools",
   "apk_url": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-universal-release.apk",
   "apk_size_bytes": 27951768,
   "apk_sha256": "e1647d00de502a56ced6cbab4dd9d9ba5d29605a36ed7ca95b7be288d91058ba",
