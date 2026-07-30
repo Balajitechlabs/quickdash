@@ -25,16 +25,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Setup JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
       - name: OWASP Dependency Check
-        uses: dependency-check/Dependency-Check_Action@v1.2.0
+        uses: dependency-check/Dependency-Check_Action@main
         with:
           project: QuickDash
           path: app
@@ -43,7 +43,7 @@ jobs:
 
       - name: Upload report
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: dependency-check-report
           path: ${{ github.workspace }}/reports/
