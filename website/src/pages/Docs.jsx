@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async'
 import { useApi } from '../hooks/useApi'
 
 export default function Docs() {
@@ -9,13 +10,21 @@ export default function Docs() {
   }, {})
 
   return (
-    <div className="container" style={{ paddingTop: 32, paddingBottom: 48 }} role="status" aria-live="polite">
-      <header>
-        <h1 className="section-title" style={{ fontSize: 20 }}>Documentation</h1>
-        <p style={{ color: 'var(--md-on-surface-variant)', fontSize: 14, marginBottom: 32 }}>
-          Setup guides, permission requirements, and developer documentation for QuickDash.
-        </p>
-      </header>
+    <>
+      <Helmet>
+        <title>Documentation — QuickDash</title>
+        <meta name="description" content="Setup guides, permission requirements, and developer documentation for QuickDash Android app." />
+        <meta property="og:title" content="Documentation — QuickDash" />
+        <meta property="og:description" content="Setup guides, permission requirements, and developer documentation for QuickDash Android app." />
+        <link rel="canonical" href="https://quickdash.balajitechlab.com/docs" />
+      </Helmet>
+      <div className="container" style={{ paddingTop: 32, paddingBottom: 48 }} role="status" aria-live="polite">
+        <header>
+          <h1 className="section-title" style={{ fontSize: 20 }}>Documentation</h1>
+          <p style={{ color: 'var(--md-on-surface-variant)', fontSize: 14, marginBottom: 32 }}>
+            Setup guides, permission requirements, and developer documentation for QuickDash.
+          </p>
+        </header>
 
       <section aria-label="Documentation content">
         {loading ? (
@@ -53,6 +62,7 @@ export default function Docs() {
           ))
         )}
       </section>
-    </div>
+      </div>
+    </>
   )
 }

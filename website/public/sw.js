@@ -1,4 +1,4 @@
-const CACHE = 'quickdash-v9'
+const CACHE = 'quickdash-v10'
 const PRECACHE = [
   '/', '/privacy', '/reading', '/docs', '/changelog',
   '/assets/logo.png',

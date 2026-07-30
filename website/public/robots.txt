@@ -4,3 +4,6 @@ Allow: /
 
 # Sitemap Index URL
 Sitemap: https://quickdash.balajitechlab.com/sitemap.xml
+
+# RSS Feed
+Sitemap: https://quickdash.balajitechlab.com/feed.xml

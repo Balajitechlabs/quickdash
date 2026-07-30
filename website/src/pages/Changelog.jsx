@@ -1,16 +1,25 @@
+import { Helmet } from 'react-helmet-async'
 import { useApi } from '../hooks/useApi'
 
 export default function Changelog() {
   const { data: logs, loading, error, refetch } = useApi('/api/reading/changelogs.json')
 
   return (
-    <div className="container" style={{ paddingTop: 32, paddingBottom: 48 }} role="status" aria-live="polite">
-      <header>
-        <h1 className="section-title" style={{ fontSize: 20 }}>Changelog</h1>
-        <p style={{ color: 'var(--md-on-surface-variant)', fontSize: 14, marginBottom: 32 }}>
-          Release history and version notes for QuickDash.
-        </p>
-      </header>
+    <>
+      <Helmet>
+        <title>Changelog — QuickDash</title>
+        <meta name="description" content="Release history and version notes for QuickDash Android app." />
+        <meta property="og:title" content="Changelog — QuickDash" />
+        <meta property="og:description" content="Release history and version notes for QuickDash Android app." />
+        <link rel="canonical" href="https://quickdash.balajitechlab.com/changelog" />
+      </Helmet>
+      <div className="container" style={{ paddingTop: 32, paddingBottom: 48 }} role="status" aria-live="polite">
+        <header>
+          <h1 className="section-title" style={{ fontSize: 20 }}>Changelog</h1>
+          <p style={{ color: 'var(--md-on-surface-variant)', fontSize: 14, marginBottom: 32 }}>
+            Release history and version notes for QuickDash.
+          </p>
+        </header>
 
       <section aria-label="Release history">
         {loading ? (
@@ -59,6 +68,7 @@ export default function Changelog() {
           </div>
         )}
       </section>
-    </div>
+      </div>
+    </>
   )
 }

@@ -1,6 +1,8 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import Layout from './components/Layout'
+import ErrorBoundary from './components/ErrorBoundary'
+import { prefetchAllOnIdle } from './utils/prefetch'
 
 const Home = lazy(() => import('./pages/Home'))
 const Blog = lazy(() => import('./pages/Blog'))
@@ -40,20 +42,24 @@ function NotFound() {
 }
 
 export default function App() {
+  useEffect(() => { prefetchAllOnIdle() }, [])
+
   return (
     <BrowserRouter>
-      <Layout>
-        <Suspense fallback={<LoadingPage />}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/reading" element={<Blog />} />
-            <Route path="/docs" element={<Docs />} />
-            <Route path="/changelog" element={<Changelog />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </Layout>
+      <ErrorBoundary>
+        <Layout>
+          <Suspense fallback={<LoadingPage />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/reading" element={<Blog />} />
+              <Route path="/docs" element={<Docs />} />
+              <Route path="/changelog" element={<Changelog />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </Layout>
+      </ErrorBoundary>
     </BrowserRouter>
   )
 }

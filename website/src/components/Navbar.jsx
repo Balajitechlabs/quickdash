@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import ThemeToggle from './ThemeToggle'
+import { prefetchPage } from '../utils/prefetch'
 
 const links = [
   { to: '/', label: 'Home' },
@@ -12,6 +13,7 @@ const links = [
 export default function Navbar() {
   const { pathname } = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
+  const handlePrefetch = useCallback((path) => prefetchPage(path), [])
 
   useEffect(() => {
     if (!menuOpen) return
@@ -53,6 +55,8 @@ export default function Navbar() {
           <Link
             key={l.to}
             to={l.to}
+            onMouseEnter={() => handlePrefetch(l.to)}
+            onTouchStart={() => handlePrefetch(l.to)}
             aria-current={pathname === l.to ? 'page' : undefined}
             className="btn btn-sm btn-outline"
             style={{

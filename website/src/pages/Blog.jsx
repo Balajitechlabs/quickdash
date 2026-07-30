@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async'
 import { useApi } from '../hooks/useApi'
 
 function SkeletonCard() {
@@ -14,13 +15,21 @@ export default function Blog() {
   const { data: posts, loading, error } = useApi('/api/reading/posts.json')
 
   return (
-    <div className="container" style={{ paddingTop: 32, paddingBottom: 48 }} role="status" aria-live="polite">
-      <header>
-        <h1 className="section-title" style={{ fontSize: 20 }}>Reading</h1>
-        <p style={{ color: 'var(--md-on-surface-variant)', fontSize: 14, marginBottom: 32 }}>
-          Development blog, release notes, and technical articles about QuickDash and Android development.
-        </p>
-      </header>
+    <>
+      <Helmet>
+        <title>Reading — QuickDash Blog</title>
+        <meta name="description" content="Development blog, release notes, and technical articles about QuickDash and Android development." />
+        <meta property="og:title" content="Reading — QuickDash Blog" />
+        <meta property="og:description" content="Development blog, release notes, and technical articles about QuickDash and Android development." />
+        <link rel="canonical" href="https://quickdash.balajitechlab.com/reading" />
+      </Helmet>
+      <div className="container" style={{ paddingTop: 32, paddingBottom: 48 }} role="status" aria-live="polite">
+        <header>
+          <h1 className="section-title" style={{ fontSize: 20 }}>Reading</h1>
+          <p style={{ color: 'var(--md-on-surface-variant)', fontSize: 14, marginBottom: 32 }}>
+            Development blog, release notes, and technical articles about QuickDash and Android development.
+          </p>
+        </header>
 
       {error && (
         <div className="card" style={{ textAlign: 'center', padding: 32, borderColor: 'var(--md-error)' }}>
@@ -62,6 +71,7 @@ export default function Blog() {
           </div>
         )}
       </section>
-    </div>
+      </div>
+    </>
   )
 }

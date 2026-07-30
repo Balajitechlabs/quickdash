@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>QuickDash</title>
+    <description>QuickDash is a floating overlay utility hub for Android featuring 12 tools — UPI QR, translator, clipboard, notes, calculator, Wi-Fi sharing, and more.</description>
+    <link>https://quickdash.balajitechlab.com</link>
+    <language>en</language>
+    <lastBuildDate>Thu, 30 Jul 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://quickdash.balajitechlab.com/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>QuickDash v5.1.2 Released</title>
+      <description>Security improvements, catch block hardening, type-safe navigation, comprehensive testing, version bump to 5.1.2.</description>
+      <link>https://github.com/Balajitechlabs/quickdash/releases</link>
+      <guid>https://github.com/Balajitechlabs/quickdash/releases/tag/v5.1.2</guid>
+      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>QuickDash v5.1.1 Released</title>
+      <description>Android 16 (API 36) target, 16KB page alignment, bug fixes and performance improvements.</description>
+      <link>https://github.com/Balajitechlabs/quickdash/releases</link>
+      <guid>https://github.com/Balajitechlabs/quickdash/releases/tag/v5.1.1</guid>
+      <pubDate>Mon, 15 Jul 2026 00:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>QuickDash is Now Open Source</title>
+      <description>QuickDash has been released as open source under the PocketOps Custom Open Source Fork License. Source code available on GitHub.</description>
+      <link>https://github.com/Balajitechlabs/quickdash</link>
+      <guid>https://github.com/Balajitechlabs/quickdash</guid>
+      <pubDate>Wed, 01 Jul 2026 00:00:00 +0000</pubDate>
+    </item>
+  </channel>
+</rss>

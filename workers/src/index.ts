@@ -7,14 +7,36 @@ export interface Env {
 
 const ORIGIN = 'https://balajitechlabs.github.io'
 const ALLOWED_ORIGIN = 'https://quickdash.balajitechlab.com'
-const CORS: Record<string, string> = {
-  'content-type': 'application/json',
-  'access-control-allow-origin': ALLOWED_ORIGIN,
-  'access-control-allow-methods': 'GET, POST, OPTIONS',
-  'access-control-allow-headers': 'Content-Type',
-}
+
+const STATS_TTL = 300
 const RATE_LIMIT = 3
 const RATE_WINDOW = 60
+
+function json(data: unknown, status = 200, extra: Record<string, string> = {}): Response {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      'content-type': 'application/json',
+      'access-control-allow-origin': ALLOWED_ORIGIN,
+      'access-control-allow-methods': 'GET, POST, OPTIONS',
+      'access-control-allow-headers': 'Content-Type',
+      'cache-control': status >= 400 ? 'no-store' : 'public, max-age=60',
+      ...extra,
+    },
+  })
+}
+
+function cors(): Response {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'access-control-allow-origin': ALLOWED_ORIGIN,
+      'access-control-allow-methods': 'GET, POST, OPTIONS',
+      'access-control-allow-headers': 'Content-Type',
+      'cache-control': 'no-store',
+    },
+  })
+}
 
 async function checkRateLimit(ip: string, env: Env): Promise<boolean> {
   const key = `ratelimit:${ip}`
@@ -39,9 +61,7 @@ export default {
     const url = new URL(request.url)
     const path = url.pathname
 
-    if (request.method === 'OPTIONS') {
-      return new Response(null, { status: 204, headers: CORS })
-    }
+    if (request.method === 'OPTIONS') return cors()
 
     if (path === '/api/v1/stats' || path === '/api/v1/stats.json') {
       return handleStats(env)
@@ -51,7 +71,7 @@ export default {
       const ip = request.headers.get('cf-connecting-ip') || 'unknown'
       const allowed = await checkRateLimit(ip, env)
       if (!allowed) {
-        return new Response(JSON.stringify({ status: 'error', message: 'Too many requests. Try again later.' }), { status: 429, headers: CORS })
+        return json({ status: 'error', message: 'Too many requests. Try again later.' }, 429)
       }
       return handleFeedback(request, env)
     }
@@ -60,20 +80,26 @@ export default {
       const ip = request.headers.get('cf-connecting-ip') || 'unknown'
       const allowed = await checkRateLimit(ip, env)
       if (!allowed) {
-        return new Response(JSON.stringify({ status: 'error', message: 'Too many requests. Try again later.' }), { status: 429, headers: CORS })
+        return json({ status: 'error', message: 'Too many requests. Try again later.' }, 429)
       }
       return handleCrashReport(request, env)
     }
 
     const originReq = new Request(ORIGIN + path + url.search, request)
-    return fetch(originReq)
+    const originRes = await fetch(originReq)
+    const resp = new Response(originRes.body, originRes)
+    resp.headers.set('access-control-allow-origin', ALLOWED_ORIGIN)
+    resp.headers.set('cache-control', 'public, max-age=86400')
+    return resp
   }
 }
 
 async function handleStats(env: Env): Promise<Response> {
   try {
     const cached = await env.QUICKDASH_KV.get('stats:cached', 'text')
-    if (cached) return new Response(cached, { headers: { ...CORS, 'cf-cache-status': 'HIT' } })
+    if (cached) {
+      return json(JSON.parse(cached), 200, { 'cf-cache-status': 'HIT' })
+    }
 
     const [releasesRes, toolsRes] = await Promise.allSettled([
       fetch('https://api.github.com/repos/Balajitechlabs/quickdash/releases?per_page=5', {
@@ -102,12 +128,11 @@ async function handleStats(env: Env): Promise<Response> {
     }
 
     const body = { downloads, tools, active_users: null, note: 'GA4 active users requires a Google Cloud service account' }
-    const json = JSON.stringify(body)
-    await env.QUICKDASH_KV.put('stats:cached', json, { expirationTtl: 60 })
+    await env.QUICKDASH_KV.put('stats:cached', JSON.stringify(body), { expirationTtl: STATS_TTL })
 
-    return new Response(json, { headers: { ...CORS, 'cf-cache-status': 'MISS' } })
+    return json(body, 200, { 'cf-cache-status': 'MISS' })
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: CORS })
+    return json({ error: e.message, note: 'Stats temporarily unavailable' }, 500)
   }
 }
 
@@ -118,9 +143,9 @@ async function handleFeedback(request: Request, env: Env): Promise<Response> {
     const key = `feedback:${Date.now()}:${crypto.randomUUID()}`
     await env.QUICKDASH_KV.put(key, JSON.stringify(entry))
     await env.QUICKDASH_KV.put('feedback:latest', JSON.stringify(entry))
-    return new Response(JSON.stringify({ status: 'ok' }), { headers: CORS })
+    return json({ status: 'ok' })
   } catch (e: any) {
-    return new Response(JSON.stringify({ status: 'error', message: e.message }), { status: 400, headers: CORS })
+    return json({ status: 'error', message: e.message }, 400)
   }
 }
 
@@ -131,8 +156,8 @@ async function handleCrashReport(request: Request, env: Env): Promise<Response> 
     const key = `crash:${Date.now()}:${crypto.randomUUID()}`
     await env.QUICKDASH_KV.put(key, JSON.stringify(entry))
     await env.QUICKDASH_KV.put('crash:latest', JSON.stringify(entry))
-    return new Response(JSON.stringify({ status: 'ok' }), { headers: CORS })
+    return json({ status: 'ok' })
   } catch (e: any) {
-    return new Response(JSON.stringify({ status: 'error', message: e.message }), { status: 400, headers: CORS })
+    return json({ status: 'error', message: e.message }, 400)
   }
 }
