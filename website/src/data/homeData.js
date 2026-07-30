@@ -14,7 +14,7 @@ export const features = [
 ]
 
 export const specs = [
-  { label: 'Latest Version', value: 'v5.1.2' },
+  { label: 'Latest Version', value: 'v5.1.3' },
   { label: 'Min SDK', value: 'Android 7.0 (API 24)' },
   { label: 'Target SDK', value: 'Android 16 (API 36)' },
   { label: 'Architecture', value: 'MVVM + Hilt DI + Jetpack Compose' },

@@ -11,7 +11,7 @@ object FeedbackSender {
         rating: Int
     ): Boolean {
         val request = FeedbackRequest(
-            app_version = "5.1.2",
+            app_version = com.balajitechlabs.quickdash.BuildConfig.VERSION_NAME,
             device = "${Build.MANUFACTURER} ${Build.MODEL}",
             android_version = "${Build.VERSION.SDK_INT}",
             message = message,

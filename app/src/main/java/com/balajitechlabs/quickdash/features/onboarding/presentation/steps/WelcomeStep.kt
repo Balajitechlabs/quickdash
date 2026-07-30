@@ -27,7 +27,7 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Welcome to QuickDash v5.1.2 🚀",
+            text = "Welcome to QuickDash v5.1.3 🚀",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
@@ -37,7 +37,7 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(6.dp))
 
         Text(
-            text = "Welcome to the v5.1.2 update! Featuring Android 16 readiness, 16 KB page size alignment, Play Core APIs, and F-Droid support.",
+            text = "Welcome to the v5.1.3 update! Featuring Android 16 readiness, Quick Settings Tile fixes, and 12 floating tools.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth()

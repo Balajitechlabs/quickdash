@@ -30,7 +30,7 @@ data class Announcement(
 object QuickDashApiClient {
 
     private const val TAG = "QuickDashApiClient"
-    private const val APP_VERSION = "5.1.2"
+    private val APP_VERSION = com.balajitechlabs.quickdash.BuildConfig.VERSION_NAME
 
     private val json = Json { ignoreUnknownKeys = true }
 

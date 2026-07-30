@@ -570,9 +570,9 @@ fun QuickDashContent(
         val lastSeen = mainViewModel.settingsRepository.lastSeenVersion.first()
         val currentVersion = try {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            packageInfo.versionName ?: "5.1.2"
+            packageInfo.versionName ?: "5.1.3"
         } catch (e: Exception) {
-            "5.1.2"
+            "5.1.3"
         }
         if (lastSeen != currentVersion) {
             showWhatsNewOnLaunch = true
@@ -1345,7 +1345,7 @@ fun QuickDashContent(
     }
     if (showWhatsNewOnLaunch) {
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val versionName = packageInfo.versionName ?: "5.1.2"
+        val versionName = packageInfo.versionName ?: "5.1.3"
         
         LaunchedEffect(Unit) {
             settingsConfettiType = "Corner"
@@ -1521,7 +1521,7 @@ fun UpdateTag(onShowUpdateDialog: () -> Unit = {}) {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
             "v${packageInfo.versionName}"
         } catch (e: Exception) {
-            "v5.1.2"
+            "v5.1.3"
         }
     }
 

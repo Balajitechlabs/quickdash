@@ -1932,7 +1932,7 @@ fun SettingsScreen(
 
     if (showWhatsNewDialog) {
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val versionName = packageInfo.versionName ?: "5.1.2"
+        val versionName = packageInfo.versionName ?: "5.1.3"
         WhatsNewDialog(
             versionName = versionName,
             onDismiss = { showWhatsNewDialog = false }

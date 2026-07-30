@@ -1,8 +1,8 @@
 {
   "status": "ok",
-  "version": "5.1.2",
-  "uptime_days": 45,
-  "last_release": "2026-07-26",
+  "version": "5.1.3",
+  "uptime_days": 50,
+  "last_release": "2026-07-31",
   "api_version": "1",
-  "app_min_version": 512
+  "app_min_version": 515
 }

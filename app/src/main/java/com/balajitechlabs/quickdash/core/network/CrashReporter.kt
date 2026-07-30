@@ -14,8 +14,8 @@ object CrashReporter {
     ): Boolean {
         val request = CrashReportRequest(
             id = UUID.randomUUID().toString(),
-            app_version = "5.1.2",
-            version_code = 511,
+            app_version = com.balajitechlabs.quickdash.BuildConfig.VERSION_NAME,
+            version_code = com.balajitechlabs.quickdash.BuildConfig.VERSION_CODE,
             device = "${Build.MANUFACTURER} ${Build.MODEL}",
             android_version = "${Build.VERSION.SDK_INT}",
             stacktrace = Log.getStackTraceString(throwable),
