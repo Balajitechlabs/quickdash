@@ -3,59 +3,59 @@ import FadeInSection from '../components/FadeInSection'
 import { trackEvent } from '../utils/analytics'
 
 function GitHubRelease() {
+  const [repo, setRepo] = useState(null)
   const [release, setRelease] = useState(null)
   const [commit, setCommit] = useState(null)
-  const [repo, setRepo] = useState(null)
 
   useEffect(() => {
     fetch('https://api.github.com/repos/Balajitechlabs/quickdash')
       .then(r => r.ok ? r.json() : null)
-      .then(d => setRepo(d))
+      .then(d => d && setRepo(d))
       .catch(() => {})
-  }, [])
-
-  useEffect(() => {
     fetch('https://api.github.com/repos/Balajitechlabs/quickdash/releases/latest')
       .then(r => r.ok ? r.json() : null)
-      .then(d => setRelease(d))
+      .then(d => d && setRelease(d))
+      .catch(() => {})
+    fetch('https://api.github.com/repos/Balajitechlabs/quickdash/commits/master')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => d && setCommit(d))
       .catch(() => {})
   }, [])
 
-  useEffect(() => {
-    fetch('https://api.github.com/repos/Balajitechlabs/quickdash/commits/main')
-      .then(r => r.ok ? r.json() : null)
-      .then(d => setCommit(d))
-      .catch(() => {})
-  }, [])
+  const badgeStyle = {
+    display: 'inline-flex', alignItems: 'center', gap: 6,
+    color: 'var(--md-on-surface-variant)', textDecoration: 'none',
+    background: 'var(--md-surface-variant)', padding: '6px 12px',
+    borderRadius: 20, fontSize: 11, fontWeight: 500
+  }
 
   return (
-    <div style={{ marginTop: 20, display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', fontFamily: 'var(--body-font)', fontSize: 13 }}>
-      <a href="https://github.com/Balajitechlabs/quickdash/actions" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--md-on-surface-variant)', textDecoration: 'none', background: 'var(--md-surface-variant)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }} onClick={() => trackEvent('badge_click', 'build_status')}>
+    <div style={{ marginTop: 24, display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap', fontFamily: 'var(--body-font)', fontSize: 13 }}>
+      <a href="https://github.com/Balajitechlabs/quickdash/actions" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'build_status')}>
         <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#4caf50' }} />
         Build passing
       </a>
-      {repo && (
-        <a href="https://github.com/Balajitechlabs/quickdash/stargazers" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--md-on-surface-variant)', textDecoration: 'none', background: 'var(--md-surface-variant)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }} onClick={() => trackEvent('badge_click', 'stars')}>
-          ⭐ {repo.stargazers_count}
-        </a>
-      )}
-      {repo && (
-        <a href="https://github.com/Balajitechlabs/quickdash/issues" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--md-on-surface-variant)', textDecoration: 'none', background: 'var(--md-surface-variant)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }} onClick={() => trackEvent('badge_click', 'issues')}>
-          {repo.open_issues_count > 0 ? '🔴' : '🟢'} {repo.open_issues_count} issues
-        </a>
-      )}
-      <a href="https://github.com/Balajitechlabs/quickdash/security/policy" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--md-on-surface-variant)', textDecoration: 'none', background: 'var(--md-surface-variant)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }} onClick={() => trackEvent('badge_click', 'security')}>
-        🔒 Security
+      
+      <a href="https://github.com/Balajitechlabs/quickdash/releases" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'version')}>
+        <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#2196f3', animation: 'pulse 2s infinite' }} />
+        {release ? `v${release.tag_name.replace('v', '')}` : 'v5.1.2 Latest'}
       </a>
-      {release && (
-        <a href={release.html_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--md-on-surface-variant)', textDecoration: 'none', background: 'var(--md-surface-variant)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }} onClick={() => trackEvent('badge_click', 'latest_release')}>
-          <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#4caf50', animation: 'pulse 2s infinite' }} />
-          v{release.tag_name.replace('v', '')} — {new Date(release.published_at).toLocaleDateString()}
-        </a>
-      )}
+
+      <a href="https://github.com/Balajitechlabs/quickdash/security/policy" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'security')}>
+        🔒 Security Verified
+      </a>
+
+      <a href="https://github.com/Balajitechlabs/quickdash" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'stars')}>
+        ⭐ {repo ? `${repo.stargazers_count} Stars` : 'Open Source'}
+      </a>
+
+      <a href="https://github.com/Balajitechlabs/quickdash/issues" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'issues')}>
+        🟢 {repo ? `${repo.open_issues_count} Issues` : 'Active Dev'}
+      </a>
+
       {commit && (
-        <a href={commit.html_url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--md-on-surface-variant)', textDecoration: 'none', background: 'var(--md-surface-variant)', padding: '4px 10px', borderRadius: 20, fontSize: 11 }} onClick={() => trackEvent('badge_click', 'latest_commit')}>
-          <span style={{ fontFamily: 'var(--mono-font)', fontSize: 10 }}>{commit.sha.slice(0, 7)}</span>
+        <a href={commit.html_url} target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'commit')}>
+          <span style={{ fontFamily: 'var(--mono-font)', fontSize: 10 }}>#{commit.sha.slice(0, 7)}</span>
         </a>
       )}
     </div>
