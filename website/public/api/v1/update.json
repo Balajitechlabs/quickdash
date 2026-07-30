@@ -6,7 +6,7 @@
   "apk_url": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-universal-release.apk",
   "apk_size_bytes": 27951765,
   "apk_sha256": "a60f49e616398b72ee11dc473d43a513ecaf872a9aa6b70a8d28823bcbeda17a",
-  "release_date": "2026-07-30",
+  "release_date": "2026-07-31",
   "critical_update": false,
   "features": {
     "ai_actions": true,

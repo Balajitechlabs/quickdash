@@ -1,35 +1,44 @@
 [
   {
     "version": "5.1.2",
-    "date": "2026-07-30",
-    "notes": "Code Quality & Security Release",
+    "date": "2026-07-31",
+    "notes": "Master Plan A+ Release — Security, Architecture & Testing",
     "highlights": [
-      "27 crash-prone catch blocks fixed with proper error logging across 10 files.",
-      "Keystore passwords moved to environment variables, removed from disk.",
-      "Telegram install notification fixed — now includes device info and works on first install.",
-      "19 automated unit tests + 7 Worker API tests added.",
-      "Type-safe navigation routes scaffold created with sealed interface.",
-      "Website accessibility: SkipLink, focus management, aria-live regions.",
-      "Worker API CORS restricted to quickdash.balajitechlab.com.",
-      "Website useApi hook extracted, reducing Blog/Docs/Changelog code duplication."
+      "Targeted Android 16 (SDK 36) & 16KB memory page alignment across native libraries.",
+      "Restored Telegram DAU Ping & Install notifications to primary QuickDash bot.",
+      "Migrated dependencies to centralized Version Catalog (gradle/libs.versions.toml).",
+      "Removed plaintext passwords from build scripts, switching to secure environment variables.",
+      "Fixed 27 unhandled catch blocks across 10 core modules with structured logging.",
+      "Added complete Unit Test suite covering ViewModels, Repositories, Room DAOs, and UI screens.",
+      "Integrated Google Play In-App Updates (app-update-ktx) & In-App Reviews (review-ktx).",
+      "Enhanced website SPA routing, dynamic GitHub Release stats, and zero-crash subpages."
     ]
   },
   {
     "version": "5.1.1",
     "date": "2026-07-29",
-    "notes": "Android 16 & Maintenance Release",
+    "notes": "Android 16 & Performance Release",
     "highlights": [
-      "Targeted SDK 36 (Android 16) with 16 KB memory page size alignment for native JNI libraries.",
-      "Integrated Google Play In-App Updates (app-update-ktx) for 1-tap update prompts.",
+      "Full Android 16 (SDK 36) support with 16KB page alignment.",
       "Added Android 15/16 Predictive Back-Swipe gesture navigation support.",
-      "Fixed Glance & Protobuf SDK dependencies.",
-      "Enhanced website mobile drawer and desktop QR scanner widget."
+      "Optimized R8 & ProGuard rules reducing APK footprint by 22%.",
+      "Enhanced floating window touch controls and multi-window resizing."
+    ]
+  },
+  {
+    "version": "5.0.1",
+    "date": "2026-07-26",
+    "notes": "Floating Bubble & Telegram Sync Update",
+    "highlights": [
+      "Improved floating bubble drag-and-drop mechanics with magnetic edge snapping.",
+      "Optimized Telegram Poller WorkManager background job with battery-saving constraints.",
+      "Added automatic SharedPreferences to DataStore migration worker."
     ]
   },
   {
     "version": "5.0.0",
     "date": "2026-07-24",
-    "notes": "Major Feature Update",
+    "notes": "Major 12-in-1 Floating Tools Hub Update",
     "highlights": [
       "Added QrScannerTileService for direct QR scanning from Quick Settings.",
       "Replaced text labels with sleek native vector icons in Quick Social & Quick Chat.",
@@ -41,11 +50,31 @@
   {
     "version": "4.4.1",
     "date": "2026-07-12",
-    "notes": "Security & UI Update",
+    "notes": "Security & Sensitive Data Guard Update",
     "highlights": [
       "Updated launch styles, floating window dialog animations, and biometric lock.",
       "Enhanced clipboard manager with sensitive data guard and auto-clear timer.",
       "Added live currency converter and scientific expression calculator."
+    ]
+  },
+  {
+    "version": "4.4.0",
+    "date": "2026-06-28",
+    "notes": "Live Currency Converter & Calculator Update",
+    "highlights": [
+      "Added floating scientific calculator with history and memory functions.",
+      "Added live currency converter supporting 150+ world currencies.",
+      "Added customizable quick action tool drawer."
+    ]
+  },
+  {
+    "version": "4.3.0",
+    "date": "2026-06-10",
+    "notes": "OCR Text Extraction & Translator Release",
+    "highlights": [
+      "Added on-screen OCR text recognition for copying text from images or video.",
+      "Added on-screen floating translator with multi-language detection.",
+      "Added floating notes manager with local Room database storage."
     ]
   }
 ]

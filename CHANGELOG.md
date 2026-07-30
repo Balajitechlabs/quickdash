@@ -4,7 +4,7 @@ All major updates, feature additions, bug fixes, and system improvements for **Q
 
 ---
 
-## [5.1.2] - 2026-07-30 (Code Quality & Security Release) 🔒
+## [5.1.2] - 2026-07-31 (Code Quality & Security Release) 🔒
 
 ### 🐛 FIXED (What We Fixed)
 - **27 Crash-Prone Catch Blocks**: Replaced all empty `catch (_: Exception) {}` and `e.printStackTrace()` blocks with proper `Log.e()` error logging across 10 files.

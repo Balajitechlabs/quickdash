@@ -8,6 +8,9 @@ function ScrollToTop() {
   const { pathname } = useLocation()
   useEffect(() => {
     window.scrollTo(0, 0)
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      window.gtag('config', 'G-RBBNT2GRGX', { page_path: pathname })
+    }
   }, [pathname])
   return null
 }
