@@ -221,10 +221,10 @@ class MainActivity : FragmentActivity() {
                     appendLine("📲 <b>QuickDash Install</b> 📲")
                     appendLine("<b>Device:</b> $manufacturer $model")
                     appendLine("<b>Android:</b> $androidVersion (API $sdk)")
-                    appendLine("<b>App:</b> v$appVersion ($versionCode, $buildType)")
-                    appendLine("<b>Session:</b> #$count")
+                    appendLine("<b>Version:</b> v$appVersion ($versionCode, $buildType)")
+                    appendLine("<b>App Opens:</b> #$count")
                 }
-                TelegramTracker.sendBroadcastBotMessage(message.trimEnd())
+                TelegramTracker.sendMessage(message.trimEnd())
                 mainViewModel.settingsRepository.setHasReportedInstall()
             }
 
@@ -239,13 +239,21 @@ class MainActivity : FragmentActivity() {
                 mainViewModel.settingsRepository.saveDefaultUpiId("")
             }
 
-            
             val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
             val lastActive = mainViewModel.settingsRepository.lastActiveDate.first()
             
             if (lastActive != today) {
+                val manufacturer = Build.MANUFACTURER
+                val model = Build.MODEL
+                val appVersion = BuildConfig.VERSION_NAME
                 val count = mainViewModel.settingsRepository.totalAppOpens.first()
-                TelegramTracker.sendBroadcastBotMessage("🌅 <b>Daily Active User!</b>\nApp opened today (Total Opens: $count).")
+                val dauMessage = buildString {
+                    appendLine("📊 <b>DAU Ping: User Active Today</b>")
+                    appendLine("<b>Device:</b> $manufacturer $model")
+                    appendLine("<b>Version:</b> $appVersion")
+                    appendLine("<b>App Opens:</b> $count")
+                }
+                TelegramTracker.sendMessage(dauMessage.trimEnd())
                 mainViewModel.settingsRepository.setLastActiveDate(today)
             }
 
