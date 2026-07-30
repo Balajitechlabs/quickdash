@@ -5,29 +5,13 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: https://quickdash.balajitechlab.com
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: website
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
-      - name: Setup Node.js 22 LTS
+      - name: Setup Node.js 22
         uses: actions/setup-node@v5
         with:
           node-version: 22
@@ -36,20 +20,14 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        working-directory: website
 
       - name: Build
         run: npm run build
+        working-directory: website
 
-      - name: Write CNAME
-        run: echo "quickdash.balajitechlab.com" > dist/CNAME
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
         with:
-          path: ./website/dist
-
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: pages deploy website/dist --project-name=quickdash

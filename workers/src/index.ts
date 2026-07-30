@@ -5,9 +5,7 @@ export interface Env {
   }
 }
 
-const ORIGIN = 'https://balajitechlabs.github.io'
 const ALLOWED_ORIGIN = 'https://quickdash.balajitechlab.com'
-
 const STATS_TTL = 300
 const RATE_LIMIT = 3
 const RATE_WINDOW = 60
@@ -85,12 +83,7 @@ export default {
       return handleCrashReport(request, env)
     }
 
-    const originReq = new Request(ORIGIN + path + url.search, request)
-    const originRes = await fetch(originReq)
-    const resp = new Response(originRes.body, originRes)
-    resp.headers.set('access-control-allow-origin', ALLOWED_ORIGIN)
-    resp.headers.set('cache-control', 'public, max-age=86400')
-    return resp
+    return json({ error: 'Not found', path }, 404)
   }
 }
 
