@@ -1,8 +1,18 @@
 name: Dependency Scan
 
 on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'app/**'
+      - 'gradle/**'
+      - '*.gradle.kts'
   pull_request:
     branches: [main, master]
+    paths:
+      - 'app/**'
+      - 'gradle/**'
+      - '*.gradle.kts'
   schedule:
     - cron: '0 6 * * 1'
   workflow_dispatch:
