@@ -4,8 +4,8 @@
   "min_version_code": 500,
   "changelog": "• QuickDash v5.1.2 — Code Quality & Security Release\n• 27 crash-prone catch blocks fixed with proper error logging\n• Keystore passwords moved to environment variables\n• Improved Telegram install notification with device details\n• Worker API tests added (rate limiting, CORS, feedback)\n• Website a11y improvements (SkipLink, focus management, aria-live)\n• Shared useApi hook extracted for Blog/Docs/Changelog\n• Performance improvements & bug fixes",
   "apk_url": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-universal-release.apk",
-  "apk_size_bytes": 27951765,
-  "apk_sha256": "a60f49e616398b72ee11dc473d43a513ecaf872a9aa6b70a8d28823bcbeda17a",
+  "apk_size_bytes": 27951768,
+  "apk_sha256": "e1647d00de502a56ced6cbab4dd9d9ba5d29605a36ed7ca95b7be288d91058ba",
   "release_date": "2026-07-31",
   "critical_update": false,
   "features": {
