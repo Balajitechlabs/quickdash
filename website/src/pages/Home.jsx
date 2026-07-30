@@ -15,36 +15,50 @@ import { trackEvent } from '../utils/analytics'
 
 function ChangelogSection() {
   const [releases, setReleases] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('https://api.github.com/repos/Balajitechlabs/quickdash/releases?per_page=5')
+    fetch('/api/reading/changelogs.json')
       .then(r => r.ok ? r.json() : [])
-      .then(d => setReleases(d.slice(0, 3)))
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setReleases(data.slice(0, 3))
+        } else {
+          // Fallback to GitHub Releases API
+          return fetch('https://api.github.com/repos/Balajitechlabs/quickdash/releases?per_page=5')
+            .then(r => r.ok ? r.json() : [])
+            .then(d => setReleases(d.slice(0, 3)))
+        }
+      })
       .catch(() => {})
+      .finally(() => setLoading(false))
   }, [])
 
   return (
     <FadeInSection as="section" aria-label="Recent releases changelog">
       <h2 className="section-title">Changelog</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {releases.length === 0 && <p className="card" style={{ fontSize: 13, color: 'var(--md-on-surface-variant)', textAlign: 'center', padding: 24 }}>Loading releases...</p>}
-        {releases.map(r => (
-          <div key={r.id} className="card" style={{ padding: 16 }}>
+        {loading && <p className="card" style={{ fontSize: 13, color: 'var(--md-on-surface-variant)', textAlign: 'center', padding: 24 }}>Loading releases...</p>}
+        {!loading && releases.length === 0 && (
+          <p className="card" style={{ fontSize: 13, color: 'var(--md-on-surface-variant)', textAlign: 'center', padding: 24 }}>No recent release notes available.</p>
+        )}
+        {releases.map((r, idx) => (
+          <div key={r.id || r.version || idx} className="card" style={{ padding: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8, flexWrap: 'wrap', gap: 4 }}>
-              <a href={r.html_url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--pixel-font)', fontSize: 9, color: 'var(--md-primary)', textDecoration: 'none' }} onClick={() => trackEvent('changelog_click', r.tag_name)}>
-                v{r.tag_name.replace('v', '')}
-              </a>
+              <span style={{ fontFamily: 'var(--pixel-font)', fontSize: 9, color: 'var(--md-primary)' }}>
+                v{r.version || (r.tag_name ? r.tag_name.replace('v', '') : '')}
+              </span>
               <span style={{ fontSize: 11, color: 'var(--md-on-surface-variant)' }}>
-                {new Date(r.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                {r.date || (r.published_at ? new Date(r.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '')}
               </span>
             </div>
-            <p style={{ fontSize: 13, color: 'var(--md-on-surface-variant)', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
-              {r.body ? r.body.split('\n').slice(0, 6).join('\n') : 'No changelog'}
+            <p style={{ fontSize: 13, color: 'var(--md-on-surface-variant)', lineHeight: 1.6, margin: 0 }}>
+              {r.notes || (r.highlights ? r.highlights.join(' • ') : (r.body ? r.body.split('\n').slice(0, 4).join('\n') : ''))}
             </p>
           </div>
         ))}
-        <a href="https://github.com/Balajitechlabs/quickdash/releases" target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline" style={{ alignSelf: 'center' }} onClick={() => trackEvent('changelog_click', 'all_releases')}>
-          View all releases
+        <a href="/changelog" className="btn btn-sm btn-outline" style={{ alignSelf: 'center', marginTop: 8 }} onClick={() => trackEvent('changelog_click', 'all_releases')}>
+          View full changelog
         </a>
       </div>
     </FadeInSection>
