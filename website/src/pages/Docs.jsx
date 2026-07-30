@@ -2,10 +2,13 @@ import { Helmet } from 'react-helmet-async'
 import { useApi } from '../hooks/useApi'
 
 export default function Docs() {
-  const { data: sections, loading, error, refetch } = useApi('/api/reading/docs.json')
+  const { data, loading, error, refetch } = useApi('/api/reading/docs.json')
+  const sections = Array.isArray(data) ? data : []
 
   const grouped = sections.reduce((acc, s) => {
-    (acc[s.section] = acc[s.section] || []).push(s)
+    if (s && s.section) {
+      (acc[s.section] = acc[s.section] || []).push(s)
+    }
     return acc
   }, {})
 

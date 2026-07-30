@@ -12,7 +12,8 @@ function SkeletonCard() {
 }
 
 export default function Blog() {
-  const { data: posts, loading, error } = useApi('/api/reading/posts.json')
+  const { data, loading, error } = useApi('/api/reading/posts.json')
+  const posts = Array.isArray(data) ? data : []
 
   return (
     <>

@@ -2,7 +2,8 @@ import { Helmet } from 'react-helmet-async'
 import { useApi } from '../hooks/useApi'
 
 export default function Changelog() {
-  const { data: logs, loading, error, refetch } = useApi('/api/reading/changelogs.json')
+  const { data, loading, error, refetch } = useApi('/api/reading/changelogs.json')
+  const logs = Array.isArray(data) ? data : []
 
   return (
     <>
