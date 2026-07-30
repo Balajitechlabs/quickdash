@@ -36,6 +36,23 @@ jobs:
       - name: Setup Gradle cache
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Decode google-services.json
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON_BASE64" ]; then
+            echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 -d > app/google-services.json
+          else
+            echo '{"project_info":{"project_number":"0","project_id":"quickdash-mock","storage_bucket":"quickdash.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:0:android:0","android_client_info":{"package_name":"com.balajitechlabs.quickdash"}},"api_key":[{"current_key":"mock"}]}]}' > app/google-services.json
+          fi
+        env:
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+
+      - name: Create local.properties
+        run: |
+          echo "TG_BOT_TOKEN=${{ secrets.TG_BOT_TOKEN }}" >> local.properties
+          echo "TG_BROADCAST_BOT_TOKEN=${{ secrets.TG_BROADCAST_BOT_TOKEN }}" >> local.properties
+          echo "TG_CHAT_ID=${{ secrets.TG_CHAT_ID }}" >> local.properties
+          echo "sdk.dir=$ANDROID_HOME" >> local.properties
+
       - name: Debug build
         run: ./gradlew assembleDebug
 
