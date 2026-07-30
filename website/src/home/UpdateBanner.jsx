@@ -9,7 +9,12 @@ export default function UpdateBanner() {
     fetch('/api/v1/update.json')
       .then(r => r.ok ? r.json() : null)
       .then(d => {
-        if (d && d.version_name) setLatest(d)
+        if (d && (d.latest_version || d.version_name)) {
+          setLatest({
+            ...d,
+            version: d.latest_version || d.version_name
+          })
+        }
       })
       .catch(() => {})
   }, [])
@@ -22,21 +27,22 @@ export default function UpdateBanner() {
         textAlign: 'center', padding: 24,
         background: 'var(--md-primary-container)',
         border: '1px solid var(--md-primary)',
+        marginTop: 24,
       }}>
         <p style={{ fontFamily: 'var(--pixel-font)', fontSize: 9, color: 'var(--md-primary)', marginBottom: 8 }}>
-          UPDATE AVAILABLE
+          🎉 LATEST RELEASE AVAILABLE
         </p>
         <p style={{ fontSize: 14, color: 'var(--md-on-surface-variant)', marginBottom: 16 }}>
-          Version {latest.version_name} is now available <small>({latest.version_code})</small>
+          QuickDash v{latest.version} is now available (Build #{latest.version_code || 514})
         </p>
         <a
-          href={latest.download_url || 'https://github.com/Balajitechlabs/quickdash/releases/latest'}
+          href={latest.apk_url || 'https://github.com/Balajitechlabs/quickdash/releases/latest'}
           className="btn btn-sm"
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() => trackEvent('update_banner_click', latest.version_name)}
+          onClick={() => trackEvent('update_banner_click', latest.version)}
         >
-          DOWNLOAD
+          DOWNLOAD v{latest.version} APK
         </a>
       </div>
     </FadeInSection>
