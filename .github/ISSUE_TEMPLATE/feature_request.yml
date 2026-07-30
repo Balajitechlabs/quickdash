@@ -1,0 +1,42 @@
+name: Feature Request
+description: Suggest a new tool, improvement, or enhancement
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Suggest a new tool, improvement, or enhancement for QuickDash.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the pain point or use case
+      placeholder: e.g. I often need to check the weather while using other apps
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe the solution
+      description: What should the feature look like?
+      placeholder: e.g. A floating weather widget that shows current temperature and forecast
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any workarounds you currently use
+      placeholder: e.g. I switch to the weather app, but it breaks my flow
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Before submitting
+      options:
+        - label: I have searched existing issues for a similar request
+          required: true
+        - label: This feature would work without external server dependencies

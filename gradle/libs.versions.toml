@@ -16,6 +16,16 @@ kotlinxSerialization = "1.7.3"
 hiltNavigationCompose = "1.2.0"
 protobuf = "4.26.1"
 protobufPlugin = "0.9.4"
+room = "2.7.1"
+firebaseBom = "33.7.0"
+okhttp = "4.12.0"
+lottie = "6.6.0"
+zxing = "3.5.4"
+gson = "2.11.0"
+workmanager = "2.10.0"
+konfetti = "2.0.4"
+coil = "2.6.0"
+biometric = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -41,6 +51,19 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 protobuf-javalite = { group = "com.google.protobuf", name = "protobuf-javalite", version.ref = "protobuf" }
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 androidx-datastore-core = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+lottie = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+zxing = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+workmanager = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workmanager" }
+konfetti = { group = "nl.dionsegijn", name = "konfetti-compose", version.ref = "konfetti" }
+coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

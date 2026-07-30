@@ -1,8 +1,8 @@
-const CACHE = 'quickdash-v8'
+const CACHE = 'quickdash-v9'
 const PRECACHE = [
-  '/', '/assets/logo.png',
-  '/api/v1/update.json', '/api/v1/announcement.json',
-  '/api/v1/stats.json', '/api/v1/health.json', '/api/v1/tools.json',
+  '/', '/privacy', '/reading', '/docs', '/changelog',
+  '/assets/logo.png',
+  '/api/v1/update.json', '/api/v1/health.json', '/api/v1/tools.json',
 ]
 self.addEventListener('install', e => {
   e.waitUntil(

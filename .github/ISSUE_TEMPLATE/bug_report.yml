@@ -1,0 +1,59 @@
+name: Bug Report
+description: Report a crash, UI glitch, or unexpected behavior
+labels: [bug, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report.
+
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      placeholder: e.g. Pixel 9 Pro
+    validations:
+      required: true
+
+  - type: input
+    id: android_version
+    attributes:
+      label: Android Version
+      placeholder: e.g. Android 16 (SDK 36)
+    validations:
+      required: true
+
+  - type: input
+    id: app_version
+    attributes:
+      label: QuickDash Version
+      description: Check in-app Settings → About or the APK filename
+      placeholder: e.g. v5.1.1 (513)
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      placeholder: Describe the bug, what you expected, and what actually happened
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open QuickDash
+        2. Tap the translator tool
+        3. Select language...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / screenshots
+      description: Paste adb logcat output or attach screenshots. Redact any personal info.
+      placeholder: Paste log output or drag screenshots here

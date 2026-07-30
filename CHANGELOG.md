@@ -4,6 +4,37 @@ All major updates, feature additions, bug fixes, and system improvements for **Q
 
 ---
 
+## [5.1.2] - 2026-07-30 (Code Quality & Security Release) 🔒
+
+### 🐛 FIXED (What We Fixed)
+- **27 Crash-Prone Catch Blocks**: Replaced all empty `catch (_: Exception) {}` and `e.printStackTrace()` blocks with proper `Log.e()` error logging across 10 files.
+- **Telegram First-Install Notification**: Fixed missing `incrementAppOpens()` call that prevented install notifications. Added device info (manufacturer, model, Android version, API level, app version) to notification message.
+- **Website Stats Bar Regression**: Fixed field names in `stats.json` to match Worker API response (`downloads`, `tools`, `active_users`).
+- **Website Announcement Download URL**: Fixed pointing to wrong APK filename (`QuickDash-v5.1.1` → `app-universal-release`).
+- **Website Blog/Docs/Changelog Double Fetch**: Eliminated 404 round-trip by fetching `.json` directly.
+- **CSS Slide-Up Animation**: Aligned `slideUp` animation with actual dialog height to prevent visual clipping.
+
+### 🔒 SECURITY (What We Hardened)
+- **Keystore Passwords Removed from Disk**: Moved signing credentials from `keystore.properties` (plaintext) to `local.properties` + CI environment variables.
+- **Worker CORS Restricted**: API responses now set `access-control-allow-origin` to `quickdash.balajitechlab.com` only.
+
+### ✅ ADDED (What We Added)
+- **19 Automated Unit Tests**: ViewModel, Repository, and Room DAO tests covering MainViewModel, SettingsViewModel, ClipboardViewModel, QrViewModel, QuickTimerViewModel, HistoryRepository, SecurityRepository, and Room database migrations.
+- **7 Worker API Tests**: Rate limiter (3 req/window + 429), CORS headers, OPTIONS preflight, 404 handling, stats endpoint, feedback submission.
+- **Type-Safe Navigation Routes**: Sealed `QuickDashRoute` interface with 12 `@Serializable` routes and `QuickDashNavHost` composable scaffold.
+- **Shared `useApi` React Hook**: Extracted and refactored Blog, Docs, and Changelog pages for consistent data fetching with loading/error states.
+- **Website Accessibility**: Added `SkipLink`, focus management on route change, `aria-live="polite"` regions, and `role="status"` on dynamic content.
+- **Community Files**: Created `ISSUE_TEMPLATE` (bug + feature), `PULL_REQUEST_TEMPLATE`, `CODEOWNERS`, and `FUNDING.yml`.
+
+### 🔄 UPDATED (What We Updated)
+- **Version Bump**: `5.1.1` → **`5.1.2`** (513 → **514**).
+- **ProGuard Rules**: Fixed `UpdateManager**` → `UpdateManager*`, removed stale `-optimizationpasses 5`, consolidated `-dontwarn` rules.
+- **Service Worker**: Updated precache to include SPA routes, removed `announcement.json`.
+- **Worker `compatibility_date`**: Updated to `2026-07-30`.
+- **Website `CONTRIBUTING.md`**: Fixed stale template links.
+
+---
+
 ## [5.1.1] - 2026-07-26 (Android 16 & Google Play Release) 🛡️
 
 ### 🐛 FIXED (What We Fixed)

@@ -70,8 +70,11 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.core.view.drawToBitmap
 
+import android.util.Log
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.balajitechlabs.quickdash.features.settings.presentation.SettingsViewModel
+
+private const val TAG = "SettingsScreen"
 
 @Suppress("DEPRECATION")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -460,7 +463,7 @@ fun SettingsScreen(
                                 try {
                                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://razorpay.me/@balajitechlabs"))
                                     context.startActivity(intent)
-                                } catch (e: Exception) { e.printStackTrace() }
+                                } catch (e: Exception) { Log.e(TAG, "Failed to open Razorpay link", e) }
                             },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp),
@@ -1844,7 +1847,7 @@ fun SettingsScreen(
                 FilledTonalButton(
                     onClick = {
                         triggerFeedback()
-                        try { onNavigateToSystemLogs() } catch (e: Exception) { e.printStackTrace() }
+                        try { onNavigateToSystemLogs() } catch (e: Exception) { Log.e(TAG, "Failed to navigate to system logs", e) }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.large
@@ -1929,7 +1932,7 @@ fun SettingsScreen(
 
     if (showWhatsNewDialog) {
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val versionName = packageInfo.versionName ?: "5.1.1"
+        val versionName = packageInfo.versionName ?: "5.1.2"
         WhatsNewDialog(
             versionName = versionName,
             onDismiss = { showWhatsNewDialog = false }
@@ -2412,7 +2415,7 @@ fun SettingsScreen(
                                     Text("Status: Up to date ✅", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                                     Button(
                                         onClick = {
-                                            try { com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(context, manual = true) } catch (e: Exception) { e.printStackTrace() }
+                                            try { com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(context, manual = true) } catch (e: Exception) { Log.e(TAG, "Failed to check for updates", e) }
                                         },
                                         shape = RoundedCornerShape(8.dp)
                                     ) {
@@ -2428,7 +2431,7 @@ fun SettingsScreen(
                                     Text(updateState.message, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
                                     Button(
                                         onClick = {
-                                            try { com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(context, manual = true) } catch (e: Exception) { e.printStackTrace() }
+                                            try { com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(context, manual = true) } catch (e: Exception) { Log.e(TAG, "Failed to retry update check", e) }
                                         },
                                         shape = RoundedCornerShape(8.dp)
                                     ) {
@@ -2439,7 +2442,7 @@ fun SettingsScreen(
                                     Text("New Update Available! 🎉\nVersion v${updateState.versionName}", style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                                     Button(
                                         onClick = {
-                                            try { com.balajitechlabs.quickdash.core.utils.UpdateManager.startDownload(context, updateState.apkUrl, updateState.versionName) } catch (e: Exception) { e.printStackTrace() }
+                                            try { com.balajitechlabs.quickdash.core.utils.UpdateManager.startDownload(context, updateState.apkUrl, updateState.versionName) } catch (e: Exception) { Log.e(TAG, "Failed to start update download", e) }
                                         },
                                         shape = RoundedCornerShape(8.dp)
                                     ) {
@@ -2458,7 +2461,7 @@ fun SettingsScreen(
                                     Text("Update ready to install! 📦", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = Color(0xFF4CAF50))
                                     Button(
                                         onClick = {
-                                            try { com.balajitechlabs.quickdash.core.utils.UpdateManager.installApk(context, updateState.fileName) } catch (e: Exception) { e.printStackTrace() }
+                                            try { com.balajitechlabs.quickdash.core.utils.UpdateManager.installApk(context, updateState.fileName) } catch (e: Exception) { Log.e(TAG, "Failed to install APK", e) }
                                         },
                                         shape = RoundedCornerShape(8.dp),
                                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50), contentColor = Color.White)
@@ -2553,7 +2556,7 @@ fun SettingsScreen(
             confirmButton = {
                 Button(onClick = {
                     showUpdateDialog = false
-                    try { com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(context, manual = true) } catch (e: Exception) { e.printStackTrace() }
+                    try { com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(context, manual = true) } catch (e: Exception) { Log.e(TAG, "Failed to check for updates from dialog", e) }
                 }) { Text("Check Now") }
             },
             dismissButton = { TextButton(onClick = { showUpdateDialog = false }) { Text("Later") } }
@@ -2653,7 +2656,7 @@ fun SettingsScreen(
                                 try {
                                     val jsonString = com.balajitechlabs.quickdash.core.utils.BackupRestoreManager.getBackupJsonString(context)
                                     shareBackupFile(context, jsonString, "com.whatsapp")
-                                } catch (e: Exception) { e.printStackTrace() }
+                                } catch (e: Exception) { Log.e(TAG, "Failed to share backup via WhatsApp", e) }
                             }
                         },
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
@@ -2677,7 +2680,7 @@ fun SettingsScreen(
                                 try {
                                     val jsonString = com.balajitechlabs.quickdash.core.utils.BackupRestoreManager.getBackupJsonString(context)
                                     shareBackupFile(context, jsonString, "org.telegram.messenger")
-                                } catch (e: Exception) { e.printStackTrace() }
+                                } catch (e: Exception) { Log.e(TAG, "Failed to share backup via Telegram", e) }
                             }
                         },
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
@@ -2701,7 +2704,7 @@ fun SettingsScreen(
                                 try {
                                     val jsonString = com.balajitechlabs.quickdash.core.utils.BackupRestoreManager.getBackupJsonString(context)
                                     shareBackupFile(context, jsonString, null)
-                                } catch (e: Exception) { e.printStackTrace() }
+                                } catch (e: Exception) { Log.e(TAG, "Failed to share backup file", e) }
                             }
                         },
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),

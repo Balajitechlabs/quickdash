@@ -457,7 +457,9 @@ fun QuickWifiScreen(viewModel: WifiViewModel = hiltViewModel(), isFloating: Bool
                             user = obj.get("username")?.asString ?: ""
                             pass = obj.get("password")?.asString ?: ""
                         }
-                    } catch (_: Exception) {}
+                    } catch (e: Exception) {
+                        AppLogger.e("QuickWifiScreen", "Failed to parse server credentials JSON", e)
+                    }
                 }
                 
                 Card(

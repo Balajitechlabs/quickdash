@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import org.json.JSONArray
 import javax.inject.Inject
 import javax.inject.Singleton
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -20,6 +21,7 @@ class DataMigrationManager @Inject constructor(
     private val historyRepository: HistoryRepository
 ) {
     companion object {
+        private const val TAG = "DataMigrationManager"
         val HAS_MIGRATED_HISTORY_KEY = booleanPreferencesKey("has_migrated_history")
         val SEARCH_HISTORY_KEY = stringPreferencesKey("search_history")
         val WIFI_HISTORY_KEY = stringPreferencesKey("wifi_history")
@@ -64,7 +66,7 @@ class DataMigrationManager @Inject constructor(
                             securityType = obj.optString("securityType", "WPA/WPA2")
                         )
                     }
-                } catch (e: Exception) { e.printStackTrace() }
+                } catch (e: Exception) { Log.e(TAG, "Failed to migrate Wi-Fi history", e) }
             }
 
             // Migrate QR History
@@ -82,7 +84,7 @@ class DataMigrationManager @Inject constructor(
                             category = obj.optString("category", "General")
                         )
                     }
-                } catch (e: Exception) { e.printStackTrace() }
+                } catch (e: Exception) { Log.e(TAG, "Failed to migrate QR history", e) }
             }
 
             // Mark migration as complete and delete old strings to save space
@@ -94,7 +96,7 @@ class DataMigrationManager @Inject constructor(
             }
             return true
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "Failed to migrate legacy history", e)
             return false
         }
     }

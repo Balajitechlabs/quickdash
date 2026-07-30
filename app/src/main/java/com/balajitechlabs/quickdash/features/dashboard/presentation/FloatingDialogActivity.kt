@@ -254,7 +254,9 @@ class FloatingDialogActivity : FragmentActivity() {
             if (pendingCrash != null) {
                 shareLogFile(pendingCrash)
             }
-        } catch (_: Exception) {}
+        } catch (e: Exception) {
+            AppLogger.e("FloatingDialogActivity", "Failed to share pending crash log", e)
+        }
 
         try {
             val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -269,7 +271,9 @@ class FloatingDialogActivity : FragmentActivity() {
         super.onDestroy()
         try {
             unregisterReceiver(captureReceiver)
-        } catch (_: Exception) {}
+        } catch (e: Exception) {
+            AppLogger.e("FloatingDialogActivity", "Failed to unregister capture receiver", e)
+        }
     }
 
     override fun onPause() {

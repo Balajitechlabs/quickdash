@@ -1,27 +1,39 @@
-name: Dependency Security Scan
+name: Dependency Scan
 
 on:
+  pull_request:
+    branches: [main, master]
   schedule:
     - cron: '0 6 * * 1'
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-java@v5
-        with: { distribution: temurin, java-version: 17 }
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
 
       - name: OWASP Dependency Check
         uses: dependency-check/Dependency-Check_Action@v1.2.0
         with:
           project: QuickDash
-          path: .
+          path: app
           format: HTML
+          fail_on_cvss: 7
 
-      - name: Upload Results
+      - name: Upload report
+        if: always()
         uses: actions/upload-artifact@v5
         with:
           name: dependency-check-report
-          path: reports/
+          path: ${{ github.workspace }}/reports/

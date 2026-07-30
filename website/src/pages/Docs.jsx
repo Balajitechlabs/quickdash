@@ -1,29 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useApi } from '../hooks/useApi'
 
 export default function Docs() {
-  const [sections, setSections] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  const load = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      let res = await fetch('/api/reading/docs')
-      if (!res.ok) {
-        res = await fetch('/api/reading/docs.json')
-      }
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const data = await res.json()
-      setSections(data)
-      setLoading(false)
-    } catch (e) {
-      setError(e.message)
-      setLoading(false)
-    }
-  }
-
-  useEffect(load, [])
+  const { data: sections, loading, error, refetch } = useApi('/api/reading/docs.json')
 
   const grouped = sections.reduce((acc, s) => {
     (acc[s.section] = acc[s.section] || []).push(s)
@@ -31,7 +9,7 @@ export default function Docs() {
   }, {})
 
   return (
-    <div className="container" style={{ paddingTop: 32, paddingBottom: 48 }}>
+    <div className="container" style={{ paddingTop: 32, paddingBottom: 48 }} role="status" aria-live="polite">
       <header>
         <h1 className="section-title" style={{ fontSize: 20 }}>Documentation</h1>
         <p style={{ color: 'var(--md-on-surface-variant)', fontSize: 14, marginBottom: 32 }}>
@@ -46,7 +24,7 @@ export default function Docs() {
           <div className="card" style={{ textAlign: 'center', padding: 32, borderColor: 'var(--md-error)' }}>
             <p style={{ fontFamily: 'var(--pixel-font)', fontSize: 10, color: 'var(--md-error)' }}>ERROR LOADING DOCS</p>
             <p style={{ color: 'var(--md-on-surface-variant)', fontSize: 14, marginTop: 8 }}>{error}</p>
-            <button onClick={load} className="btn btn-sm" style={{ marginTop: 16 }}>RETRY</button>
+            <button onClick={refetch} className="btn btn-sm" style={{ marginTop: 16 }}>RETRY</button>
           </div>
         ) : sections.length === 0 ? (
           <div className="card" style={{ textAlign: 'center', padding: 32 }}>

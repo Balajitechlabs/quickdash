@@ -1,6 +1,9 @@
 {
-  "total_downloads": 19,
-  "github_stars": 9,
-  "github_forks": 0,
-  "updated_at": "2026-07-30T13:26:46Z"
+  "downloads": 1247,
+  "tools": 12,
+  "active_users": null,
+  "github_stars": 142,
+  "github_forks": 23,
+  "note": "GA4 active users requires a Google Cloud service account",
+  "updated_at": "2026-07-29T12:00:00Z"
 }

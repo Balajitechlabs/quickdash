@@ -1,13 +1,13 @@
 {
-  "version_code": 512,
-  "latest_version": "5.1.1",
+  "version_code": 514,
+  "latest_version": "5.1.2",
   "min_version_code": 500,
-  "changelog": "• QuickDash v5.1.1 — Maintenance Release\n• Android 16 support & 16KB page alignment\n• Play Store beta integration\n• F-Droid distribution support\n• Performance improvements & bug fixes",
-  "apk_url": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/QuickDash-v5.1.1-universal.apk",
+  "changelog": "• QuickDash v5.1.2 — Code Quality & Security Release\n• 27 crash-prone catch blocks fixed with proper error logging\n• Keystore passwords moved to environment variables\n• Improved Telegram install notification with device details\n• Worker API tests added (rate limiting, CORS, feedback)\n• Website a11y improvements (SkipLink, focus management, aria-live)\n• Shared useApi hook extracted for Blog/Docs/Changelog\n• Performance improvements & bug fixes",
+  "apk_url": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/QuickDash-v5.1.2-universal.apk",
   "release_url": "https://github.com/Balajitechlabs/quickdash/releases/latest",
   "apk_sha256": "",
   "critical_update": false,
-  "release_date": "2026-07-29",
+  "release_date": "2026-07-30",
   "features": {
     "ai_actions": true,
     "pixel_design": true,

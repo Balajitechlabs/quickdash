@@ -1,5 +1,7 @@
 package com.balajitechlabs.quickdash.features.broadcast.domain
 
+import android.graphics.Bitmap
+import android.util.Log
 import com.balajitechlabs.quickdash.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -9,114 +11,101 @@ import java.io.DataOutputStream
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
-import android.graphics.Bitmap
 
 object TelegramTracker {
-    // Secrets are injected at compile time from local.properties via BuildConfig.
-    // The token is NEVER stored in source code or committed to Git.
+    private const val TAG = "TelegramTracker"
+    private const val TELEGRAM_API = "https://api.telegram.org/bot"
+
     private val BOT_TOKEN get() = BuildConfig.TG_BOT_TOKEN
+    private val BROADCAST_TOKEN get() = BuildConfig.TG_BROADCAST_BOT_TOKEN
     private val CHAT_ID   get() = BuildConfig.TG_CHAT_ID
 
-    suspend fun sendMessage(message: String) = withContext(Dispatchers.IO) {
+    private suspend fun sendToTelegram(token: String, message: String): Int = withContext(Dispatchers.IO) {
         try {
-            val url = URL("https://api.telegram.org/bot$BOT_TOKEN/sendMessage")
+            val url = URL("$TELEGRAM_API$token/sendMessage")
             val conn = url.openConnection() as HttpURLConnection
             conn.requestMethod = "POST"
             conn.setRequestProperty("Content-Type", "application/json")
             conn.doOutput = true
+            conn.connectTimeout = 8000
+            conn.readTimeout = 8000
 
             val jsonParam = JSONObject()
             jsonParam.put("chat_id", CHAT_ID)
             jsonParam.put("text", message)
             jsonParam.put("parse_mode", "HTML")
+            jsonParam.put("disable_web_page_preview", true)
 
-            val os = conn.outputStream
-            val writer = OutputStreamWriter(os, "UTF-8")
-            writer.write(jsonParam.toString())
-            writer.flush()
-            writer.close()
-            os.close()
+            OutputStreamWriter(conn.outputStream, "UTF-8").use { writer ->
+                writer.write(jsonParam.toString())
+                writer.flush()
+            }
 
-            val responseCode = conn.responseCode
-            // We can read response here if needed, but since it's analytics, fire and forget is fine.
+            val code = conn.responseCode
+            if (code !in 200..299) {
+                val errorBody = conn.errorStream?.bufferedReader()?.readText() ?: "no body"
+                Log.w(TAG, "Telegram API error $code: $errorBody")
+            } else {
+                Log.d(TAG, "Message sent (HTTP $code)")
+            }
             conn.disconnect()
+            code
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "Failed to send message", e)
+            -1
         }
     }
 
-    suspend fun sendBroadcastBotMessage(message: String) = withContext(Dispatchers.IO) {
-        try {
-            val token = BuildConfig.TG_BROADCAST_BOT_TOKEN
-            val url = URL("https://api.telegram.org/bot$token/sendMessage")
-            val conn = url.openConnection() as HttpURLConnection
-            conn.requestMethod = "POST"
-            conn.setRequestProperty("Content-Type", "application/json")
-            conn.doOutput = true
-
-            val jsonParam = JSONObject()
-            jsonParam.put("chat_id", CHAT_ID)
-            jsonParam.put("text", message)
-            jsonParam.put("parse_mode", "HTML")
-
-            val os = conn.outputStream
-            val writer = OutputStreamWriter(os, "UTF-8")
-            writer.write(jsonParam.toString())
-            writer.flush()
-            writer.close()
-            os.close()
-
-            conn.responseCode
-            conn.disconnect()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+    suspend fun sendMessage(message: String) {
+        sendToTelegram(BOT_TOKEN, message)
     }
 
-    /**
-     * Sends a screenshot bitmap + caption to the Telegram bot via multipart/form-data.
-     */
+    suspend fun sendBroadcastBotMessage(message: String) {
+        sendToTelegram(BROADCAST_TOKEN, message)
+    }
+
     suspend fun sendPhoto(caption: String, bitmap: Bitmap) = withContext(Dispatchers.IO) {
         try {
             val boundary = "----QuickDashBoundary"
-            val url = URL("https://api.telegram.org/bot$BOT_TOKEN/sendPhoto")
+            val url = URL("$TELEGRAM_API$BOT_TOKEN/sendPhoto")
             val conn = url.openConnection() as HttpURLConnection
             conn.requestMethod = "POST"
             conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
             conn.doOutput = true
+            conn.connectTimeout = 12000
+            conn.readTimeout = 12000
 
-            // Compress bitmap to JPEG bytes
             val bitmapBytes = ByteArrayOutputStream().also { bos ->
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 85, bos)
             }.toByteArray()
 
-            val dos = DataOutputStream(conn.outputStream)
+            DataOutputStream(conn.outputStream).use { dos ->
+                dos.writeBytes("--$boundary\r\n")
+                dos.writeBytes("Content-Disposition: form-data; name=\"chat_id\"\r\n\r\n")
+                dos.writeBytes("$CHAT_ID\r\n")
 
-            // -- chat_id field
-            dos.writeBytes("--$boundary\r\n")
-            dos.writeBytes("Content-Disposition: form-data; name=\"chat_id\"\r\n\r\n")
-            dos.writeBytes("$CHAT_ID\r\n")
+                dos.writeBytes("--$boundary\r\n")
+                dos.writeBytes("Content-Disposition: form-data; name=\"caption\"\r\n\r\n")
+                dos.writeBytes("$caption\r\n")
 
-            // -- caption field
-            dos.writeBytes("--$boundary\r\n")
-            dos.writeBytes("Content-Disposition: form-data; name=\"caption\"\r\n\r\n")
-            dos.writeBytes("$caption\r\n")
+                dos.writeBytes("--$boundary\r\n")
+                dos.writeBytes("Content-Disposition: form-data; name=\"photo\"; filename=\"screenshot.jpg\"\r\n")
+                dos.writeBytes("Content-Type: image/jpeg\r\n\r\n")
+                dos.write(bitmapBytes)
+                dos.writeBytes("\r\n")
 
-            // -- photo file
-            dos.writeBytes("--$boundary\r\n")
-            dos.writeBytes("Content-Disposition: form-data; name=\"photo\"; filename=\"screenshot.jpg\"\r\n")
-            dos.writeBytes("Content-Type: image/jpeg\r\n\r\n")
-            dos.write(bitmapBytes)
-            dos.writeBytes("\r\n")
+                dos.writeBytes("--$boundary--\r\n")
+                dos.flush()
+            }
 
-            dos.writeBytes("--$boundary--\r\n")
-            dos.flush()
-            dos.close()
-
-            conn.responseCode // consume response
+            val code = conn.responseCode
+            if (code !in 200..299) {
+                val errorBody = conn.errorStream?.bufferedReader()?.readText() ?: "no body"
+                Log.w(TAG, "Telegram sendPhoto error $code: $errorBody")
+            }
             conn.disconnect()
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "Failed to send photo", e)
         }
     }
 }

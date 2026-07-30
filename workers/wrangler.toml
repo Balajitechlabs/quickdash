@@ -1,14 +1,23 @@
 name = "quickdash-api"
-main = "src/index.js"
-compatibility_date = "2025-04-01"
+main = "src/index.ts"
+compatibility_date = "2026-07-30"
 workers_dev = false
 
 routes = [
   "quickdash.balajitechlab.com/api/v1/feedback",
   "quickdash.balajitechlab.com/api/v1/crash-report",
-  "quickdash.balajitechlab.com/api/v1/stats"
+  "quickdash.balajitechlab.com/api/v1/stats",
+  "quickdash.balajitechlab.com/api/v1/stats.json"
 ]
 
 [[kv_namespaces]]
+binding = "QUICKDASH_KV"
+id = "880939f5c2e04092a891c18ab4475314"
+
+[env.staging]
+name = "quickdash-api-staging"
+routes = ["staging.quickdash.balajitechlab.com/api/*"]
+
+[[env.staging.kv_namespaces]]
 binding = "QUICKDASH_KV"
 id = "880939f5c2e04092a891c18ab4475314"

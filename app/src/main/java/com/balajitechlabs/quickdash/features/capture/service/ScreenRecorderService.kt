@@ -18,6 +18,7 @@ import android.os.Environment
 import android.os.IBinder
 import android.provider.MediaStore
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
@@ -48,6 +49,7 @@ class ScreenRecorderService : Service() {
         // Broadcast sent to UI to report state changes
         const val BROADCAST_RECORDING_STARTED = "com.balajitechlabs.quickdash.RECORDING_STARTED"
         const val BROADCAST_RECORDING_STOPPED = "com.balajitechlabs.quickdash.RECORDING_STOPPED"
+        const val TAG = "ScreenRecorderService"
     }
 
     private var mediaProjection: MediaProjection? = null
@@ -176,7 +178,9 @@ class ScreenRecorderService : Service() {
     private fun stopRecordingAndSave() {
         try {
             mediaRecorder?.stop()
-        } catch (_: Exception) {}
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to stop MediaRecorder", e)
+        }
 
         mediaRecorder?.release()
         mediaRecorder = null

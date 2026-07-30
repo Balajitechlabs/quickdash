@@ -1,4 +1,4 @@
-import { useEffect, useState, Component } from 'react'
+import { useEffect, useState, useRef, Component } from 'react'
 import { useLocation } from 'react-router-dom'
 import Navbar from './Navbar'
 import Footer from './Footer'
@@ -10,6 +10,16 @@ function ScrollToTop() {
     window.scrollTo(0, 0)
   }, [pathname])
   return null
+}
+
+function SkipLink() {
+  return (
+    <a href="#main-content" style={{ position: 'absolute', left: '-9999px', top: 0, zIndex: 9999 }}
+      onFocus={e => e.target.style.left = '8px'}
+      onBlur={e => e.target.style.left = '-9999px'}>
+      Skip to content
+    </a>
+  )
 }
 
 function BackToTop() {
@@ -58,12 +68,21 @@ function ErrorFallback() {
 }
 
 export default function Layout({ children }) {
+  const { pathname } = useLocation()
+  const mainRef = useRef(null)
+
+  useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.focus()
+    }
+  }, [pathname])
+
   return (
     <>
       <ScrollToTop />
-      <a href="#main-content" className="skip-link">Skip to main content</a>
+      <SkipLink />
       <Navbar />
-      <main id="main-content" role="main">
+      <main id="main-content" ref={mainRef} tabIndex={-1} role="main" aria-live="polite">
         <ErrorBoundary fallback={<ErrorFallback />}>
           {children}
         </ErrorBoundary>
@@ -82,6 +101,12 @@ class ErrorBoundary extends Component {
   }
   static getDerivedStateFromError() {
     return { hasError: true }
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error('ErrorBoundary caught:', error, errorInfo)
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'error_boundary', { error: error.message })
+    }
   }
   render() {
     if (this.state.hasError) return this.props.fallback

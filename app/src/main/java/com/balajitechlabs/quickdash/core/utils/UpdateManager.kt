@@ -14,6 +14,7 @@ import com.balajitechlabs.quickdash.core.network.QuickDashApiClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import android.util.Log
 import org.json.JSONObject
 import java.io.File
 import java.net.HttpURLConnection
@@ -27,6 +28,8 @@ sealed interface UpdateState {
     data class Downloading(val versionName: String, val progress: Int) : UpdateState
     data class ReadyToInstall(val versionName: String, val fileName: String) : UpdateState
 }
+
+private const val TAG = "UpdateManager"
 
 object UpdateManager {
     var updateState by mutableStateOf<UpdateState>(UpdateState.Idle)
@@ -73,10 +76,12 @@ object UpdateManager {
                         it.delete()
                     }
                 }
-            } catch (_: Exception) {}
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to delete APK from public downloads", e)
+            }
             hasLocalApk = false
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "Failed to delete downloaded APKs", e)
         }
     }
 

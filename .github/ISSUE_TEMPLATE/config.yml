@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Discussions
+    url: https://github.com/Balajitechlabs/quickdash/discussions
+    about: Ask questions, share setups, or discuss ideas here
+  - name: Telegram
+    url: https://t.me/quickdash_app
+    about: Join the community chat

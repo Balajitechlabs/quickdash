@@ -35,10 +35,13 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.balajitechlabs.quickdash.core.ui.components.RoundedCardContainer
 import kotlinx.coroutines.delay
+import android.util.Log
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+private const val TAG = "QuickVoiceMemosScreen"
 
 data class VoiceMemoItem(val file: File, val name: String, val formattedDate: String, val sizeKb: Long)
 
@@ -194,7 +197,9 @@ fun QuickVoiceMemosScreen(isFloating: Boolean = false) {
             try {
                 activeRecorder?.stop()
                 activeRecorder?.release()
-            } catch (_: Exception) {}
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to stop voice recorder on dispose", e)
+            }
             mediaPlayer?.release()
         }
     }

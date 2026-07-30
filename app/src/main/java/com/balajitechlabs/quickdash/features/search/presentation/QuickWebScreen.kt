@@ -34,7 +34,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import android.util.Log
 import com.balajitechlabs.quickdash.R
+
+private const val TAG = "QuickWebScreen"
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
@@ -228,7 +231,9 @@ fun QuickWebScreen(
                                     addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                                 }
                                 context.startActivity(intent)
-                            } catch (_: Exception) {}
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Failed to open external URL", e)
+                            }
                             return true
                         }
                     }

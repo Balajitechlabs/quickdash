@@ -1,8 +1,8 @@
-name: Deploy Showcase Website to Custom Subdomain
+name: Deploy Website
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   workflow_dispatch:
 
 permissions:
@@ -11,11 +11,11 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  deploy:
     environment:
       name: github-pages
       url: https://quickdash.balajitechlab.com
@@ -24,26 +24,26 @@ jobs:
       run:
         working-directory: website
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22 LTS
         uses: actions/setup-node@v5
         with:
-          node-version: 24
+          node-version: 22
           cache: npm
           cache-dependency-path: website/package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build site
+      - name: Build
         run: npm run build
 
-      - name: Ensure CNAME file exists in build output
+      - name: Write CNAME
         run: echo "quickdash.balajitechlab.com" > dist/CNAME
 
-      - name: Setup Pages
+      - name: Configure Pages
         uses: actions/configure-pages@v4
 
       - name: Upload artifact
@@ -52,5 +52,4 @@ jobs:
           path: ./website/dist
 
       - name: Deploy to GitHub Pages
-        id: deployment
         uses: actions/deploy-pages@v4

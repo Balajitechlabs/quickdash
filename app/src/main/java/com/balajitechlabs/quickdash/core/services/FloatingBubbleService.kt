@@ -14,6 +14,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
+import com.balajitechlabs.quickdash.core.utils.AppLogger
 import com.balajitechlabs.quickdash.features.dashboard.presentation.FloatingDialogActivity
 import com.balajitechlabs.quickdash.R
 import android.app.NotificationChannel
@@ -279,7 +280,9 @@ class FloatingBubbleService : Service() {
                 interpolator = DecelerateInterpolator()
                 addUpdateListener { anim ->
                     params.x = anim.animatedValue as Int
-                    try { windowManager.updateViewLayout(floatingView, params) } catch (_: Exception) {}
+                    try { windowManager.updateViewLayout(floatingView, params) } catch (e: Exception) {
+                        AppLogger.e("FloatingBubbleService", "Failed to update floating view layout during snap", e)
+                    }
                 }
                 start()
             }
@@ -389,13 +392,17 @@ class FloatingBubbleService : Service() {
         super.onDestroy()
         serviceScope.cancel()
         if (::floatingView.isInitialized) {
-            try { windowManager.removeView(floatingView) } catch (_: Exception) {}
+            try { windowManager.removeView(floatingView) } catch (e: Exception) {
+                AppLogger.e("FloatingBubbleService", "Failed to remove floating view on destroy", e)
+            }
         }
         miniWidgetView?.let {
             savedStateRegistryOwner.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
             savedStateRegistryOwner.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
             savedStateRegistryOwner.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-            try { windowManager.removeView(it) } catch (_: Exception) {}
+            try { windowManager.removeView(it) } catch (e: Exception) {
+                AppLogger.e("FloatingBubbleService", "Failed to remove mini widget view on destroy", e)
+            }
         }
     }
 }

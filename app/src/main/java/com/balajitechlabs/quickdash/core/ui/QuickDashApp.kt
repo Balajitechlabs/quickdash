@@ -3,6 +3,7 @@ package com.balajitechlabs.quickdash.core.ui
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -128,6 +129,8 @@ import com.balajitechlabs.quickdash.features.exchange.presentation.QuickExchange
 import com.balajitechlabs.quickdash.features.voicememos.presentation.QuickVoiceMemosScreen
 import com.balajitechlabs.quickdash.features.reminders.presentation.QuickRemindersScreen
 import com.balajitechlabs.quickdash.features.qr.presentation.QuickQrScannerScreen
+
+private const val TAG = "QuickDashApp"
 
 sealed interface QuickDashUiState {
     data object Onboarding : QuickDashUiState
@@ -558,15 +561,18 @@ fun QuickDashContent(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
+    val updateState = UpdateManager.updateState
+    val showUpdateDialog = remember(updateState) { mutableStateOf(true) }
+
     var showWhatsNewOnLaunch by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         val lastSeen = mainViewModel.settingsRepository.lastSeenVersion.first()
         val currentVersion = try {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            packageInfo.versionName ?: "5.1.1"
+            packageInfo.versionName ?: "5.1.2"
         } catch (e: Exception) {
-            "5.1.1"
+            "5.1.2"
         }
         if (lastSeen != currentVersion) {
             showWhatsNewOnLaunch = true
@@ -718,7 +724,9 @@ fun QuickDashContent(
                                         )
                                     }
                                 }
-                                UpdateTag()
+                                UpdateTag(
+                                    onShowUpdateDialog = { showUpdateDialog.value = true }
+                                )
                             }
                         }
                     }
@@ -1337,7 +1345,7 @@ fun QuickDashContent(
     }
     if (showWhatsNewOnLaunch) {
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val versionName = packageInfo.versionName ?: "5.1.1"
+        val versionName = packageInfo.versionName ?: "5.1.2"
         
         LaunchedEffect(Unit) {
             settingsConfettiType = "Corner"
@@ -1354,9 +1362,6 @@ fun QuickDashContent(
             }
         )
     }
-
-    val updateState = UpdateManager.updateState
-    val showUpdateDialog = remember(updateState) { mutableStateOf(true) }
 
     if (updateState is UpdateState.UpdateAvailable && showUpdateDialog.value) {
         AlertDialog(
@@ -1509,14 +1514,14 @@ fun QuickDashContent(
 @Composable
 
 
-fun UpdateTag() {
+fun UpdateTag(onShowUpdateDialog: () -> Unit = {}) {
     val context = LocalContext.current
     val currentVersionName = remember {
         try {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
             "v${packageInfo.versionName}"
         } catch (e: Exception) {
-            "v5.1.1"
+            "v5.1.2"
         }
     }
 
@@ -1636,11 +1641,7 @@ fun UpdateTag() {
                     .wrapContentSize()
                     .clip(RoundedCornerShape(12.dp))
                     .clickable {
-                        UpdateManager.startDownload(
-                            context,
-                            state.apkUrl,
-                            state.versionName
-                        )
+                        onShowUpdateDialog()
                     }
             ) {
                 Row(
@@ -1787,7 +1788,9 @@ fun playClickVibration(context: Context, hapticEnabled: Boolean) {
                 vibrator.vibrate(15L)
             }
         }
-    } catch (_: Exception) {}
+    } catch (e: Exception) {
+        Log.e(TAG, "Failed to play click vibration", e)
+    }
 }
 
 fun playExplosionVibration(context: Context, hapticEnabled: Boolean) {
@@ -1807,5 +1810,7 @@ fun playExplosionVibration(context: Context, hapticEnabled: Boolean) {
                 vibrator.vibrate(longArrayOf(0, 15, 80, 20), -1)
             }
         }
-    } catch (_: Exception) {}
+    } catch (e: Exception) {
+        Log.e(TAG, "Failed to play explosion vibration", e)
+    }
 }

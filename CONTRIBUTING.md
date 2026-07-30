@@ -10,12 +10,12 @@ By participating, you agree to uphold our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ### Report Bugs
 1. Search [existing issues](https://github.com/Balajitechlabs/quickdash/issues) first.
-2. If not found, [open a new issue](https://github.com/Balajitechlabs/quickdash/issues/new?labels=bug&template=bug_report.md).
+2. If not found, [open a bug report](https://github.com/Balajitechlabs/quickdash/issues/new/choose).
 3. Include: device model, Android version, steps to reproduce, screenshots (if applicable).
 
 ### Suggest Features
 1. Check [existing feature requests](https://github.com/Balajitechlabs/quickdash/issues?q=is%3Aissue+label%3Aenhancement).
-2. [Open a new issue](https://github.com/Balajitechlabs/quickdash/issues/new?labels=enhancement) describing the feature and use case.
+2. [Open a feature request](https://github.com/Balajitechlabs/quickdash/issues/new/choose) describing the feature and use case.
 
 ### Submit Code Changes
 

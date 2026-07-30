@@ -14,7 +14,7 @@ object CrashReporter {
     ): Boolean {
         val request = CrashReportRequest(
             id = UUID.randomUUID().toString(),
-            app_version = "5.1.1",
+            app_version = "5.1.2",
             version_code = 511,
             device = "${Build.MANUFACTURER} ${Build.MODEL}",
             android_version = "${Build.VERSION.SDK_INT}",

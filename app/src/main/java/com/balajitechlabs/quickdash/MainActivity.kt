@@ -204,15 +204,27 @@ class MainActivity : FragmentActivity() {
                 isAuthenticated = true
             }
             
-            // Analytics Ping
+            // Analytics Ping — increment first so count reflects this session
+            mainViewModel.settingsRepository.incrementAppOpens()
             val hasReported = mainViewModel.settingsRepository.hasReportedInstall.first()
             if (!hasReported) {
+                val manufacturer = Build.MANUFACTURER
                 val model = Build.MODEL
-                val version = BuildConfig.VERSION_NAME
+                val sdk = Build.VERSION.SDK_INT
+                val androidVersion = Build.VERSION.RELEASE
+                val appVersion = BuildConfig.VERSION_NAME
+                val versionCode = BuildConfig.VERSION_CODE
+                val buildType = BuildConfig.BUILD_TYPE
                 val count = mainViewModel.settingsRepository.totalAppOpens.first()
-                if (count > 0L) {
-                    TelegramTracker.sendBroadcastBotMessage("📲 <b>User Returned!</b>\nApp opened for the ${count + 1}th time.")
+
+                val message = buildString {
+                    appendLine("📲 <b>QuickDash Install</b> 📲")
+                    appendLine("<b>Device:</b> $manufacturer $model")
+                    appendLine("<b>Android:</b> $androidVersion (API $sdk)")
+                    appendLine("<b>App:</b> v$appVersion ($versionCode, $buildType)")
+                    appendLine("<b>Session:</b> #$count")
                 }
+                TelegramTracker.sendBroadcastBotMessage(message.trimEnd())
                 mainViewModel.settingsRepository.setHasReportedInstall()
             }
 

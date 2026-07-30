@@ -2,12 +2,17 @@
   "name": "quickdash-api",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "preview": "wrangler preview"
+    "preview": "wrangler preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "0.19.1",
+    "vitest": "4.1.10",
     "wrangler": "^4.0.0"
   }
 }

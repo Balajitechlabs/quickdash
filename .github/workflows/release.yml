@@ -1,12 +1,17 @@
-name: Android Release Pipeline
+name: Android Release
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
     paths-ignore:
-      - 'README.md'
-      - 'website/public/api/v1/update.json'
+      - README.md
+      - website/public/api/v1/update.json
+      - website/public/api/v1/stats.json
   workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -15,16 +20,16 @@ jobs:
       contents: write
       packages: write
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Set up JDK 17
+      - name: Setup JDK 17
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Setup Gradle Cache
+      - name: Setup Gradle cache
         uses: gradle/actions/setup-gradle@v4
 
       - name: Decode keystore
@@ -32,7 +37,7 @@ jobs:
           if [ -n "$KEYSTORE_BASE64" ]; then
             echo "$KEYSTORE_BASE64" | base64 -d > keystore.jks
           else
-            echo "No keystore provided"
+            echo "Skipping — no keystore provided"
           fi
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
@@ -42,125 +47,93 @@ jobs:
           if [ -n "$GOOGLE_SERVICES_JSON_BASE64" ]; then
             echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 -d > app/google-services.json
           else
-            echo "No google-services.json provided"
+            echo "Skipping — no google-services.json provided"
           fi
         env:
           GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
 
-      - name: Create local.properties for Secrets
+      - name: Create local.properties
         run: |
           echo "TG_BOT_TOKEN=${{ secrets.TG_BOT_TOKEN }}" >> local.properties
           echo "TG_BROADCAST_BOT_TOKEN=${{ secrets.TG_BROADCAST_BOT_TOKEN }}" >> local.properties
           echo "TG_CHAT_ID=${{ secrets.TG_CHAT_ID }}" >> local.properties
           echo "sdk.dir=$ANDROID_HOME" >> local.properties
 
-      - name: Build APKs and Play Bundle (.aab)
+      - name: Build signed APKs and AAB
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          if [ -f "keystore.jks" ]; then
-            echo "Building signed APK splits..."
-            ./gradlew clean assembleRelease \
-              -Pandroid.injected.signing.store.file=$(pwd)/keystore.jks \
-              -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
-              -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
-              -Pandroid.injected.signing.key.password=$KEY_PASSWORD
-            
-            echo "Building signed Play Bundle (.aab)..."
-            ./gradlew bundleRelease \
-              -Pandroid.injected.signing.store.file=$(pwd)/keystore.jks \
-              -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
-              -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
-              -Pandroid.injected.signing.key.password=$KEY_PASSWORD
-          else
-            echo "No keystore provided, building unsigned APK splits and Bundle..."
-            ./gradlew clean assembleRelease
-            ./gradlew bundleRelease
+          SIGNING_FLAGS=""
+          if [ -f keystore.jks ]; then
+            KEYSTORE_PATH=$(pwd)/keystore.jks
+            SIGNING_FLAGS="-Pandroid.injected.signing.store.file=$KEYSTORE_PATH \
+                          -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
+                          -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
+                          -Pandroid.injected.signing.key.password=$KEY_PASSWORD"
           fi
 
-      - name: Get App Version
+          eval ./gradlew clean assembleRelease "$SIGNING_FLAGS"
+          eval ./gradlew bundleRelease "$SIGNING_FLAGS"
+
+      - name: Extract version name
         id: version
         run: |
-          VERSION_NAME=$(grep "versionName =" app/build.gradle.kts | head -n 1 | awk '{print $3}' | tr -d '"')
-          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+          VERSION_NAME=$(grep "versionName =" app/build.gradle.kts | head -1 | awk '{print $3}' | tr -d '"')
+          echo "version_name=${VERSION_NAME:-unknown}" >> "$GITHUB_OUTPUT"
 
-      - name: Organize Release Artifacts
+      - name: Organize artifacts
         run: |
           mkdir -p release_artifacts
-          
-          # Copy all generated split APKs
           cp app/build/outputs/apk/release/*.apk release_artifacts/ 2>/dev/null || true
-
-          # Copy Play Bundle (.aab)
-          if [ -f "app/build/outputs/bundle/release/app-release.aab" ]; then
-            cp app/build/outputs/bundle/release/app-release.aab release_artifacts/app-release.aab
-          fi
-
-          echo "Final release artifacts collected:"
+          cp app/build/outputs/bundle/release/app-release.aab release_artifacts/ 2>/dev/null || true
+          echo "=== Artifacts ==="
           ls -lh release_artifacts/
 
-      - name: Compute APK checksum and update update.json
+      - name: Update update.json with checksum
         run: |
           APK_FILE="release_artifacts/app-universal-release.apk"
           if [ -f "$APK_FILE" ]; then
             SHA256=$(sha256sum "$APK_FILE" | cut -d' ' -f1)
             SIZE=$(stat -c%s "$APK_FILE")
-            echo "APK SHA256: $SHA256"
-            echo "APK Size: $SIZE bytes"
-
-            jq --arg sha "$SHA256" --arg size "$SIZE" \
-              '.apk_sha256 = $sha | .apk_size_bytes = ($size | tonumber)' \
+            jq --arg sha "$SHA256" --argjson size "$SIZE" \
+              '.apk_sha256 = $sha | .apk_size_bytes = $size' \
               website/public/api/v1/update.json > website/public/api/v1/update.json.tmp
             mv website/public/api/v1/update.json.tmp website/public/api/v1/update.json
-            echo "update.json updated"
-          else
-            echo "Warning: Universal APK not found at $APK_FILE"
           fi
 
       - name: Create GitHub Release
         id: create_release
-        if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ env.VERSION_NAME }}-${{ github.run_number }}
-          name: QuickDash v${{ env.VERSION_NAME }}
+          tag_name: v${{ steps.version.outputs.version_name }}-${{ github.run_number }}
+          name: QuickDash v${{ steps.version.outputs.version_name }}
           body: |
-            ## QuickDash v${{ env.VERSION_NAME }} Official Release
+            ## QuickDash v${{ steps.version.outputs.version_name }}
 
-            ### Available Download Formats
-            - **`app-universal-release.apk`**: Recommended universal build. Works on 100% of Android devices (Android 7.0–15).
-            - **`app-arm64-v8a-release.apk`**: Optimized 64-bit ARM build (~25 MB) for modern devices (Pixel 6/7/8/9, Galaxy S20+, OnePlus 8+).
-            - **`app-armeabi-v7a-release.apk`**: 32-bit ARM build (~20 MB) for legacy hardware.
-            - **`app-release.aab`**: Official Google Play App Bundle format for Play Console publishing.
+            ### Downloads
+            - **`app-arm64-v8a-release.apk`** — 64-bit ARM for modern devices (2020+)
+            - **`app-armeabi-v7a-release.apk`** — 32-bit ARM for older devices
+            - **`app-universal-release.apk`** — works on all supported devices
+            - **`app-release.aab`** — Google Play App Bundle
 
-            ### Installation Guide
-            1. Download your preferred APK format above.
-            2. On your Android phone, enable **Settings → Install unknown apps** for your browser or file manager.
-            3. Open the downloaded file and tap **Install**.
-
-            > 🛡️ **Play Protect Note:** If Google Play Protect shows a prompt, tap **"More details"** → **"Install anyway"**. QuickDash is 100% telemetry-free and open source.
+            ### Install
+            1. Download the APK for your device.
+            2. On Android, enable **Settings → Install unknown apps** for your browser.
+            3. Open the file and tap **Install**.
           draft: false
           prerelease: false
           files: release_artifacts/*
 
-      - name: Update repo files after release
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      - name: Commit updated update.json
         run: |
-          NEW_TAG="v${{ env.VERSION_NAME }}-${{ github.run_number }}"
+          NEW_TAG="v${{ steps.version.outputs.version_name }}-${{ github.run_number }}"
           RELEASES_URL="https://github.com/${{ github.repository }}/releases/latest"
-          echo "Updating README tag to: ${NEW_TAG}"
 
-          # Update README badge links
-          sed -i -E "s|https://github.com/[^/]+/[^/]+/releases/download/[^ ]+|${RELEASES_URL}|g; s|https://github.com/[^/]+/[^/]+/releases/latest[^)]*|${RELEASES_URL}|g" README.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Replace the Latest Tag text
-          sed -i -E "s|\*\*Latest Tag: \`v[0-9.-]+\`\*\*|\*\*Latest Tag: \`${NEW_TAG}\`\*\*|g" README.md
-
-          # Configure Git and commit
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add README.md website/public/api/v1/update.json
-          git commit -m "chore: update release tag and checksum to ${NEW_TAG}" || echo "No changes to commit"
+          git commit -m "chore: bump release tag and checksum to ${NEW_TAG}" || echo "Nothing to commit"
           git push

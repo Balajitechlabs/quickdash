@@ -173,7 +173,7 @@ function FAQ() {
           <div key={i} className="card" style={{ padding: 0, overflow: 'hidden' }}>
             <button
               onClick={() => {
-                trackEvent('faq_toggle', openIdx === i ? 'close' : 'open', f.q)
+                trackEvent('faq_toggle', openIdx === i ? 'close' : 'open')
                 setOpenIdx(openIdx === i ? null : i)
               }}
               aria-expanded={openIdx === i}
@@ -276,8 +276,8 @@ function FeedbackForm() {
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault()
     const form = e.target
-    const name = form.name.value
-    const message = form.message.value
+    const name = form.elements['name'].value
+    const message = form.elements['message'].value
     trackEvent('feedback_submit', 'github_issues')
     const body = `**Feedback from ${name}**\n\n${message}`
     const url = `https://github.com/Balajitechlabs/quickdash/issues/new?title=Feedback: ${encodeURIComponent(name)}&body=${encodeURIComponent(body)}&labels=feedback`

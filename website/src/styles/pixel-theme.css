@@ -213,7 +213,7 @@ nav, footer { transition: background-color 0.3s ease, border-color 0.3s ease; }
 
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
@@ -232,7 +232,7 @@ nav, footer { transition: background-color 0.3s ease, border-color 0.3s ease; }
 }
 
 @media print {
-  nav, footer, .pixel-divider, .update-popup, .back-to-top { display: none; }
+  nav, footer, .pixel-divider, .back-to-top { display: none; }
   body::before { display: none; }
   .card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
 }

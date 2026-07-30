@@ -25,6 +25,8 @@
   <img src="https://img.shields.io/github/v/release/Balajitechlabs/quickdash?style=flat-square&logo=github&color=blue" alt="Version">
   <img src="https://img.shields.io/github/stars/Balajitechlabs/quickdash?style=flat-square&logo=github&color=gold" alt="Stars">
   <img src="https://img.shields.io/github/last-commit/Balajitechlabs/quickdash?style=flat-square&logo=git&color=green" alt="Last Commit">
+  <img src="https://img.shields.io/github/actions/workflow/status/Balajitechlabs/quickdash/deploy-website.yml?style=flat-square&label=website" alt="Website">
+  <img src="https://img.shields.io/github/actions/workflow/status/Balajitechlabs/quickdash/nightly.yml?style=flat-square&label=nightly" alt="Nightly">
   <img src="https://img.shields.io/badge/Kotlin-100%25-purple?style=flat-square&logo=kotlin" alt="Kotlin">
   <img src="https://img.shields.io/badge/Android_16+-green?style=flat-square&logo=android" alt="Android">
   <img src="https://img.shields.io/badge/License-Custom_OS_Fork-orange?style=flat-square" alt="License">
@@ -108,7 +110,7 @@ For detailed setup instructions, see [SETUP.md](SETUP.md).
 | Min SDK | **API 24** (Android 7.0) |
 | Target SDK | **API 36** (Android 16) |
 | Build | **Gradle 9.4** with Kotlin DSL |
-| CI/CD | **GitHub Actions** (5 workflows) |
+| CI/CD | **GitHub Actions** (4 workflows) |
 
 ---
 
@@ -118,7 +120,7 @@ For detailed setup instructions, see [SETUP.md](SETUP.md).
 quickdash/
 ├── app/                    # Android app module
 ├── website/                # Showcase website (React + GitHub Pages)
-├── .github/workflows/      # CI/CD (5 pipelines)
+├── .github/                # CI/CD, issue templates, community files
 ├── release/                # Release process & notes
 ├── metadata/               # F-Droid store metadata
 ├── scripts/                # Developer helpers

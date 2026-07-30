@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useApi } from '../hooks/useApi'
 
 function SkeletonCard() {
   return (
@@ -11,31 +11,10 @@ function SkeletonCard() {
 }
 
 export default function Blog() {
-  const [posts, setPosts] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  useEffect(() => {
-    let cancelled = false
-    const loadPosts = async () => {
-      try {
-        let res = await fetch('/api/reading/posts')
-        if (!res.ok) {
-          res = await fetch('/api/reading/posts.json')
-        }
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const data = await res.json()
-        if (!cancelled) { setPosts(data); setLoading(false) }
-      } catch (e) {
-        if (!cancelled) { setError(e.message); setLoading(false) }
-      }
-    }
-    loadPosts()
-    return () => { cancelled = true }
-  }, [])
+  const { data: posts, loading, error } = useApi('/api/reading/posts.json')
 
   return (
-    <div className="container" style={{ paddingTop: 32, paddingBottom: 48 }}>
+    <div className="container" style={{ paddingTop: 32, paddingBottom: 48 }} role="status" aria-live="polite">
       <header>
         <h1 className="section-title" style={{ fontSize: 20 }}>Reading</h1>
         <p style={{ color: 'var(--md-on-surface-variant)', fontSize: 14, marginBottom: 32 }}>

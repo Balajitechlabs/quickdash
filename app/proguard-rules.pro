@@ -1,5 +1,5 @@
 # ======================================================================
-# QuickDash R8 / ProGuard rules — Stable Release v5.1.1
+# QuickDash R8 / ProGuard rules
 # ======================================================================
 
 # ======================================================================
@@ -19,14 +19,11 @@
 # ======================================================================
 -keep class com.balajitechlabs.quickdash.widget.QuickDashWidget { *; }
 -keep class com.balajitechlabs.quickdash.widget.QuickDashWidgetReceiver { *; }
--keep class androidx.glance.** { *; }
--dontwarn androidx.glance.**
 
 # ======================================================================
-# 3. BROADCAST RECEIVERS & ALARM RECEIVERS
+# 3. BROADCAST RECEIVERS
 # ======================================================================
 -keep class * extends android.content.BroadcastReceiver { *; }
--keep class com.balajitechlabs.quickdash.features.timer.presentation.TimerAlarmReceiver { *; }
 
 # ======================================================================
 # 4. SERVICES
@@ -34,7 +31,7 @@
 -keep class * extends android.app.Service { *; }
 
 # ======================================================================
-# 5. WORKMANAGER / BACKGROUND WORKERS
+# 5. WORKMANAGER
 # ======================================================================
 -keep class * extends androidx.work.Worker { *; }
 -keep class * extends androidx.work.ListenableWorker { *; }
@@ -58,7 +55,11 @@
 -keep class **Dao_Impl { *; }
 
 # ======================================================================
-# 7. DI CONTAINER & CORE SINGLETONS
+# 7. HILT / DAGGER DI
+# ======================================================================
+
+# ======================================================================
+# 8. CORE SINGLETONS & UTILITIES
 # ======================================================================
 -keep class com.balajitechlabs.quickdash.core.di.** { *; }
 -keep class com.balajitechlabs.quickdash.core.data.UserStore { *; }
@@ -66,7 +67,7 @@
 -keep class com.balajitechlabs.quickdash.core.data.EncryptedPrefsHelper { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.LogManager { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.AppLogger { *; }
--keep class com.balajitechlabs.quickdash.core.utils.UpdateManager** { *; }
+-keep class com.balajitechlabs.quickdash.core.utils.UpdateManager* { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.UpdateState { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.UpdateState$* { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.ShakeDetector { *; }
@@ -84,7 +85,7 @@
 -keep class com.balajitechlabs.quickdash.core.network.QuickDashApiClient { *; }
 -keep class com.balajitechlabs.quickdash.core.network.ApiConfig { *; }
 
-# Telegram feature singletons
+# Telegram feature
 -keep class com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker { *; }
 
 # Repositories
@@ -94,7 +95,7 @@
 -keep class com.balajitechlabs.quickdash.features.settings.domain.repository.SettingsRepository { *; }
 
 # ======================================================================
-# 8. KOTLINX SERIALIZATION MODELS (ApiModels, sealed classes)
+# 9. KOTLINX SERIALIZATION (API models, sealed classes)
 # ======================================================================
 -keep,includedescriptorclasses class com.balajitechlabs.quickdash.**$$serializer { *; }
 -keepclassmembers class com.balajitechlabs.quickdash.** {
@@ -115,7 +116,7 @@
 -keep class com.balajitechlabs.quickdash.core.network.CrashReportRequest { *; }
 
 # ======================================================================
-# 9. DATA MODELS / ENUMS / SEALED CLASSES
+# 10. DATA MODELS / ENUMS / SEALED CLASSES
 # ======================================================================
 -keep class com.balajitechlabs.quickdash.core.data.** { *; }
 -keep class com.balajitechlabs.quickdash.features.**.domain.model.** { *; }
@@ -142,7 +143,7 @@
 }
 
 # ======================================================================
-# 10. GOOGLE FONTS (CRITICAL — crash on theme init if stripped)
+# 11. GOOGLE FONTS
 # ======================================================================
 -keep class androidx.compose.ui.text.googlefonts.** { *; }
 -keep class androidx.compose.ui.text.font.** { *; }
@@ -150,102 +151,83 @@
 -dontwarn com.google.android.gms.fonts.**
 
 # ======================================================================
-# 11. ANDROIDX GRAPHICS-SHAPES (Squircle/Smooth shape styles)
+# 12. ANDROIDX GRAPHICS-SHAPES
 # ======================================================================
 -keep class androidx.graphics.shapes.** { *; }
 -dontwarn androidx.graphics.shapes.**
 
 # ======================================================================
-# 12. GSON / TypeToken (CRITICAL — generic signature reflection)
+# 13. GSON
 # ======================================================================
 -keep class com.google.gson.** { *; }
--keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
--keep class * extends com.google.gson.reflect.TypeToken { *; }
 -keepclassmembers class * {
     @com.google.gson.annotations.SerializedName <fields>;
 }
+-keep class * extends com.google.gson.reflect.TypeToken { *; }
 -keep class * implements com.google.gson.JsonSerializer { *; }
 -keep class * implements com.google.gson.JsonDeserializer { *; }
 -keep class * implements com.google.gson.TypeAdapter { *; }
 -keep class * implements com.google.gson.TypeAdapterFactory { *; }
--keep class * extends com.google.gson.TypeAdapter { *; }
--keep class * extends com.google.gson.TypeAdapterFactory { *; }
 -keepattributes Signature
 
 # ======================================================================
-# 13. FIREBASE / GOOGLE PLAY SERVICES
+# 14. FIREBASE / GOOGLE PLAY SERVICES
 # ======================================================================
 -keep class com.google.firebase.** { *; }
 -keep class com.google.android.gms.** { *; }
--dontwarn com.google.firebase.**
--dontwarn com.google.android.gms.**
 
 # ======================================================================
-# 14. OKHTTP
+# 15. OKHTTP
 # ======================================================================
 -keep class okhttp3.** { *; }
 -keep interface okhttp3.** { *; }
 -keepnames interface okhttp3.internal.http2.Http2Connection$Listener
--dontwarn okhttp3.**
--dontwarn okio.**
 
 # ======================================================================
-# 15. ZXING QR GENERATION
+# 16. ZXING QR
 # ======================================================================
 -keep class com.google.zxing.** { *; }
--dontwarn com.google.zxing.**
 
 # ======================================================================
-# 16. ML KIT CODE SCANNER (primary crash source in release builds)
+# 17. ML KIT CODE SCANNER
 # ======================================================================
 -keep class com.google.mlkit.** { *; }
 -keep class com.google.android.gms.internal.mlkit_code_scanner.** { *; }
 -keep class com.google.android.gms.vision.** { *; }
--dontwarn com.google.mlkit.**
--dontwarn com.google.android.gms.internal.mlkit_code_scanner.**
 
 # ======================================================================
-# 17. ANDROIDX SECURITY / CRYPTO / TINK (CRITICAL — EncryptedPrefs)
+# 18. ANDROIDX SECURITY / CRYPTO / TINK
 # ======================================================================
 -keep class androidx.security.crypto.** { *; }
--dontwarn androidx.security.crypto.**
--dontwarn androidx.biometric.**
 -keep class com.google.crypto.tink.** { *; }
 -keep class com.google.crypto.tink.subtle.** { *; }
 -keep class com.google.crypto.tink.proto.** { *; }
--dontwarn com.google.crypto.tink.**
 
 # ======================================================================
-# 18. JETPACK COMPOSE RUNTIME
+# 19. JETPACK COMPOSE
 # ======================================================================
 -keep class androidx.compose.runtime.** { *; }
--dontwarn androidx.compose.runtime.**
--dontwarn androidx.compose.ui.**
--dontwarn androidx.compose.material3.**
--dontwarn androidx.compose.foundation.**
--dontwarn androidx.compose.animation.**
 -keep class com.balajitechlabs.quickdash.**Kt { *; }
 -keep class com.balajitechlabs.quickdash.**Kt$* { *; }
 -keep class com.balajitechlabs.quickdash.core.ui.components.PaymentModeSwitcherKt { *; }
 -keep class com.balajitechlabs.quickdash.core.ui.components.ComposableSingletons$PaymentModeSwitcherKt { *; }
 
 # ======================================================================
-# 19. KOTLIN METADATA & REFLECTION
+# 20. KOTLIN METADATA & REFLECTION
 # ======================================================================
 -keepattributes *Annotation*, InnerClasses, EnclosingMethod
 -keepattributes RuntimeVisibleAnnotations, RuntimeInvisibleAnnotations
 -keep class kotlin.Metadata { *; }
--dontwarn kotlin.**
 
 # ======================================================================
-# 20. PARCELABLE CREATORS
+# 21. PARCELABLE
 # ======================================================================
 -keepclassmembers class * implements android.os.Parcelable {
     public static final android.os.Parcelable$Creator CREATOR;
 }
 
 # ======================================================================
-# 21. @Keep ANNOTATED CLASSES
+# 22. @KEEP ANNOTATED
 # ======================================================================
 -keep @androidx.annotation.Keep class * { *; }
 -keepclassmembers class * {
@@ -253,25 +235,63 @@
 }
 
 # ======================================================================
-# 22. COIL IMAGE LOADER
+# 23. COIL IMAGE LOADER
 # ======================================================================
 -keep class coil.** { *; }
--dontwarn coil.**
 
 # ======================================================================
-# 23. KONFETTI
+# 24. KONFETTI
 # ======================================================================
 -keep class nl.dionsegijn.konfetti.** { *; }
+
+# ======================================================================
+# 25. LIFECYCLE / DATASTORE / WEBVIEW / PLAY CORE
+# ======================================================================
+-keep class androidx.lifecycle.** { *; }
+-keep class * implements androidx.lifecycle.LifecycleObserver { *; }
+-keep class androidx.datastore.** { *; }
+-keep class androidx.datastore.preferences.** { *; }
+-keep class androidx.core.app.** { *; }
+-keep class * extends android.webkit.WebViewClient { *; }
+-keep class * extends android.webkit.WebChromeClient { *; }
+-keep class android.webkit.** { *; }
+-keep class com.google.android.play.core.** { *; }
+
+# ======================================================================
+# 26. COROUTINES
+# ======================================================================
+-keep class kotlinx.coroutines.** { *; }
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+-keep class kotlin.coroutines.** { *; }
+
+# ======================================================================
+# 27. CRASH SYMBOLICATION
+# ======================================================================
+-keepattributes SourceFile, LineNumberTable
+-renamesourcefileattribute SourceFile
+
+# ======================================================================
+# 28. WARNING SUPPRESSION
+# ======================================================================
+-dontwarn com.google.firebase.**
+-dontwarn com.google.android.gms.**
+-dontwarn com.google.mlkit.**
+-dontwarn com.google.android.gms.internal.mlkit_code_scanner.**
+-dontwarn com.google.crypto.tink.**
+-dontwarn com.google.zxing.**
+-dontwarn com.google.android.gms.fonts.**
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn coil.**
 -dontwarn nl.dionsegijn.konfetti.**
+-dontwarn com.google.auto.value.**
+-dontwarn javax.lang.model.**
+-dontwarn autovalue.shaded.**
+-dontwarn org.apache.http.**
 
 # ======================================================================
-# 24. R8 OPTIMIZATION
-# ======================================================================
--allowaccessmodification
--optimizationpasses 5
-
-# ======================================================================
-# 25. LOGGING CLEANUP IN RELEASE
+# 29. LOG CLEANUP IN RELEASE
 # ======================================================================
 -assumenosideeffects class android.util.Log {
     public static boolean isLoggable(java.lang.String, int);
@@ -281,48 +301,6 @@
 }
 
 # ======================================================================
-# 26. CRASH SYMBOLICATION
+# 30. R8 OPTIMIZATIONS
 # ======================================================================
--keepattributes SourceFile,LineNumberTable
--renamesourcefileattribute SourceFile
-
-# ======================================================================
-# 27. ANDROIDX LIFECYCLE / DATASTORE / SAVEDSTATE / WEBVIEW / PLAY CORE
-# ======================================================================
--keep class androidx.lifecycle.** { *; }
--keep class * implements androidx.lifecycle.LifecycleObserver { *; }
--keep class androidx.datastore.** { *; }
--keep class androidx.datastore.preferences.** { *; }
--keep class androidx.core.app.** { *; }
--keep class * extends androidx.fragment.app.Fragment { *; }
--keep class * extends android.app.Activity { *; }
--keep class androidx.savedstate.** { *; }
--dontwarn androidx.savedstate.**
--keep class * implements androidx.savedstate.SavedStateRegistryOwner { *; }
--keep class * extends android.webkit.WebViewClient { *; }
--keep class * extends android.webkit.WebChromeClient { *; }
--keep class android.webkit.** { *; }
--dontwarn android.webkit.**
--keep class com.google.android.play.core.** { *; }
--dontwarn com.google.android.play.core.**
--dontwarn androidx.palette.**
--dontwarn androidx.appcompat.**
-
-# ======================================================================
-# 28. COROUTINES (prevents silent hangs in release)
-# ======================================================================
--keep class kotlinx.coroutines.** { *; }
--keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
--keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
--keep class kotlin.coroutines.** { *; }
--dontwarn kotlinx.**
-
-# ======================================================================
-# 29. CLEANUP — suppress non-actionable warnings
-# ======================================================================
--dontwarn javax.lang.model.**
--dontwarn autovalue.shaded.**
--dontwarn com.google.auto.value.**
--dontwarn com.squareup.javapoet.**
--dontwarn org.apache.http.**
--dontwarn org.apache.commons.**
+-allowaccessmodification

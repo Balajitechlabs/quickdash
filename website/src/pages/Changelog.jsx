@@ -1,32 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useApi } from '../hooks/useApi'
 
 export default function Changelog() {
-  const [logs, setLogs] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  const load = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      let res = await fetch('/api/reading/changelogs')
-      if (!res.ok) {
-        res = await fetch('/api/reading/changelogs.json')
-      }
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const data = await res.json()
-      setLogs(data)
-      setLoading(false)
-    } catch (e) {
-      setError(e.message)
-      setLoading(false)
-    }
-  }
-
-  useEffect(load, [])
+  const { data: logs, loading, error, refetch } = useApi('/api/reading/changelogs.json')
 
   return (
-    <div className="container" style={{ paddingTop: 32, paddingBottom: 48 }}>
+    <div className="container" style={{ paddingTop: 32, paddingBottom: 48 }} role="status" aria-live="polite">
       <header>
         <h1 className="section-title" style={{ fontSize: 20 }}>Changelog</h1>
         <p style={{ color: 'var(--md-on-surface-variant)', fontSize: 14, marginBottom: 32 }}>
@@ -45,7 +23,7 @@ export default function Changelog() {
           <div className="card" style={{ textAlign: 'center', padding: 32, borderColor: 'var(--md-error)' }}>
             <p style={{ fontFamily: 'var(--pixel-font)', fontSize: 10, color: 'var(--md-error)' }}>ERROR LOADING CHANGELOG</p>
             <p style={{ color: 'var(--md-on-surface-variant)', fontSize: 14, marginTop: 8 }}>{error}</p>
-            <button onClick={load} className="btn btn-sm" style={{ marginTop: 16 }}>RETRY</button>
+            <button onClick={refetch} className="btn btn-sm" style={{ marginTop: 16 }}>RETRY</button>
           </div>
         ) : logs.length === 0 ? (
           <div className="card" style={{ textAlign: 'center', padding: 32 }}>

@@ -12,8 +12,7 @@ import android.hardware.Sensor
 import android.content.Context
 import android.content.Intent
 
-import com.balajitechlabs.quickdash.core.di.AppContainer
-import com.balajitechlabs.quickdash.core.di.AppContainerImpl
+
 import com.balajitechlabs.quickdash.core.utils.LogManager
 import com.balajitechlabs.quickdash.core.utils.ShakeDetector
 import com.balajitechlabs.quickdash.core.data.EncryptedPrefsHelper
@@ -23,12 +22,13 @@ import com.balajitechlabs.quickdash.features.broadcast.data.TelegramPollerWorker
 import com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker
 import com.balajitechlabs.quickdash.features.dashboard.presentation.FloatingDialogActivity
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 @HiltAndroidApp
 class QuickDashApplication : Application() {
     private var shakeDetector: ShakeDetector? = null
     private var sensorManager: SensorManager? = null
-    lateinit var container: AppContainer
+    @Inject lateinit var userStore: UserStore
 
     override fun onCreate() {
         super.onCreate()
@@ -47,40 +47,41 @@ class QuickDashApplication : Application() {
                 val dir = getExternalFilesDir(null) ?: filesDir
                 val crashFile = java.io.File(dir, "quickdash_crash.txt")
                 crashFile.writeText(msg)
-            } catch (_: Exception) {}
+            } catch (e: Exception) {
+                Log.e("QuickDashApp", "Failed to write crash capture file", e)
+            }
             earlyDefaultHandler?.uncaughtException(thread, throwable)
         }
         // ── END CRASH CAPTURE ────────────────────────────────────────────────────
-
-        container = AppContainerImpl(this)
         
-        try { LogManager.init(this) } catch (_: Exception) {}
+        try { LogManager.init(this) } catch (e: Exception) { Log.e("QuickDashApp", "LogManager init failed", e) }
         LogManager.d("QuickDashApp", "Application starting up...")
         
         try { EncryptedPrefsHelper.init(this) } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("QuickDashApp", "EncryptedPrefsHelper init failed", e)
         }
         try { com.google.firebase.FirebaseApp.initializeApp(this) } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("QuickDashApp", "FirebaseApp initializeApp failed", e)
         }
         try { RemoteConfigManager.fetchAndActivate() } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("QuickDashApp", "RemoteConfig fetch failed", e)
         }
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val userStore = container.userStore
                 val analyticsEnabled = userStore.isAnalyticsEnabled()
                 
                 try {
                     com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(analyticsEnabled)
-                } catch (_: Exception) {}
+                } catch (e: Exception) {
+                    Log.e("QuickDashApp", "Firebase Crashlytics collection setup failed", e)
+                }
 
                 if (userStore.shakeToOpen.first()) {
                     startShakeDetector()
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("QuickDashApp", "Analytics/ShakeDetector launch scope error", e)
             }
         }
         

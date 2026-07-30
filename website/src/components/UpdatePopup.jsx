@@ -35,7 +35,7 @@ export default function UpdatePopup() {
     setVisible(false)
     setDismissed(true)
     if (data) {
-      localStorage.setItem('qd-update-dismissed', data.id)
+      localStorage.setItem('qd-update-dismissed', String(data.latest_version))
     }
   }
 
@@ -53,28 +53,28 @@ export default function UpdatePopup() {
       }}>
         <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
           <div style={{
-            background: data.critical ? 'var(--md-error)' : 'var(--md-primary)',
-            color: data.critical ? 'var(--md-on-error)' : 'var(--md-on-primary)',
+            background: data.critical_update ? 'var(--md-error)' : 'var(--md-primary)',
+            color: data.critical_update ? 'var(--md-on-error)' : 'var(--md-on-primary)',
             padding: '10px 16px', display: 'flex', alignItems: 'center',
             justifyContent: 'space-between',
             fontFamily: 'var(--pixel-font)', fontSize: 8, letterSpacing: 0.5,
             textTransform: 'uppercase',
           }}>
-            <span>{data.critical ? 'Critical Update' : 'Update Available'}</span>
-            <span style={{ fontSize: 7, opacity: 0.7 }}>v{data.version}</span>
+            <span>{data.critical_update ? 'Critical Update' : 'Update Available'}</span>
+            <span style={{ fontSize: 7, opacity: 0.7 }}>v{data.latest_version}</span>
           </div>
           <div style={{ padding: 16 }}>
             <h4 style={{
               fontFamily: 'var(--pixel-font)', fontSize: 10, marginBottom: 8,
               letterSpacing: 0.5, color: 'var(--md-primary)',
-            }}>{data.title}</h4>
+            }}>{data.changelog?.split('\n')[0]}</h4>
             <p style={{
               fontSize: 13, color: 'var(--md-on-surface-variant)', marginBottom: 16,
               lineHeight: 1.6, maxHeight: 80, overflow: 'hidden',
-            }}>{data.summary}</p>
+            }}>{data.changelog}</p>
             <div style={{ display: 'flex', gap: 8 }}>
-              {data.link && (
-                <a href={data.link} target="_blank" rel="noopener noreferrer"
+              {data.apk_url && (
+                <a href={data.apk_url} target="_blank" rel="noopener noreferrer"
                    className="btn" style={{ fontSize: 8, padding: '8px 16px' }}>
                   Download
                 </a>

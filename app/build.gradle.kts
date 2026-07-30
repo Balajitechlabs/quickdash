@@ -11,14 +11,8 @@ plugins {
     id("com.google.firebase.crashlytics")
 }
 
-val keystoreProperties = Properties()
-val keystorePropertiesFile = rootProject.file("keystore.properties")
-
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(keystorePropertiesFile.inputStream())
-}
-
-// Load secrets from local.properties (gitignored — never committed)
+// Secrets from local.properties (gitignored — never committed)
+// For CI, set KEYSTORE_PASSWORD / KEY_ALIAS / KEY_PASSWORD / KEYSTORE_PATH as GitHub Secrets
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
@@ -34,8 +28,8 @@ android {
         applicationId = "com.balajitechlabs.quickdash"
         minSdk = 24
         targetSdk = 36
-        versionCode = 513
-        versionName = "5.1.1"
+        versionCode = 514
+        versionName = "5.1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -56,9 +50,10 @@ android {
             "\"${localProperties.getProperty("TG_CHAT_ID", "")}\""
         )
 
-        // Ensure full support for 64-bit & 32-bit architectures (no missing native library crashes)
+        // Only include real-device architectures (arm64-v8a + armeabi-v7a)
+        // x86 / x86_64 dropped — these are emulator-only and bloat the bundle
         ndk {
-            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64"))
+            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a"))
         }
     }
 
@@ -68,7 +63,7 @@ android {
         abi {
             isEnable = !isBuildingBundle
             reset()
-            include("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
+            include("arm64-v8a", "armeabi-v7a")
             isUniversalApk = true
         }
     }
@@ -83,11 +78,16 @@ android {
 //            enableV2Signing = true
 //        }
         create("release") {
-            if (keystoreProperties.isNotEmpty()) {
-                storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
-                storePassword = keystoreProperties["storePassword"] as String
-                keyAlias = keystoreProperties["keyAlias"] as String
-                keyPassword = keystoreProperties["keyPassword"] as String
+            val storePass = System.getenv("KEYSTORE_PASSWORD") ?: localProperties.getProperty("KEYSTORE_PASSWORD")
+            val alias = System.getenv("KEY_ALIAS") ?: localProperties.getProperty("KEY_ALIAS")
+            val keyPass = System.getenv("KEY_PASSWORD") ?: localProperties.getProperty("KEY_PASSWORD")
+            val storeFilePath = System.getenv("KEYSTORE_PATH") ?: localProperties.getProperty("KEYSTORE_PATH", "quickdash.jks")
+
+            if (!storePass.isNullOrEmpty() && !alias.isNullOrEmpty() && !keyPass.isNullOrEmpty()) {
+                storeFile = rootProject.file(storeFilePath)
+                storePassword = storePass
+                keyAlias = alias
+                keyPassword = keyPass
                 enableV1Signing = true
                 enableV2Signing = true
                 enableV3Signing = true
@@ -160,12 +160,12 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("com.airbnb.android:lottie-compose:6.6.0")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation(libs.lottie)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation("androidx.fragment:fragment-ktx:1.8.2")
-    implementation("com.google.zxing:core:3.5.4")
+    implementation(libs.zxing)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore.core)
     implementation(libs.protobuf.javalite)
@@ -177,23 +177,22 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 
-    implementation("androidx.biometric:biometric:1.1.0") // Stable release — avoid alpha in production
-    implementation("com.google.code.gson:gson:2.11.0")
-    implementation("androidx.work:work-runtime-ktx:2.10.0")
-    implementation("nl.dionsegijn:konfetti-compose:2.0.4")
+    implementation(libs.androidx.biometric)
+    implementation(libs.gson)
+    implementation(libs.workmanager)
+    implementation(libs.konfetti)
     implementation("androidx.security:security-crypto:1.1.0")
-    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation(platform(libs.firebase.bom))
     implementation("com.google.firebase:firebase-messaging-ktx")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-config")
-    implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation(libs.coil)
 
     // Room Database
-    val roomVersion = "2.7.1"
-    implementation("androidx.room:room-runtime:$roomVersion")
-    implementation("androidx.room:room-ktx:$roomVersion")
-    ksp("androidx.room:room-compiler:$roomVersion")
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
 
     // Google Sign-In (kept for future use)
     implementation("com.google.android.gms:play-services-auth:21.2.0")
@@ -218,6 +217,11 @@ dependencies {
 
     
     testImplementation(libs.junit)
+    testImplementation("app.cash.turbine:turbine:1.2.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    testImplementation("io.mockk:mockk:1.13.13")
+    testImplementation("com.google.truth:truth:1.4.4")
+    androidTestImplementation("com.google.truth:truth:1.4.4")
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)

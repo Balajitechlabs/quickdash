@@ -1,6 +1,7 @@
 package com.balajitechlabs.quickdash.features.notes.presentation
 
 import android.content.Intent
+import com.balajitechlabs.quickdash.core.utils.AppLogger
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -379,7 +380,9 @@ fun QuickNotesScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel, 
                                         putExtra(Intent.EXTRA_TITLE, "QuickDash Note")
                                     }
                                     context.startActivity(Intent.createChooser(shareIntent, "Export Note to File"))
-                                } catch (e: Exception) { e.printStackTrace() }
+                                } catch (e: Exception) {
+                                    AppLogger.e("QuickNotesScreen", "Failed to export note", e)
+                                }
                             }) {
                                 Icon(
                                     Icons.Filled.Share, 

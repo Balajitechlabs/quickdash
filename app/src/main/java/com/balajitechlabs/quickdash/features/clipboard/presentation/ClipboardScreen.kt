@@ -40,9 +40,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
+
+private const val TAG = "ClipboardScreen"
 
 data class ActionableItem(
     val label: String,
@@ -619,7 +622,7 @@ fun ClipboardItemCard(
                             }
                             context.startActivity(Intent.createChooser(intent, "Share Clipboard Item"))
                             onTriggerConfetti()
-                        } catch (e: Exception) { e.printStackTrace() }
+                        } catch (e: Exception) { Log.e(TAG, "Failed to share clipboard item", e) }
                     },
                     modifier = Modifier.size(36.dp)
                 ) {

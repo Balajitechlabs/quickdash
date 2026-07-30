@@ -1,3 +1,4 @@
+@file:Suppress("DEPRECATION")
 package com.balajitechlabs.quickdash.core.data
 
 import android.content.Context

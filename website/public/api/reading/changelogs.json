@@ -1,5 +1,20 @@
 [
   {
+    "version": "5.1.2",
+    "date": "2026-07-30",
+    "notes": "Code Quality & Security Release",
+    "highlights": [
+      "27 crash-prone catch blocks fixed with proper error logging across 10 files.",
+      "Keystore passwords moved to environment variables, removed from disk.",
+      "Telegram install notification fixed — now includes device info and works on first install.",
+      "19 automated unit tests + 7 Worker API tests added.",
+      "Type-safe navigation routes scaffold created with sealed interface.",
+      "Website accessibility: SkipLink, focus management, aria-live regions.",
+      "Worker API CORS restricted to quickdash.balajitechlab.com.",
+      "Website useApi hook extracted, reducing Blog/Docs/Changelog code duplication."
+    ]
+  },
+  {
     "version": "5.1.1",
     "date": "2026-07-29",
     "notes": "Android 16 & Maintenance Release",

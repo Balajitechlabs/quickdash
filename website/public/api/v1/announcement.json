@@ -1,10 +1,10 @@
 {
-  "announcement_id": 5,
-  "title": "🎉 QuickDash v5.1.1 is Here!",
-  "message": "Maintenance update with Android 16 support, 16KB page alignment, Play Store beta integration, and F-Droid distribution support.",
-  "action_url": "https://quickdash.balajitechlab.com/downloads/QuickDash-v5.1.1-universal.apk",
-  "action_text": "Download v5.1.1",
+  "announcement_id": 6,
+  "title": "QuickDash v5.1.2 is Here!",
+  "message": "Code quality & security release: 27 bug fixes, keystore hardening, Worker API tests, and website accessibility enhancements.",
+  "action_url": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-universal-release.apk",
+  "action_text": "Download v5.1.2",
   "priority": "high",
   "dismissible": true,
-  "expires_at": "2026-09-01T00:00:00Z"
+  "expires_at": "2026-09-30T00:00:00Z"
 }
