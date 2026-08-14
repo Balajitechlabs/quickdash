@@ -202,7 +202,7 @@ dependencies {
 
     // Custom UI & Theme Upgrades
     implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
-    implementation("androidx.graphics:graphics-shapes:1.0.1")
+    implementation("androidx.graphics:graphics-shapes:1.1.0")
     implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
 
