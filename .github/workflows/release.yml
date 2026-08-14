@@ -136,4 +136,5 @@ jobs:
 
           git add README.md website/public/api/v1/update.json
           git commit -m "chore: bump release tag and checksum to ${NEW_TAG}" || echo "Nothing to commit"
+          git pull --rebase origin master || true
           git push

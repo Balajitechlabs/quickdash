@@ -34,7 +34,14 @@ jobs:
         working-directory: website
 
       - name: Deploy to Cloudflare Pages
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: pages deploy website/dist --project-name=quickdash
+
+      - name: Cloudflare API Token notice
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN == '' }}
+        run: |
+          echo "⚠️ Skipping Cloudflare Pages deployment: CLOUDFLARE_API_TOKEN secret is not configured in GitHub repository secrets."
+          echo "To enable auto-deploy, add CLOUDFLARE_API_TOKEN to Settings -> Secrets and variables -> Actions."

@@ -74,7 +74,8 @@ android {
             val keyPass = System.getenv("KEY_PASSWORD") ?: localProperties.getProperty("KEY_PASSWORD")
             val storeFilePath = System.getenv("KEYSTORE_PATH") ?: localProperties.getProperty("KEYSTORE_PATH", "quickdash.jks")
 
-            if (!storePass.isNullOrEmpty() && !alias.isNullOrEmpty() && !keyPass.isNullOrEmpty()) {
+            val hasKeystore = !storePass.isNullOrEmpty() && !alias.isNullOrEmpty() && !keyPass.isNullOrEmpty() && rootProject.file(storeFilePath).exists()
+            if (hasKeystore) {
                 storeFile = rootProject.file(storeFilePath)
                 storePassword = storePass
                 keyAlias = alias
@@ -110,7 +111,13 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            val storePass = System.getenv("KEYSTORE_PASSWORD") ?: localProperties.getProperty("KEYSTORE_PASSWORD")
+            val alias = System.getenv("KEY_ALIAS") ?: localProperties.getProperty("KEY_ALIAS")
+            val keyPass = System.getenv("KEY_PASSWORD") ?: localProperties.getProperty("KEY_PASSWORD")
+            val storeFilePath = System.getenv("KEYSTORE_PATH") ?: localProperties.getProperty("KEYSTORE_PATH", "quickdash.jks")
+            val hasKeystore = !storePass.isNullOrEmpty() && !alias.isNullOrEmpty() && !keyPass.isNullOrEmpty() && rootProject.file(storeFilePath).exists()
+
+            signingConfig = if (hasKeystore) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
             ndk {
                 debugSymbolLevel = "FULL"
             }
