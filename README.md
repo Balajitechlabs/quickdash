@@ -1,3 +1,5 @@
+
+
 <p align="center">
   <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" width="120" alt="QuickDash">
 </p>
@@ -124,6 +126,7 @@ For detailed setup instructions, see [SETUP.md](SETUP.md).
 quickdash/
 ├── app/                    # Android app module
 ├── website/                # Showcase website (React + GitHub Pages)
+├── workers/                # Cloudflare Workers API
 ├── .github/                # CI/CD, issue templates, community files
 ├── release/                # Release process & notes
 ├── metadata/               # F-Droid store metadata
