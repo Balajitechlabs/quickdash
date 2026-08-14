@@ -137,7 +137,7 @@ fun RadialBubbleMenu(
                 ) {
                     Column(
                         modifier = Modifier.size(54.dp),
-                        horizontalAlignment = Alignment.CenterVertically,
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
                     ) {
                         Icon(

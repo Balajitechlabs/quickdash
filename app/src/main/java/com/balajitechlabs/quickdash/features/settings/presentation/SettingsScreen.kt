@@ -2615,6 +2615,7 @@ fun SettingsScreen(
         )
     }
 }
+}
 
 
 
