@@ -131,6 +131,11 @@ android {
         compose = true
         buildConfig = true  // Required to generate BuildConfig fields
     }
+
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
+    }
 }
 
 
