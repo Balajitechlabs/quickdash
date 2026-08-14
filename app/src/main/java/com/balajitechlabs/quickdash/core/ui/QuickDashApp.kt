@@ -573,6 +573,7 @@ fun QuickDashContent(
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
             packageInfo.versionName ?: "5.2.1"
         } catch (e: Exception) {
+            Log.e("QuickDashApp", "Failed to retrieve package version name", e)
             "5.2.1"
         }
         if (lastSeen != currentVersion) {
@@ -1364,9 +1365,10 @@ fun QuickDashContent(
         )
     }
 
-    if ((updateState is UpdateState.UpdateAvailable && showUpdateDialog.value) || 
-        updateState is UpdateState.Downloading || 
-        updateState is UpdateState.ReadyToInstall) {
+    if ((updateState is UpdateState.UpdateAvailable && showUpdateDialog.value) ||
+        updateState is UpdateState.Downloading ||
+        updateState is UpdateState.ReadyToInstall ||
+        updateState is UpdateState.Error) {
         AppUpdateDialog(
             onDismiss = {
                 showUpdateDialog.value = false

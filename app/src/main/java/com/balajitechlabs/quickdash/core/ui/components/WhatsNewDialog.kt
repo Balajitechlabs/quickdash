@@ -62,11 +62,10 @@ fun WhatsNewDialog(
     )
 
     val items = listOf(
-        "💖 Support & Donate" to "Support QuickDash directly via Razorpay from the Settings screen.",
-        "🛠️ System Log Viewer" to "Dedicated UI with a 1-click Copy to Clipboard feature for easier debugging.",
-        "📐 Dynamic Floating UI" to "The Floating UI Window now dynamically adjusts its height based on content.",
-        "🔗 Clickable Links" to "All links shared to the clipboard are now instantly clickable inside the app.",
-        "🚀 Crashlytics Updates" to "Automatic Crashlytics mapping uploads to Firebase for enhanced stability tracking."
+        "🎯 Radial Quick-Wheel Gesture" to "Fast 4-tool launch with radial bubble gesture for power users.",
+        "📱 Glance Material 3 Widgets" to "Responsive widgets in multiple sizes (1x1, 2x1, 2x2) with Material 3 design.",
+        "🔐 Encrypted Backup & Restore" to "Secure .qdbackup files protected with AES-256-GCM encryption.",
+        "🔄 In-App Update Flow" to "Seamless self-update mechanism with download progress and installation prompts."
     )
 
     AlertDialog(
