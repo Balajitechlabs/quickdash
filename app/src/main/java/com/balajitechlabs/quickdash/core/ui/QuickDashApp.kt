@@ -1426,7 +1426,8 @@ fun UpdateTag(onShowUpdateDialog: () -> Unit = {}) {
     val hasLocalApk = UpdateManager.hasLocalApk
 
     when (state) {
-        UpdateState.Idle -> {
+        UpdateState.Idle,
+        UpdateState.UpToDate -> {
             if (hasLocalApk) {
                 Surface(
                     color = MaterialTheme.colorScheme.errorContainer,
