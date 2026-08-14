@@ -1,5 +1,16 @@
 [
   {
+    "version": "5.2.1",
+    "date": "2026-08-14",
+    "notes": "UX & Power-User Controls Release",
+    "highlights": [
+      "Radial Quick-Wheel Bubble Gesture for fast 4-tool launch (UPI QR, Notes, Calculator, Timer).",
+      "Glance Material 3 Responsive Widgets supporting 1x1, 2x1 Quick Bar, and 2x2 Tool Hub.",
+      "Encrypted Backup & Restore (.qdbackup) with AES-256-GCM and PBKDF2 passphrase protection.",
+      "Repository & CI automation with CodeRabbit and automated contributor welcome workflows."
+    ]
+  },
+  {
     "version": "5.2.0",
     "date": "2026-08-14",
     "notes": "Unified DataStore Architecture & Security Release",

@@ -1,10 +1,10 @@
 {
-  "announcement_id": 8,
-  "title": "QuickDash v5.2.0 is Here!",
-  "message": "Unified storage layer with UserStore DataStore migration, target SDK 36, enhanced biometric incognito security, and unit test suite refactoring.",
+  "announcement_id": 9,
+  "title": "QuickDash v5.2.1 is Here!",
+  "message": "Radial Quick-Wheel Bubble Gestures, Glance Material 3 Responsive Widgets, and Encrypted Backup & Restore (.qdbackup).",
   "action_url": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-universal-release.apk",
-  "action_text": "Download v5.2.0",
+  "action_text": "Download v5.2.1",
   "priority": "high",
   "dismissible": true,
-  "expires_at": "2026-09-30T00:00:00Z"
+  "expires_at": "2026-10-31T00:00:00Z"
 }
