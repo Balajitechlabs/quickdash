@@ -4,8 +4,8 @@
   "min_version_code": 500,
   "changelog": "• QuickDash v5.2.0 — Major Architecture & Storage Upgrade\n• Unified storage layer with UserStore DataStore migration\n• Updated target SDK 36 (Android 15+ readiness)\n• Enhanced Security & Biometric Incognito screenshot protection\n• Expanded unit test suite & full AGP 9.2 pipeline support",
   "apk_url": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-universal-release.apk",
-  "apk_size_bytes": 27951768,
-  "apk_sha256": "e1647d00de502a56ced6cbab4dd9d9ba5d29605a36ed7ca95b7be288d91058ba",
+  "apk_size_bytes": 27817304,
+  "apk_sha256": "4818ee231421de00099316dfac0acc95ac951a83f57c9ad08c1d61a0654683fa",
   "release_date": "2026-08-14",
   "critical_update": false,
   "features": {
