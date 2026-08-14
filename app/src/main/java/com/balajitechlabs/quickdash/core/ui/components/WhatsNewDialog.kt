@@ -62,11 +62,11 @@ fun WhatsNewDialog(
     )
 
     val items = listOf(
-        "🎯 Radial Quick-Wheel Gesture" to "Fast 4-tool launch with radial bubble gesture for power users.",
-        "📊 Glance Material 3 Widgets" to "Responsive widgets (1x1, 2x1, 2x2) with Material 3 design.",
-        "🔒 Encrypted Backup & Restore" to "Secure .qdbackup files with AES-256-GCM encryption.",
-        "🔄 In-App Update Flow" to "Seamless app updates with download progress and install prompts.",
-        "⚙️ CI/CD Improvements" to "Upgraded CI/CD pipeline and automated contributor workflows."
+        "🎯 Radial Quick-Wheel" to "350ms long-press or swipe on the floating bubble to instantly summon top 4 tools with spring physics.",
+        "📱 Glance Material 3 Widgets" to "Responsive home screen widgets (1x1 Squircle, 2x1 Quick Bar, 2x2 Tool Hub) with dynamic tinting.",
+        "🔐 Encrypted Backup & Restore" to "Export and import settings & notes with AES-256-GCM encryption and PBKDF2 passphrase protection.",
+        "📦 In-App Update Engine" to "Streamlined update checker, download progress indicator, and automatic package installer trigger.",
+        "⚡ Architecture & Stability" to "Target SDK 36 (Android 16), Unified UserStore DataStore migration, and comprehensive test suite."
     )
 
     AlertDialog(

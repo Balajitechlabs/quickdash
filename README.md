@@ -143,6 +143,20 @@ For a complete tour of the codebase, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ---
 
+## 👥 Contributors & Community
+
+Thanks to all the wonderful contributors who help build and improve QuickDash!
+
+<p align="center">
+  <a href="https://github.com/Balajitechlabs/quickdash/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=Balajitechlabs/quickdash" alt="QuickDash Contributors" />
+  </a>
+</p>
+
+Contributions of all kinds are warmly welcomed! Please read our [Contributing Guide](CONTRIBUTING.md) and [Developer Setup Guide](SETUP.md) to get started.
+
+---
+
 ## License & Attribution
 
 QuickDash is published under the **PocketOps Custom Open Source Fork License**.

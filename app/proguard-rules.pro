@@ -95,24 +95,8 @@
 }
 
 # ======================================================================
-# 8B. GSON SERIALIZATION (Backup payloads & models)
+# 8B. RADIAL GESTURE & UI MODELS
 # ======================================================================
--keepattributes Signature
--keepattributes *Annotation*
--keep class sun.misc.Unsafe { *; }
--keep class com.google.gson.** { *; }
--keep class * implements com.google.gson.TypeAdapterFactory
--keep class * implements com.google.gson.JsonSerializer
--keep class * implements com.google.gson.JsonDeserializer
--keepclassmembers class * {
-    @com.google.gson.annotations.SerializedName <fields>;
-    @com.google.gson.annotations.Expose <fields>;
-}
-
-# ======================================================================
-# 8C. RADIAL GESTURE & MODAL DIALOGS
-# ======================================================================
--keep class com.balajitechlabs.quickdash.core.ui.components.RadialBubbleMenuKt { *; }
 -keep class com.balajitechlabs.quickdash.core.ui.components.RadialToolItem { *; }
 -keep class com.balajitechlabs.quickdash.core.ui.components.RadialSector { *; }
 -keep class com.balajitechlabs.quickdash.core.ui.components.AppUpdateDialogKt { *; }

@@ -70,6 +70,7 @@ class BackupManagerTest {
         assertThat(metadata.appVersion).isEqualTo("5.2.1")
         assertThat(metadata.appVersionCode).isEqualTo(521)
         assertThat(metadata.timestamp).isGreaterThan(0L)
+        assertThat(metadata.isEncrypted).isFalse()
     }
 
     @Test

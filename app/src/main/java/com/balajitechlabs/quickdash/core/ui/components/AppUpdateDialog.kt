@@ -235,7 +235,7 @@ fun AppUpdateDialog(
                                     }
                                     Button(
                                         onClick = {
-                                            UpdateManager.startDownload(context, targetState.apkUrl, targetState.versionName)
+                                            UpdateManager.startDownload(context, targetState.apkUrl, targetState.versionName, targetState.sha256)
                                         },
                                         modifier = Modifier.weight(1.4f),
                                         shape = RoundedCornerShape(12.dp)
