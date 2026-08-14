@@ -221,7 +221,7 @@ dependencies {
     implementation("com.google.android.play:integrity:1.4.0")
 
     // MediaPipe LLM Inference (on-device AI with Gemma / Phi models)
-    implementation("com.google.mediapipe:tasks-genai:0.10.22")
+    implementation("com.google.mediapipe:tasks-genai:0.10.35")
 
     
     testImplementation(libs.junit)
