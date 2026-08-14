@@ -21,7 +21,7 @@ if (localPropertiesFile.exists()) {
 
 android {
     namespace = "com.balajitechlabs.quickdash"
-    compileSdk = 37
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.balajitechlabs.quickdash"
