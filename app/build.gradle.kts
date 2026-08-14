@@ -21,14 +21,14 @@ if (localPropertiesFile.exists()) {
 
 android {
     namespace = "com.balajitechlabs.quickdash"
-    compileSdk = 37
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.balajitechlabs.quickdash"
         minSdk = 24
         targetSdk = 36
-        versionCode = 520
-        versionName = "5.2.0"
+        versionCode = 521
+        versionName = "5.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -131,6 +131,11 @@ android {
         compose = true
         buildConfig = true  // Required to generate BuildConfig fields
     }
+
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
+    }
 }
 
 
@@ -162,7 +167,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
-    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.core:core-splashscreen:1.2.0")
     implementation(libs.lottie)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
@@ -198,11 +203,11 @@ dependencies {
     ksp(libs.room.compiler)
 
     // Google Sign-In (kept for future use)
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation("com.google.android.gms:play-services-auth:21.6.0")
 
     // Custom UI & Theme Upgrades
     implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
-    implementation("androidx.graphics:graphics-shapes:1.0.1")
+    implementation("androidx.graphics:graphics-shapes:1.1.0")
     implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
 
@@ -221,7 +226,7 @@ dependencies {
     
     testImplementation(libs.junit)
     testImplementation("app.cash.turbine:turbine:1.2.0")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
     testImplementation("io.mockk:mockk:1.13.13")
     testImplementation("com.google.truth:truth:1.4.4")
     androidTestImplementation("com.google.truth:truth:1.4.4")

@@ -1932,7 +1932,7 @@ fun SettingsScreen(
 
     if (showWhatsNewDialog) {
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val versionName = packageInfo.versionName ?: "5.2.0"
+        val versionName = packageInfo.versionName ?: "5.2.1"
         WhatsNewDialog(
             versionName = versionName,
             onDismiss = { showWhatsNewDialog = false }
@@ -2362,7 +2362,17 @@ fun SettingsScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             Text("QuickDash", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                            Text("Version $vNameAbout (Build $vCodeAbout)", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f))
+                            Text(
+                                "Version $vNameAbout (Build $vCodeAbout) 🚀",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.clickable {
+                                    showAboutDialog = false
+                                    showUpdateDialog = true
+                                    try { com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(context, manual = true) } catch (e: Exception) { Log.e(TAG, "Failed to check for updates", e) }
+                                }
+                            )
                             Text("Made with ❤️ by BalajiTechLabs", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f))
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
@@ -2411,10 +2421,13 @@ fun SettingsScreen(
                     ) {
                         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                             when (updateState) {
-                                is com.balajitechlabs.quickdash.core.utils.UpdateState.Idle -> {
+                                is com.balajitechlabs.quickdash.core.utils.UpdateState.Idle,
+                                is com.balajitechlabs.quickdash.core.utils.UpdateState.UpToDate -> {
                                     Text("Status: Up to date ✅", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                                     Button(
                                         onClick = {
+                                            showAboutDialog = false
+                                            showUpdateDialog = true
                                             try { com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(context, manual = true) } catch (e: Exception) { Log.e(TAG, "Failed to check for updates", e) }
                                         },
                                         shape = RoundedCornerShape(8.dp)
@@ -2549,17 +2562,8 @@ fun SettingsScreen(
 
     // ── Update Check Dialog ───────────────────────────────────────────────
     if (showUpdateDialog) {
-        AlertDialog(
-            onDismissRequest = { showUpdateDialog = false },
-            title = { Text("🔄 Check for Updates", fontWeight = FontWeight.Bold) },
-            text = { Text("Would you like to check for the latest version of QuickDash?", style = MaterialTheme.typography.bodyMedium) },
-            confirmButton = {
-                Button(onClick = {
-                    showUpdateDialog = false
-                    try { com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(context, manual = true) } catch (e: Exception) { Log.e(TAG, "Failed to check for updates from dialog", e) }
-                }) { Text("Check Now") }
-            },
-            dismissButton = { TextButton(onClick = { showUpdateDialog = false }) { Text("Later") } }
+        com.balajitechlabs.quickdash.core.ui.components.AppUpdateDialog(
+            onDismiss = { showUpdateDialog = false }
         )
     }
 
@@ -2610,120 +2614,8 @@ fun SettingsScreen(
     }
 
     if (showBackupOptionsDialog) {
-        val scope = rememberCoroutineScope()
-        AlertDialog(
-            onDismissRequest = { showBackupOptionsDialog = false },
-            title = {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(Icons.Default.Save, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Text("Export / Share Backup", fontWeight = FontWeight.Bold)
-                }
-            },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = "Choose how you want to export your settings and data:",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    // Option 1: Save Local File
-                    Card(
-                        modifier = Modifier.fillMaxWidth().clickable {
-                            showBackupOptionsDialog = false
-                            val time = System.currentTimeMillis() / 1000
-                            backupLauncher.launch("quickdash_backup_$time.json")
-                        },
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Folder, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text("Save Local File", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-                                Text("Save JSON file directly to device storage", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                        }
-                    }
-
-                    // Option 2: Share via WhatsApp
-                    Card(
-                        modifier = Modifier.fillMaxWidth().clickable {
-                            showBackupOptionsDialog = false
-                            scope.launch {
-                                try {
-                                    val jsonString = com.balajitechlabs.quickdash.core.utils.BackupRestoreManager.getBackupJsonString(context)
-                                    shareBackupFile(context, jsonString, "com.whatsapp")
-                                } catch (e: Exception) { Log.e(TAG, "Failed to share backup via WhatsApp", e) }
-                            }
-                        },
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Share, contentDescription = null, tint = Color(0xFF4CAF50))
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text("Share via WhatsApp", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-                                Text("Send JSON backup directly to a chat", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                        }
-                    }
-
-                    // Option 3: Share via Telegram
-                    Card(
-                        modifier = Modifier.fillMaxWidth().clickable {
-                            showBackupOptionsDialog = false
-                            scope.launch {
-                                try {
-                                    val jsonString = com.balajitechlabs.quickdash.core.utils.BackupRestoreManager.getBackupJsonString(context)
-                                    shareBackupFile(context, jsonString, "org.telegram.messenger")
-                                } catch (e: Exception) { Log.e(TAG, "Failed to share backup via Telegram", e) }
-                            }
-                        },
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Share, contentDescription = null, tint = Color(0xFF2196F3))
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text("Share via Telegram", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-                                Text("Send JSON backup to a channel/chat", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                        }
-                    }
-
-                    // Option 4: General Share
-                    Card(
-                        modifier = Modifier.fillMaxWidth().clickable {
-                            showBackupOptionsDialog = false
-                            scope.launch {
-                                try {
-                                    val jsonString = com.balajitechlabs.quickdash.core.utils.BackupRestoreManager.getBackupJsonString(context)
-                                    shareBackupFile(context, jsonString, null)
-                                } catch (e: Exception) { Log.e(TAG, "Failed to share backup file", e) }
-                            }
-                        },
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Send, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text("Share File...", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-                                Text("Send using other messaging/cloud apps", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { showBackupOptionsDialog = false }) { Text("Cancel") }
-            }
+        BackupRestoreDialog(
+            onDismissRequest = { showBackupOptionsDialog = false }
         )
     }
 }

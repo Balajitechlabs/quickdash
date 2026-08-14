@@ -14,13 +14,13 @@ export const features = [
 ]
 
 export const specs = [
-  { label: 'Latest Version', value: 'v5.2.0' },
+  { label: 'Latest Version', value: 'v5.2.1' },
   { label: 'Min SDK', value: 'Android 7.0 (API 24)' },
   { label: 'Target SDK', value: 'Android 16 (API 36)' },
   { label: 'Architecture', value: 'MVVM + Hilt DI + Jetpack Compose' },
   { label: 'Language', value: 'Kotlin' },
   { label: 'License', value: 'PocketOps Custom Open Source Fork License' },
-  { label: 'APK Size', value: '~6 MB (universal), ~4 MB (ARM64)' },
+  { label: 'APK Size', value: '~27.9 MB (universal), ~18.5 MB (ARM64)' },
   { label: 'Permissions', value: 'Overlay (SYSTEM_ALERT_WINDOW) — no internet required' },
   { label: 'Page Size', value: '16 KB page aligned (Android 16 ready)' },
   { label: 'Testing', value: 'JUnit 5 + MockK + Turbine + Room + Truth' },
