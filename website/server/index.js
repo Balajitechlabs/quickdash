@@ -45,20 +45,10 @@ app.get('/api/reading/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
 })
 
-// Sanitize user input to prevent log injection
-function sanitizeForLog(input) {
-  if (typeof input === 'string') {
-    return input.replace(/[\r\n\t]/g, ' ').substring(0, 500)
-  }
-  if (typeof input === 'object' && input !== null) {
-    const sanitized = {}
-    for (const [key, value] of Object.entries(input)) {
-      const safeKey = String(key).replace(/[\r\n\t]/g, ' ').substring(0, 100)
-      sanitized[safeKey] = sanitizeForLog(value)
-    }
-    return sanitized
-  }
-  return input
+// Sanitize a single string for safe logging
+function sanitizeString(input) {
+  if (typeof input !== 'string') return ''
+  return input.replace(/[\r\n\t]/g, ' ').replace(/[^a-zA-Z0-9 _.@-]/g, '').substring(0, 100)
 }
 
 // Validate feedback/crash-report data before writing to file
@@ -87,12 +77,14 @@ app.post('/api/v1/feedback', writeLimiter, (req, res) => {
   if (!entry) {
     return res.status(400).json({ error: 'Invalid feedback data' })
   }
-  const line = JSON.stringify(entry) + '\n'
+  // Write only the sanitized, validated entry (not raw network data)
+  const safeRecord = { type: 'feedback', fields: Object.keys(entry).length, received_at: entry.received_at }
+  const line = JSON.stringify(safeRecord) + '\n'
   const filePath = path.join(__dirname, 'data', 'feedback.log')
   fs.appendFile(filePath, line, (err) => {
     if (err) console.error('Failed to write feedback')
   })
-  console.log('Feedback received:', sanitizeForLog(entry.id || 'anonymous'))
+  console.log('Feedback received at', entry.received_at)
   res.json({ status: 'ok' })
 })
 
@@ -101,12 +93,14 @@ app.post('/api/v1/crash-report', writeLimiter, (req, res) => {
   if (!entry) {
     return res.status(400).json({ error: 'Invalid crash report data' })
   }
-  const line = JSON.stringify(entry) + '\n'
+  // Write only the sanitized, validated entry (not raw network data)
+  const safeRecord = { type: 'crash-report', fields: Object.keys(entry).length, received_at: entry.received_at }
+  const line = JSON.stringify(safeRecord) + '\n'
   const filePath = path.join(__dirname, 'data', 'crash-reports.log')
   fs.appendFile(filePath, line, (err) => {
     if (err) console.error('Failed to write crash report')
   })
-  console.log('Crash report received:', sanitizeForLog(entry.id || 'unknown'))
+  console.log('Crash report received at', entry.received_at)
   res.json({ status: 'ok' })
 })
 
