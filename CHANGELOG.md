@@ -2,6 +2,15 @@
 
 All major updates, feature additions, bug fixes, and system improvements for **QuickDash** are documented in this file.
 
+## [5.2.0] - 2026-08-14 (Unified DataStore & Architecture Release) 🚀
+
+### 🚀 ADDED & IMPROVED
+- **Unified DataStore Architecture**: Migrated all 9 ViewModels, UI Composables, background Services (`QuickTileService`), and Workers (`TelegramPollerWorker`) to `@Singleton UserStore`.
+- **Target SDK 36**: Upgraded target SDK to 36 for full Android 15/16 device compatibility.
+- **Enhanced Security & Incognito**: Implemented `applyWindowSecurity(window)` for system-wide `FLAG_SECURE` toggles and added `DEVICE_CREDENTIAL` (PIN/Pattern/Password) fallback unlock support.
+- **Unit Test Suite Refactoring**: Updated unit test suite (`ClipboardViewModelTest`, `MainViewModelTest`, `QrViewModelTest`, `QuickTimerViewModelTest`, `SettingsViewModelTest`) for 100% passing tests.
+- **Build System Cleanup**: Optimized AGP 9.2 configuration properties and removed hardcoded NDK version.
+
 ---
 
 ## [5.1.3] - 2026-07-31 (Stability & Service Robustness Release) ⚡

@@ -123,14 +123,14 @@ fun DashboardScreen(
         }
     }
 
-    val favToolsFlow = mainViewModel?.settingsRepository?.favoriteTools?.collectAsState(initial = "")
+    val favToolsFlow = mainViewModel?.userStore?.favoriteTools?.collectAsState(initial = "")
     val userFavorites = remember(favToolsFlow?.value) {
         val str = favToolsFlow?.value ?: ""
         if (str.isEmpty()) listOf(QuickTool.UPI, QuickTool.CLIPBOARD, QuickTool.NOTES, QuickTool.QRSCANNER, QuickTool.EYEDROPPER, QuickTool.CAPTURE, QuickTool.PASSWORD, QuickTool.TIMER)
         else str.split(",").mapNotNull { runCatching { QuickTool.valueOf(it) }.getOrNull() }
     }
 
-    val toolOrderFlow = mainViewModel?.settingsRepository?.toolOrder?.collectAsState(initial = "")
+    val toolOrderFlow = mainViewModel?.userStore?.toolOrder?.collectAsState(initial = "")
     var toolOrderOverride by remember { mutableStateOf<String?>(null) }
     val effectiveOrderString = toolOrderOverride ?: (toolOrderFlow?.value ?: "")
 
@@ -385,7 +385,7 @@ fun DashboardScreen(
                                     list[i + dir] = temp
                                     val newOrderStr = list.joinToString(",")
                                     toolOrderOverride = newOrderStr
-                                    scope.launch { mainViewModel?.settingsRepository?.saveToolOrder(newOrderStr) }
+                                    scope.launch { mainViewModel?.userStore?.saveToolOrder(newOrderStr) }
                                 }
                             },
                             onClick = { onToolSelected(tool.tool) }
@@ -442,7 +442,7 @@ fun DashboardScreen(
                                         list[i + dir] = temp
                                         val newOrderStr = list.joinToString(",")
                                         toolOrderOverride = newOrderStr
-                                        scope.launch { mainViewModel?.settingsRepository?.saveToolOrder(newOrderStr) }
+                                        scope.launch { mainViewModel?.userStore?.saveToolOrder(newOrderStr) }
                                     }
                                 },
                                 onClick = { onToolSelected(tool.tool) }

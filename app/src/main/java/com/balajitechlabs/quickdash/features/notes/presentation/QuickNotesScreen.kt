@@ -95,7 +95,7 @@ fun QuickNotesScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel, 
     val notes by noteDao.getAllNotes().collectAsState(initial = emptyList())
     
     // Migration Logic: Transfer old DataStore JSON notes to Room DB
-    val notesJson by mainViewModel.settingsRepository.notesHistory.collectAsState(initial = "")
+    val notesJson by mainViewModel.userStore.notesHistory.collectAsState(initial = "")
     LaunchedEffect(notesJson) {
         if (notesJson.isNotBlank() && notesJson != "[]") {
             try {
@@ -116,7 +116,7 @@ fun QuickNotesScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel, 
                 if (migratedNotes.isNotEmpty()) {
                     noteDao.insertAll(migratedNotes)
                 }
-                mainViewModel.settingsRepository.saveNotesHistory("[]") // Only clear after successful migration
+                mainViewModel.userStore.saveNotesHistory("[]") // Only clear after successful migration
             } catch (e: Exception) {
                 com.balajitechlabs.quickdash.core.utils.AppLogger.e("QuickNotesScreen", "Failed to migrate notes to Room database", e)
             }
@@ -141,7 +141,7 @@ fun QuickNotesScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel, 
         }
     }
 
-    val isTabLocked by mainViewModel.settingsRepository.tabBiometricLock.collectAsState(initial = false)
+    val isTabLocked by mainViewModel.userStore.tabBiometricLock.collectAsState(initial = false)
     var isUnlocked by remember { mutableStateOf(false) }
 
     if (isTabLocked && !isUnlocked) {
@@ -201,7 +201,7 @@ fun QuickNotesScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel, 
                         if (noteText.isEmpty()) return@FilledTonalIconButton
                         coroutineScope.launch {
                             noteDao.insertNote(NoteEntity(text = noteText))
-                            mainViewModel.settingsRepository.incrementNotesSaved()
+                            mainViewModel.userStore.incrementNotesSaved()
                         }
                         text = ""
                     },
@@ -218,7 +218,7 @@ fun QuickNotesScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel, 
                 if (noteText.isEmpty()) return@Button
                 coroutineScope.launch {
                     noteDao.insertNote(NoteEntity(text = noteText))
-                    mainViewModel.settingsRepository.incrementNotesSaved()
+                    mainViewModel.userStore.incrementNotesSaved()
                 }
                 text = ""
             },

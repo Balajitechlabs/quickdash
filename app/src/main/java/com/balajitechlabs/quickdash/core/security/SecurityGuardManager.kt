@@ -14,7 +14,10 @@ object SecurityGuardManager {
 
     fun isBiometricAvailable(context: Context): Boolean {
         val biometricManager = BiometricManager.from(context)
-        return when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.BIOMETRIC_WEAK)) {
+        val authenticators = BiometricManager.Authenticators.BIOMETRIC_STRONG or 
+                BiometricManager.Authenticators.BIOMETRIC_WEAK or 
+                BiometricManager.Authenticators.DEVICE_CREDENTIAL
+        return when (biometricManager.canAuthenticate(authenticators)) {
             BiometricManager.BIOMETRIC_SUCCESS -> true
             else -> false
         }
@@ -28,7 +31,7 @@ object SecurityGuardManager {
         onError: (String) -> Unit
     ) {
         if (!isBiometricAvailable(activity)) {
-            // Fallback: grant access if biometrics are not configured
+            // Fallback: grant access if biometrics/pin are not configured on device
             onSuccess()
             return
         }
@@ -37,7 +40,11 @@ object SecurityGuardManager {
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(title)
             .setSubtitle(subtitle)
-            .setNegativeButtonText("Cancel")
+            .setAllowedAuthenticators(
+                BiometricManager.Authenticators.BIOMETRIC_STRONG or 
+                BiometricManager.Authenticators.BIOMETRIC_WEAK or 
+                BiometricManager.Authenticators.DEVICE_CREDENTIAL
+            )
             .build()
 
         val biometricPrompt = BiometricPrompt(

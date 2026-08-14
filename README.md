@@ -143,7 +143,7 @@ For a complete tour of the codebase, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 QuickDash is published under the **PocketOps Custom Open Source Fork License**.
 
-- **Original Base:** Fork of [PocketOps](https://github.com/L192/PocketOps) by Aakarsh (L192) / IIXII™.
+- **Original Base:** Fork of [PocketOps](https://github.com/IIXII-L192/PocketOps-app) by Aakarsh (L192) / IIXII™.
 - **Modifications:** Includes >30% major functional additions (details in [LICENSE](LICENSE)).
 - **Compliance:** All original copyright notices are preserved.
 

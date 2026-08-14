@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
@@ -48,14 +49,19 @@ fun SystemLogsScreen(onDismiss: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text("System Logs") },
+                navigationIcon = {
+                    IconButton(onClick = onDismiss) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
                 actions = {
-                    IconButton(onClick = {
+                    TextButton(onClick = {
                         val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                         val clip = android.content.ClipData.newPlainText("System Logs", logsText)
                         clipboard.setPrimaryClip(clip)
                         android.widget.Toast.makeText(context, "Copied to clipboard", android.widget.Toast.LENGTH_SHORT).show()
                     }) {
-                        androidx.compose.material3.Text("Copy", color = androidx.compose.ui.graphics.Color.White, style = androidx.compose.material3.MaterialTheme.typography.labelSmall)
+                        Text("Copy", style = MaterialTheme.typography.labelMedium)
                     }
                     IconButton(onClick = {
                         val sendIntent: android.content.Intent = android.content.Intent().apply {
@@ -77,7 +83,11 @@ fun SystemLogsScreen(onDismiss: () -> Unit) {
                     }) {
                         Icon(Icons.Filled.Delete, contentDescription = "Clear")
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
+                )
             )
         }
     ) { padding ->
@@ -85,14 +95,15 @@ fun SystemLogsScreen(onDismiss: () -> Unit) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Color.Black) // Terminal-like background
-                .padding(8.dp)
+                .background(Color(0xFF0F172A)) // Sleek terminal dark backdrop
+                .padding(12.dp)
         ) {
             Text(
-                text = logsText,
+                text = logsText.ifEmpty { "No logs available." },
                 fontFamily = FontFamily.Monospace,
-                fontSize = 11.sp,
-                color = Color.Green, // Terminal green
+                fontSize = 12.sp,
+                color = Color(0xFF4ADE80), // Modern terminal green
+                lineHeight = 16.sp,
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)

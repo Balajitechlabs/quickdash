@@ -42,8 +42,8 @@ class QuickDashWidget : GlanceAppWidget() {
             Box(
                 modifier = GlanceModifier
                     .size(56.dp)
-                    .background(ColorProvider(Color(0xFF1E88E5)))
-                    .cornerRadius(28.dp),
+                    .background(ColorProvider(Color(0xFF2563EB))) // M3 Expressive Seed Primary
+                    .cornerRadius(24.dp), // M3 Squircle radius
                 contentAlignment = Alignment.Center
             ) {
                 Image(

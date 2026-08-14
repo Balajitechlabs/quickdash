@@ -22,14 +22,13 @@ if (localPropertiesFile.exists()) {
 android {
     namespace = "com.balajitechlabs.quickdash"
     compileSdk = 37
-    ndkVersion = "28.0.13004108"
 
     defaultConfig {
         applicationId = "com.balajitechlabs.quickdash"
         minSdk = 24
         targetSdk = 36
-        versionCode = 515
-        versionName = "5.1.3"
+        versionCode = 520
+        versionName = "5.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -69,14 +68,6 @@ android {
     }
 
     signingConfigs {
-//        getByName("debug") {
-//            storeFile = rootProject.file("quickdash.jks")
-//            storePassword = "quickdash"
-//            keyAlias = "quickdash"
-//            keyPassword = "quickdash"
-//            enableV1Signing = true
-//            enableV2Signing = true
-//        }
         create("release") {
             val storePass = System.getenv("KEYSTORE_PASSWORD") ?: localProperties.getProperty("KEYSTORE_PASSWORD")
             val alias = System.getenv("KEY_ALIAS") ?: localProperties.getProperty("KEY_ALIAS")

@@ -50,18 +50,18 @@ fun OnboardingScreen(
 
     var step by remember { mutableIntStateOf(0) }
     var showConfetti by remember { mutableStateOf(false) }
-    val confettiEnabled by mainViewModel.settingsRepository.confettiEnabled.collectAsState(initial = true)
+    val confettiEnabled by mainViewModel.userStore.confettiEnabled.collectAsState(initial = true)
 
     // --- Persisted state ---
-    val savedUpiIds by mainViewModel.settingsRepository.upiIds.collectAsState(initial = emptyList())
-    val savedDefaultUpiId by mainViewModel.settingsRepository.defaultUpiId.collectAsState(initial = null)
-    val savedPayeeName by mainViewModel.settingsRepository.payeeName.collectAsState(initial = null)
-    val themeMode by mainViewModel.settingsRepository.themeMode.collectAsState(initial = "SYSTEM")
-    val shapeStyle by mainViewModel.settingsRepository.shapeStyle.collectAsState(initial = "Rounded")
-    val cornerRadius by mainViewModel.settingsRepository.cornerRadius.collectAsState(initial = 16f)
-    val borderWidth by mainViewModel.settingsRepository.borderWidth.collectAsState(initial = 1f)
-    val fontFamilyName by mainViewModel.settingsRepository.fontFamilyKey.collectAsState(initial = "SYSTEM")
-    val fontScale by mainViewModel.settingsRepository.fontScale.collectAsState(initial = 1f)
+    val savedUpiIds by mainViewModel.userStore.upiIds.collectAsState(initial = emptyList())
+    val savedDefaultUpiId by mainViewModel.userStore.defaultUpiId.collectAsState(initial = null)
+    val savedPayeeName by mainViewModel.userStore.payeeName.collectAsState(initial = null)
+    val themeMode by mainViewModel.userStore.themeMode.collectAsState(initial = "SYSTEM")
+    val shapeStyle by mainViewModel.userStore.shapeStyle.collectAsState(initial = "Rounded")
+    val cornerRadius by mainViewModel.userStore.cornerRadius.collectAsState(initial = 16f)
+    val borderWidth by mainViewModel.userStore.borderWidth.collectAsState(initial = 1f)
+    val fontFamilyName by mainViewModel.userStore.fontFamilyKey.collectAsState(initial = "SYSTEM")
+    val fontScale by mainViewModel.userStore.fontScale.collectAsState(initial = 1f)
 
     // --- Ephemeral permission state ---
     var notifGranted by remember { mutableStateOf(false) }
@@ -95,9 +95,9 @@ fun OnboardingScreen(
                     payeeName = savedPayeeName,
                     onSave = { ids, name, defaultId ->
                         scope.launch {
-                            mainViewModel.settingsRepository.saveUpiIds(ids)
-                            mainViewModel.settingsRepository.saveDefaultUpiId(defaultId)
-                            mainViewModel.settingsRepository.savePayeeName(name)
+                            mainViewModel.userStore.saveUpiIds(ids)
+                            mainViewModel.userStore.saveDefaultUpiId(defaultId)
+                            mainViewModel.userStore.savePayeeName(name)
                             step = 4
                         }
                     },
@@ -108,7 +108,7 @@ fun OnboardingScreen(
                 4 -> ThemeStep(
                     currentTheme = themeMode,
                     onThemeSelected = { code ->
-                        scope.launch { mainViewModel.settingsRepository.saveThemeMode(code) }
+                        scope.launch { mainViewModel.userStore.saveThemeMode(code) }
                     },
                     onBack = { step = 3 },
                     onNext = { step = 5 }
@@ -119,13 +119,13 @@ fun OnboardingScreen(
                     currentRadius = cornerRadius,
                     currentBorder = borderWidth,
                     onShapeSelected = { style ->
-                        scope.launch { mainViewModel.settingsRepository.saveShapeStyle(style) }
+                        scope.launch { mainViewModel.userStore.saveShapeStyle(style) }
                     },
                     onRadiusChanged = { radius ->
-                        scope.launch { mainViewModel.settingsRepository.saveCornerRadius(radius) }
+                        scope.launch { mainViewModel.userStore.saveCornerRadius(radius) }
                     },
                     onBorderChanged = { border ->
-                        scope.launch { mainViewModel.settingsRepository.saveBorderWidth(border) }
+                        scope.launch { mainViewModel.userStore.saveBorderWidth(border) }
                     },
                     onBack = { step = 4 },
                     onNext = { step = 6 }
@@ -138,10 +138,10 @@ fun OnboardingScreen(
                     cornerRadius = cornerRadius,
                     borderWidth = borderWidth,
                     onFontFamilySelected = { code ->
-                        scope.launch { mainViewModel.settingsRepository.saveFontFamilyKey(code) }
+                        scope.launch { mainViewModel.userStore.saveFontFamilyKey(code) }
                     },
                     onFontScaleChanged = { scale ->
-                        scope.launch { mainViewModel.settingsRepository.saveFontScale(scale) }
+                        scope.launch { mainViewModel.userStore.saveFontScale(scale) }
                     },
                     onBack = { step = 5 },
                     onNext = { step = 7 }

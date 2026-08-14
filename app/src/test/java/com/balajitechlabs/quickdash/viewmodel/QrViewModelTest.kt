@@ -1,6 +1,6 @@
 package com.balajitechlabs.quickdash.viewmodel
 
-import com.balajitechlabs.quickdash.core.data.SettingsRepository
+import com.balajitechlabs.quickdash.core.data.UserStore
 import com.balajitechlabs.quickdash.features.qr.presentation.QrViewModel
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -18,13 +18,13 @@ import org.junit.Test
 class QrViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val settingsRepository = mockk<SettingsRepository>(relaxed = true)
+    private val userStore = mockk<UserStore>(relaxed = true)
     private lateinit var viewModel: QrViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = QrViewModel(settingsRepository)
+        viewModel = QrViewModel(userStore)
     }
 
     @After
@@ -33,14 +33,14 @@ class QrViewModelTest {
     }
 
     @Test
-    fun `saveLaunchStyle delegates to settingsRepository`() = runTest {
+    fun `saveLaunchStyle delegates to userStore`() = runTest {
         viewModel.saveLaunchStyle("FULL_SCREEN")
-        coVerify { settingsRepository.saveLaunchStyle("FULL_SCREEN") }
+        coVerify { userStore.saveLaunchStyle("FULL_SCREEN") }
     }
 
     @Test
-    fun `saveFavoriteTools delegates to settingsRepository`() = runTest {
+    fun `saveFavoriteTools delegates to userStore`() = runTest {
         viewModel.saveFavoriteTools("[\"qr\"]")
-        coVerify { settingsRepository.saveFavoriteTools("[\"qr\"]") }
+        coVerify { userStore.saveFavoriteTools("[\"qr\"]") }
     }
 }

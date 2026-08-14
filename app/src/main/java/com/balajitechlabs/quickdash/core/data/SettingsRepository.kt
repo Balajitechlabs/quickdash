@@ -22,6 +22,7 @@ import javax.inject.Singleton
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_settings")
 
 @Singleton
+@Deprecated("Use UserStore directly instead. SettingsRepository is retained for backwards compatibility.", ReplaceWith("UserStore"))
 class SettingsRepository @Inject constructor(@ApplicationContext private val context: Context) {
 
     init {

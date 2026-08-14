@@ -1,5 +1,17 @@
 [
   {
+    "version": "5.2.0",
+    "date": "2026-08-14",
+    "notes": "Unified DataStore Architecture & Security Release",
+    "highlights": [
+      "Migrated all ViewModels, UI Composables, background Services, and Workers to @Singleton UserStore.",
+      "Targeted Android 16 (SDK 36) with full 16KB page alignment support.",
+      "Enhanced SecurityGuardManager with FLAG_SECURE window toggles & Biometric/PIN fallbacks.",
+      "Refactored unit test suite to 100% passing status across all ViewModels.",
+      "Cleaned AGP 9.2 configuration properties and removed hardcoded NDK version."
+    ]
+  },
+  {
     "version": "5.1.3",
     "date": "2026-07-31",
     "notes": "Stability & Service Robustness Release",

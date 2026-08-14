@@ -2,7 +2,7 @@ package com.balajitechlabs.quickdash.features.wifi.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.balajitechlabs.quickdash.core.data.SettingsRepository
+import com.balajitechlabs.quickdash.core.data.UserStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -12,64 +12,64 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WifiViewModel @Inject constructor(
-    private val settingsRepository: SettingsRepository
+    private val userStore: UserStore
 ) : ViewModel() {
     
     // UI state flows
-    val wifiSsid: StateFlow<String> = settingsRepository.wifiSsid
+    val wifiSsid: StateFlow<String> = userStore.wifiSsid
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
         
-    val wifiPassword: StateFlow<String> = settingsRepository.wifiPassword
+    val wifiPassword: StateFlow<String> = userStore.wifiPassword
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
         
-    val wifiHistoryJson: StateFlow<String> = settingsRepository.wifiHistory
+    val wifiHistoryJson: StateFlow<String> = userStore.wifiHistory
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "[]")
         
-    val emojiHeader: StateFlow<String> = settingsRepository.emojiHeader
+    val emojiHeader: StateFlow<String> = userStore.emojiHeader
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "🚀")
         
-    val qrUseEmojiOverlay: StateFlow<Boolean> = settingsRepository.qrUseEmojiOverlay
+    val qrUseEmojiOverlay: StateFlow<Boolean> = userStore.qrUseEmojiOverlay
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
         
-    val wifiHotspotMode: StateFlow<Boolean> = settingsRepository.wifiHotspotMode
+    val wifiHotspotMode: StateFlow<Boolean> = userStore.wifiHotspotMode
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
         
-    val serverCredentials: StateFlow<String> = settingsRepository.serverCredentials
+    val serverCredentials: StateFlow<String> = userStore.serverCredentials
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "{}")
 
     fun saveWifiHotspotMode(mode: Boolean) {
         viewModelScope.launch {
-            settingsRepository.saveWifiHotspotMode(mode)
+            userStore.saveWifiHotspotMode(mode)
         }
     }
 
     fun saveServerCredentials(json: String) {
         viewModelScope.launch {
-            settingsRepository.saveServerCredentials(json)
+            userStore.saveServerCredentials(json)
         }
     }
 
     fun saveWifiCredentials(ssid: String, password: String) {
         viewModelScope.launch {
-            settingsRepository.saveWifiCredentials(ssid, password)
+            userStore.saveWifiCredentials(ssid, password)
         }
     }
 
     fun addWifiHistory(ssid: String, password: String, encryptionType: String) {
         viewModelScope.launch {
-            settingsRepository.addWifiHistory(ssid, password, encryptionType)
+            userStore.addWifiHistory(ssid, password, encryptionType)
         }
     }
 
     fun clearWifiHistory() {
         viewModelScope.launch {
-            settingsRepository.clearWifiHistory()
+            userStore.clearWifiHistory()
         }
     }
 
     fun removeWifiHistoryEntry(ssid: String) {
         viewModelScope.launch {
-            settingsRepository.removeWifiHistoryEntry(ssid)
+            userStore.removeWifiHistoryEntry(ssid)
         }
     }
 }

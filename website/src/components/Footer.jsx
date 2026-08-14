@@ -34,7 +34,7 @@ export default function Footer() {
         </nav>
         <p style={{ fontFamily: 'var(--pixel-font)', fontSize: 8, color: 'var(--md-on-surface-variant)', lineHeight: 2 }}>
           &copy; {year} BalajiTechLabs &mdash; FREE TO USE &amp; OPEN SOURCE<br />
-          Fork of IIXII™ property by Aakarsh (L192) &mdash; <a href="https://github.com/L192/PocketOps" target="_blank" rel="noopener noreferrer" style={{color:'var(--md-primary)'}}>Original</a><br />
+          Fork of IIXII™ property by Aakarsh (L192) &mdash; <a href="https://github.com/IIXII-L192/PocketOps-app" target="_blank" rel="noopener noreferrer" style={{color:'var(--md-primary)'}}>Original</a><br />
           NOT AFFILIATED WITH GOOGLE LLC. ANDROID IS A TRADEMARK OF GOOGLE LLC.
         </p>
       </div>

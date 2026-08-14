@@ -83,7 +83,7 @@ class FloatingDialogActivity : FragmentActivity() {
         // cached coroutine value, falling back to the system default locale on failure.
         lifecycleScope.launch {
             try {
-                val langCode = mainViewModel.settingsRepository.appLanguage.first()
+                val langCode = mainViewModel.userStore.appLanguage.first()
                 if (langCode.isNotBlank()) {
                     val locale = Locale.forLanguageTag(langCode)
                     Locale.setDefault(locale)
@@ -96,7 +96,7 @@ class FloatingDialogActivity : FragmentActivity() {
         }
 
         lifecycleScope.launch {
-            val locked = mainViewModel.settingsRepository.isAppLocked.first()
+            val locked = mainViewModel.userStore.isAppLocked.first()
             if (locked) {
                 isAuthRequired = true
                 showBiometricPrompt()
@@ -105,7 +105,7 @@ class FloatingDialogActivity : FragmentActivity() {
             }
 
             // Secure Mode Setup
-            mainViewModel.settingsRepository.secureMode.collect { secure ->
+            mainViewModel.userStore.secureMode.collect { secure ->
                 if (secure) {
                     window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
                 } else {
@@ -115,8 +115,8 @@ class FloatingDialogActivity : FragmentActivity() {
         }
 
         setContent {
-            val themeMode by mainViewModel.settingsRepository.themeMode.collectAsState(initial = "SYSTEM")
-            val dynamicColor by mainViewModel.settingsRepository.dynamicColor.collectAsState(initial = false)
+            val themeMode by mainViewModel.userStore.themeMode.collectAsState(initial = "SYSTEM")
+            val dynamicColor by mainViewModel.userStore.dynamicColor.collectAsState(initial = false)
             val isDarkTheme = when (themeMode) {
                 "LIGHT" -> false
                 "DARK", "AMOLED" -> true
@@ -185,12 +185,12 @@ class FloatingDialogActivity : FragmentActivity() {
                                 isFloating = !isFullScreen,
                                 onToggleDynamicColor = { enabled ->
                                     lifecycleScope.launch {
-                                        mainViewModel.settingsRepository.saveDynamicColor(enabled)
+                                        mainViewModel.userStore.saveDynamicColor(enabled)
                                     }
                                 },
                                 onChangeThemeMode = { nextMode ->
                                     lifecycleScope.launch {
-                                        mainViewModel.settingsRepository.saveThemeMode(nextMode)
+                                        mainViewModel.userStore.saveThemeMode(nextMode)
                                     }
                                 },
                                 onQrShown = { maxBrightness() },
@@ -293,7 +293,7 @@ class FloatingDialogActivity : FragmentActivity() {
                 val text = clipboard.primaryClip?.getItemAt(0)?.text?.toString()
                 if (!text.isNullOrBlank()) {
                     lifecycleScope.launch {
-                        val historyJson = mainViewModel.settingsRepository.clipboardHistory.first()
+                        val historyJson = mainViewModel.userStore.clipboardHistory.first()
                         val gson = Gson()
                         val listType = object : TypeToken<List<String>>() {}.type
                         val list: MutableList<String> = try {
@@ -304,7 +304,7 @@ class FloatingDialogActivity : FragmentActivity() {
                         
                         if (!list.contains(text)) {
                             list.add(0, text)
-                            mainViewModel.settingsRepository.saveClipboardHistory(gson.toJson(list.take(20)))
+                            mainViewModel.userStore.saveClipboardHistory(gson.toJson(list.take(20)))
                             android.widget.Toast.makeText(this@FloatingDialogActivity, "Saved to QuickDash Clipboard", android.widget.Toast.LENGTH_SHORT).show()
                         }
                     }

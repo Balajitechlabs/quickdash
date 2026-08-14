@@ -1,9 +1,9 @@
 {
-  "announcement_id": 7,
-  "title": "QuickDash v5.1.3 is Here!",
-  "message": "Stability & service robustness release: Fixed Android 12+/14+ Quick Settings Tile crash, FloatingBubbleService safety, and CI workflows.",
+  "announcement_id": 8,
+  "title": "QuickDash v5.2.0 is Here!",
+  "message": "Unified storage layer with UserStore DataStore migration, target SDK 36, enhanced biometric incognito security, and unit test suite refactoring.",
   "action_url": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-universal-release.apk",
-  "action_text": "Download v5.1.3",
+  "action_text": "Download v5.2.0",
   "priority": "high",
   "dismissible": true,
   "expires_at": "2026-09-30T00:00:00Z"

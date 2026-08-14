@@ -2,7 +2,7 @@ package com.balajitechlabs.quickdash.features.chat.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.balajitechlabs.quickdash.core.data.SettingsRepository
+import com.balajitechlabs.quickdash.core.data.UserStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -10,35 +10,35 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuickChatViewModel @Inject constructor(
-    private val settingsRepository: SettingsRepository
+    private val userStore: UserStore
 ) : ViewModel() {
 
-    val chatDefaultCode: Flow<String> = settingsRepository.chatDefaultCode
-    val chatDefaultIso: Flow<String> = settingsRepository.chatDefaultIso
-    val chatHistory: Flow<List<String>> = settingsRepository.chatHistory
-    val chatPauseHistory: Flow<Boolean> = settingsRepository.chatPauseHistory
+    val chatDefaultCode: Flow<String> = userStore.chatDefaultCode
+    val chatDefaultIso: Flow<String> = userStore.chatDefaultIso
+    val chatHistory: Flow<List<String>> = userStore.chatHistory
+    val chatPauseHistory: Flow<Boolean> = userStore.chatPauseHistory
 
     fun saveChatDefaultCountry(code: String, iso: String) {
         viewModelScope.launch {
-            settingsRepository.saveChatDefaultCountry(code, iso)
+            userStore.saveChatDefaultCountry(code, iso)
         }
     }
 
     fun saveChatNumberToHistory(number: String, flag: String) {
         viewModelScope.launch {
-            settingsRepository.saveChatNumberToHistory(number, flag)
+            userStore.saveChatNumberToHistory(number, flag)
         }
     }
 
     fun clearChatHistory() {
         viewModelScope.launch {
-            settingsRepository.clearChatHistory()
+            userStore.clearChatHistory()
         }
     }
 
     fun saveChatPauseHistory(pause: Boolean) {
         viewModelScope.launch {
-            settingsRepository.saveChatPauseHistory(pause)
+            userStore.saveChatPauseHistory(pause)
         }
     }
 }

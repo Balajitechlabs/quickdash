@@ -102,7 +102,7 @@ fun QuickSocialScreen(
                 // Run network operations in IO thread and get result
                 val result = withContext(Dispatchers.IO) {
                     try {
-                        val token = mainViewModel.settingsRepository.githubAccessToken.first()
+                        val token = mainViewModel.userStore.githubAccessToken.first()
                         
                         // 1. Fetch user general details
                         val userUrl = URL("https://api.github.com/users/$targetUsername")

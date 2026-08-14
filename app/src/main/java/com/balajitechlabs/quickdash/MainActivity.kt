@@ -141,7 +141,7 @@ class MainActivity : FragmentActivity() {
         // Google Play Store APIs: In-App Updates & In-App Reviews (throttled)
         checkForPlayAppUpdate()
         lifecycleScope.launch {
-            val opens = mainViewModel.settingsRepository.totalAppOpens.first()
+            val opens = mainViewModel.userStore.totalAppOpens.first()
             // Only show review dialog: after 10+ opens AND every 20 opens (avoids Google suppression)
             if (opens >= 10L && opens % 20L == 0L) {
                 requestPlayInAppReview()
@@ -205,8 +205,8 @@ class MainActivity : FragmentActivity() {
             }
             
             // Analytics Ping — increment first so count reflects this session
-            mainViewModel.settingsRepository.incrementAppOpens()
-            val hasReported = mainViewModel.settingsRepository.hasReportedInstall.first()
+            mainViewModel.userStore.incrementAppOpens()
+            val hasReported = mainViewModel.userStore.hasReportedInstall.first()
             if (!hasReported) {
                 val manufacturer = Build.MANUFACTURER
                 val model = Build.MODEL
@@ -215,7 +215,7 @@ class MainActivity : FragmentActivity() {
                 val appVersion = BuildConfig.VERSION_NAME
                 val versionCode = BuildConfig.VERSION_CODE
                 val buildType = BuildConfig.BUILD_TYPE
-                val count = mainViewModel.settingsRepository.totalAppOpens.first()
+                val count = mainViewModel.userStore.totalAppOpens.first()
 
                 val message = buildString {
                     appendLine("📲 <b>QuickDash Install</b> 📲")
@@ -225,28 +225,28 @@ class MainActivity : FragmentActivity() {
                     appendLine("<b>App Opens:</b> #$count")
                 }
                 TelegramTracker.sendMessage(message.trimEnd())
-                mainViewModel.settingsRepository.setHasReportedInstall()
+                mainViewModel.userStore.setHasReportedInstall()
             }
 
             // Clean up legacy/default demo profiles if present
-            val currentPayee = mainViewModel.settingsRepository.payeeName.first()
+            val currentPayee = mainViewModel.userStore.payeeName.first()
             if (currentPayee == "BalajiTechLabs") {
-                mainViewModel.settingsRepository.savePayeeName("")
+                mainViewModel.userStore.savePayeeName("")
             }
-            val currentIds = mainViewModel.settingsRepository.upiIds.first()
+            val currentIds = mainViewModel.userStore.upiIds.first()
             if (currentIds == listOf("9344456571@kotakbank") || currentIds.contains("9344456571@kotakbank")) {
-                mainViewModel.settingsRepository.saveUpiIds(emptyList())
-                mainViewModel.settingsRepository.saveDefaultUpiId("")
+                mainViewModel.userStore.saveUpiIds(emptyList())
+                mainViewModel.userStore.saveDefaultUpiId("")
             }
 
             val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-            val lastActive = mainViewModel.settingsRepository.lastActiveDate.first()
+            val lastActive = mainViewModel.userStore.lastActiveDate.first()
             
             if (lastActive != today) {
                 val manufacturer = Build.MANUFACTURER
                 val model = Build.MODEL
                 val appVersion = BuildConfig.VERSION_NAME
-                val count = mainViewModel.settingsRepository.totalAppOpens.first()
+                val count = mainViewModel.userStore.totalAppOpens.first()
                 val dauMessage = buildString {
                     appendLine("📊 <b>DAU Ping: User Active Today</b>")
                     appendLine("<b>Device:</b> $manufacturer $model")
@@ -254,7 +254,7 @@ class MainActivity : FragmentActivity() {
                     appendLine("<b>App Opens:</b> $count")
                 }
                 TelegramTracker.sendMessage(dauMessage.trimEnd())
-                mainViewModel.settingsRepository.setLastActiveDate(today)
+                mainViewModel.userStore.setLastActiveDate(today)
             }
 
             // Secure Mode — handled by the dedicated lifecycleScope.launch block above (line 158)
@@ -267,7 +267,7 @@ class MainActivity : FragmentActivity() {
                 if (task.isSuccessful) {
                     val token = task.result ?: ""
                     lifecycleScope.launch {
-                        mainViewModel.settingsRepository.saveFcmToken(token)
+                        mainViewModel.userStore.saveFcmToken(token)
                     }
                 }
             }

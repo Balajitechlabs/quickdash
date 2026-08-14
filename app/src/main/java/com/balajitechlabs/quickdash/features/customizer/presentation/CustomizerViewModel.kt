@@ -2,7 +2,7 @@ package com.balajitechlabs.quickdash.features.customizer.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.balajitechlabs.quickdash.core.data.SettingsRepository
+import com.balajitechlabs.quickdash.core.data.UserStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -10,42 +10,42 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CustomizerViewModel @Inject constructor(
-    private val settingsRepository: SettingsRepository
+    private val userStore: UserStore
 ) : ViewModel() {
 
-    val bubbleSizeDp: Flow<Float> = settingsRepository.bubbleSizeDp
-    val bubbleOpacityAlpha: Flow<Float> = settingsRepository.bubbleOpacityAlpha
-    val bubbleGlowColorHex: Flow<String> = settingsRepository.bubbleGlowColorHex
-    val useDynamicWallpaperColor: Flow<Boolean> = settingsRepository.useDynamicWallpaperColor
-    val soundEffectsEnabled: Flow<Boolean> = settingsRepository.soundEffectsEnabled
+    val bubbleSizeDp: Flow<Float> = userStore.bubbleSizeDp
+    val bubbleOpacityAlpha: Flow<Float> = userStore.bubbleOpacityAlpha
+    val bubbleGlowColorHex: Flow<String> = userStore.bubbleGlowColorHex
+    val useDynamicWallpaperColor: Flow<Boolean> = userStore.useDynamicWallpaperColor
+    val soundEffectsEnabled: Flow<Boolean> = userStore.soundEffectsEnabled
 
     fun saveBubbleSizeDp(sizeDp: Float) {
         viewModelScope.launch {
-            settingsRepository.saveBubbleSizeDp(sizeDp)
+            userStore.saveBubbleSizeDp(sizeDp)
         }
     }
 
     fun saveBubbleOpacityAlpha(alpha: Float) {
         viewModelScope.launch {
-            settingsRepository.saveBubbleOpacityAlpha(alpha)
+            userStore.saveBubbleOpacityAlpha(alpha)
         }
     }
 
     fun saveBubbleGlowColorHex(colorHex: String) {
         viewModelScope.launch {
-            settingsRepository.saveBubbleGlowColorHex(colorHex)
+            userStore.saveBubbleGlowColorHex(colorHex)
         }
     }
 
     fun saveUseDynamicWallpaperColor(enabled: Boolean) {
         viewModelScope.launch {
-            settingsRepository.saveUseDynamicWallpaperColor(enabled)
+            userStore.saveUseDynamicWallpaperColor(enabled)
         }
     }
 
     fun saveSoundEffectsEnabled(enabled: Boolean) {
         viewModelScope.launch {
-            settingsRepository.saveSoundEffectsEnabled(enabled)
+            userStore.saveSoundEffectsEnabled(enabled)
         }
     }
 }

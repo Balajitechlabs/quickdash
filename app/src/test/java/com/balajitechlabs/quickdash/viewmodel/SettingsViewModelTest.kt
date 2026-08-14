@@ -1,6 +1,6 @@
 package com.balajitechlabs.quickdash.viewmodel
 
-import com.balajitechlabs.quickdash.core.data.SettingsRepository
+import com.balajitechlabs.quickdash.core.data.UserStore
 import com.balajitechlabs.quickdash.features.settings.presentation.SettingsViewModel
 import com.google.common.truth.Truth.assertThat
 import io.mockk.mockk
@@ -18,13 +18,13 @@ import org.junit.Test
 class SettingsViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val settingsRepository = mockk<SettingsRepository>(relaxed = true)
+    private val userStore = mockk<UserStore>(relaxed = true)
     private lateinit var viewModel: SettingsViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = SettingsViewModel(settingsRepository)
+        viewModel = SettingsViewModel(userStore)
     }
 
     @After

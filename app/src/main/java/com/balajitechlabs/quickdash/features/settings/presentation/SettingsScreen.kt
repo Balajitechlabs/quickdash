@@ -92,16 +92,16 @@ fun SettingsScreen(
     onNavigateToSystemLogs: () -> Unit = {},
     onManageUpiIds: () -> Unit = {}
 ) {
-    val userStore = viewModel.settingsRepository
+    val userStore = viewModel.userStore
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val customShape = LocalCustomShape.current
 
     // Load new visual settings reactively from UserStore datastore
-    val launchStyle by viewModel.settingsRepository.launchStyle.collectAsState(initial = "FULL_SCREEN")
-    val seedColorHex by viewModel.settingsRepository.seedColor.collectAsState(initial = "#1E88E5")
-    val switchStyleStr by viewModel.settingsRepository.switchStyle.collectAsState(initial = "MaterialYou")
-    val sliderStyleStr by viewModel.settingsRepository.sliderStyle.collectAsState(initial = "MaterialYou")
+    val launchStyle by viewModel.userStore.launchStyle.collectAsState(initial = "FULL_SCREEN")
+    val seedColorHex by viewModel.userStore.seedColor.collectAsState(initial = "#1E88E5")
+    val switchStyleStr by viewModel.userStore.switchStyle.collectAsState(initial = "MaterialYou")
+    val sliderStyleStr by viewModel.userStore.sliderStyle.collectAsState(initial = "MaterialYou")
 
     // Resolve active styles from switchStyleStr and sliderStyleStr
     val activeSwitchStyle = remember(switchStyleStr) {
@@ -110,29 +110,29 @@ fun SettingsScreen(
     val activeSliderStyle = remember(sliderStyleStr) {
         try { SliderStyle.valueOf(sliderStyleStr) } catch(e: Exception) { SliderStyle.MaterialYou }
     }
-    val shapeStyleStr by viewModel.settingsRepository.shapeStyle.collectAsState(initial = "Rounded")
-    val cornerRadius by viewModel.settingsRepository.cornerRadius.collectAsState(initial = 16f)
-    val borderWidth by viewModel.settingsRepository.borderWidth.collectAsState(initial = 1f)
-    val fontScale by viewModel.settingsRepository.fontScale.collectAsState(initial = 1f)
-    val fontFamilyName by viewModel.settingsRepository.fontFamilyKey.collectAsState(initial = "system")
-    val showShadow by viewModel.settingsRepository.showShadow.collectAsState(initial = true)
-    val showToolDescriptions by viewModel.settingsRepository.showToolDescriptions.collectAsState(initial = true)
-    val secureMode by viewModel.settingsRepository.secureMode.collectAsState(initial = false)
-    val maxBrightness by viewModel.settingsRepository.maxBrightness.collectAsState(initial = false)
-    val showImagePreviews by viewModel.settingsRepository.showImagePreviews.collectAsState(initial = true)
-    val advancedThumbnail by viewModel.settingsRepository.advancedThumbnail.collectAsState(initial = false)
-    val emojiHeader by viewModel.settingsRepository.emojiHeader.collectAsState(initial = "🚀")
-    val appLanguage by viewModel.settingsRepository.appLanguage.collectAsState(initial = "en")
-    val confettiType by viewModel.settingsRepository.confettiType.collectAsState(initial = "Default")
-    val confettiEnabled by viewModel.settingsRepository.confettiEnabled.collectAsState(initial = true)
-    val hapticEnabled by viewModel.settingsRepository.hapticEnabled.collectAsState(initial = true)
-    val biometricLock by viewModel.settingsRepository.biometricLock.collectAsState(initial = false)
-    val clipboardAutocleanInterval by viewModel.settingsRepository.clipboardAutocleanInterval.collectAsState(initial = "OFF")
-    val shakeToOpen by viewModel.settingsRepository.shakeToOpen.collectAsState(initial = false)
-    val customSearchEnginesJson by viewModel.settingsRepository.customSearchEngines.collectAsState(initial = "[]")
-    val shakeToTrigger by viewModel.settingsRepository.shakeToTrigger.collectAsState(initial = false)
-    val hapticDuration by viewModel.settingsRepository.hapticDuration.collectAsState(initial = 15f)
-    val customBackupPath by viewModel.settingsRepository.customBackupPath.collectAsState(initial = null)
+    val shapeStyleStr by viewModel.userStore.shapeStyle.collectAsState(initial = "Rounded")
+    val cornerRadius by viewModel.userStore.cornerRadius.collectAsState(initial = 16f)
+    val borderWidth by viewModel.userStore.borderWidth.collectAsState(initial = 1f)
+    val fontScale by viewModel.userStore.fontScale.collectAsState(initial = 1f)
+    val fontFamilyName by viewModel.userStore.fontFamilyKey.collectAsState(initial = "system")
+    val showShadow by viewModel.userStore.showShadow.collectAsState(initial = true)
+    val showToolDescriptions by viewModel.userStore.showToolDescriptions.collectAsState(initial = true)
+    val secureMode by viewModel.userStore.secureMode.collectAsState(initial = false)
+    val maxBrightness by viewModel.userStore.maxBrightness.collectAsState(initial = false)
+    val showImagePreviews by viewModel.userStore.showImagePreviews.collectAsState(initial = true)
+    val advancedThumbnail by viewModel.userStore.advancedThumbnail.collectAsState(initial = false)
+    val emojiHeader by viewModel.userStore.emojiHeader.collectAsState(initial = "🚀")
+    val appLanguage by viewModel.userStore.appLanguage.collectAsState(initial = "en")
+    val confettiType by viewModel.userStore.confettiType.collectAsState(initial = "Default")
+    val confettiEnabled by viewModel.userStore.confettiEnabled.collectAsState(initial = true)
+    val hapticEnabled by viewModel.userStore.hapticEnabled.collectAsState(initial = true)
+    val biometricLock by viewModel.userStore.biometricLock.collectAsState(initial = false)
+    val clipboardAutocleanInterval by viewModel.userStore.clipboardAutocleanInterval.collectAsState(initial = "OFF")
+    val shakeToOpen by viewModel.userStore.shakeToOpen.collectAsState(initial = false)
+    val customSearchEnginesJson by viewModel.userStore.customSearchEngines.collectAsState(initial = "[]")
+    val shakeToTrigger by viewModel.userStore.shakeToTrigger.collectAsState(initial = false)
+    val hapticDuration by viewModel.userStore.hapticDuration.collectAsState(initial = 15f)
+    val customBackupPath by viewModel.userStore.customBackupPath.collectAsState(initial = null)
 
     var localRadius by remember(cornerRadius) { mutableStateOf(cornerRadius) }
     var localBorderWidth by remember(borderWidth) { mutableStateOf(borderWidth) }
@@ -140,11 +140,11 @@ fun SettingsScreen(
 
     @Suppress("DEPRECATION")
     val vibrator = remember { context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator }
-    val hapticLevel by viewModel.settingsRepository.hapticLevel.collectAsState(initial = "Crisp")
+    val hapticLevel by viewModel.userStore.hapticLevel.collectAsState(initial = "Crisp")
     var expandedGroup by remember { mutableStateOf<String?>("Contact & Socials") }
-    val activeDefaultPaymentApp by viewModel.settingsRepository.defaultPaymentApp.collectAsState(initial = "ANY")
-    val activeClipboardClearDelay by viewModel.settingsRepository.clipboardClearDelay.collectAsState(initial = -1L)
-    val activeGithubAccessToken by viewModel.settingsRepository.githubAccessToken.collectAsState(initial = "")
+    val activeDefaultPaymentApp by viewModel.userStore.defaultPaymentApp.collectAsState(initial = "ANY")
+    val activeClipboardClearDelay by viewModel.userStore.clipboardClearDelay.collectAsState(initial = -1L)
+    val activeGithubAccessToken by viewModel.userStore.githubAccessToken.collectAsState(initial = "")
 
     @Composable
     fun SettingsFilterChip(
@@ -182,9 +182,9 @@ fun SettingsScreen(
         }
     }
 
-    val totalOpens by viewModel.settingsRepository.totalAppOpens.collectAsState(initial = 0L)
-    val totalQrs by viewModel.settingsRepository.totalQrGenerated.collectAsState(initial = 0L)
-    val totalNotes by viewModel.settingsRepository.totalNotesSaved.collectAsState(initial = 0L)
+    val totalOpens by viewModel.userStore.totalAppOpens.collectAsState(initial = 0L)
+    val totalQrs by viewModel.userStore.totalQrGenerated.collectAsState(initial = 0L)
+    val totalNotes by viewModel.userStore.totalNotesSaved.collectAsState(initial = 0L)
 
     var showStatsDialog by remember { mutableStateOf(false) }
     var showFeedbackDialog by remember { mutableStateOf(false) }
@@ -553,7 +553,7 @@ fun SettingsScreen(
                                 onClick = {
                                     payAppExpanded = false
                                     coroutineScope.launch {
-                                        viewModel.settingsRepository.saveDefaultPaymentApp(code)
+                                        viewModel.userStore.saveDefaultPaymentApp(code)
                                     }
                                 }
                             )
@@ -604,7 +604,7 @@ fun SettingsScreen(
                                 onClick = {
                                     clearDelayExpanded = false
                                     coroutineScope.launch {
-                                        viewModel.settingsRepository.saveClipboardClearDelay(delay)
+                                        viewModel.userStore.saveClipboardClearDelay(delay)
                                     }
                                 }
                             )
@@ -634,7 +634,7 @@ fun SettingsScreen(
                     onValueChange = { 
                         githubTokenInput = it
                         coroutineScope.launch {
-                            viewModel.settingsRepository.saveGithubAccessToken(it.trim())
+                            viewModel.userStore.saveGithubAccessToken(it.trim())
                         }
                     },
                     placeholder = { Text("ghp_xxxxxxxxxxxxxxxxxxxx") },
@@ -668,7 +668,7 @@ fun SettingsScreen(
                     selected = launchStyle == "FULL_SCREEN",
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.settingsRepository.saveLaunchStyle("FULL_SCREEN")
+                            viewModel.userStore.saveLaunchStyle("FULL_SCREEN")
                             val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
                                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                             }
@@ -684,7 +684,7 @@ fun SettingsScreen(
                     selected = launchStyle == "FLOATING_DIALOG",
                     onClick = {
                         coroutineScope.launch {
-                            viewModel.settingsRepository.saveLaunchStyle("FLOATING_DIALOG")
+                            viewModel.userStore.saveLaunchStyle("FLOATING_DIALOG")
                             val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
                                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                             }
@@ -822,7 +822,7 @@ fun SettingsScreen(
                         onCheckedChange = { enabled ->
                             triggerFeedback()
                             coroutineScope.launch {
-                                viewModel.settingsRepository.setShakeToOpen(enabled)
+                                viewModel.userStore.setShakeToOpen(enabled)
                             }
                             // Toggle service via application
                             val appContext = context.applicationContext as com.balajitechlabs.quickdash.QuickDashApplication
@@ -928,7 +928,7 @@ fun SettingsScreen(
                         selected = isSelected,
                         onClick = {
                             triggerFeedback()
-                            coroutineScope.launch { viewModel.settingsRepository.saveSeedColor(hex) }
+                            coroutineScope.launch { viewModel.userStore.saveSeedColor(hex) }
                         },
                         label = name
                     )
@@ -970,7 +970,7 @@ fun SettingsScreen(
                             .clip(CircleShape)
                             .background(color)
                             .clickable {
-                                coroutineScope.launch { viewModel.settingsRepository.saveSeedColor(hex) }
+                                coroutineScope.launch { viewModel.userStore.saveSeedColor(hex) }
                             }
                             .border(
                                 width = if (seedColorHex == hex) 3.dp else 1.dp,
@@ -997,7 +997,7 @@ fun SettingsScreen(
                 onValueChange = {
                     hexInput = it
                     if (it.matches(Regex("^#[0-9a-fA-F]{6}$"))) {
-                        coroutineScope.launch { viewModel.settingsRepository.saveSeedColor(it) }
+                        coroutineScope.launch { viewModel.userStore.saveSeedColor(it) }
                     }
                 },
                 label = { Text("Manual Hex Code") },
@@ -1029,7 +1029,7 @@ fun SettingsScreen(
             }
 
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            val qrUseEmojiOverlay by viewModel.settingsRepository.qrUseEmojiOverlay.collectAsState(initial = false)
+            val qrUseEmojiOverlay by viewModel.userStore.qrUseEmojiOverlay.collectAsState(initial = false)
             PreferenceItem(
                 title = "QR Emoji Badges",
                 subtitle = "Overlay signature emoji inside QR codes instead of app logo",
@@ -1040,7 +1040,7 @@ fun SettingsScreen(
                         checked = qrUseEmojiOverlay,
                         onCheckedChange = {
                             triggerFeedback()
-                            coroutineScope.launch { viewModel.settingsRepository.saveQrUseEmojiOverlay(it) }
+                            coroutineScope.launch { viewModel.userStore.saveQrUseEmojiOverlay(it) }
                         }
                     )
                 }
@@ -1074,7 +1074,7 @@ fun SettingsScreen(
                         selected = switchStyleStr == style,
                         onClick = {
                             triggerFeedback()
-                            coroutineScope.launch { viewModel.settingsRepository.saveSwitchStyle(style) }
+                            coroutineScope.launch { viewModel.userStore.saveSwitchStyle(style) }
                         },
                         label = style
                     )
@@ -1119,7 +1119,7 @@ fun SettingsScreen(
                         selected = sliderStyleStr == style,
                         onClick = {
                             triggerFeedback()
-                            coroutineScope.launch { viewModel.settingsRepository.saveSliderStyle(style) }
+                            coroutineScope.launch { viewModel.userStore.saveSliderStyle(style) }
                         },
                         label = style
                     )
@@ -1163,7 +1163,7 @@ fun SettingsScreen(
                         selected = shapeStyleStr == shape,
                         onClick = {
                             triggerFeedback()
-                            coroutineScope.launch { viewModel.settingsRepository.saveShapeStyle(shape) }
+                            coroutineScope.launch { viewModel.userStore.saveShapeStyle(shape) }
                         },
                         label = shape
                     )
@@ -1243,7 +1243,7 @@ fun SettingsScreen(
                     localRadius = it
                 },
                 onValueChangeFinished = {
-                    coroutineScope.launch { viewModel.settingsRepository.saveCornerRadius(localRadius) }
+                    coroutineScope.launch { viewModel.userStore.saveCornerRadius(localRadius) }
                 },
                 valueRange = 4f..32f,
                 modifier = Modifier
@@ -1265,7 +1265,7 @@ fun SettingsScreen(
                     localBorderWidth = it
                 },
                 onValueChangeFinished = {
-                    coroutineScope.launch { viewModel.settingsRepository.saveBorderWidth(localBorderWidth) }
+                    coroutineScope.launch { viewModel.userStore.saveBorderWidth(localBorderWidth) }
                 },
                 valueRange = 0f..4f,
                 modifier = Modifier
@@ -1285,7 +1285,7 @@ fun SettingsScreen(
                         checked = showShadow,
                         onCheckedChange = {
                             triggerFeedback()
-                            coroutineScope.launch { viewModel.settingsRepository.saveShowShadow(it) }
+                            coroutineScope.launch { viewModel.userStore.saveShowShadow(it) }
                         }
                     )
                 }
@@ -1301,7 +1301,7 @@ fun SettingsScreen(
                         checked = showToolDescriptions,
                         onCheckedChange = {
                             triggerFeedback()
-                            coroutineScope.launch { viewModel.settingsRepository.saveShowToolDescriptions(it) }
+                            coroutineScope.launch { viewModel.userStore.saveShowToolDescriptions(it) }
                         }
                     )
                 }
@@ -1331,7 +1331,7 @@ fun SettingsScreen(
                     localFontScale = it
                 },
                 onValueChangeFinished = {
-                    coroutineScope.launch { viewModel.settingsRepository.saveFontScale(localFontScale) }
+                    coroutineScope.launch { viewModel.userStore.saveFontScale(localFontScale) }
                 },
                 valueRange = 0.8f..1.4f,
                 modifier = Modifier
@@ -1365,7 +1365,7 @@ fun SettingsScreen(
                         selected = fontFamilyName.uppercase() == code.uppercase(),
                         onClick = {
                             triggerFeedback()
-                            coroutineScope.launch { viewModel.settingsRepository.saveFontFamilyKey(code) }
+                            coroutineScope.launch { viewModel.userStore.saveFontFamilyKey(code) }
                         },
                         label = label
                     )
@@ -1391,7 +1391,7 @@ fun SettingsScreen(
                         style = activeSwitchStyle,
                         checked = secureMode,
                         onCheckedChange = {
-                            coroutineScope.launch { viewModel.settingsRepository.saveSecureMode(it) }
+                            coroutineScope.launch { viewModel.userStore.saveSecureMode(it) }
                         }
                     )
                 }
@@ -1408,7 +1408,7 @@ fun SettingsScreen(
                         style = activeSwitchStyle,
                         checked = maxBrightness,
                         onCheckedChange = {
-                            coroutineScope.launch { viewModel.settingsRepository.saveMaxBrightness(it) }
+                            coroutineScope.launch { viewModel.userStore.saveMaxBrightness(it) }
                         }
                     )
                 }
@@ -1425,7 +1425,7 @@ fun SettingsScreen(
                         style = activeSwitchStyle,
                         checked = showImagePreviews,
                         onCheckedChange = {
-                            coroutineScope.launch { viewModel.settingsRepository.saveShowImagePreviews(it) }
+                            coroutineScope.launch { viewModel.userStore.saveShowImagePreviews(it) }
                         }
                     )
                 }
@@ -1439,7 +1439,7 @@ fun SettingsScreen(
                         style = activeSwitchStyle,
                         checked = advancedThumbnail,
                         onCheckedChange = {
-                            coroutineScope.launch { viewModel.settingsRepository.saveAdvancedThumbnail(it) }
+                            coroutineScope.launch { viewModel.userStore.saveAdvancedThumbnail(it) }
                         }
                     )
                 }
@@ -1456,7 +1456,7 @@ fun SettingsScreen(
                 value = emojiHeader,
                 onValueChange = {
                     if (it.length <= 4) {
-                        coroutineScope.launch { viewModel.settingsRepository.saveEmojiHeader(it) }
+                        coroutineScope.launch { viewModel.userStore.saveEmojiHeader(it) }
                     }
                 },
                 singleLine = true,
@@ -1478,7 +1478,7 @@ fun SettingsScreen(
                         checked = confettiEnabled,
                         onCheckedChange = {
                             triggerFeedback()
-                            coroutineScope.launch { viewModel.settingsRepository.saveConfettiEnabled(it) }
+                            coroutineScope.launch { viewModel.userStore.saveConfettiEnabled(it) }
                         }
                     )
                 }
@@ -1502,7 +1502,7 @@ fun SettingsScreen(
                             selected = confettiType == type,
                             onClick = {
                                 triggerFeedback()
-                                coroutineScope.launch { viewModel.settingsRepository.saveConfettiType(type) }
+                                coroutineScope.launch { viewModel.userStore.saveConfettiType(type) }
                                 onTriggerConfetti(type)
                             },
                             label = type
@@ -1521,7 +1521,7 @@ fun SettingsScreen(
             Slider(
                 value = hapticDuration,
                 onValueChange = {
-                    coroutineScope.launch { viewModel.settingsRepository.saveHapticDuration(it) }
+                    coroutineScope.launch { viewModel.userStore.saveHapticDuration(it) }
                 },
                 valueRange = 0f..100f,
                 steps = 20,
@@ -1548,7 +1548,7 @@ fun SettingsScreen(
                         selected = clipboardAutocleanInterval == interval,
                         onClick = {
                             triggerFeedback()
-                            coroutineScope.launch { viewModel.settingsRepository.setClipboardAutocleanInterval(interval) }
+                            coroutineScope.launch { viewModel.userStore.setClipboardAutocleanInterval(interval) }
                         },
                         label = when (interval) {
                             "OFF" -> "Off"
@@ -1573,7 +1573,7 @@ fun SettingsScreen(
                         checked = shakeToTrigger,
                         onCheckedChange = {
                             triggerFeedback()
-                            coroutineScope.launch { viewModel.settingsRepository.saveShakeToTrigger(it) }
+                            coroutineScope.launch { viewModel.userStore.saveShakeToTrigger(it) }
                         }
                     )
                 }
@@ -1606,7 +1606,7 @@ fun SettingsScreen(
 
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
-            val isAppLocked by viewModel.settingsRepository.isAppLocked.collectAsState(initial = false)
+            val isAppLocked by viewModel.userStore.isAppLocked.collectAsState(initial = false)
             PreferenceItem(
                 title = "Biometric Lock",
                 subtitle = "App lock protection switch",
@@ -1617,7 +1617,7 @@ fun SettingsScreen(
                         checked = isAppLocked,
                         onCheckedChange = { enabled ->
                             triggerFeedback()
-                            coroutineScope.launch { viewModel.settingsRepository.setAppLocked(enabled) }
+                            coroutineScope.launch { viewModel.userStore.setAppLocked(enabled) }
                         }
                     )
                 }
@@ -1625,7 +1625,7 @@ fun SettingsScreen(
 
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
-            val isTabLocked by viewModel.settingsRepository.tabBiometricLock.collectAsState(initial = false)
+            val isTabLocked by viewModel.userStore.tabBiometricLock.collectAsState(initial = false)
             PreferenceItem(
                 title = "Lock Private Tabs",
                 subtitle = "Require authentication for Clipboard & Notes",
@@ -1636,7 +1636,7 @@ fun SettingsScreen(
                         checked = isTabLocked,
                         onCheckedChange = { enabled ->
                             triggerFeedback()
-                            coroutineScope.launch { viewModel.settingsRepository.saveTabBiometricLock(enabled) }
+                            coroutineScope.launch { viewModel.userStore.saveTabBiometricLock(enabled) }
                         }
                     )
                 }
@@ -1932,7 +1932,7 @@ fun SettingsScreen(
 
     if (showWhatsNewDialog) {
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val versionName = packageInfo.versionName ?: "5.1.3"
+        val versionName = packageInfo.versionName ?: "5.2.0"
         WhatsNewDialog(
             versionName = versionName,
             onDismiss = { showWhatsNewDialog = false }
@@ -2223,7 +2223,7 @@ fun SettingsScreen(
                                     IconButton(onClick = {
                                         val updated = customEngines.filter { it != engine }
                                         coroutineScope.launch {
-                                            viewModel.settingsRepository.saveCustomSearchEngines(gson.toJson(updated))
+                                            viewModel.userStore.saveCustomSearchEngines(gson.toJson(updated))
                                         }
                                     }) {
                                         Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
@@ -2261,7 +2261,7 @@ fun SettingsScreen(
                         val newEngine = mapOf("name" to newEngineName, "url" to newEngineUrl)
                         val updated = customEngines + newEngine
                         coroutineScope.launch {
-                            viewModel.settingsRepository.saveCustomSearchEngines(gson.toJson(updated))
+                            viewModel.userStore.saveCustomSearchEngines(gson.toJson(updated))
                         }
                         newEngineName = ""
                         newEngineUrl = ""
@@ -2317,7 +2317,7 @@ fun SettingsScreen(
                                 val message = "🌟 <b>New App Rating</b>\nStars: $selectedStars⭐\nReview: ${if (reviewText.isBlank()) "None" else reviewText}\nDevice: ${Build.MODEL}"
                                 com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker.sendBroadcastBotMessage(message)
                                 // Record rating stat
-                                viewModel.settingsRepository.incrementAppOpens()
+                                viewModel.userStore.incrementAppOpens()
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }

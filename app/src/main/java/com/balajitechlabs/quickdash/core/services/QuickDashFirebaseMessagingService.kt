@@ -10,6 +10,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.balajitechlabs.quickdash.MainActivity
 import com.balajitechlabs.quickdash.R
+import com.balajitechlabs.quickdash.core.data.UserStore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import android.util.Log
@@ -22,7 +23,7 @@ import javax.inject.Inject
 class QuickDashFirebaseMessagingService : FirebaseMessagingService() {
 
     @Inject
-    lateinit var settingsRepository: com.balajitechlabs.quickdash.core.data.SettingsRepository
+    lateinit var userStore: UserStore
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.d(TAG, "From: ${remoteMessage.from}")
@@ -38,7 +39,7 @@ class QuickDashFirebaseMessagingService : FirebaseMessagingService() {
             // Persist the message locally
             kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
                 try {
-                    val rawJson = settingsRepository.firebaseBlogPosts.first()
+                    val rawJson = userStore.firebaseBlogPosts.first()
                     val listType = object : com.google.gson.reflect.TypeToken<MutableList<Map<String, Any>>>() {}.type
                     val gson = com.google.gson.Gson()
                     val list: MutableList<Map<String, Any>> = gson.fromJson(rawJson, listType) ?: mutableListOf()
@@ -55,7 +56,7 @@ class QuickDashFirebaseMessagingService : FirebaseMessagingService() {
                             "timestamp" to timestamp
                         )
                         list.add(0, newPost)
-                        settingsRepository.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
+                        userStore.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -69,7 +70,7 @@ class QuickDashFirebaseMessagingService : FirebaseMessagingService() {
         Log.d(TAG, "Refreshed token: $token")
         kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
             try {
-                settingsRepository.saveFcmToken(token)
+                userStore.saveFcmToken(token)
             } catch (e: Exception) {
                 e.printStackTrace()
                 com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().recordException(e)

@@ -5,7 +5,7 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
-import com.balajitechlabs.quickdash.core.data.SettingsRepository
+import com.balajitechlabs.quickdash.core.data.UserStore
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +22,7 @@ import javax.inject.Inject
 class QuickTileService : TileService() {
 
     @Inject
-    lateinit var settingsRepository: SettingsRepository
+    lateinit var userStore: UserStore
 
     override fun onStartListening() {
         super.onStartListening()
@@ -35,9 +35,9 @@ class QuickTileService : TileService() {
         val context = applicationContext
 
         CoroutineScope(Dispatchers.Main).launch {
-            val isEnabled = settingsRepository.bubbleEnabled.first()
+            val isEnabled = userStore.bubbleEnabled.first()
             val newStatus = !isEnabled
-            settingsRepository.setBubbleEnabled(newStatus)
+            userStore.setBubbleEnabled(newStatus)
 
             if (newStatus) {
                 val intent = Intent(context, FloatingBubbleService::class.java)
@@ -73,7 +73,7 @@ class QuickTileService : TileService() {
         val tile = qsTile ?: return
 
         CoroutineScope(Dispatchers.Main).launch {
-            val isEnabled = settingsRepository.bubbleEnabled.first()
+            val isEnabled = userStore.bubbleEnabled.first()
             tile.state = if (isEnabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
             tile.updateTile()
         }

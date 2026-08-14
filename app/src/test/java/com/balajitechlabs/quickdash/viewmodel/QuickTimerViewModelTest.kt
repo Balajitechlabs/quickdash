@@ -1,6 +1,6 @@
 package com.balajitechlabs.quickdash.viewmodel
 
-import com.balajitechlabs.quickdash.core.data.SettingsRepository
+import com.balajitechlabs.quickdash.core.data.UserStore
 import com.balajitechlabs.quickdash.features.timer.presentation.QuickTimerViewModel
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -18,13 +18,13 @@ import org.junit.Test
 class QuickTimerViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val settingsRepository = mockk<SettingsRepository>(relaxed = true)
+    private val userStore = mockk<UserStore>(relaxed = true)
     private lateinit var viewModel: QuickTimerViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = QuickTimerViewModel(settingsRepository)
+        viewModel = QuickTimerViewModel(userStore)
     }
 
     @After
@@ -33,8 +33,8 @@ class QuickTimerViewModelTest {
     }
 
     @Test
-    fun `saveTimerHistory delegates to settingsRepository`() = runTest {
+    fun `saveTimerHistory delegates to userStore`() = runTest {
         viewModel.saveTimerHistory("[\"timer_1\"]")
-        coVerify { settingsRepository.saveTimerHistory("[\"timer_1\"]") }
+        coVerify { userStore.saveTimerHistory("[\"timer_1\"]") }
     }
 }

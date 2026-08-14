@@ -132,7 +132,7 @@ export default function CtaSection() {
         <div className="card" style={{ fontSize: 13, color: 'var(--md-on-surface-variant)', lineHeight: 1.7 }}>
           <p>QuickDash is a fork of <strong>PocketOps</strong> by <strong>Aakarsh (L192) / IIXII™</strong> under the PocketOps Custom Open Source Fork License.</p>
           <p style={{ marginTop: 8 }}>
-            View the original project: <a href="https://github.com/L192/PocketOps" target="_blank" rel="noopener noreferrer" onClick={() => trackEvent('external_link', 'pocketops_github')}>github.com/L192/PocketOps</a>
+            View the original project: <a href="https://github.com/IIXII-L192/PocketOps-app" target="_blank" rel="noopener noreferrer" onClick={() => trackEvent('external_link', 'pocketops_github')}>github.com/IIXII-L192/PocketOps-app</a>
           </p>
         </div>
       </FadeInSection>

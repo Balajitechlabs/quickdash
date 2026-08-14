@@ -47,8 +47,9 @@ Release*Notes.md
 keystore.b64
 gs.b64
 
-# Website
+# Website & Workers
 website/node_modules/
 website/dist/
 website/server/node_modules/
+workers/node_modules/
 

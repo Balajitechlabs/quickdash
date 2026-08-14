@@ -14,14 +14,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.balajitechlabs.quickdash.core.ui.components.smoothCornerShape
 
+/**
+ * Organic M3 Expressive Squircle Container Modifier.
+ * Applies continuous curvature shapes, tonal container background, border, shadow, and inner padding.
+ */
 @Composable
 fun Modifier.container(
-    shape: Shape = RoundedCornerShape(32.dp),
-    color: Color = MaterialTheme.colorScheme.surface,
-    borderColor: Color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+    shape: Shape = smoothCornerShape(24f),
+    color: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
+    borderColor: Color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
     borderWidth: Dp = 1.dp,
-    shadowElevation: Dp = 8.dp,
+    shadowElevation: Dp = 4.dp,
     clip: Boolean = true,
     padding: Dp = 0.dp
 ): Modifier = composed {

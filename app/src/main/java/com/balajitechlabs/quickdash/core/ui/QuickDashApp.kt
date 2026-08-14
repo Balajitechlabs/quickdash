@@ -187,25 +187,25 @@ fun QuickDashApp(
     onDismiss: () -> Unit = {},
     onConvertToFullScreen: (() -> Unit)? = null
 ) {
-    val savedUpiIds by mainViewModel.settingsRepository.upiIds.collectAsState(initial = emptyList())
-    val savedPaypalIds by mainViewModel.settingsRepository.paypalIds.collectAsState(initial = emptyList())
-    val usePaypal by mainViewModel.settingsRepository.usePaypal.collectAsState(initial = false)
-    val defaultPaymentApp by mainViewModel.settingsRepository.defaultPaymentApp.collectAsState(initial = "ANY")
-    val qrHistoryJson by mainViewModel.settingsRepository.qrHistory.collectAsState(initial = "[]")
+    val savedUpiIds by mainViewModel.userStore.upiIds.collectAsState(initial = emptyList())
+    val savedPaypalIds by mainViewModel.userStore.paypalIds.collectAsState(initial = emptyList())
+    val usePaypal by mainViewModel.userStore.usePaypal.collectAsState(initial = false)
+    val defaultPaymentApp by mainViewModel.userStore.defaultPaymentApp.collectAsState(initial = "ANY")
+    val qrHistoryJson by mainViewModel.userStore.qrHistory.collectAsState(initial = "[]")
     
     // Choose active IDs based on mode
     val activeIds = if (usePaypal) savedPaypalIds else savedUpiIds
     
-    val savedDefaultUpiId by mainViewModel.settingsRepository.defaultUpiId.collectAsState(initial = null)
-    val savedDefaultPaypalId by mainViewModel.settingsRepository.defaultPaypalId.collectAsState(initial = null)
+    val savedDefaultUpiId by mainViewModel.userStore.defaultUpiId.collectAsState(initial = null)
+    val savedDefaultPaypalId by mainViewModel.userStore.defaultPaypalId.collectAsState(initial = null)
     val activeDefaultId = if (usePaypal) savedDefaultPaypalId ?: savedPaypalIds.firstOrNull() ?: "" else savedDefaultUpiId ?: savedUpiIds.firstOrNull() ?: ""
 
-    val savedPayeeName by mainViewModel.settingsRepository.payeeName.collectAsState(initial = null)
-    val recentAmounts by mainViewModel.settingsRepository.recentAmounts.collectAsState(initial = emptyList())
-    val showUpiId by mainViewModel.settingsRepository.showUpiId.collectAsState(initial = true)
+    val savedPayeeName by mainViewModel.userStore.payeeName.collectAsState(initial = null)
+    val recentAmounts by mainViewModel.userStore.recentAmounts.collectAsState(initial = emptyList())
+    val showUpiId by mainViewModel.userStore.showUpiId.collectAsState(initial = true)
     
-    val bubbleEnabled by mainViewModel.settingsRepository.bubbleEnabled.collectAsState(initial = true)
-    val emojiHeaderVal by mainViewModel.settingsRepository.emojiHeader.collectAsState(initial = "🚀")
+    val bubbleEnabled by mainViewModel.userStore.bubbleEnabled.collectAsState(initial = true)
+    val emojiHeaderVal by mainViewModel.userStore.emojiHeader.collectAsState(initial = "🚀")
 
     val scope = rememberCoroutineScope()
     val qrColorVal = MaterialTheme.colorScheme.primary.toArgb()
@@ -351,7 +351,7 @@ fun QuickDashApp(
         mainViewModel = mainViewModel,
         uiState = uiState,
         usePaypal = usePaypal,
-        onTogglePaypal = { scope.launch { mainViewModel.settingsRepository.saveUsePaypal(it) } },
+        onTogglePaypal = { scope.launch { mainViewModel.userStore.saveUsePaypal(it) } },
         isFloating = isFloating,
         recentAmounts = recentAmounts,
         upiIds = activeIds,
@@ -359,7 +359,7 @@ fun QuickDashApp(
         showUpiId = showUpiId,
         themeMode = themeMode,
         dynamicColor = dynamicColor,
-        hapticEnabled = mainViewModel.settingsRepository.hapticEnabled.collectAsState(initial = true).value,
+        hapticEnabled = mainViewModel.userStore.hapticEnabled.collectAsState(initial = true).value,
         onToggleDynamicColor = onToggleDynamicColor,
         onChangeThemeMode = onChangeThemeMode,
         payeeName = savedPayeeName,
@@ -369,18 +369,18 @@ fun QuickDashApp(
         onToggleSelectingCountry = { selectingCountry = it },
         defaultPaymentApp = defaultPaymentApp,
         qrHistoryJson = qrHistoryJson,
-        onClearQrHistory = { scope.launch { mainViewModel.settingsRepository.clearQrHistory() } },
+        onClearQrHistory = { scope.launch { mainViewModel.userStore.clearQrHistory() } },
         onScanQr = triggerScanQr,
         onSaveUpiIds = { ids, name, defaultId ->
             scope.launch {
                 if (usePaypal) {
-                    mainViewModel.settingsRepository.savePaypalIds(ids)
-                    mainViewModel.settingsRepository.saveDefaultPaypalId(defaultId)
+                    mainViewModel.userStore.savePaypalIds(ids)
+                    mainViewModel.userStore.saveDefaultPaypalId(defaultId)
                 } else {
-                    mainViewModel.settingsRepository.saveUpiIds(ids)
-                    mainViewModel.settingsRepository.saveDefaultUpiId(defaultId)
+                    mainViewModel.userStore.saveUpiIds(ids)
+                    mainViewModel.userStore.saveDefaultUpiId(defaultId)
                 }
-                mainViewModel.settingsRepository.savePayeeName(name)
+                mainViewModel.userStore.savePayeeName(name)
                 val wasManaging = (navigationStack.lastOrNull() as? QuickDashUiState.Setup)?.isManaging == true
                 if (navigationStack.isNotEmpty() && navigationStack.lastOrNull() is QuickDashUiState.Setup) {
                     navigationStack.removeAt(navigationStack.lastIndex)
@@ -392,7 +392,7 @@ fun QuickDashApp(
         },
         onGenerateQr = { amount, note, selectedId, targetApp, category, useCircularDots, useGradient ->
             if (amount.isNotBlank()) {
-                scope.launch { mainViewModel.settingsRepository.saveRecentAmount(amount) }
+                scope.launch { mainViewModel.userStore.saveRecentAmount(amount) }
             }
 
             val payScheme = targetApp.schemePrefix
@@ -416,9 +416,9 @@ fun QuickDashApp(
             }
 
             scope.launch {
-                mainViewModel.settingsRepository.saveQrHistoryItem(amount, note, selectedId, targetApp.name, category)
+                mainViewModel.userStore.saveQrHistoryItem(amount, note, selectedId, targetApp.name, category)
                 val bitmap = withContext(Dispatchers.Default) {
-                    val useEmoji = mainViewModel.settingsRepository.qrUseEmojiOverlay.first()
+                    val useEmoji = mainViewModel.userStore.qrUseEmojiOverlay.first()
                     QRCodeGenerator.generateQRCode(
                         context = appContext,
                         text = payURL,
@@ -493,7 +493,7 @@ fun QuickDashApp(
         },
         onOnboardingComplete = {
             scope.launch {
-                mainViewModel.settingsRepository.setOnboardingComplete()
+                mainViewModel.userStore.setOnboardingComplete()
                 navigationStack.removeAt(navigationStack.lastIndex)
                 navigationStack.add(QuickDashUiState.Dashboard)
             }
@@ -501,7 +501,7 @@ fun QuickDashApp(
         bubbleEnabled = bubbleEnabled,
         onToggleBubble = { enabled ->
             scope.launch {
-                mainViewModel.settingsRepository.setBubbleEnabled(enabled)
+                mainViewModel.userStore.setBubbleEnabled(enabled)
             }
         },
         onConvertToFullScreen = onConvertToFullScreen,
@@ -567,21 +567,21 @@ fun QuickDashContent(
     var showWhatsNewOnLaunch by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        val lastSeen = mainViewModel.settingsRepository.lastSeenVersion.first()
+        val lastSeen = mainViewModel.userStore.lastSeenVersion.first()
         val currentVersion = try {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            packageInfo.versionName ?: "5.1.3"
+            packageInfo.versionName ?: "5.2.0"
         } catch (e: Exception) {
-            "5.1.3"
+            "5.2.0"
         }
         if (lastSeen != currentVersion) {
             showWhatsNewOnLaunch = true
         }
 
         // Clipboard auto-clean interval execution check
-        val interval = mainViewModel.settingsRepository.clipboardAutocleanInterval.first()
-        val customDelay = mainViewModel.settingsRepository.clipboardClearDelay.first()
-        val lastClean = mainViewModel.settingsRepository.lastClipboardCleanTime.first()
+        val interval = mainViewModel.userStore.clipboardAutocleanInterval.first()
+        val customDelay = mainViewModel.userStore.clipboardClearDelay.first()
+        val lastClean = mainViewModel.userStore.lastClipboardCleanTime.first()
         val now = System.currentTimeMillis()
         var shouldClean = false
         
@@ -600,21 +600,21 @@ fun QuickDashContent(
             shouldClean = true
         }
         if (shouldClean) {
-            mainViewModel.settingsRepository.saveClipboardHistory("[]")
-            mainViewModel.settingsRepository.saveLastClipboardCleanTime(now)
+            mainViewModel.userStore.saveClipboardHistory("[]")
+            mainViewModel.userStore.saveLastClipboardCleanTime(now)
         }
     }
-    val emojiHeaderVal by mainViewModel.settingsRepository.emojiHeader.collectAsState(initial = "🚀")
-    val qrUseEmojiOverlay by mainViewModel.settingsRepository.qrUseEmojiOverlay.collectAsState(initial = false)
-    val confettiEnabled by mainViewModel.settingsRepository.confettiEnabled.collectAsState(initial = true)
+    val emojiHeaderVal by mainViewModel.userStore.emojiHeader.collectAsState(initial = "🚀")
+    val qrUseEmojiOverlay by mainViewModel.userStore.qrUseEmojiOverlay.collectAsState(initial = false)
+    val confettiEnabled by mainViewModel.userStore.confettiEnabled.collectAsState(initial = true)
     var triggerEmojiConfetti by remember { mutableStateOf(false) }
     var emojiConfettiKey by remember { mutableStateOf(0) }
     var settingsConfettiType by remember { mutableStateOf<String?>(null) }
     var settingsConfettiKey by remember { mutableStateOf(0) }
     var showFullScreenPrompt by remember { mutableStateOf(false) }
 
-    val rawPostsJson by mainViewModel.settingsRepository.firebaseBlogPosts.collectAsState(initial = "[]")
-    val hiddenJson by mainViewModel.settingsRepository.hiddenNotifications.collectAsState(initial = "[]")
+    val rawPostsJson by mainViewModel.userStore.firebaseBlogPosts.collectAsState(initial = "[]")
+    val hiddenJson by mainViewModel.userStore.hiddenNotifications.collectAsState(initial = "[]")
     val activeNotificationCount = remember(rawPostsJson, hiddenJson) {
         try {
             val gson = com.google.gson.Gson()
@@ -941,8 +941,8 @@ fun QuickDashContent(
                                 onManageUpiIds = onManageUpiIds
                             )
                         is QuickDashUiState.ShowQr -> {
-                            val confettiType by mainViewModel.settingsRepository.confettiType.collectAsState(initial = "Default")
-                            val hapticLevel by mainViewModel.settingsRepository.hapticLevel.collectAsState(initial = "Crisp")
+                            val confettiType by mainViewModel.userStore.confettiType.collectAsState(initial = "Default")
+                            val hapticLevel by mainViewModel.userStore.hapticLevel.collectAsState(initial = "Crisp")
                             ShowQrScreen(
                                 amount = state.amount,
                                 qrBitmap = state.qrBitmap,
@@ -1345,7 +1345,7 @@ fun QuickDashContent(
     }
     if (showWhatsNewOnLaunch) {
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val versionName = packageInfo.versionName ?: "5.1.3"
+        val versionName = packageInfo.versionName ?: "5.2.0"
         
         LaunchedEffect(Unit) {
             settingsConfettiType = "Corner"
@@ -1357,7 +1357,7 @@ fun QuickDashContent(
             onDismiss = {
                 showWhatsNewOnLaunch = false
                 scope.launch {
-                    mainViewModel.settingsRepository.saveLastSeenVersion(versionName)
+                    mainViewModel.userStore.saveLastSeenVersion(versionName)
                 }
             }
         )
@@ -1521,7 +1521,7 @@ fun UpdateTag(onShowUpdateDialog: () -> Unit = {}) {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
             "v${packageInfo.versionName}"
         } catch (e: Exception) {
-            "v5.1.3"
+            "v5.2.0"
         }
     }
 

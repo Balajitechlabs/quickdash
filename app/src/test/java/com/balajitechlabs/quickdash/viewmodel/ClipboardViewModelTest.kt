@@ -1,6 +1,6 @@
 package com.balajitechlabs.quickdash.viewmodel
 
-import com.balajitechlabs.quickdash.core.data.SettingsRepository
+import com.balajitechlabs.quickdash.core.data.UserStore
 import com.balajitechlabs.quickdash.features.clipboard.data.ClipboardRepository
 import com.balajitechlabs.quickdash.features.clipboard.presentation.ClipboardViewModel
 import io.mockk.coVerify
@@ -21,13 +21,13 @@ class ClipboardViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val clipboardRepository = mockk<ClipboardRepository>(relaxed = true)
-    private val settingsRepository = mockk<SettingsRepository>(relaxed = true)
+    private val userStore = mockk<UserStore>(relaxed = true)
     private lateinit var viewModel: ClipboardViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = ClipboardViewModel(clipboardRepository, settingsRepository)
+        viewModel = ClipboardViewModel(clipboardRepository, userStore)
     }
 
     @After

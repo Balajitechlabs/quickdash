@@ -50,7 +50,7 @@ fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
     var query by remember { mutableStateOf("") }
     var showAddEngineDialog by remember { mutableStateOf(false) }
 
-    val searchHistoryJson by mainViewModel.settingsRepository.searchHistory.collectAsState(initial = "[]")
+    val searchHistoryJson by mainViewModel.userStore.searchHistory.collectAsState(initial = "[]")
     val searchHistory = remember(searchHistoryJson) {
         try {
             val type = object : TypeToken<List<String>>() {}.type
@@ -58,7 +58,7 @@ fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
         } catch (e: Exception) { emptyList() }
     }
 
-    val customEnginesJson by mainViewModel.settingsRepository.customSearchEngines.collectAsState(initial = "[]")
+    val customEnginesJson by mainViewModel.userStore.customSearchEngines.collectAsState(initial = "[]")
     
     val engines = remember(customEnginesJson) {
         val defaultEngines = listOf(
@@ -118,7 +118,7 @@ fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
     fun doSearch(q: String) {
         if (q.isBlank()) return
         coroutineScope.launch {
-            mainViewModel.settingsRepository.addSearchHistory(q)
+            mainViewModel.userStore.addSearchHistory(q)
         }
         try {
             val encoded = java.net.URLEncoder.encode(q, "UTF-8")
@@ -410,7 +410,7 @@ fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 TextButton(onClick = {
-                    coroutineScope.launch { mainViewModel.settingsRepository.clearSearchHistory() }
+                    coroutineScope.launch { mainViewModel.userStore.clearSearchHistory() }
                 }) {
                     Text("Clear", color = MaterialTheme.colorScheme.error)
                 }
@@ -478,7 +478,7 @@ fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
                             newList.add(mapOf("name" to engineName.trim(), "url" to engineUrl.trim()))
                             
                             coroutineScope.launch {
-                                mainViewModel.settingsRepository.saveCustomSearchEngines(gson.toJson(newList))
+                                mainViewModel.userStore.saveCustomSearchEngines(gson.toJson(newList))
                             }
                             showAddEngineDialog = false
                         }
