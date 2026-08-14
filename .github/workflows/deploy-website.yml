@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || '2861af483292ee5ae3c882f83b782c91' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,7 +41,10 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || '2861af483292ee5ae3c882f83b782c91' }}
           command: pages deploy website/dist --project-name=quickdash --branch=master --commit-dirty=true
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || '2861af483292ee5ae3c882f83b782c91' }}
 
       - name: Cloudflare API Token notice
         if: env.CLOUDFLARE_API_TOKEN == ''
