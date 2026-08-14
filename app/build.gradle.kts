@@ -198,7 +198,7 @@ dependencies {
     ksp(libs.room.compiler)
 
     // Google Sign-In (kept for future use)
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation("com.google.android.gms:play-services-auth:21.6.0")
 
     // Custom UI & Theme Upgrades
     implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
