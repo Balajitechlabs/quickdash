@@ -13,11 +13,17 @@ router.get('/', async (req, res) => {
     const raw = await readFile(DATA_PATH, 'utf-8')
     let docs = JSON.parse(raw)
     const { id, section } = req.query
-    if (id) docs = docs.filter(d => d.id === id)
-    if (section) docs = docs.filter(d => d.section === section)
+    if (id && typeof id === 'string') {
+      const safeId = id.substring(0, 50)
+      docs = docs.filter(d => d.id === safeId)
+    }
+    if (section && typeof section === 'string') {
+      const safeSection = section.substring(0, 50)
+      docs = docs.filter(d => d.section === safeSection)
+    }
     res.json(docs)
   } catch (err) {
-    console.error('Error reading docs:', err.message)
+    console.error('Error reading docs')
     res.status(500).json({ error: 'Failed to read docs' })
   }
 })
