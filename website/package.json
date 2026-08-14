@@ -10,7 +10,7 @@
     "typecheck": "echo no typecheck"
   },
   "dependencies": {
-    "react": "^18.3.1",
+    "react": "^19.2.8",
     "react-dom": "^18.3.1",
     "react-helmet-async": "3.0.0",
     "react-router-dom": "^6.26.0"
