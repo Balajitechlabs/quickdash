@@ -85,6 +85,23 @@
 -keep class com.balajitechlabs.quickdash.core.network.QuickDashApiClient { *; }
 -keep class com.balajitechlabs.quickdash.core.network.ApiConfig { *; }
 
+# ======================================================================
+# 8A. BACKUP & RESTORE ENGINE (AES-256-GCM + PBKDF2)
+# ======================================================================
+-keep class com.balajitechlabs.quickdash.core.data.backup.** { *; }
+-keepclassmembers class com.balajitechlabs.quickdash.core.data.backup.** {
+    <fields>;
+    <init>(...);
+}
+
+# ======================================================================
+# 8B. RADIAL GESTURE & UI MODELS
+# ======================================================================
+-keep class com.balajitechlabs.quickdash.core.ui.components.RadialToolItem { *; }
+-keep class com.balajitechlabs.quickdash.core.ui.components.RadialSector { *; }
+-keep class com.balajitechlabs.quickdash.core.ui.components.AppUpdateDialogKt { *; }
+-keep class com.balajitechlabs.quickdash.features.settings.presentation.BackupRestoreDialogKt { *; }
+
 # Telegram feature
 -keep class com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker { *; }
 

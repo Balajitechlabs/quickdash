@@ -12,7 +12,7 @@ object OfflineBackupManager {
 
     fun exportBackupZip(context: Context, destinationFile: File): Boolean {
         return try {
-            destinationFile.writeText("{\"backup_version\": \"5.2.0\", \"timestamp\": ${System.currentTimeMillis()}}")
+            destinationFile.writeText("{\"backup_version\": \"5.2.1\", \"timestamp\": ${System.currentTimeMillis()}}")
             Toast.makeText(context, "Backup exported successfully! 📦", Toast.LENGTH_SHORT).show()
             true
         } catch (e: Exception) {

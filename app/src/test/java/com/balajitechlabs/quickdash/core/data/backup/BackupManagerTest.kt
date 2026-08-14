@@ -26,8 +26,8 @@ class BackupManagerTest {
     fun `test BackupPayload json serialization and deserialization`() {
         val metadata = BackupMetadata(
             version = 1,
-            appVersion = "5.2.0",
-            appVersionCode = 520,
+            appVersion = "5.2.1",
+            appVersionCode = 521,
             timestamp = 1723630000000L,
             deviceName = "Google Pixel 9 Pro",
             isEncrypted = true
@@ -53,13 +53,24 @@ class BackupManagerTest {
         assertThat(json).isNotEmpty()
 
         val parsed = gson.fromJson(json, BackupPayload::class.java)
-        assertThat(parsed.metadata.appVersion).isEqualTo("5.2.0")
+        assertThat(parsed.metadata.appVersion).isEqualTo("5.2.1")
+        assertThat(parsed.metadata.appVersionCode).isEqualTo(521)
         assertThat(parsed.metadata.isEncrypted).isTrue()
         assertThat(parsed.stringPreferences["default_upi_id"]).isEqualTo("user@upi")
         assertThat(parsed.booleanPreferences["dynamic_color"]).isTrue()
         assertThat(parsed.notes).hasSize(1)
         assertThat(parsed.notes[0].text).isEqualTo("Test encrypted note content")
         assertThat(parsed.notes[0].isPinned).isTrue()
+    }
+
+    @Test
+    fun `test BackupMetadata default values`() {
+        val metadata = BackupMetadata()
+        assertThat(metadata.version).isEqualTo(1)
+        assertThat(metadata.appVersion).isEqualTo("5.2.1")
+        assertThat(metadata.appVersionCode).isEqualTo(521)
+        assertThat(metadata.timestamp).isGreaterThan(0L)
+        assertThat(metadata.isEncrypted).isFalse()
     }
 
     @Test

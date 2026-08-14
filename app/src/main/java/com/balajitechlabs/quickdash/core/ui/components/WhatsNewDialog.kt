@@ -25,7 +25,7 @@ import androidx.compose.foundation.BorderStroke
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WhatsNewDialog(
-    versionName: String = "5.2.0",
+    versionName: String = "5.2.1",
     onDismiss: () -> Unit
 ) {
     var isInverted by remember { mutableStateOf(false) }
@@ -62,11 +62,11 @@ fun WhatsNewDialog(
     )
 
     val items = listOf(
-        "💖 Support & Donate" to "Support QuickDash directly via Razorpay from the Settings screen.",
-        "🛠️ System Log Viewer" to "Dedicated UI with a 1-click Copy to Clipboard feature for easier debugging.",
-        "📐 Dynamic Floating UI" to "The Floating UI Window now dynamically adjusts its height based on content.",
-        "🔗 Clickable Links" to "All links shared to the clipboard are now instantly clickable inside the app.",
-        "🚀 Crashlytics Updates" to "Automatic Crashlytics mapping uploads to Firebase for enhanced stability tracking."
+        "🎯 Radial Quick-Wheel" to "350ms long-press or swipe on the floating bubble to instantly summon top 4 tools with spring physics.",
+        "📱 Glance Material 3 Widgets" to "Responsive home screen widgets (1x1 Squircle, 2x1 Quick Bar, 2x2 Tool Hub) with dynamic tinting.",
+        "🔐 Encrypted Backup & Restore" to "Export and import settings & notes with AES-256-GCM encryption and PBKDF2 passphrase protection.",
+        "📦 In-App Update Engine" to "Streamlined update checker, download progress indicator, and automatic package installer trigger.",
+        "⚡ Architecture & Stability" to "Target SDK 36 (Android 16), Unified UserStore DataStore migration, and comprehensive test suite."
     )
 
     AlertDialog(

@@ -121,6 +121,7 @@ import com.balajitechlabs.quickdash.core.utils.QRCodeGenerator
 import com.balajitechlabs.quickdash.core.utils.UpdateManager
 import com.balajitechlabs.quickdash.core.utils.UpdateState
 import com.balajitechlabs.quickdash.core.ui.components.WhatsNewDialog
+import com.balajitechlabs.quickdash.core.ui.components.AppUpdateDialog
 import com.balajitechlabs.quickdash.features.eyedropper.presentation.QuickColorEyedropperScreen
 import com.balajitechlabs.quickdash.features.pomodoro.presentation.QuickPomodoroScreen
 import com.balajitechlabs.quickdash.features.password.presentation.QuickPasswordScreen
@@ -570,9 +571,10 @@ fun QuickDashContent(
         val lastSeen = mainViewModel.userStore.lastSeenVersion.first()
         val currentVersion = try {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            packageInfo.versionName ?: "5.2.0"
+            packageInfo.versionName ?: "5.2.1"
         } catch (e: Exception) {
-            "5.2.0"
+            Log.e("QuickDashApp", "Failed to retrieve version from PackageManager", e)
+            "5.2.1"
         }
         if (lastSeen != currentVersion) {
             showWhatsNewOnLaunch = true
@@ -1345,7 +1347,7 @@ fun QuickDashContent(
     }
     if (showWhatsNewOnLaunch) {
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val versionName = packageInfo.versionName ?: "5.2.0"
+        val versionName = packageInfo.versionName ?: "5.2.1"
         
         LaunchedEffect(Unit) {
             settingsConfettiType = "Corner"
@@ -1363,116 +1365,13 @@ fun QuickDashContent(
         )
     }
 
-    if (updateState is UpdateState.UpdateAvailable && showUpdateDialog.value) {
-        AlertDialog(
-            onDismissRequest = { showUpdateDialog.value = false },
-            title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically, 
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_cloud_download),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Text("Update Available! 🚀", fontWeight = FontWeight.Bold)
-                }
-            },
-            text = {
-                Text(
-                    text = "A new version (v${updateState.versionName}) of QuickDash is available. Update now to get the latest features and stability fixes.",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showUpdateDialog.value = false
-                        UpdateManager.startDownload(context, updateState.apkUrl, updateState.versionName)
-                    }
-                ) {
-                    Text("Download & Update")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showUpdateDialog.value = false }) {
-                    Text("Later")
-                }
-            }
-        )
-    }
-
-    if (updateState is UpdateState.Downloading) {
-        AlertDialog(
-            onDismissRequest = {},
-            title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically, 
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    CircularProgressIndicator(
-                        progress = { updateState.progress / 100f },
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                        strokeWidth = 3.dp,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Text("Downloading Update...", fontWeight = FontWeight.Bold)
-                }
-            },
-            text = {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(10.dp), 
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Downloading version v${updateState.versionName} (${updateState.progress}%)",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    LinearProgressIndicator(
-                        progress = { updateState.progress / 100f },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            },
-            confirmButton = {}
-        )
-    }
-
-    if (updateState is UpdateState.ReadyToInstall) {
-        AlertDialog(
-            onDismissRequest = {},
-            title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically, 
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_check_circle_fill),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Text("Update Ready! 🎉", fontWeight = FontWeight.Bold)
-                }
-            },
-            text = {
-                Text(
-                    text = "Version v${updateState.versionName} has been successfully downloaded. Click below to install it.",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        UpdateManager.installApk(context, updateState.fileName)
-                    }
-                ) {
-                    Text("Install Now")
-                }
+    if ((updateState is UpdateState.UpdateAvailable && showUpdateDialog.value) || 
+        (updateState is UpdateState.Error && showUpdateDialog.value) ||
+        updateState is UpdateState.Downloading || 
+        updateState is UpdateState.ReadyToInstall) {
+        AppUpdateDialog(
+            onDismiss = {
+                showUpdateDialog.value = false
             }
         )
     }
@@ -1521,7 +1420,7 @@ fun UpdateTag(onShowUpdateDialog: () -> Unit = {}) {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
             "v${packageInfo.versionName}"
         } catch (e: Exception) {
-            "v5.2.0"
+            "v5.2.1"
         }
     }
 
@@ -1529,7 +1428,8 @@ fun UpdateTag(onShowUpdateDialog: () -> Unit = {}) {
     val hasLocalApk = UpdateManager.hasLocalApk
 
     when (state) {
-        UpdateState.Idle -> {
+        UpdateState.Idle,
+        UpdateState.UpToDate -> {
             if (hasLocalApk) {
                 Surface(
                     color = MaterialTheme.colorScheme.errorContainer,

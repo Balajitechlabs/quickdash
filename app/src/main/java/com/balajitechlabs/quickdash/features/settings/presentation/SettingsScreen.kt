@@ -1932,7 +1932,7 @@ fun SettingsScreen(
 
     if (showWhatsNewDialog) {
         val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val versionName = packageInfo.versionName ?: "5.2.0"
+        val versionName = packageInfo.versionName ?: "5.2.1"
         WhatsNewDialog(
             versionName = versionName,
             onDismiss = { showWhatsNewDialog = false }
@@ -2362,7 +2362,17 @@ fun SettingsScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             Text("QuickDash", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                            Text("Version $vNameAbout (Build $vCodeAbout)", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f))
+                            Text(
+                                "Version $vNameAbout (Build $vCodeAbout) 🚀",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.clickable {
+                                    showAboutDialog = false
+                                    showUpdateDialog = true
+                                    try { com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(context, manual = true) } catch (e: Exception) { Log.e(TAG, "Failed to check for updates", e) }
+                                }
+                            )
                             Text("Made with ❤️ by BalajiTechLabs", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f))
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
@@ -2411,10 +2421,13 @@ fun SettingsScreen(
                     ) {
                         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                             when (updateState) {
-                                is com.balajitechlabs.quickdash.core.utils.UpdateState.Idle -> {
+                                is com.balajitechlabs.quickdash.core.utils.UpdateState.Idle,
+                                is com.balajitechlabs.quickdash.core.utils.UpdateState.UpToDate -> {
                                     Text("Status: Up to date ✅", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                                     Button(
                                         onClick = {
+                                            showAboutDialog = false
+                                            showUpdateDialog = true
                                             try { com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(context, manual = true) } catch (e: Exception) { Log.e(TAG, "Failed to check for updates", e) }
                                         },
                                         shape = RoundedCornerShape(8.dp)
@@ -2549,17 +2562,8 @@ fun SettingsScreen(
 
     // ── Update Check Dialog ───────────────────────────────────────────────
     if (showUpdateDialog) {
-        AlertDialog(
-            onDismissRequest = { showUpdateDialog = false },
-            title = { Text("🔄 Check for Updates", fontWeight = FontWeight.Bold) },
-            text = { Text("Would you like to check for the latest version of QuickDash?", style = MaterialTheme.typography.bodyMedium) },
-            confirmButton = {
-                Button(onClick = {
-                    showUpdateDialog = false
-                    try { com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(context, manual = true) } catch (e: Exception) { Log.e(TAG, "Failed to check for updates from dialog", e) }
-                }) { Text("Check Now") }
-            },
-            dismissButton = { TextButton(onClick = { showUpdateDialog = false }) { Text("Later") } }
+        com.balajitechlabs.quickdash.core.ui.components.AppUpdateDialog(
+            onDismiss = { showUpdateDialog = false }
         )
     }
 
