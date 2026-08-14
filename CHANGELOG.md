@@ -2,6 +2,16 @@
 
 All major updates, feature additions, bug fixes, and system improvements for **QuickDash** are documented in this file.
 
+## [5.3.0] - 2026-08-14 (UX & Power-User Controls Release) 🎨
+
+### 🚀 ADDED & IMPROVED
+- **🎯 Radial Quick-Wheel Bubble Gesture**: 350ms long-press or directional swipe on the floating bubble summons a spring-animated Material 3 circular hub to instantly launch top 4 tools (UPI QR, Notes, Calculator, Timer).
+- **📱 Glance Material 3 Responsive Widgets**: Multi-size home screen & lock screen widgets supporting 1x1 Compact Squircle, 2x1 Quick Actions Bar, and 2x2 / 4x2 Tool Dashboard with dynamic Material You container tinting.
+- **🔐 Encrypted Backup & Restore**: AES-256-GCM encrypted `.qdbackup` file export/import with PBKDF2 (100,000 iterations) passphrase key derivation, Room database notes serialization, and DataStore preferences restore with Merge/Replace conflict resolution.
+- **🤖 GitHub Repository & CI Automation**: Added CodeRabbit configuration (`.coderabbit.yaml`), automated PR welcome contributor bot (`pr-welcome.yml`), Dependabot version grouping, and upgraded Gradle wrapper to 9.5 and `setup-java@v5`.
+
+---
+
 ## [5.2.0] - 2026-08-14 (Unified DataStore & Architecture Release) 🚀
 
 ### 🚀 ADDED & IMPROVED

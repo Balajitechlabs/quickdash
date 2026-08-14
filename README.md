@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Balajitechlabs/quickdash/releases/latest
+  <a href="https://github.com/Balajitechlabs/quickdash/releases/latest">
     <img src="https://img.shields.io/badge/Download_APK-2ea44f?style=for-the-badge&logo=android&logoColor=white" alt="Download APK">
   </a>
   <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash">
@@ -41,16 +41,19 @@ QuickDash is an **Android floating overlay utility hub** — a single persistent
 
 | Tool | Description |
 |------|-------------|
+| 🎯 **Radial Quick-Wheel** | 350ms long-press or swipe on the bubble to launch your top 4 pinned tools. |
+| 📱 **Glance M3 Widgets** | Responsive Home Screen & Lock Screen widgets (1x1, 2x1 Quick Bar, 2x2 Hub). |
+| 🔐 **Encrypted Backup** | AES-256-GCM encrypted `.qdbackup` export & restore with PBKDF2 passphrase protection. |
 | 🔤 **Translator** | On-screen translation across 100+ languages. Runs entirely on-device. |
 | 📋 **Clipboard** | Smart clipboard manager with history, favorites, and one-tap paste. |
 | 📱 **UPI QR** | Generate UPI QR codes from any screen. Tap to scan or share. |
-| 📝 **Notes** | Quick floating notes that sync with your system clipboard. |
+| 📝 **Notes** | Quick floating notes that sync with Room DB and clipboard. |
 | 🔢 **Calculator** | Floating calculator for quick arithmetic without switching apps. |
 | 📶 **Wi-Fi Share** | Share connected Wi-Fi credentials instantly as QR codes. |
 | ⚖️ **Unit Converter** | Convert length, weight, temperature, currency, and more. |
 | 👁️ **Text Extractor** | Extract text from images using on-device OCR (Optical Character Recognition). |
 | 🎨 **Color Picker** | Pick colors from any screen area and copy hex/RGB values. |
-| ⏱️ **Timer** | Floating countdown timer with preset intervals. |
+| ⏱️ **Timer** | Floating countdown timer with preset intervals and AlarmManager exact alarms. |
 | 🔋 **Battery Info** | View battery stats, health, and estimated remaining time. |
 | 🧰 **Tool Drawer** | Quick-access drawer for all utilities in one place. |
 
@@ -102,15 +105,16 @@ For detailed setup instructions, see [SETUP.md](SETUP.md).
 | Component | Technology |
 |-----------|-----------|
 | Language | **Kotlin 2.2** |
-| UI | **Jetpack Compose** + Material Design 3 |
-| Architecture | MVVM (Model-View-ViewModel) |
+| UI | **Jetpack Compose** + **Material Design 3** + **Glance Widgets** |
+| Architecture | MVVM (Model-View-ViewModel) + Single-Activity Floating Dialog |
 | DI | **Hilt** (Dagger) |
-| Database | **Room** + **DataStore** |
+| Database & Storage | **Room DB**, **DataStore** (`UserStore`), **Proto DataStore** |
+| Encryption | **AES-256-GCM** + **PBKDF2** |
 | Networking | **OkHttp 4.12** |
 | Min SDK | **API 24** (Android 7.0) |
 | Target SDK | **API 36** (Android 16) |
-| Build | **Gradle 9.4** with Kotlin DSL |
-| CI/CD | **GitHub Actions** (4 workflows) |
+| Build | **Gradle 9.5** with Kotlin DSL |
+| CI/CD | **GitHub Actions** (6 workflows: PR checks, release, CodeQL, nightly, dependency scan, website) |
 
 ---
 

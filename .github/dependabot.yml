@@ -13,7 +13,21 @@ updates:
       - "android"
     commit-message:
       prefix: "chore(deps)"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
+    groups:
+      androidx-compose:
+        patterns:
+          - "androidx.*"
+          - "com.google.android.material*"
+      build-tools:
+        patterns:
+          - "com.android.*"
+          - "org.jetbrains.kotlin.*"
+          - "com.google.devtools.ksp*"
+      firebase-google:
+        patterns:
+          - "com.google.firebase*"
+          - "com.google.android.gms*"
 
   # npm dependencies (Website)
   - package-ecosystem: "npm"
@@ -28,6 +42,10 @@ updates:
     commit-message:
       prefix: "chore(deps)"
     open-pull-requests-limit: 5
+    groups:
+      npm-website:
+        patterns:
+          - "*"
 
   # npm dependencies (Cloudflare Workers)
   - package-ecosystem: "npm"
@@ -43,7 +61,7 @@ updates:
       prefix: "chore(deps)"
     open-pull-requests-limit: 5
     groups:
-      npm-and-yarn:
+      npm-workers:
         patterns:
           - "*"
 
@@ -60,3 +78,7 @@ updates:
     commit-message:
       prefix: "chore(ci)"
     open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns:
+          - "*"

@@ -1,0 +1,36 @@
+# CodeRabbit Configuration for QuickDash
+language: "en-US"
+early_access: false
+
+reviews:
+  profile: "chill"
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: false # Disables noisy "Review skipped" comments on non-default branches
+  collapse_walkthrough: true
+  auto_review:
+    enabled: true
+    ignore_title_keywords:
+      - "WIP"
+      - "Draft"
+    drafts: false
+    base_branches:
+      - "master"
+      - "main"
+      - "dev"
+  path_instructions:
+    - path: "app/src/main/**/*.kt"
+      instructions: |
+        - Jetpack Compose Thread Safety: All state writes (mutableStateOf, mutableStateListOf, collectAsState) MUST execute on the Main Thread (Dispatchers.Main).
+        - Intrinsic Measurements: Never place SubcomposeLayout components (LazyRow, LazyColumn, TabRow, BoxWithConstraints) inside ListItem or intrinsic measurement slots.
+        - Floating / Service Intents: Any Intent launched from a background service or floating context must have Intent.FLAG_ACTIVITY_NEW_TASK.
+        - Vector & Image Assets: Always use androidx.compose.foundation.Image (without tint) instead of Icon for multi-colored logos.
+        - UPI Validation: Support flexible alpha-numeric UPI handles (digits and special characters .-_).
+    - path: ".github/workflows/*.yml"
+      instructions: |
+        - Ensure action versions are valid (actions/checkout@v4, actions/setup-java@v5, actions/setup-node@v4).
+        - Ensure no credentials or tokens are hardcoded.
+
+chat:
+  auto_reply: true
