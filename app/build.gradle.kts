@@ -213,7 +213,7 @@ dependencies {
     // Google Play Core APIs: In-App Updates, In-App Reviews & Play Integrity
     implementation("com.google.android.play:app-update-ktx:2.1.0")
     implementation("com.google.android.play:review-ktx:2.0.2")
-    implementation("com.google.android.play:integrity:1.4.0")
+    implementation("com.google.android.play:integrity:1.6.0")
 
     // MediaPipe LLM Inference (on-device AI with Gemma / Phi models)
     implementation("com.google.mediapipe:tasks-genai:0.10.22")
