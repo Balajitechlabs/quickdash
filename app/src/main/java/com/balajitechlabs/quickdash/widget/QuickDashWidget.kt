@@ -67,7 +67,7 @@ class QuickDashWidget : GlanceAppWidget() {
             modifier = GlanceModifier
                 .fillMaxSize()
                 .padding(4.dp)
-                .clickable(actionStartActivity<MainActivity>()),
+                .clickable(actionStartActivity(Intent(context, MainActivity::class.java).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })),
             contentAlignment = Alignment.Center
         ) {
             Box(
@@ -136,7 +136,7 @@ class QuickDashWidget : GlanceAppWidget() {
             Row(
                 modifier = GlanceModifier
                     .fillMaxWidth()
-                    .clickable(actionStartActivity<MainActivity>()),
+                    .clickable(actionStartActivity(Intent(context, MainActivity::class.java).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
