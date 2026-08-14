@@ -330,13 +330,88 @@ class FloatingBubbleService : Service() {
             collapseMenu()
         }
 
-        // ── Drag + tap logic ──────────────────────────────────────────
+        // ── Drag + tap + Radial Gesture logic ──────────────────────────
         var initialX = 0; var initialY = 0
         var initialTouchX = 0f; var initialTouchY = 0f
         var lastTapTime = 0L
         val tapHandler = android.os.Handler(android.os.Looper.getMainLooper())
         var singleTapRunnable: Runnable? = null
         var isDragging = false
+        var isRadialMenuOpen = false
+        var activeRadialSector = -1
+        var radialView: ComposeView? = null
+        var radialParams: WindowManager.LayoutParams? = null
+
+        val radialState = androidx.compose.runtime.mutableIntStateOf(-1)
+
+        fun dismissRadialMenu() {
+            if (radialView != null) {
+                try {
+                    windowManager.removeView(radialView)
+                } catch (e: Exception) {
+                    AppLogger.e("FloatingBubbleService", "Error removing radial view", e)
+                }
+                radialView = null
+                isRadialMenuOpen = false
+                radialState.intValue = -1
+                activeRadialSector = -1
+            }
+        }
+
+        fun showRadialMenu(centerX: Int, centerY: Int) {
+            dismissRadialMenu()
+            isRadialMenuOpen = true
+            triggerVibration(30)
+
+            val layoutFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            else @Suppress("DEPRECATION") WindowManager.LayoutParams.TYPE_PHONE
+
+            val sizePx = (240 * resources.displayMetrics.density).toInt()
+            radialParams = WindowManager.LayoutParams(
+                sizePx,
+                sizePx,
+                layoutFlag,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT
+            ).apply {
+                gravity = Gravity.TOP or Gravity.START
+                x = centerX - sizePx / 2
+                y = centerY - sizePx / 2
+            }
+
+            radialView = ComposeView(this@FloatingBubbleService).apply {
+                setViewTreeLifecycleOwner(savedStateRegistryOwner)
+                setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
+                setContent {
+                    com.balajitechlabs.quickdash.core.ui.components.RadialBubbleMenu(
+                        activeSectorIndex = radialState.intValue,
+                        onActionSelected = { action ->
+                            triggerVibration(15)
+                            dismissRadialMenu()
+                            launchSection(action.actionIntent)
+                        },
+                        onDismiss = {
+                            dismissRadialMenu()
+                        }
+                    )
+                }
+            }
+
+            try {
+                windowManager.addView(radialView, radialParams)
+            } catch (e: Exception) {
+                AppLogger.e("FloatingBubbleService", "Failed to add radial menu view", e)
+            }
+        }
+
+        val longPressRunnable = Runnable {
+            if (!isDragging) {
+                val bubbleWidth = floatingView.width.takeIf { it > 0 } ?: (48 * resources.displayMetrics.density).toInt()
+                val bubbleHeight = floatingView.height.takeIf { it > 0 } ?: (48 * resources.displayMetrics.density).toInt()
+                showRadialMenu(params.x + bubbleWidth / 2, params.y + bubbleHeight / 2)
+            }
+        }
 
         bubbleImage.setOnTouchListener { _, event ->
             when (event.action) {
@@ -344,48 +419,106 @@ class FloatingBubbleService : Service() {
                     initialX = params.x; initialY = params.y
                     initialTouchX = event.rawX; initialTouchY = event.rawY
                     isDragging = false
+                    isRadialMenuOpen = false
+                    tapHandler.postDelayed(longPressRunnable, 350)
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val dx = (event.rawX - initialTouchX).toInt()
                     val dy = (event.rawY - initialTouchY).toInt()
-                    if (!isDragging && (abs(dx) > 8 || abs(dy) > 8)) isDragging = true
-                    if (isDragging) {
-                        params.x = initialX + dx
-                        params.y = initialY + dy
-                        windowManager.updateViewLayout(floatingView, params)
+
+                    if (isRadialMenuOpen) {
+                        // Calculate sector angle based on delta from touch down
+                        val distance = kotlin.math.hypot(event.rawX - initialTouchX, event.rawY - initialTouchY)
+                        if (distance > 35 * resources.displayMetrics.density) {
+                            var angle = Math.toDegrees(kotlin.math.atan2((event.rawY - initialTouchY).toDouble(), (event.rawX - initialTouchX).toDouble()))
+                            if (angle < 0) angle += 360.0
+
+                            // 4 Cardinal sectors:
+                            // Right (East): 315° to 45° -> Index 1 (Notes)
+                            // Bottom (South): 45° to 135° -> Index 2 (Calc)
+                            // Left (West): 135° to 225° -> Index 3 (Timer)
+                            // Top (North): 225° to 315° -> Index 0 (UPI)
+                            val sector = when {
+                                angle >= 315.0 || angle < 45.0 -> 1 // Right / Notes
+                                angle in 45.0..135.0 -> 2            // Bottom / Calc
+                                angle in 135.0..225.0 -> 3           // Left / Timer
+                                else -> 0                            // Top / UPI
+                            }
+                            if (sector != activeRadialSector) {
+                                activeRadialSector = sector
+                                radialState.intValue = sector
+                                triggerVibration(10)
+                            }
+                        } else {
+                            if (activeRadialSector != -1) {
+                                activeRadialSector = -1
+                                radialState.intValue = -1
+                            }
+                        }
+                    } else {
+                        if (!isDragging && (abs(dx) > 12 || abs(dy) > 12)) {
+                            isDragging = true
+                            tapHandler.removeCallbacks(longPressRunnable)
+                        }
+                        if (isDragging) {
+                            params.x = initialX + dx
+                            params.y = initialY + dy
+                            try { windowManager.updateViewLayout(floatingView, params) } catch (e: Exception) {
+                                AppLogger.e("FloatingBubbleService", "Error updating bubble layout", e)
+                            }
+                        }
                     }
                     true
                 }
                 MotionEvent.ACTION_UP -> {
-                    val xDiff = abs(event.rawX - initialTouchX)
-                    val yDiff = abs(event.rawY - initialTouchY)
+                    tapHandler.removeCallbacks(longPressRunnable)
 
-                    if (isDragging) {
+                    if (isRadialMenuOpen) {
+                        val selectedIndex = activeRadialSector
+                        dismissRadialMenu()
+                        if (selectedIndex in 0..3) {
+                            val actions = com.balajitechlabs.quickdash.core.ui.components.DEFAULT_RADIAL_ACTIONS
+                            val chosenAction = actions.getOrNull(selectedIndex)
+                            if (chosenAction != null) {
+                                triggerVibration(20)
+                                launchSection(chosenAction.actionIntent)
+                            }
+                        }
+                    } else if (isDragging) {
                         // Released after drag — snap to nearest edge
                         snapToEdge()
-                    } else if (xDiff < 10 && yDiff < 10) {
-                        val currentTime = System.currentTimeMillis()
-                        if (currentTime - lastTapTime < 300) {
-                            singleTapRunnable?.let { tapHandler.removeCallbacks(it) }
-                            lastTapTime = 0L
-                            triggerDoubleVibration()
-                            val userStore = com.balajitechlabs.quickdash.core.data.UserStore(this@FloatingBubbleService)
-                            serviceScope.launch {
-                                userStore.setBubbleEnabled(false)
+                    } else {
+                        val xDiff = abs(event.rawX - initialTouchX)
+                        val yDiff = abs(event.rawY - initialTouchY)
+                        if (xDiff < 15 && yDiff < 15) {
+                            val currentTime = System.currentTimeMillis()
+                            if (currentTime - lastTapTime < 300) {
+                                singleTapRunnable?.let { tapHandler.removeCallbacks(it) }
+                                lastTapTime = 0L
+                                triggerDoubleVibration()
+                                val userStore = com.balajitechlabs.quickdash.core.data.UserStore(this@FloatingBubbleService)
+                                serviceScope.launch {
+                                    userStore.setBubbleEnabled(false)
+                                }
+                                sendBroadcast(Intent("com.balajitechlabs.quickdash.CLOSE_APP"))
+                                stopSelf()
+                            } else {
+                                lastTapTime = currentTime
+                                singleTapRunnable = Runnable {
+                                    triggerVibration(20)
+                                    if (bubbleMenu.visibility == View.VISIBLE) collapseMenu() else expandMenu()
+                                }
+                                tapHandler.postDelayed(singleTapRunnable!!, 300)
                             }
-                            sendBroadcast(Intent("com.balajitechlabs.quickdash.CLOSE_APP"))
-                            stopSelf()
-                        } else {
-                            lastTapTime = currentTime
-                            singleTapRunnable = Runnable {
-                                triggerVibration(20)
-                                if (bubbleMenu.visibility == View.VISIBLE) collapseMenu() else expandMenu()
-                            }
-                            tapHandler.postDelayed(singleTapRunnable!!, 300)
                         }
                     }
                     true
+                }
+                MotionEvent.ACTION_CANCEL -> {
+                    tapHandler.removeCallbacks(longPressRunnable)
+                    dismissRadialMenu()
+                    false
                 }
                 else -> false
             }

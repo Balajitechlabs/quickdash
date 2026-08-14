@@ -1,0 +1,37 @@
+name: PR Welcome & Contributor Guide
+
+on:
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  welcome-comment:
+    name: 💬 PR Welcome Comment
+    runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]' && github.actor != 'github-actions[bot]'
+    steps:
+      - name: Post PR Welcome Message
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const author = context.payload.pull_request.user.login;
+            const body = `### 👋 Welcome @${author}! Thank you for contributing to QuickDash! ⚡
+
+            We really appreciate your time and effort to improve QuickDash. Before maintainers review this PR, please double-check the following:
+
+            - [ ] 🔨 **Automated Checks**: Please wait for all CI checks (\`Android Build\`, \`Unit Tests\`, \`Lint Check\`, and \`Security Scan\`) to pass with green checkmarks ✅.
+            - [ ] 🧪 **Local Tests**: Ensure \`./gradlew testDebugUnitTest\` and \`./gradlew assembleDebug\` execute cleanly.
+            - [ ] 📋 **Scope & Rules**: Confirm changes comply with our architecture and thread-safety rules (all Compose UI writes on \`Dispatchers.Main\`).
+
+            > 💡 **Tip**: If your PR is still in progress, please keep it as a **Draft**. Once all checks pass and it is ready for maintainer review, mark it as **Ready for review**! 🚀`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: body
+            });

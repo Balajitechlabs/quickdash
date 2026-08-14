@@ -13,11 +13,17 @@ router.get('/', async (req, res) => {
     const raw = await readFile(DATA_PATH, 'utf-8')
     let posts = JSON.parse(raw)
     const { limit, category } = req.query
-    if (category) posts = posts.filter(p => p.category === category)
-    if (limit) posts = posts.slice(0, parseInt(limit, 10))
+    if (category && typeof category === 'string') {
+      const safeCategory = category.substring(0, 50)
+      posts = posts.filter(p => p.category === safeCategory)
+    }
+    if (limit) {
+      const num = Math.min(Math.max(parseInt(limit, 10) || 10, 1), 100)
+      posts = posts.slice(0, num)
+    }
     res.json(posts)
   } catch (err) {
-    console.error('Error reading posts:', err.message)
+    console.error('Error reading posts')
     res.status(500).json({ error: 'Failed to read posts' })
   }
 })

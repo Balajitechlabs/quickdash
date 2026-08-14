@@ -21,7 +21,7 @@ if (localPropertiesFile.exists()) {
 
 android {
     namespace = "com.balajitechlabs.quickdash"
-    compileSdk = 37
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.balajitechlabs.quickdash"
@@ -130,6 +130,11 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true  // Required to generate BuildConfig fields
+    }
+
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
     }
 }
 

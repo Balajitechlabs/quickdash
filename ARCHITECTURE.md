@@ -105,17 +105,29 @@ app/src/main/java/com/balajitechlabs/quickdash/
 | `CrashReporter.kt` | Captures crashes, sends on next launch. |
 | `WifiTransferServer.kt` | Local HTTP server for Wi-Fi file transfer. |
 
+#### `core/data/backup/` — Backup & Restore Engine
+
+| File | Purpose |
+|------|---------|
+| `BackupManager.kt` | **Encrypted Backup Engine.** AES-256-GCM encryption with PBKDF2 (100,000 iterations), Room DB notes serialization, and DataStore preferences export/import with Merge/Replace conflict resolution. |
+
 #### `core/services/` — Background Services
 
 | File | Purpose |
 |------|---------|
-| `FloatingBubbleService.kt` | **The floating bubble.** System overlay service. Draggable, tap-to-open, double-tap-to-close. |
+| `FloatingBubbleService.kt` | **The floating bubble.** System overlay service with 350ms long-press & directional swipe **Radial Quick-Wheel** to launch top 4 tools, single-tap toggle, double-tap close, and screen edge snapping. |
 | `QuickTileService.kt` | Quick Settings tile to toggle the bubble. |
 | `QuickTileCategoryService.kt` | Tile category provider for Android 13+. |
 | `SideBarDockService.kt` | Edge sidebar for quick tool access. |
 | `ShakeDetectorService.kt` | Shake-to-open gesture service. |
 | `QuickDashFirebaseMessagingService.kt` | FCM push notifications. |
 | `QuickDashNotificationListenerService.kt` | Reads notifications for clipboard & preview features. |
+
+#### `widget/` — Home Screen & Lock Screen Widgets
+
+| File | Purpose |
+|------|---------|
+| `QuickDashWidget.kt` | **Glance Material 3 Widget.** Responsive layouts: 1x1 Compact Squircle, 2x1 Quick Actions Bar, and 2x2 / 4x2 Tool Dashboard. |
 
 #### `core/quicktile/`
 

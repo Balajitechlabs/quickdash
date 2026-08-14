@@ -42,16 +42,20 @@ docs: update README with new screenshots
 ```
 
 #### 5. Open a Pull Request
-- Target the `main` branch.
-- Link any related issues.
-- Describe what your PR changes and why.
+- Target the `dev` branch for all features and bug fixes.
+- Wait for automated CI checks (`Android Build`, `Unit Tests`, `Lint`) to pass with green checkmarks.
+- Link any related issues and describe your changes.
 
 ## Development Guidelines
 
-### Architecture
+### Architecture & Stability Rules
+- **Jetpack Compose Thread Safety**: All state writes (`mutableStateOf`, updates) MUST execute on the Main Thread (`Dispatchers.Main`).
+- **Intrinsic Measurements**: Never place `SubcomposeLayout` (`LazyRow`, `LazyColumn`, `TabRow`) inside `ListItem` slots.
+- **Service Intents**: Always set `Intent.FLAG_ACTIVITY_NEW_TASK` when launching intents from background or floating services.
+- **Vector & Multi-Colored Assets**: Use `androidx.compose.foundation.Image` (without colorFilter tint) for multi-colored logos and icons.
 - **MVVM** pattern — screens have a ViewModel, data flows through repositories.
-- **Hilt** for dependency injection in new code.
-- **DataStore** for preferences, **Room** for persistent data.
+- **Hilt** for dependency injection.
+- **DataStore** (`UserStore`) for settings and preferences, **Room** for database persistence.
 
 ### Code Style
 - 100% Kotlin — no Java files.

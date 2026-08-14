@@ -44,7 +44,7 @@ router.get('/', async (req, res) => {
 
     res.json(updates[0] || null)
   } catch (err) {
-    console.error('Error fetching updates:', err.message)
+    console.error('Error fetching updates')
     res.json(null)
   }
 })

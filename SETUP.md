@@ -3,30 +3,34 @@
 Welcome to the Developer Setup guide for QuickDash. This project is built using 100% Kotlin and Jetpack Compose (Material 3).
 
 ## Prerequisites
-- **Android Studio:** Giraffe or newer (recommended).
+- **Android Studio:** Ladybug / Meerkat or newer (recommended).
 - **JDK:** Java 17 or higher.
-- **Android SDK:** API Level 34 (Android 14) or higher.
+- **Android SDK:** API Level 36 (Android 16).
 
-## Building the Project
+## Building & Verifying the Project
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/balajitechlabs/quickdash.git
+   git clone https://github.com/Balajitechlabs/quickdash.git
    cd quickdash
    ```
 
 2. **Configure Local Properties**
-   QuickDash relies on a private Telegram Bot Poller for its notification and crash logging systems. You must provide your own Telegram Bot keys to build the project locally, as these are injected via `BuildConfig`.
-   
-   Create a file named `local.properties` in the root directory (this file is gitignored):
+   QuickDash includes Telegram Bot integration for notification and diagnostics logging. Create a file named `local.properties` in the root directory (gitignored):
    ```properties
    TG_BOT_TOKEN=your_telegram_bot_token_here
    TG_CHAT_ID=your_telegram_chat_id_here
    ```
 
-3. **Sync and Build**
-   Open the project in Android Studio. Wait for the Gradle sync to complete, then hit **Run** or use the terminal:
+3. **Build & Test**
    ```bash
+   # Run unit test suite
+   ./gradlew testDebugUnitTest
+
+   # Run Android Lint
+   ./gradlew lintDebug
+
+   # Assemble debug APK
    ./gradlew assembleDebug
    ```
 
