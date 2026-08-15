@@ -5,30 +5,17 @@ AuthorName: BalajiTechLabs
 WebSite: https://quickdash.balajitechlab.com
 SourceCode: https://github.com/Balajitechlabs/quickdash
 IssueTracker: https://github.com/Balajitechlabs/quickdash/issues
+Changelog: https://github.com/Balajitechlabs/quickdash/blob/master/CHANGELOG.md
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 5.1.1
-CurrentVersionCode: 511
-
-Name: QuickDash
-Summary: 12 floating utility tools, QR payments, notes & translator running over any Android app
-Description: |-
-  QuickDash is a system-wide floating utility overlay for Android devices.
-  Features 12 integrated floating tools:
-  - Quick Collect: Instant UPI & PayPal payment QR code generator
-  - Quick Scan: QR and barcode scanner
-  - Quick Chat: Send direct WhatsApp messages without saving numbers
-  - Smart Translator: Fast on-screen translation
-  - Smart Clipboard: Rich clipboard history manager
-  - Quick Notes: Floating notepad
-  - Calculator: Floating math calculator with history
-  - Quick Capture: On-screen screenshot and video recording
+CurrentVersion: 5.2.1
+CurrentVersionCode: 521
 
 Builds:
-  - versionName: 5.1.1
-    versionCode: 511
-    commit: main
+  - versionName: 5.2.1
+    versionCode: 521
+    commit: v5.2.1
     subdir: app
     gradle:
       - yes
