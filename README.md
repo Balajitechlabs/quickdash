@@ -21,10 +21,14 @@
   <a href="obtainium://app/https://github.com/Balajitechlabs/quickdash">
     <img src="https://img.shields.io/badge/Add_to_Obtainium-000000?style=for-the-badge&logo=github&logoColor=white" alt="Obtainium">
   </a>
+  <a href="https://github.com/Balajitechlabs/quickdash/releases">
+    <img src="https://img.shields.io/github/downloads/Balajitechlabs/quickdash/total?style=for-the-badge&logo=github&logoColor=white&color=2563eb&label=TOTAL%20DOWNLOADS" alt="Total Downloads">
+  </a>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/github/v/release/Balajitechlabs/quickdash?style=flat-square&logo=github&color=blue" alt="Version">
+  <img src="https://img.shields.io/github/downloads/Balajitechlabs/quickdash/total?style=flat-square&logo=github&color=2563eb&label=downloads" alt="Downloads">
   <img src="https://img.shields.io/github/stars/Balajitechlabs/quickdash?style=flat-square&logo=github&color=gold" alt="Stars">
   <img src="https://img.shields.io/github/last-commit/Balajitechlabs/quickdash?style=flat-square&logo=git&color=green" alt="Last Commit">
   <img src="https://img.shields.io/github/actions/workflow/status/Balajitechlabs/quickdash/deploy-website.yml?style=flat-square&label=website" alt="Website">
