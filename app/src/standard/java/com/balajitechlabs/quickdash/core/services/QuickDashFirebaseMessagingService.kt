@@ -59,8 +59,7 @@ class QuickDashFirebaseMessagingService : FirebaseMessagingService() {
                         userStore.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
                     }
                 } catch (e: Exception) {
-                    e.printStackTrace()
-                    com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().recordException(e)
+                    com.balajitechlabs.quickdash.core.utils.AppLogger.e(TAG, "Failed to parse FCM post", e)
                 }
             }
         }
@@ -72,8 +71,7 @@ class QuickDashFirebaseMessagingService : FirebaseMessagingService() {
             try {
                 userStore.saveFcmToken(token)
             } catch (e: Exception) {
-                e.printStackTrace()
-                com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().recordException(e)
+                com.balajitechlabs.quickdash.core.utils.AppLogger.e(TAG, "Failed to save FCM token", e)
             }
         }
         sendRegistrationToServer(token)

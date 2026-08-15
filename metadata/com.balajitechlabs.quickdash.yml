@@ -9,13 +9,15 @@ Changelog: https://github.com/Balajitechlabs/quickdash/blob/master/CHANGELOG.md
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 5.2.1
-CurrentVersionCode: 521
+CurrentVersion: 5.2.2
+CurrentVersionCode: 522
 
 Builds:
-  - versionName: 5.2.1
-    versionCode: 521
-    commit: v5.2.1
+  - versionName: 5.2.2
+    versionCode: 522
+    commit: v5.2.2
     subdir: app
     gradle:
       - yes
+    gradleflags:
+      - -Pfoss

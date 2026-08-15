@@ -34,12 +34,17 @@ object AppLogger {
         appendLog("ERROR", safeTag, errorMsg)
         
         try {
+            val clazz = Class.forName("com.google.firebase.crashlytics.FirebaseCrashlytics")
+            val getInstance = clazz.getMethod("getInstance")
+            val instance = getInstance.invoke(null)
             if (throwable != null) {
-                com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().recordException(throwable)
+                val recordException = clazz.getMethod("recordException", Throwable::class.java)
+                recordException.invoke(instance, throwable)
             } else {
-                com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().log("[$safeTag] $safeMsg")
+                val logMethod = clazz.getMethod("log", String::class.java)
+                logMethod.invoke(instance, "[$safeTag] $safeMsg")
             }
-        } catch (_: Exception) { /* Crashlytics disabled or not initialized */ }
+        } catch (_: Throwable) { /* Crashlytics not present in FOSS build or disabled */ }
     }
     
     fun i(tag: String, message: String) {
@@ -58,16 +63,20 @@ object AppLogger {
 
     private fun appendLog(level: String, tag: String, message: String) {
         val time = dateFormat.format(Date())
-        val logLine = "$time [$level] $tag: $message"
+        val logEntry = "[$time] [$level] [$tag]: $message"
         val currentList = _logs.value.toMutableList()
-        currentList.add(0, logLine) // add to top
-        if (currentList.size > MAX_LOGS) {
-            currentList.removeAt(currentList.lastIndex)
+        if (currentList.size >= MAX_LOGS) {
+            currentList.removeAt(0)
         }
+        currentList.add(logEntry)
         _logs.value = currentList
     }
 
-    fun clear() {
+    fun getLogsAsText(): String {
+        return _logs.value.joinToString("\n")
+    }
+
+    fun clearLogs() {
         _logs.value = emptyList()
     }
 }

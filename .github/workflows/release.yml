@@ -59,7 +59,7 @@ jobs:
           echo "TG_CHAT_ID=${{ secrets.TG_CHAT_ID }}" >> local.properties
           echo "sdk.dir=$ANDROID_HOME" >> local.properties
 
-      - name: Build signed APKs and AAB
+      - name: Build signed APKs, AAB, and FOSS APK
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -74,8 +74,26 @@ jobs:
                           -Pandroid.injected.signing.key.password=$KEY_PASSWORD"
           fi
 
-          eval ./gradlew clean assembleRelease "$SIGNING_FLAGS"
-          eval ./gradlew bundleRelease "$SIGNING_FLAGS"
+          # 1. Build Standard Release APKs & AAB (Google Play / Direct)
+          eval ./gradlew clean assembleRelease bundleRelease --parallel --build-cache "$SIGNING_FLAGS"
+
+          # 2. Stage standard artifacts
+          mkdir -p release_artifacts
+          cp app/build/outputs/apk/release/*.apk release_artifacts/ 2>/dev/null || true
+          cp app/build/outputs/bundle/release/app-release.aab release_artifacts/ 2>/dev/null || true
+
+          # 3. Build 100% Zero-Tracker FOSS Release APK (for F-Droid & IzzyOnDroid)
+          eval ./gradlew assembleRelease -Pfoss --parallel --build-cache "$SIGNING_FLAGS"
+          if [ -f app/build/outputs/apk/release/app-universal-release.apk ]; then
+            cp app/build/outputs/apk/release/app-universal-release.apk release_artifacts/app-foss-release.apk
+          elif [ -f app/build/outputs/apk/release/app-release.apk ]; then
+            cp app/build/outputs/apk/release/app-release.apk release_artifacts/app-foss-release.apk
+          fi
+
+          # 4. Generate SHA-256 Checksums for all release artifacts
+          cd release_artifacts
+          sha256sum * > checksums.txt
+          cd ..
 
       - name: Extract version name
         id: version
@@ -83,13 +101,22 @@ jobs:
           VERSION_NAME=$(grep "versionName =" app/build.gradle.kts | head -1 | awk '{print $3}' | tr -d '"')
           echo "version_name=${VERSION_NAME:-unknown}" >> "$GITHUB_OUTPUT"
 
-      - name: Organize artifacts
+      - name: Organize artifacts & generate summary
         run: |
-          mkdir -p release_artifacts
-          cp app/build/outputs/apk/release/*.apk release_artifacts/ 2>/dev/null || true
-          cp app/build/outputs/bundle/release/app-release.aab release_artifacts/ 2>/dev/null || true
-          echo "=== Artifacts ==="
+          echo "=== Artifacts to Publish ==="
           ls -lh release_artifacts/
+
+          echo "### 📦 QuickDash v${{ steps.version.outputs.version_name }} Release Artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "| File Name | Size | SHA-256 Checksum |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+          for file in release_artifacts/*; do
+            if [ -f "$file" ]; then
+              fname=$(basename "$file")
+              fsize=$(ls -lh "$file" | awk '{print $5}')
+              fsha=$(sha256sum "$file" | awk '{print $1}')
+              echo "| \`$fname\` | $fsize | \`$fsha\` |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
 
       - name: Update update.json with checksum
         run: |
@@ -112,13 +139,15 @@ jobs:
           body: |
             ## QuickDash v${{ steps.version.outputs.version_name }}
 
-            ### Downloads
+            ### 📦 Downloads
+            - **`app-foss-release.apk`** — 🌿 **100% Zero-Tracker FOSS Edition** (for F-Droid & IzzyOnDroid)
+            - **`app-universal-release.apk`** — Universal APK (works on all Android devices)
             - **`app-arm64-v8a-release.apk`** — 64-bit ARM for modern devices (2020+)
             - **`app-armeabi-v7a-release.apk`** — 32-bit ARM for older devices
-            - **`app-universal-release.apk`** — works on all supported devices
             - **`app-release.aab`** — Google Play App Bundle
+            - **`checksums.txt`** — Cryptographic SHA-256 file hashes
 
-            ### Install
+            ### 📲 Install Instructions
             1. Download the APK for your device.
             2. On Android, enable **Settings → Install unknown apps** for your browser.
             3. Open the file and tap **Install**.

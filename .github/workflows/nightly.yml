@@ -2,13 +2,13 @@ name: Nightly
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, dev]
     paths:
       - 'app/**'
       - 'gradle/**'
       - '*.gradle.kts'
   pull_request:
-    branches: [main, master]
+    branches: [main, master, dev]
     paths:
       - 'app/**'
       - 'gradle/**'
@@ -53,11 +53,15 @@ jobs:
           echo "TG_CHAT_ID=${{ secrets.TG_CHAT_ID }}" >> local.properties
           echo "sdk.dir=$ANDROID_HOME" >> local.properties
 
-      - name: Debug build
-        run: ./gradlew assembleDebug
+      - name: Debug build (Standard & FOSS)
+        run: |
+          ./gradlew assembleDebug
+          ./gradlew assembleDebug -Pfoss
 
-      - name: Unit tests
-        run: ./gradlew testDebugUnitTest
+      - name: Unit tests (Standard & FOSS)
+        run: |
+          ./gradlew testDebugUnitTest
+          ./gradlew testDebugUnitTest -Pfoss
 
       - name: Lint check
         run: ./gradlew lint

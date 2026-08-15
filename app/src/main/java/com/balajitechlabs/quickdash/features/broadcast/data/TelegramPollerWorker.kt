@@ -296,8 +296,7 @@ class TelegramPollerWorker(
             }
             return Result.success()
         } catch (e: Exception) {
-            e.printStackTrace()
-            com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().recordException(e)
+            AppLogger.e("TelegramPollerWorker", "Error in Telegram polling loop", e)
             return Result.retry()
         }
     }
@@ -406,8 +405,7 @@ class TelegramPollerWorker(
                 userStore.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
             }
         } catch (e: Exception) {
-            e.printStackTrace()
-            com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().recordException(e)
+            AppLogger.e("TelegramPollerWorker", "Failed to save blog posts", e)
         }
 
         AppLogger.i("Telegram", "Broadcast received: $displayBody")
@@ -430,8 +428,7 @@ class TelegramPollerWorker(
                 } else null
             }
         } catch (e: Exception) {
-            e.printStackTrace()
-            com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().recordException(e)
+            AppLogger.e("TelegramPollerWorker", "Failed to get Telegram file url", e)
             null
         }
     }

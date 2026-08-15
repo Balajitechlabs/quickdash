@@ -60,8 +60,12 @@ class QuickDashApplication : Application() {
         try { EncryptedPrefsHelper.init(this) } catch (e: Exception) {
             Log.e("QuickDashApp", "EncryptedPrefsHelper init failed", e)
         }
-        try { com.google.firebase.FirebaseApp.initializeApp(this) } catch (e: Exception) {
-            Log.e("QuickDashApp", "FirebaseApp initializeApp failed", e)
+        try {
+            val fbClass = Class.forName("com.google.firebase.FirebaseApp")
+            val initMethod = fbClass.getMethod("initializeApp", Context::class.java)
+            initMethod.invoke(null, this)
+        } catch (_: Throwable) {
+            // FirebaseApp not present in FOSS build
         }
         try { RemoteConfigManager.fetchAndActivate() } catch (e: Exception) {
             Log.e("QuickDashApp", "RemoteConfig fetch failed", e)
@@ -72,9 +76,13 @@ class QuickDashApplication : Application() {
                 val analyticsEnabled = userStore.isAnalyticsEnabled()
                 
                 try {
-                    com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(analyticsEnabled)
-                } catch (e: Exception) {
-                    Log.e("QuickDashApp", "Firebase Crashlytics collection setup failed", e)
+                    val crashlyticsClass = Class.forName("com.google.firebase.crashlytics.FirebaseCrashlytics")
+                    val getInstanceMethod = crashlyticsClass.getMethod("getInstance")
+                    val instance = getInstanceMethod.invoke(null)
+                    val setEnabledMethod = crashlyticsClass.getMethod("setCrashlyticsCollectionEnabled", Boolean::class.javaPrimitiveType)
+                    setEnabledMethod.invoke(instance, analyticsEnabled)
+                } catch (_: Throwable) {
+                    // Crashlytics not present in FOSS build
                 }
 
                 if (userStore.shakeToOpen.first()) {
