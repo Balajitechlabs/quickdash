@@ -1,16 +1,37 @@
 package com.balajitechlabs.quickdash.core.utils
 
 import android.app.Activity
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.review.ReviewManagerFactory
 
 object PlayStoreHelper {
+    private var installStateListener: InstallStateUpdatedListener? = null
+
     fun checkForAppUpdate(activity: Activity) {
         try {
             val appUpdateManager = AppUpdateManagerFactory.create(activity)
+
+            // Register listener for flexible update download completion
+            installStateListener = InstallStateUpdatedListener { state ->
+                if (state.installStatus() == InstallStatus.DOWNLOADED) {
+                    // Update downloaded - prompt user to complete installation
+                    Snackbar.make(
+                        activity.findViewById(android.R.id.content),
+                        "Update downloaded. Restart to install?",
+                        Snackbar.LENGTH_INDEFINITE
+                    ).setAction("RESTART") {
+                        appUpdateManager.completeUpdate()
+                    }.show()
+                }
+            }
+            appUpdateManager.registerListener(installStateListener!!)
+
             appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
                 val isUpdateAvailable = appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                 val isFlexible = appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
@@ -28,6 +49,18 @@ object PlayStoreHelper {
             }
         } catch (e: Exception) {
             AppLogger.e("PlayStoreHelper", "In-App Update check skipped", e)
+        }
+    }
+
+    fun unregisterUpdateListener(activity: Activity) {
+        try {
+            installStateListener?.let {
+                val appUpdateManager = AppUpdateManagerFactory.create(activity)
+                appUpdateManager.unregisterListener(it)
+                installStateListener = null
+            }
+        } catch (e: Exception) {
+            AppLogger.e("PlayStoreHelper", "Failed to unregister update listener", e)
         }
     }
 

@@ -31,7 +31,7 @@
   </a>
   &nbsp;&nbsp;
   <a href="https://github.com/Balajitechlabs/quickdash">
-    <img src="https://komarev.com/ghpvc/?username=Balajitechlabs-quickdash&label=TOTAL%20VIEWS&color=2563eb&style=for-the-badge" alt="Total Views">
+    <img src="https://komarev.com/ghpvc/?username=Balajitechlabs-quickdash&label=BADGE%20VIEWS&color=2563eb&style=for-the-badge" alt="Badge Views">
   </a>
   &nbsp;&nbsp;
   <a href="obtainium://app/https://github.com/Balajitechlabs/quickdash">

@@ -20,13 +20,16 @@ object QrScannerHelper {
             val scannerClass = Class.forName("com.google.mlkit.vision.codescanner.GmsBarcodeScanning")
             val getClientMethod = scannerClass.getMethod("getClient", Context::class.java)
             val scannerInstance = getClientMethod.invoke(null, context)
-            val startScanMethod = scannerInstance.javaClass.getMethod("startScan")
+
+            val barcodeScannerClass = Class.forName("com.google.mlkit.vision.codescanner.GmsBarcodeScanner")
+            val startScanMethod = barcodeScannerClass.getMethod("startScan")
             val taskInstance = startScanMethod.invoke(scannerInstance) ?: run {
                 onError("Scanner task initialization failed")
                 return
             }
 
             // Reflectively attach addOnSuccessListener
+            val taskClass = Class.forName("com.google.android.gms.tasks.Task")
             val successListenerClass = Class.forName("com.google.android.gms.tasks.OnSuccessListener")
             val proxyHandler = java.lang.reflect.InvocationHandler { _, method, args ->
                 if (method.name == "onSuccess" && args != null && args.isNotEmpty()) {
@@ -52,7 +55,7 @@ object QrScannerHelper {
                 proxyHandler
             )
 
-            val addSuccessMethod = taskInstance.javaClass.getMethod("addOnSuccessListener", successListenerClass)
+            val addSuccessMethod = taskClass.getMethod("addOnSuccessListener", successListenerClass)
             addSuccessMethod.invoke(taskInstance, proxyListener)
 
             // Reflectively attach addOnFailureListener
@@ -71,7 +74,7 @@ object QrScannerHelper {
                 failureProxyHandler
             )
 
-            val addFailureMethod = taskInstance.javaClass.getMethod("addOnFailureListener", failureListenerClass)
+            val addFailureMethod = taskClass.getMethod("addOnFailureListener", failureListenerClass)
             addFailureMethod.invoke(taskInstance, failureProxyListener)
 
         } catch (_: Throwable) {

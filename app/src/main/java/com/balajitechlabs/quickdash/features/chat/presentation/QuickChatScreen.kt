@@ -824,13 +824,13 @@ fun QuickChatScreen(
                                             parsed = Regex("wa\\.me/([+0-9]+)", RegexOption.IGNORE_CASE)
                                                 .find(clean)?.groupValues?.get(1)
                                         }
-                                        if (parsed == null) {
+                                    } else {
+                                        // Non-WhatsApp content: only accept if it looks like a valid phone number
+                                        if (clean.matches(Regex("^[+0-9]+$"))) {
                                             parsed = clean
                                         }
-                                    } else {
-                                        parsed = clean
                                     }
-                                    
+
                                     if (parsed != null) {
                                         phoneNumber = parsed
                                     } else {

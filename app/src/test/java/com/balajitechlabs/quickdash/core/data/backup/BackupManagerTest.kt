@@ -69,8 +69,8 @@ class BackupManagerTest {
     fun `test BackupMetadata default values`() {
         val metadata = BackupMetadata()
         assertThat(metadata.version).isEqualTo(1)
-        assertThat(metadata.appVersion).isEqualTo("5.2.1")
-        assertThat(metadata.appVersionCode).isEqualTo(521)
+        assertThat(metadata.appVersion).isEqualTo("5.2.2")
+        assertThat(metadata.appVersionCode).isEqualTo(522)
         assertThat(metadata.timestamp).isGreaterThan(0L)
         assertThat(metadata.isEncrypted).isFalse()
     }

@@ -11,8 +11,8 @@ import java.util.Locale
 object AppLogger {
     private val _logs = MutableStateFlow<List<String>>(emptyList())
     val logs: StateFlow<List<String>> = _logs.asStateFlow()
-    
-    private val dateFormat = SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US)
+
+    private val logLock = Any()
     private const val MAX_LOGS = 200
 
     private fun sanitize(input: String): String {
@@ -44,7 +44,20 @@ object AppLogger {
                 val logMethod = clazz.getMethod("log", String::class.java)
                 logMethod.invoke(instance, "[$safeTag] $safeMsg")
             }
-        } catch (_: Throwable) { /* Crashlytics not present in FOSS build or disabled */ }
+        } catch (e: ClassNotFoundException) {
+            // Crashlytics not present in FOSS build
+        } catch (e: NoSuchMethodException) {
+            // Crashlytics API changed or unavailable
+        } catch (e: IllegalAccessException) {
+            // Reflection access denied
+        } catch (e: java.lang.reflect.InvocationTargetException) {
+            // Unwrap and rethrow fatal errors from Crashlytics invocation
+            val cause = e.cause
+            if (cause is VirtualMachineError || cause is ThreadDeath || cause is LinkageError) {
+                throw cause
+            }
+            // Otherwise suppress - Crashlytics call failed but not fatal
+        }
     }
     
     fun i(tag: String, message: String) {
@@ -62,21 +75,28 @@ object AppLogger {
     }
 
     private fun appendLog(level: String, tag: String, message: String) {
-        val time = dateFormat.format(Date())
-        val logEntry = "[$time] [$level] [$tag]: $message"
-        val currentList = _logs.value.toMutableList()
-        if (currentList.size >= MAX_LOGS) {
-            currentList.removeAt(0)
+        synchronized(logLock) {
+            val dateFormat = SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US)
+            val time = dateFormat.format(Date())
+            val logEntry = "[$time] [$level] [$tag]: $message"
+            val currentList = _logs.value.toMutableList()
+            if (currentList.size >= MAX_LOGS) {
+                currentList.removeAt(0)
+            }
+            currentList.add(logEntry)
+            _logs.value = currentList
         }
-        currentList.add(logEntry)
-        _logs.value = currentList
     }
 
     fun getLogsAsText(): String {
-        return _logs.value.joinToString("\n")
+        synchronized(logLock) {
+            return _logs.value.joinToString("\n")
+        }
     }
 
     fun clearLogs() {
-        _logs.value = emptyList()
+        synchronized(logLock) {
+            _logs.value = emptyList()
+        }
     }
 }
