@@ -21,16 +21,16 @@ jobs:
       packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Setup JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
       - name: Setup Gradle cache
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Decode keystore
         run: |
@@ -88,6 +88,9 @@ jobs:
             cp app/build/outputs/apk/release/app-universal-release.apk release_artifacts/app-foss-release.apk
           elif [ -f app/build/outputs/apk/release/app-release.apk ]; then
             cp app/build/outputs/apk/release/app-release.apk release_artifacts/app-foss-release.apk
+          else
+            echo "ERROR: FOSS APK not found - neither app-universal-release.apk nor app-release.apk exists"
+            exit 1
           fi
 
           # 4. Generate SHA-256 Checksums for all release artifacts

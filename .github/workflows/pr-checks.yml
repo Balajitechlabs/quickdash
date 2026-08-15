@@ -21,16 +21,16 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Decode google-services.json
         run: |
@@ -47,7 +47,9 @@ jobs:
           echo "sdk.dir=$ANDROID_HOME" > local.properties
 
       - name: Build Debug APKs (Standard & FOSS)
-        run: ./gradlew assembleDebug assembleDebug -Pfoss --parallel --build-cache --no-daemon
+        run: |
+          ./gradlew assembleDebug --parallel --build-cache --no-daemon
+          ./gradlew assembleDebug -Pfoss --parallel --build-cache --no-daemon
         env:
           CI: true
 
@@ -64,7 +66,7 @@ jobs:
 
       - name: Upload Debug APK
         if: success()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: debug-apk
           path: app/build/outputs/apk/debug/*.apk
@@ -77,16 +79,16 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Decode google-services.json
         run: |
@@ -107,7 +109,7 @@ jobs:
 
       - name: Upload Lint Report
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: lint-report
           path: app/build/reports/lint-results-debug.html
@@ -120,16 +122,16 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Decode google-services.json
         run: |
@@ -147,11 +149,12 @@ jobs:
 
       - name: Run Unit Tests (Standard & FOSS)
         run: |
-          ./gradlew testDebugUnitTest testDebugUnitTest -Pfoss --parallel --build-cache --no-daemon
+          ./gradlew testDebugUnitTest --parallel --build-cache --no-daemon
+          ./gradlew testDebugUnitTest -Pfoss --parallel --build-cache --no-daemon
 
       - name: Upload Test Report
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: test-report
           path: app/build/reports/tests/testDebugUnitTest/
@@ -164,10 +167,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Setup Node.js 22
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
@@ -188,7 +191,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Verify Fastlane & F-Droid Metadata
         run: |

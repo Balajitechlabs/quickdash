@@ -28,8 +28,8 @@ import javax.crypto.spec.SecretKeySpec
 
 data class BackupMetadata(
     val version: Int = 1,
-    val appVersion: String = "5.2.1",
-    val appVersionCode: Int = 521,
+    val appVersion: String = "5.2.2",
+    val appVersionCode: Int = 522,
     val timestamp: Long = System.currentTimeMillis(),
     val deviceName: String = "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}",
     val isEncrypted: Boolean = false

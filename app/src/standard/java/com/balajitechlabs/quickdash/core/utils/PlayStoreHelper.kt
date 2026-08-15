@@ -1,7 +1,7 @@
 package com.balajitechlabs.quickdash.core.utils
 
 import android.app.Activity
-import com.google.android.material.snackbar.Snackbar
+import android.widget.Toast
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.InstallStateUpdatedListener
@@ -20,14 +20,12 @@ object PlayStoreHelper {
             // Register listener for flexible update download completion
             installStateListener = InstallStateUpdatedListener { state ->
                 if (state.installStatus() == InstallStatus.DOWNLOADED) {
-                    // Update downloaded - prompt user to complete installation
-                    Snackbar.make(
-                        activity.findViewById(android.R.id.content),
-                        "Update downloaded. Restart to install?",
-                        Snackbar.LENGTH_INDEFINITE
-                    ).setAction("RESTART") {
-                        appUpdateManager.completeUpdate()
-                    }.show()
+                    Toast.makeText(
+                        activity,
+                        "Update downloaded. Completing installation...",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    appUpdateManager.completeUpdate()
                 }
             }
             appUpdateManager.registerListener(installStateListener!!)
