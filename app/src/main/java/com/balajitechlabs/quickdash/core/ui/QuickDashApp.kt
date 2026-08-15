@@ -241,54 +241,44 @@ fun QuickDashApp(
     var selectingCountry by remember { mutableStateOf(false) }
     var processedShortcut by remember(shortcutAction) { mutableStateOf(shortcutAction) }
 
-    // NOTE: GmsBarcodeScanning.getClient() must NOT be called eagerly at composition time.
-    // In release builds, GMS internal initialization classes are loaded on-demand by GMS.
-    // Calling getClient() in remember{} runs immediately during first composition and crashes
-    // with NullPointerException if any GMS internal class is not yet loaded.
-    // Solution: create the scanner lazily INSIDE the lambda, only when the user triggers a scan.
     val triggerScanQr = remember {
         {
-            try {
-                val scanner = com.google.mlkit.vision.codescanner.GmsBarcodeScanning.getClient(appContext)
-                scanner.startScan()
-                    .addOnSuccessListener { barcode ->
-                        var rawValue = (barcode.rawValue ?: "").trim()
-                        rawValue = rawValue.replace(Regex("[\\p{Cc}\\p{Cf}]"), "")
-                        if (rawValue.startsWith("upi://") || rawValue.startsWith("gpay://") || rawValue.startsWith("phonepe://") || rawValue.startsWith("paytmmp://") || rawValue.startsWith("bhim://")) {
-                            try {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue)).apply {
-                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                }
-                                appContext.startActivity(intent)
-                            } catch (e: Exception) {
-                                val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                                cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned UPI", rawValue))
-                                android.widget.Toast.makeText(appContext, "Failed to launch payment app. Copied link.", android.widget.Toast.LENGTH_LONG).show()
+            com.balajitechlabs.quickdash.features.qr.utils.QrScannerHelper.startScan(
+                context = appContext,
+                onResult = { raw ->
+                    var rawValue = raw.trim().replace(Regex("[\\p{Cc}\\p{Cf}]"), "")
+                    if (rawValue.startsWith("upi://") || rawValue.startsWith("gpay://") || rawValue.startsWith("phonepe://") || rawValue.startsWith("paytmmp://") || rawValue.startsWith("bhim://")) {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue)).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             }
-                        } else if (rawValue.startsWith("http://") || rawValue.startsWith("https://")) {
-                            try {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue)).apply {
-                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                }
-                                appContext.startActivity(intent)
-                            } catch (e: Exception) {
-                                val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                                cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned Link", rawValue))
-                                android.widget.Toast.makeText(appContext, "Scanned: $rawValue (Copied)", android.widget.Toast.LENGTH_LONG).show()
-                            }
-                        } else {
+                            appContext.startActivity(intent)
+                        } catch (e: Exception) {
                             val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                            cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned QR", rawValue))
+                            cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned UPI", rawValue))
+                            android.widget.Toast.makeText(appContext, "Failed to launch payment app. Copied link.", android.widget.Toast.LENGTH_LONG).show()
+                        }
+                    } else if (rawValue.startsWith("http://") || rawValue.startsWith("https://")) {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue)).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            appContext.startActivity(intent)
+                        } catch (e: Exception) {
+                            val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                            cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned Link", rawValue))
                             android.widget.Toast.makeText(appContext, "Scanned: $rawValue (Copied)", android.widget.Toast.LENGTH_LONG).show()
                         }
+                    } else {
+                        val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                        cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned QR", rawValue))
+                        android.widget.Toast.makeText(appContext, "Scanned: $rawValue (Copied)", android.widget.Toast.LENGTH_LONG).show()
                     }
-                    .addOnFailureListener {
-                        android.widget.Toast.makeText(appContext, "Scan cancelled or failed", android.widget.Toast.LENGTH_SHORT).show()
-                    }
-            } catch (e: Exception) {
-                android.widget.Toast.makeText(appContext, "QR scanner unavailable. Please update Google Play Services.", android.widget.Toast.LENGTH_LONG).show()
-            }
-            Unit
+                },
+                onError = { err ->
+                    android.widget.Toast.makeText(appContext, err, android.widget.Toast.LENGTH_SHORT).show()
+                }
+            )
         }
     }
 

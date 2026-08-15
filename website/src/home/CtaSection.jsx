@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom'
 import FadeInSection from '../components/FadeInSection'
 import { trackEvent } from '../utils/analytics'
 
-function DownloadCard({ icon, title, desc, github, playStore, label, wide }) {
-  const href = github
+function DownloadCard({ icon, title, desc, github, playStore, href: customHref, label, wide }) {
+  const href = customHref || (github
     ? 'https://github.com/Balajitechlabs/quickdash/releases/latest'
-    : 'https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash'
+    : 'https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash')
   const btnLabel = label || (github ? 'DOWNLOAD' : 'PLAY STORE')
   const imgSrc = github ? '/assets/github.svg' : '/assets/play_store.svg'
-  const trackLabel = github ? (label === 'DOWNLOAD ARM64' ? 'arm64_apk' : 'universal_apk') : 'play_store'
+  const trackLabel = customHref ? 'foss_apk' : (github ? (label === 'DOWNLOAD ARM64' ? 'arm64_apk' : 'universal_apk') : 'play_store')
 
   return (
     <div className="card" style={{ textAlign: 'center', ...(wide ? { gridColumn: '1 / -1' } : {}) }}>
@@ -90,8 +90,9 @@ export default function CtaSection() {
         <h2 id="download-title" className="section-title">Download</h2>
         <div className="grid-2">
           <DownloadCard icon="📦" title="Universal APK" desc="Compatible with all Android 7.0+ devices." github />
+          <DownloadCard icon="🌿" title="FOSS Edition" desc="100% Zero-Tracker APK for F-Droid & privacy enthusiasts." github href="https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-foss-release.apk" label="DOWNLOAD FOSS" />
           <DownloadCard icon="⚙️" title="ARM64 APK" desc="Optimized for ARM64 devices. Smaller APK size." github label="DOWNLOAD ARM64" />
-          <DownloadCard icon="▶️" title="Play Store Beta" desc="Join the Google Play Beta program." playStore wide />
+          <DownloadCard icon="▶️" title="Play Store Beta" desc="Join the Google Play Beta program." playStore />
         </div>
       </FadeInSection>
 

@@ -21,16 +21,16 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Decode google-services.json
         run: |
@@ -46,14 +46,27 @@ jobs:
         run: |
           echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --no-daemon
+      - name: Build Debug APKs (Standard & FOSS)
+        run: |
+          ./gradlew assembleDebug --parallel --build-cache --no-daemon
+          ./gradlew assembleDebug -Pfoss --parallel --build-cache --no-daemon
         env:
           CI: true
 
+      - name: Report APK Sizes
+        run: |
+          echo "### 📱 Debug APK Sizes" >> $GITHUB_STEP_SUMMARY
+          echo "| Artifact | Size |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+          for apk in app/build/outputs/apk/debug/*.apk; do
+            if [ -f "$apk" ]; then
+              echo "| \`$(basename "$apk")\` | $(ls -lh "$apk" | awk '{print $5}') |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
       - name: Upload Debug APK
         if: success()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: debug-apk
           path: app/build/outputs/apk/debug/*.apk
@@ -66,16 +79,16 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Decode google-services.json
         run: |
@@ -96,7 +109,7 @@ jobs:
 
       - name: Upload Lint Report
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: lint-report
           path: app/build/reports/lint-results-debug.html
@@ -109,16 +122,16 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Decode google-services.json
         run: |
@@ -134,12 +147,14 @@ jobs:
         run: |
           echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-      - name: Run Unit Tests
-        run: ./gradlew testDebugUnitTest --no-daemon
+      - name: Run Unit Tests (Standard & FOSS)
+        run: |
+          ./gradlew testDebugUnitTest --parallel --build-cache --no-daemon
+          ./gradlew testDebugUnitTest -Pfoss --parallel --build-cache --no-daemon
 
       - name: Upload Test Report
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: test-report
           path: app/build/reports/tests/testDebugUnitTest/
@@ -152,10 +167,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Setup Node.js 22
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
@@ -169,14 +184,24 @@ jobs:
         run: npm run build
         working-directory: website
 
-  # ── Security Scan ───────────────────────────────────────
+  # ── Security & Metadata Scan ─────────────────────────────
   security:
-    name: 🔒 Security Check
+    name: 🔒 Security & Metadata Check
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
+
+      - name: Verify Fastlane & F-Droid Metadata
+        run: |
+          echo "🔍 Validating Fastlane and F-Droid metadata files..."
+          test -f metadata/com.balajitechlabs.quickdash.yml || { echo "❌ Missing F-Droid metadata recipe"; exit 1; }
+          test -d fastlane/metadata/android/en-US || { echo "❌ Missing Fastlane metadata folder"; exit 1; }
+          test -f fastlane/metadata/android/en-US/title.txt || { echo "❌ Missing Fastlane title.txt"; exit 1; }
+          test -f fastlane/metadata/android/en-US/short_description.txt || { echo "❌ Missing Fastlane short_description.txt"; exit 1; }
+          test -f fastlane/metadata/android/en-US/full_description.txt || { echo "❌ Missing Fastlane full_description.txt"; exit 1; }
+          echo "✅ Metadata structure valid"
 
       - name: Check for hardcoded secrets
         run: |

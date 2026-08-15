@@ -1,0 +1,4 @@
+• 🌿 100% Zero-Tracker FOSS Edition build for F-Droid & IzzyOnDroid.
+• 🎯 Customizable 4-Tool Radial Bubble Wheel.
+• 📱 1-Tap Control Center Tile & Glance Material You Dynamic Widgets.
+• 🔐 Encrypted Backup & Restore with PBKDF2 & AES-256-GCM.

@@ -1,5 +1,16 @@
 [
   {
+    "version": "5.2.2",
+    "date": "2026-08-15",
+    "notes": "Zero-Tracker FOSS Edition & Privacy Architecture Release",
+    "highlights": [
+      "100% Zero-Tracker FOSS Build for F-Droid and IzzyOnDroid with zero telemetry.",
+      "Split standard and FOSS architecture for clean Google Play and open-source distribution.",
+      "Customizable 4-Tool Radial Bubble Wheel and 1-Tap Control Center Quick Tile.",
+      "Encrypted Backup & Restore (.qdbackup) with AES-256-GCM and PBKDF2 passphrase protection."
+    ]
+  },
+  {
     "version": "5.2.1",
     "date": "2026-08-14",
     "notes": "UX & Power-User Controls Release",

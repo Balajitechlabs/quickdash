@@ -2,7 +2,19 @@
 
 All major updates, feature additions, bug fixes, and system improvements for **QuickDash** are documented in this file.
 
-## [5.3.0] - 2026-08-20 (Customizable Hub, Widget Toggle & 120Hz Performance Release) 🎨
+## [5.2.2] - 2026-08-15 (Zero-Tracker FOSS Edition & Privacy Hardening Release) 🌿
+
+### 🚀 ADDED & IMPROVED
+- **🌿 100% Zero-Tracker FOSS Build**: Dedicated FOSS release target for F-Droid and IzzyOnDroid with zero Firebase analytics, zero Crashlytics, and zero ML Kit proprietary trackers (verified 0 trackers on Exodus Privacy).
+- **🛡️ Split Architecture**: Clean separation between standard Google Play builds (`src/standard`) and pure FOSS builds (`src/foss`).
+- **📷 Dynamic Proxy QR Scanner**: Tracker-free QR code scanner leveraging safe reflection and ZXing fallback.
+- **🎯 4-Tool Customizable Radial Wheel**: Rapid 350ms long-press bubble tool selection.
+- **📱 1-Tap Control Center Tile & Glance Widgets**: Material You dynamic home screen widgets and 1-tap quick settings tile.
+- **🔐 AES-256-GCM Encrypted Backup & Restore**: Robust PBKDF2 local backup protection.
+
+---
+
+## [5.2.1] - 2026-08-14 (Backup & Stability Release) ⚡
 
 ### 🚀 ADDED & IMPROVED
 - **🎨 Customizable Radial Bubble Wheel**: Users can now select and customize their top 4 favorite shortcut tools for the floating bubble wheel directly in Settings (`CustomizeBubbleDialog.kt` & `RadialToolCatalog.kt`).

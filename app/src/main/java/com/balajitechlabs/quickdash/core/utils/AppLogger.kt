@@ -11,8 +11,8 @@ import java.util.Locale
 object AppLogger {
     private val _logs = MutableStateFlow<List<String>>(emptyList())
     val logs: StateFlow<List<String>> = _logs.asStateFlow()
-    
-    private val dateFormat = SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US)
+
+    private val logLock = Any()
     private const val MAX_LOGS = 200
 
     private fun sanitize(input: String): String {
@@ -34,12 +34,30 @@ object AppLogger {
         appendLog("ERROR", safeTag, errorMsg)
         
         try {
+            val clazz = Class.forName("com.google.firebase.crashlytics.FirebaseCrashlytics")
+            val getInstance = clazz.getMethod("getInstance")
+            val instance = getInstance.invoke(null)
             if (throwable != null) {
-                com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().recordException(throwable)
+                val recordException = clazz.getMethod("recordException", Throwable::class.java)
+                recordException.invoke(instance, throwable)
             } else {
-                com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().log("[$safeTag] $safeMsg")
+                val logMethod = clazz.getMethod("log", String::class.java)
+                logMethod.invoke(instance, "[$safeTag] $safeMsg")
             }
-        } catch (_: Exception) { /* Crashlytics disabled or not initialized */ }
+        } catch (e: ClassNotFoundException) {
+            // Crashlytics not present in FOSS build
+        } catch (e: NoSuchMethodException) {
+            // Crashlytics API changed or unavailable
+        } catch (e: IllegalAccessException) {
+            // Reflection access denied
+        } catch (e: java.lang.reflect.InvocationTargetException) {
+            // Unwrap and rethrow fatal errors from Crashlytics invocation
+            val cause = e.cause
+            if (cause is VirtualMachineError || cause is ThreadDeath || cause is LinkageError) {
+                throw cause
+            }
+            // Otherwise suppress - Crashlytics call failed but not fatal
+        }
     }
     
     fun i(tag: String, message: String) {
@@ -57,17 +75,28 @@ object AppLogger {
     }
 
     private fun appendLog(level: String, tag: String, message: String) {
-        val time = dateFormat.format(Date())
-        val logLine = "$time [$level] $tag: $message"
-        val currentList = _logs.value.toMutableList()
-        currentList.add(0, logLine) // add to top
-        if (currentList.size > MAX_LOGS) {
-            currentList.removeAt(currentList.lastIndex)
+        synchronized(logLock) {
+            val dateFormat = SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US)
+            val time = dateFormat.format(Date())
+            val logEntry = "[$time] [$level] [$tag]: $message"
+            val currentList = _logs.value.toMutableList()
+            if (currentList.size >= MAX_LOGS) {
+                currentList.removeAt(0)
+            }
+            currentList.add(logEntry)
+            _logs.value = currentList
         }
-        _logs.value = currentList
     }
 
-    fun clear() {
-        _logs.value = emptyList()
+    fun getLogsAsText(): String {
+        synchronized(logLock) {
+            return _logs.value.joinToString("\n")
+        }
+    }
+
+    fun clearLogs() {
+        synchronized(logLock) {
+            _logs.value = emptyList()
+        }
     }
 }

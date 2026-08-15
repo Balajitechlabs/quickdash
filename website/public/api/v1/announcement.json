@@ -1,9 +1,9 @@
 {
   "announcement_id": 9,
-  "title": "QuickDash v5.2.1 is Here!",
-  "message": "Radial Quick-Wheel Bubble Gestures, Glance Material 3 Responsive Widgets, and Encrypted Backup & Restore (.qdbackup).",
-  "action_url": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-universal-release.apk",
-  "action_text": "Download v5.2.1",
+  "title": "QuickDash v5.2.2 is Here!",
+  "message": "Experience zero trackers on FOSS edition, customizable radial bubble, 1-tap Control Center tile, and encrypted backup/restore.",
+  "action_url": "https://github.com/Balajitechlabs/quickdash/releases/latest",
+  "action_text": "Download v5.2.2",
   "priority": "high",
   "dismissible": true,
   "expires_at": "2026-10-31T00:00:00Z"

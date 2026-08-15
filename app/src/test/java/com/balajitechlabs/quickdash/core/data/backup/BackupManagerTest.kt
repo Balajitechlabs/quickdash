@@ -28,8 +28,8 @@ class BackupManagerTest {
     fun `test BackupPayload json serialization and deserialization`() {
         val metadata = BackupMetadata(
             version = 1,
-            appVersion = "5.2.1",
-            appVersionCode = 521,
+            appVersion = "5.2.2",
+            appVersionCode = 522,
             timestamp = 1723630000000L,
             deviceName = "Google Pixel 9 Pro",
             isEncrypted = true
@@ -55,8 +55,8 @@ class BackupManagerTest {
         assertThat(json).isNotEmpty()
 
         val parsed = gson.fromJson(json, BackupPayload::class.java)
-        assertThat(parsed.metadata.appVersion).isEqualTo("5.2.1")
-        assertThat(parsed.metadata.appVersionCode).isEqualTo(521)
+        assertThat(parsed.metadata.appVersion).isEqualTo("5.2.2")
+        assertThat(parsed.metadata.appVersionCode).isEqualTo(522)
         assertThat(parsed.metadata.isEncrypted).isTrue()
         assertThat(parsed.stringPreferences["default_upi_id"]).isEqualTo("user@upi")
         assertThat(parsed.booleanPreferences["dynamic_color"]).isTrue()
@@ -69,8 +69,8 @@ class BackupManagerTest {
     fun `test BackupMetadata default values`() {
         val metadata = BackupMetadata()
         assertThat(metadata.version).isEqualTo(1)
-        assertThat(metadata.appVersion).isEqualTo("5.2.1")
-        assertThat(metadata.appVersionCode).isEqualTo(521)
+        assertThat(metadata.appVersion).isEqualTo("5.2.2")
+        assertThat(metadata.appVersionCode).isEqualTo(522)
         assertThat(metadata.timestamp).isGreaterThan(0L)
         assertThat(metadata.isEncrypted).isFalse()
     }
@@ -187,5 +187,34 @@ class BackupManagerTest {
         val decrypted = String(decryptCipher.doFinal(inCiphertext), Charsets.UTF_8)
 
         assertThat(decrypted).isEqualTo(payload)
+    }
+
+    @Test
+    fun `test QDBK envelope byte array inspection logic`() {
+        val magic = BackupManager.MAGIC_HEADER
+        val encryptedEnvelope = ByteArrayOutputStream().apply {
+            write(magic)
+            write(byteArrayOf(BackupManager.CURRENT_FORMAT_VERSION, BackupManager.FLAG_ENCRYPTED))
+            write(ByteArray(50)) // Dummy payload
+        }.toByteArray()
+
+        assertThat(encryptedEnvelope.size).isAtLeast(6)
+        val isQdMagic = encryptedEnvelope[0] == magic[0] &&
+                encryptedEnvelope[1] == magic[1] &&
+                encryptedEnvelope[2] == magic[2] &&
+                encryptedEnvelope[3] == magic[3]
+        val isEncrypted = encryptedEnvelope[5] == BackupManager.FLAG_ENCRYPTED
+
+        assertThat(isQdMagic).isTrue()
+        assertThat(isEncrypted).isTrue()
+
+        val plaintextEnvelope = ByteArrayOutputStream().apply {
+            write(magic)
+            write(byteArrayOf(BackupManager.CURRENT_FORMAT_VERSION, BackupManager.FLAG_PLAINTEXT))
+            write(ByteArray(50))
+        }.toByteArray()
+
+        val isPlainEncrypted = plaintextEnvelope[5] == BackupManager.FLAG_ENCRYPTED
+        assertThat(isPlainEncrypted).isFalse()
     }
 }
