@@ -15,7 +15,7 @@ CurrentVersionCode: 523
 Builds:
   - versionName: 5.2.2
     versionCode: 523
-    commit: v5.2.2
+    commit: 0ff6e19bc1c3a0c8cc862b0105e329012df32600
     subdir: app
     gradle:
       - yes
