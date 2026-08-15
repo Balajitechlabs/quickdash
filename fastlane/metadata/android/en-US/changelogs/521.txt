@@ -1,0 +1,4 @@
+- 1-Tap Control Center Quick Tile & Material You Glance Home Screen Widgets.
+- Customizable 4-Slot Radial Bubble Tools in Settings.
+- 120Hz RenderThread spring gesture animation optimization.
+- AES-256-GCM encrypted database export & restore.
