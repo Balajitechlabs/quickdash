@@ -5,7 +5,7 @@
   "changelog": "• QuickDash v5.2.1 — UX & Power-User Controls Release\n• Radial Quick-Wheel Bubble Gesture for fast 4-tool launch\n• Glance Material 3 Responsive Widgets (1x1, 2x1, 2x2)\n• Encrypted Backup & Restore (.qdbackup) with AES-256-GCM\n• Upgraded CI/CD & Automated Contributor Workflows",
   "apk_url": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-universal-release.apk",
   "apk_size_bytes": 27752336,
-  "apk_sha256": "370119131d2822f2ee7211e7f3802830d558b1422130b1d6bb15a14103fca341",
+  "apk_sha256": "eb0133a9b08052dbaeba7fca595149aa1529df505dee55c77f6b4dcd568b1843",
   "release_date": "2026-08-14",
   "critical_update": false,
   "features": {
