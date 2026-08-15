@@ -213,6 +213,7 @@ dependencies {
 
     // Jetpack Glance App Widget & Google Fonts
     implementation("androidx.glance:glance-appwidget:1.1.1")
+    implementation("androidx.glance:glance-material3:1.1.1")
     implementation("androidx.compose.ui:ui-text-google-fonts:1.6.0")
 
     // Google Play Core APIs: In-App Updates, In-App Reviews & Play Integrity

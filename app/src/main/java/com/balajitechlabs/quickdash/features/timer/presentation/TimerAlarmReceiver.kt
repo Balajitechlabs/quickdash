@@ -31,6 +31,7 @@ class TimerAlarmReceiver : BroadcastReceiver() {
         }
 
         val launchIntent = Intent(context, MainActivity::class.java).apply {
+            setPackage(context.packageName)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingIntent = PendingIntent.getActivity(

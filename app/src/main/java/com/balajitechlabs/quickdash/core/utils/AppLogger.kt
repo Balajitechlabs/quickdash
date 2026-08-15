@@ -15,33 +15,45 @@ object AppLogger {
     private val dateFormat = SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US)
     private const val MAX_LOGS = 200
 
+    private fun sanitize(input: String): String {
+        return input.replace('\r', '_').replace('\n', '_')
+    }
+
     fun d(tag: String, message: String) {
-        Log.d(tag, message)
-        appendLog("DEBUG", tag, message)
+        val safeTag = sanitize(tag)
+        val safeMsg = sanitize(message)
+        Log.d(safeTag, safeMsg)
+        appendLog("DEBUG", safeTag, safeMsg)
     }
 
     fun e(tag: String, message: String, throwable: Throwable? = null) {
-        Log.e(tag, message, throwable)
-        val errorMsg = if (throwable != null) "$message\n${throwable.stackTraceToString()}" else message
-        appendLog("ERROR", tag, errorMsg)
+        val safeTag = sanitize(tag)
+        val safeMsg = sanitize(message)
+        Log.e(safeTag, safeMsg, throwable)
+        val errorMsg = if (throwable != null) "$safeMsg\n${throwable.stackTraceToString()}" else safeMsg
+        appendLog("ERROR", safeTag, errorMsg)
         
         try {
             if (throwable != null) {
                 com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().recordException(throwable)
             } else {
-                com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().log("[$tag] $message")
+                com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().log("[$safeTag] $safeMsg")
             }
         } catch (_: Exception) { /* Crashlytics disabled or not initialized */ }
     }
     
     fun i(tag: String, message: String) {
-        Log.i(tag, message)
-        appendLog("INFO", tag, message)
+        val safeTag = sanitize(tag)
+        val safeMsg = sanitize(message)
+        Log.i(safeTag, safeMsg)
+        appendLog("INFO", safeTag, safeMsg)
     }
     
     fun w(tag: String, message: String) {
-        Log.w(tag, message)
-        appendLog("WARN", tag, message)
+        val safeTag = sanitize(tag)
+        val safeMsg = sanitize(message)
+        Log.w(safeTag, safeMsg)
+        appendLog("WARN", safeTag, safeMsg)
     }
 
     private fun appendLog(level: String, tag: String, message: String) {

@@ -39,7 +39,7 @@
     </queries>
     <application
         android:name=".QuickDashApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -177,6 +177,14 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/quickdash_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name="com.balajitechlabs.quickdash.widget.ToggleBubbleReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.balajitechlabs.quickdash.ACTION_TOGGLE_BUBBLE_WIDGET" />
+            </intent-filter>
         </receiver>
 
 

@@ -15,7 +15,6 @@ object SecurityGuardManager {
     fun isBiometricAvailable(context: Context): Boolean {
         val biometricManager = BiometricManager.from(context)
         val authenticators = BiometricManager.Authenticators.BIOMETRIC_STRONG or 
-                BiometricManager.Authenticators.BIOMETRIC_WEAK or 
                 BiometricManager.Authenticators.DEVICE_CREDENTIAL
         return when (biometricManager.canAuthenticate(authenticators)) {
             BiometricManager.BIOMETRIC_SUCCESS -> true
@@ -31,8 +30,7 @@ object SecurityGuardManager {
         onError: (String) -> Unit
     ) {
         if (!isBiometricAvailable(activity)) {
-            // Fallback: grant access if biometrics/pin are not configured on device
-            onSuccess()
+            onError("Biometric authentication is not enrolled or available on this device")
             return
         }
 
@@ -42,7 +40,6 @@ object SecurityGuardManager {
             .setSubtitle(subtitle)
             .setAllowedAuthenticators(
                 BiometricManager.Authenticators.BIOMETRIC_STRONG or 
-                BiometricManager.Authenticators.BIOMETRIC_WEAK or 
                 BiometricManager.Authenticators.DEVICE_CREDENTIAL
             )
             .build()
