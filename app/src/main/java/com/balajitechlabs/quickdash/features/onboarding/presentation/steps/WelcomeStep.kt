@@ -2,11 +2,10 @@ package com.balajitechlabs.quickdash.features.onboarding.presentation.steps
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.ContentPaste
+import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.QrCode
-import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Widgets
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,7 +26,7 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Welcome to QuickDash v5.2.1 🚀",
+            text = "Welcome to QuickDash ⚡",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
@@ -37,7 +36,7 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(6.dp))
 
         Text(
-            text = "Welcome to the v5.2.1 update! Featuring Radial Bubble Gestures, Glance Material 3 Widgets, and Encrypted Backups.",
+            text = "Your on-demand floating productivity suite. Turn it on with 1 tap from Control Center or Home Screen Widgets.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth()
@@ -46,9 +45,9 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(24.dp))
 
         FeatureHighlightCard(
-            icon = Icons.Filled.QrCode,
-            title = "Minimalist Quick Collect",
-            description = "Generate universal UPI & PayPal payment QR codes instantly in a compact floating card.",
+            icon = Icons.Filled.ChatBubbleOutline,
+            title = "Customizable Radial Bubble Wheel",
+            description = "Long-press the bubble (350ms) to launch your favorite 4 shortcuts. Customize slots directly in Settings.",
             accentColor = MaterialTheme.colorScheme.primary,
             delayMillis = 0
         )
@@ -56,9 +55,9 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(10.dp))
 
         FeatureHighlightCard(
-            icon = Icons.Filled.QrCodeScanner,
-            title = "Inbuilt QR Scanner Tile",
-            description = "New Quick Settings Tile to scan payment QR codes directly from your notification bar.",
+            icon = Icons.Filled.Widgets,
+            title = "1-Tap Quick Tile & Glance Widgets",
+            description = "Toggle the floating bubble instantly from your Control Center shade or Material You home screen widget.",
             accentColor = MaterialTheme.colorScheme.secondary,
             delayMillis = 80
         )
@@ -66,9 +65,9 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(10.dp))
 
         FeatureHighlightCard(
-            icon = Icons.AutoMirrored.Filled.Send,
-            title = "Pure Icon Social & Chat Hub",
-            description = "Instant deep-links for WhatsApp, Telegram, Signal, Instagram, Facebook & X with minimalist vector icons.",
+            icon = Icons.Filled.QrCode,
+            title = "Minimalist Quick Collect",
+            description = "Generate universal UPI & PayPal payment QR codes instantly in a compact floating card.",
             accentColor = MaterialTheme.colorScheme.tertiary,
             delayMillis = 160
         )
@@ -77,8 +76,8 @@ fun WelcomeStep(
 
         FeatureHighlightCard(
             icon = Icons.Filled.AutoAwesome,
-            title = "On-Device Offline AI",
-            description = "Private text translation and summarization running 100% locally on your phone.",
+            title = "On-Device Offline Privacy",
+            description = "Zero telemetry, zero tracking. Translation, text extraction (OCR), and AES-256 encrypted backups run 100% on-device.",
             accentColor = MaterialTheme.colorScheme.error,
             delayMillis = 240
         )
