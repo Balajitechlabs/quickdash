@@ -2,12 +2,12 @@ package com.balajitechlabs.quickdash.widget
 
 import android.content.Context
 import android.content.Intent
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
@@ -40,6 +40,13 @@ import com.balajitechlabs.quickdash.MainActivity
 import com.balajitechlabs.quickdash.R
 import com.balajitechlabs.quickdash.features.dashboard.presentation.FloatingDialogActivity
 
+/**
+ * ⚡ QuickDash Glance Home Screen Widgets (`QuickDashWidget.kt`).
+ * Supports Material You dynamic theming, day/night mode, and responsive layouts:
+ * - 1x1 Compact Quick Launcher
+ * - 2x1 / 4x1 Quick Actions Bar
+ * - 2x2 / 4x2 Interactive Tool Hub
+ */
 class QuickDashWidget : GlanceAppWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Responsive(
@@ -52,11 +59,13 @@ class QuickDashWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
-            val size = LocalSize.current
-            when {
-                size.width < 130.dp -> CompactWidget(context)
-                size.height < 110.dp -> QuickActionsBarWidget(context)
-                else -> QuickHubWidget(context)
+            GlanceTheme {
+                val size = LocalSize.current
+                when {
+                    size.width < 130.dp -> CompactWidget(context)
+                    size.height < 110.dp -> QuickActionsBarWidget(context)
+                    else -> QuickHubWidget(context)
+                }
             }
         }
     }
@@ -73,7 +82,7 @@ class QuickDashWidget : GlanceAppWidget() {
             Box(
                 modifier = GlanceModifier
                     .size(56.dp)
-                    .background(ColorProvider(Color(0xFF2563EB))) // Material 3 Primary
+                    .background(GlanceTheme.colors.primary)
                     .cornerRadius(22.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -91,7 +100,7 @@ class QuickDashWidget : GlanceAppWidget() {
         Row(
             modifier = GlanceModifier
                 .fillMaxSize()
-                .background(ColorProvider(Color(0xFF1E293B))) // Material 3 Dark SurfaceContainer
+                .background(GlanceTheme.colors.surface)
                 .cornerRadius(24.dp)
                 .padding(horizontal = 8.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -100,25 +109,29 @@ class QuickDashWidget : GlanceAppWidget() {
             WidgetActionButton(
                 iconRes = R.drawable.ic_shortcut_upi,
                 contentDescription = "UPI QR",
-                action = createSectionAction(context, "com.balajitechlabs.quickdash.ACTION_QUICK_UPI")
+                action = createSectionAction(context, "com.balajitechlabs.quickdash.ACTION_QUICK_UPI"),
+                bgColor = GlanceTheme.colors.primaryContainer
             )
             Spacer(modifier = GlanceModifier.width(6.dp))
             WidgetActionButton(
                 iconRes = R.drawable.ic_note,
                 contentDescription = "Notes",
-                action = createSectionAction(context, "com.balajitechlabs.quickdash.ACTION_QUICK_NOTES")
+                action = createSectionAction(context, "com.balajitechlabs.quickdash.ACTION_QUICK_NOTES"),
+                bgColor = GlanceTheme.colors.surfaceVariant
             )
             Spacer(modifier = GlanceModifier.width(6.dp))
             WidgetActionButton(
                 iconRes = R.drawable.ic_calculator,
                 contentDescription = "Calculator",
-                action = createSectionAction(context, "com.balajitechlabs.quickdash.ACTION_QUICK_CALCULATOR")
+                action = createSectionAction(context, "com.balajitechlabs.quickdash.ACTION_QUICK_CALCULATOR"),
+                bgColor = GlanceTheme.colors.surfaceVariant
             )
             Spacer(modifier = GlanceModifier.width(6.dp))
             WidgetActionButton(
                 iconRes = R.drawable.ic_timer,
                 contentDescription = "Timer",
-                action = createSectionAction(context, "com.balajitechlabs.quickdash.ACTION_QUICK_TIMER")
+                action = createSectionAction(context, "com.balajitechlabs.quickdash.ACTION_QUICK_TIMER"),
+                bgColor = GlanceTheme.colors.surfaceVariant
             )
         }
     }
@@ -128,7 +141,7 @@ class QuickDashWidget : GlanceAppWidget() {
         Column(
             modifier = GlanceModifier
                 .fillMaxSize()
-                .background(ColorProvider(Color(0xFF0F172A))) // Material 3 SurfaceContainerLowest
+                .background(GlanceTheme.colors.surface)
                 .cornerRadius(28.dp)
                 .padding(12.dp)
         ) {
@@ -148,7 +161,7 @@ class QuickDashWidget : GlanceAppWidget() {
                 Text(
                     text = "QuickDash ⚡",
                     style = TextStyle(
-                        color = ColorProvider(Color.White),
+                        color = GlanceTheme.colors.onSurface,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -165,7 +178,8 @@ class QuickDashWidget : GlanceAppWidget() {
                 WidgetGridCard(
                     title = "UPI Pay",
                     iconRes = R.drawable.ic_shortcut_upi,
-                    bgColor = Color(0xFF1E3A8A), // Navy Tint
+                    bgColor = GlanceTheme.colors.primaryContainer,
+                    textColor = GlanceTheme.colors.onPrimaryContainer,
                     action = createSectionAction(context, "com.balajitechlabs.quickdash.ACTION_QUICK_UPI"),
                     modifier = GlanceModifier.defaultWeight()
                 )
@@ -173,7 +187,8 @@ class QuickDashWidget : GlanceAppWidget() {
                 WidgetGridCard(
                     title = "Notes",
                     iconRes = R.drawable.ic_note,
-                    bgColor = Color(0xFF1E293B),
+                    bgColor = GlanceTheme.colors.surfaceVariant,
+                    textColor = GlanceTheme.colors.onSurfaceVariant,
                     action = createSectionAction(context, "com.balajitechlabs.quickdash.ACTION_QUICK_NOTES"),
                     modifier = GlanceModifier.defaultWeight()
                 )
@@ -188,7 +203,8 @@ class QuickDashWidget : GlanceAppWidget() {
                 WidgetGridCard(
                     title = "Calculator",
                     iconRes = R.drawable.ic_calculator,
-                    bgColor = Color(0xFF1E293B),
+                    bgColor = GlanceTheme.colors.surfaceVariant,
+                    textColor = GlanceTheme.colors.onSurfaceVariant,
                     action = createSectionAction(context, "com.balajitechlabs.quickdash.ACTION_QUICK_CALCULATOR"),
                     modifier = GlanceModifier.defaultWeight()
                 )
@@ -196,7 +212,8 @@ class QuickDashWidget : GlanceAppWidget() {
                 WidgetGridCard(
                     title = "Timer",
                     iconRes = R.drawable.ic_timer,
-                    bgColor = Color(0xFF1E293B),
+                    bgColor = GlanceTheme.colors.surfaceVariant,
+                    textColor = GlanceTheme.colors.onSurfaceVariant,
                     action = createSectionAction(context, "com.balajitechlabs.quickdash.ACTION_QUICK_TIMER"),
                     modifier = GlanceModifier.defaultWeight()
                 )
@@ -208,12 +225,13 @@ class QuickDashWidget : GlanceAppWidget() {
     private fun WidgetActionButton(
         iconRes: Int,
         contentDescription: String,
-        action: Action
+        action: Action,
+        bgColor: ColorProvider
     ) {
         Box(
             modifier = GlanceModifier
                 .size(44.dp)
-                .background(ColorProvider(Color(0xFF334155)))
+                .background(bgColor)
                 .cornerRadius(18.dp)
                 .clickable(action),
             contentAlignment = Alignment.Center
@@ -230,14 +248,15 @@ class QuickDashWidget : GlanceAppWidget() {
     private fun WidgetGridCard(
         title: String,
         iconRes: Int,
-        bgColor: Color,
+        bgColor: ColorProvider,
+        textColor: ColorProvider,
         action: Action,
         modifier: GlanceModifier = GlanceModifier
     ) {
         Box(
             modifier = modifier
                 .fillMaxHeight()
-                .background(ColorProvider(bgColor))
+                .background(bgColor)
                 .cornerRadius(18.dp)
                 .clickable(action)
                 .padding(8.dp),
@@ -256,7 +275,7 @@ class QuickDashWidget : GlanceAppWidget() {
                 Text(
                     text = title,
                     style = TextStyle(
-                        color = ColorProvider(Color.White),
+                        color = textColor,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium
                     )

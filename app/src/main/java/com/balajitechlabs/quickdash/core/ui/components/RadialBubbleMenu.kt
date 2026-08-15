@@ -2,6 +2,7 @@ package com.balajitechlabs.quickdash.core.ui.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +20,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
@@ -63,7 +66,7 @@ fun RadialBubbleMenu(
             targetValue = 1f,
             animationSpec = spring(
                 dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessLow
+                stiffness = Spring.StiffnessMediumLow
             )
         )
     }
@@ -73,7 +76,11 @@ fun RadialBubbleMenu(
     Box(
         modifier = Modifier
             .size(240.dp)
-            .scale(scaleAnim.value),
+            .graphicsLayer {
+                scaleX = scaleAnim.value
+                scaleY = scaleAnim.value
+                alpha = scaleAnim.value.coerceIn(0f, 1f)
+            },
         contentAlignment = Alignment.Center
     ) {
         // Center dismiss hub
@@ -103,8 +110,12 @@ fun RadialBubbleMenu(
             val offsetY = (radiusDp.value * kotlin.math.sin(rad)).dp
 
             val isSelected = activeSectorIndex == index
+            val animatedNodeScale by animateFloatAsState(
+                targetValue = if (isSelected) 1.20f else 1.0f,
+                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+                label = "node_scale_$index"
+            )
 
-            val nodeScale = if (isSelected) 1.18f else 1.0f
             val nodeBgColor = if (isSelected) {
                 MaterialTheme.colorScheme.primary
             } else {
@@ -124,7 +135,10 @@ fun RadialBubbleMenu(
                             (offsetY.toPx()).roundToInt()
                         )
                     }
-                    .scale(nodeScale)
+                    .graphicsLayer {
+                        scaleX = animatedNodeScale
+                        scaleY = animatedNodeScale
+                    }
             ) {
                 Surface(
                     modifier = Modifier
