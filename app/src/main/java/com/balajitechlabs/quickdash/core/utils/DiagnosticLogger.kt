@@ -43,7 +43,7 @@ object DiagnosticLogger {
     private fun captureLogcat(): List<String> {
         val logLines = mutableListOf<String>()
         try {
-            val process = Runtime.getRuntime().exec(arrayOf("logcat", "-d", "-v", "time"))
+            val process = Runtime.getRuntime().exec(arrayOf("/system/bin/logcat", "-d", "-v", "time"))
             process.inputStream.bufferedReader().useLines { lines ->
                 lines.forEach { line ->
                     logLines.add(line)
