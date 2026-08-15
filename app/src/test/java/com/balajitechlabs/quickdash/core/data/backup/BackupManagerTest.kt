@@ -4,6 +4,8 @@ import com.google.common.truth.Truth.assertThat
 import com.google.gson.Gson
 import org.junit.Assert.assertThrows
 import org.junit.Test
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.SecretKeyFactory
@@ -26,8 +28,8 @@ class BackupManagerTest {
     fun `test BackupPayload json serialization and deserialization`() {
         val metadata = BackupMetadata(
             version = 1,
-            appVersion = "5.2.1",
-            appVersionCode = 521,
+            appVersion = "5.2.2",
+            appVersionCode = 522,
             timestamp = 1723630000000L,
             deviceName = "Google Pixel 9 Pro",
             isEncrypted = true
@@ -53,8 +55,8 @@ class BackupManagerTest {
         assertThat(json).isNotEmpty()
 
         val parsed = gson.fromJson(json, BackupPayload::class.java)
-        assertThat(parsed.metadata.appVersion).isEqualTo("5.2.1")
-        assertThat(parsed.metadata.appVersionCode).isEqualTo(521)
+        assertThat(parsed.metadata.appVersion).isEqualTo("5.2.2")
+        assertThat(parsed.metadata.appVersionCode).isEqualTo(522)
         assertThat(parsed.metadata.isEncrypted).isTrue()
         assertThat(parsed.stringPreferences["default_upi_id"]).isEqualTo("user@upi")
         assertThat(parsed.booleanPreferences["dynamic_color"]).isTrue()
@@ -67,8 +69,8 @@ class BackupManagerTest {
     fun `test BackupMetadata default values`() {
         val metadata = BackupMetadata()
         assertThat(metadata.version).isEqualTo(1)
-        assertThat(metadata.appVersion).isEqualTo("5.2.1")
-        assertThat(metadata.appVersionCode).isEqualTo(521)
+        assertThat(metadata.appVersion).isEqualTo("5.2.2")
+        assertThat(metadata.appVersionCode).isEqualTo(522)
         assertThat(metadata.timestamp).isGreaterThan(0L)
         assertThat(metadata.isEncrypted).isFalse()
     }
@@ -122,5 +124,97 @@ class BackupManagerTest {
         assertThrows(Exception::class.java) {
             decryptCipher.doFinal(cipherText)
         }
+    }
+
+    @Test
+    fun `test QDBK binary envelope header format verification`() {
+        val magic = BackupManager.MAGIC_HEADER
+        val out = ByteArrayOutputStream()
+        out.write(magic)
+        out.write(byteArrayOf(BackupManager.CURRENT_FORMAT_VERSION, BackupManager.FLAG_PLAINTEXT))
+        val testPayload = "{\"test\": true}".toByteArray(Charsets.UTF_8)
+        out.write(testPayload)
+
+        val bytes = out.toByteArray()
+        assertThat(bytes.size).isAtLeast(6)
+        assertThat(bytes[0]).isEqualTo(0x51.toByte()) // 'Q'
+        assertThat(bytes[1]).isEqualTo(0x44.toByte()) // 'D'
+        assertThat(bytes[2]).isEqualTo(0x42.toByte()) // 'B'
+        assertThat(bytes[3]).isEqualTo(0x4B.toByte()) // 'K'
+        assertThat(bytes[4]).isEqualTo(1.toByte())    // Version 1
+        assertThat(bytes[5]).isEqualTo(0.toByte())    // Plaintext flag
+
+        val content = String(bytes.copyOfRange(6, bytes.size), Charsets.UTF_8)
+        assertThat(content).isEqualTo("{\"test\": true}")
+    }
+
+    @Test
+    fun `test encrypted QDBK envelope roundtrip structure`() {
+        val magic = BackupManager.MAGIC_HEADER
+        val salt = ByteArray(BackupManager.SALT_SIZE_BYTES).also { SecureRandom().nextBytes(it) }
+        val iv = ByteArray(BackupManager.IV_SIZE_BYTES).also { SecureRandom().nextBytes(it) }
+        val password = "StrongPassphrase@2026"
+        val payload = "{\"notes\": [{\"id\":\"1\", \"text\":\"hello\"}]}"
+
+        val key = deriveTestKey(password.toCharArray(), salt)
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.ENCRYPT_MODE, key, GCMParameterSpec(128, iv))
+        val ciphertext = cipher.doFinal(payload.toByteArray(Charsets.UTF_8))
+
+        val out = ByteArrayOutputStream()
+        out.write(magic)
+        out.write(byteArrayOf(BackupManager.CURRENT_FORMAT_VERSION, BackupManager.FLAG_ENCRYPTED))
+        out.write(salt)
+        out.write(iv)
+        out.write(ciphertext)
+
+        val fullFile = out.toByteArray()
+        assertThat(fullFile[5]).isEqualTo(BackupManager.FLAG_ENCRYPTED)
+
+        // Read and decrypt envelope
+        val inStream = ByteArrayInputStream(fullFile)
+        val header = ByteArray(6)
+        inStream.read(header)
+        val inSalt = ByteArray(BackupManager.SALT_SIZE_BYTES)
+        inStream.read(inSalt)
+        val inIv = ByteArray(BackupManager.IV_SIZE_BYTES)
+        inStream.read(inIv)
+        val inCiphertext = inStream.readBytes()
+
+        val decryptKey = deriveTestKey(password.toCharArray(), inSalt)
+        val decryptCipher = Cipher.getInstance("AES/GCM/NoPadding")
+        decryptCipher.init(Cipher.DECRYPT_MODE, decryptKey, GCMParameterSpec(128, inIv))
+        val decrypted = String(decryptCipher.doFinal(inCiphertext), Charsets.UTF_8)
+
+        assertThat(decrypted).isEqualTo(payload)
+    }
+
+    @Test
+    fun `test QDBK envelope byte array inspection logic`() {
+        val magic = BackupManager.MAGIC_HEADER
+        val encryptedEnvelope = ByteArrayOutputStream().apply {
+            write(magic)
+            write(byteArrayOf(BackupManager.CURRENT_FORMAT_VERSION, BackupManager.FLAG_ENCRYPTED))
+            write(ByteArray(50)) // Dummy payload
+        }.toByteArray()
+
+        assertThat(encryptedEnvelope.size).isAtLeast(6)
+        val isQdMagic = encryptedEnvelope[0] == magic[0] &&
+                encryptedEnvelope[1] == magic[1] &&
+                encryptedEnvelope[2] == magic[2] &&
+                encryptedEnvelope[3] == magic[3]
+        val isEncrypted = encryptedEnvelope[5] == BackupManager.FLAG_ENCRYPTED
+
+        assertThat(isQdMagic).isTrue()
+        assertThat(isEncrypted).isTrue()
+
+        val plaintextEnvelope = ByteArrayOutputStream().apply {
+            write(magic)
+            write(byteArrayOf(BackupManager.CURRENT_FORMAT_VERSION, BackupManager.FLAG_PLAINTEXT))
+            write(ByteArray(50))
+        }.toByteArray()
+
+        val isPlainEncrypted = plaintextEnvelope[5] == BackupManager.FLAG_ENCRYPTED
+        assertThat(isPlainEncrypted).isFalse()
     }
 }

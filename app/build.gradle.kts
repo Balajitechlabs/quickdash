@@ -7,8 +7,13 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.protobuf)
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
+}
+
+val isFossBuild = project.hasProperty("foss") || gradle.startParameter.taskNames.any { it.contains("foss", ignoreCase = true) }
+
+if (!isFossBuild) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
 }
 
 // Secrets from local.properties (gitignored — never committed)
@@ -27,8 +32,8 @@ android {
         applicationId = "com.balajitechlabs.quickdash"
         minSdk = 24
         targetSdk = 36
-        versionCode = 521
-        versionName = "5.2.1"
+        versionCode = 522
+        versionName = "5.2.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -132,6 +137,14 @@ android {
         buildConfig = true  // Required to generate BuildConfig fields
     }
 
+    sourceSets {
+        getByName("main") {
+            val flavorDir = if (isFossBuild) "src/foss/java" else "src/standard/java"
+            java.srcDirs("src/main/java", flavorDir)
+            kotlin.srcDirs("src/main/java", flavorDir)
+        }
+    }
+
     lint {
         abortOnError = false
         checkReleaseBuilds = false
@@ -190,38 +203,37 @@ dependencies {
     implementation(libs.workmanager)
     implementation(libs.konfetti)
     implementation("androidx.security:security-crypto:1.1.0")
-    implementation(platform(libs.firebase.bom))
-    implementation("com.google.firebase:firebase-messaging-ktx")
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-crashlytics")
-    implementation("com.google.firebase:firebase-config")
-    implementation(libs.coil)
 
     // Room Database
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
-    // Google Sign-In (kept for future use)
-    implementation("com.google.android.gms:play-services-auth:21.6.0")
-
-    // Custom UI & Theme Upgrades
-    implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
+    // UI & Graphics
     implementation("androidx.graphics:graphics-shapes:1.1.0")
     implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
 
     // Jetpack Glance App Widget & Google Fonts
     implementation("androidx.glance:glance-appwidget:1.1.1")
+    implementation("androidx.glance:glance-material3:1.1.1")
     implementation("androidx.compose.ui:ui-text-google-fonts:1.6.0")
 
-    // Google Play Core APIs: In-App Updates, In-App Reviews & Play Integrity
-    implementation("com.google.android.play:app-update-ktx:2.1.0")
-    implementation("com.google.android.play:review-ktx:2.0.2")
-    implementation("com.google.android.play:integrity:1.4.0")
+    if (!isFossBuild) {
+        implementation(platform(libs.firebase.bom))
+        implementation("com.google.firebase:firebase-messaging-ktx")
+        implementation("com.google.firebase:firebase-config")
+        implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
+        implementation("com.google.android.play:app-update-ktx:2.1.0")
+        implementation("com.google.android.play:review-ktx:2.0.2")
+        implementation("com.google.android.play:integrity:1.4.0")
+        implementation("com.google.firebase:firebase-analytics")
+        implementation("com.google.firebase:firebase-crashlytics")
+    }
+    implementation(libs.coil)
 
     // MediaPipe LLM Inference (on-device AI with Gemma / Phi models)
-    implementation("com.google.mediapipe:tasks-genai:0.10.22")
+    implementation("com.google.mediapipe:tasks-genai:0.10.35")
 
     
     testImplementation(libs.junit)
@@ -240,7 +252,7 @@ dependencies {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions {
-        freeCompilerArgs.addAll(listOf("-Xmetadata-version=2.1.0", "-Xannotation-default-target=param-property"))
+        freeCompilerArgs.addAll(listOf("-Xmetadata-version=2.1.0"))
     }
 }
 

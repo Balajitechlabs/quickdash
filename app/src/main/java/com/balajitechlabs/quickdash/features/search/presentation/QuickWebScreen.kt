@@ -191,6 +191,8 @@ fun QuickWebScreen(
                 WebView(context).apply {
                     settings.javaScriptEnabled = true
                     settings.domStorageEnabled = true
+                    settings.allowContentAccess = false
+                    settings.allowFileAccess = false
                     settings.loadWithOverviewMode = true
                     settings.useWideViewPort = true
                     settings.setSupportZoom(true)

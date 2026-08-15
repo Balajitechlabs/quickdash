@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.balajitechlabs.quickdash.core.data.UserStore
+import com.balajitechlabs.quickdash.core.data.dataStore
 import com.balajitechlabs.quickdash.core.data.database.AppDatabase
 import com.balajitechlabs.quickdash.core.data.database.NoteEntity
 import com.google.gson.Gson
@@ -27,8 +28,8 @@ import javax.crypto.spec.SecretKeySpec
 
 data class BackupMetadata(
     val version: Int = 1,
-    val appVersion: String = "5.2.1",
-    val appVersionCode: Int = 521,
+    val appVersion: String = "5.2.2",
+    val appVersionCode: Int = 522,
     val timestamp: Long = System.currentTimeMillis(),
     val deviceName: String = "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}",
     val isEncrypted: Boolean = false
@@ -62,6 +63,11 @@ enum class RestoreStrategy {
     REPLACE
 }
 
+/**
+ * 🔐 BackupManager (`BackupManager.kt`)
+ * Handles full encrypted export and import of QuickDash DataStore preferences and Room notes
+ * using military-grade AES-256-GCM encryption with PBKDF2 passphrase key derivation.
+ */
 class BackupManager(private val context: Context) {
 
     private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
@@ -69,15 +75,15 @@ class BackupManager(private val context: Context) {
     private val userStore = UserStore(context)
 
     companion object {
-        private val MAGIC_HEADER = byteArrayOf(0x51, 0x44, 0x42, 0x4B) // "QDBK"
-        private const val CURRENT_FORMAT_VERSION: Byte = 1
-        private const val FLAG_PLAINTEXT: Byte = 0
-        private const val FLAG_ENCRYPTED: Byte = 1
+        val MAGIC_HEADER = byteArrayOf(0x51, 0x44, 0x42, 0x4B) // "QDBK"
+        const val CURRENT_FORMAT_VERSION: Byte = 1
+        const val FLAG_PLAINTEXT: Byte = 0
+        const val FLAG_ENCRYPTED: Byte = 1
 
         private const val PBKDF2_ITERATIONS = 100_000
         private const val KEY_LENGTH_BITS = 256
-        private const val SALT_SIZE_BYTES = 16
-        private const val IV_SIZE_BYTES = 12
+        const val SALT_SIZE_BYTES = 16
+        const val IV_SIZE_BYTES = 12
         private const val GCM_TAG_LENGTH_BITS = 128
     }
 
@@ -89,8 +95,8 @@ class BackupManager(private val context: Context) {
         outputStream: OutputStream
     ): BackupResult = withContext(Dispatchers.IO) {
         try {
-            // 1. Gather Preferences from DataStore
-            val allPrefs = context.userStoreDataStore.data.first().asMap()
+            // 1. Gather Preferences from Singleton DataStore
+            val allPrefs = context.dataStore.data.first().asMap()
             val stringMap = mutableMapOf<String, String>()
             val boolMap = mutableMapOf<String, Boolean>()
             val intMap = mutableMapOf<String, Int>()
@@ -138,12 +144,12 @@ class BackupManager(private val context: Context) {
             val jsonString = gson.toJson(payload)
             val jsonBytes = jsonString.toByteArray(Charsets.UTF_8)
 
-            if (isEncrypted) {
+            if (passphrase != null && isEncrypted) {
                 val secureRandom = SecureRandom()
                 val salt = ByteArray(SALT_SIZE_BYTES).also { secureRandom.nextBytes(it) }
                 val iv = ByteArray(IV_SIZE_BYTES).also { secureRandom.nextBytes(it) }
 
-                val secretKey = deriveKey(passphrase!!.toCharArray(), salt)
+                val secretKey = deriveKey(passphrase.toCharArray(), salt)
                 val cipher = Cipher.getInstance("AES/GCM/NoPadding")
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey, GCMParameterSpec(GCM_TAG_LENGTH_BITS, iv))
                 val ciphertext = cipher.doFinal(jsonBytes)
@@ -168,60 +174,83 @@ class BackupManager(private val context: Context) {
     }
 
     /**
-     * Inspect backup stream header to check whether encryption is active.
+     * Inspect backup byte array header to check whether encryption is active.
      */
-    suspend fun inspectBackup(inputStream: InputStream): Pair<Boolean, Boolean> = withContext(Dispatchers.IO) {
-        val header = ByteArray(6)
-        val read = inputStream.read(header)
-        if (read < 6) return@withContext Pair(false, false)
+    suspend fun inspectBackup(backupBytes: ByteArray): Pair<Boolean, Boolean> = withContext(Dispatchers.IO) {
+        if (backupBytes.size < 6) return@withContext Pair(false, false)
 
-        val isQdMagic = header[0] == MAGIC_HEADER[0] &&
-                header[1] == MAGIC_HEADER[1] &&
-                header[2] == MAGIC_HEADER[2] &&
-                header[3] == MAGIC_HEADER[3]
+        val isQdMagic = backupBytes[0] == MAGIC_HEADER[0] &&
+                backupBytes[1] == MAGIC_HEADER[1] &&
+                backupBytes[2] == MAGIC_HEADER[2] &&
+                backupBytes[3] == MAGIC_HEADER[3]
 
         if (!isQdMagic) {
             // Raw JSON fallback
             return@withContext Pair(true, false)
         }
 
-        val isEncrypted = header[5] == FLAG_ENCRYPTED
+        val isEncrypted = backupBytes[5] == FLAG_ENCRYPTED
         Pair(true, isEncrypted)
     }
 
     /**
-     * Import backup from [inputStream], validating [passphrase] if encrypted.
+     * Inspect backup stream header to check whether encryption is active.
+     */
+    suspend fun inspectBackup(inputStream: InputStream): Pair<Boolean, Boolean> = withContext(Dispatchers.IO) {
+        try {
+            val header = ByteArray(6)
+            val read = inputStream.read(header)
+            if (read < 6) return@withContext Pair(false, false)
+
+            val isQdMagic = header[0] == MAGIC_HEADER[0] &&
+                    header[1] == MAGIC_HEADER[1] &&
+                    header[2] == MAGIC_HEADER[2] &&
+                    header[3] == MAGIC_HEADER[3]
+
+            if (!isQdMagic) {
+                // Raw JSON fallback
+                return@withContext Pair(true, false)
+            }
+
+            val isEncrypted = header[5] == FLAG_ENCRYPTED
+            Pair(true, isEncrypted)
+        } catch (e: Exception) {
+            Pair(false, false)
+        }
+    }
+
+    /**
+     * Import backup from [backupBytes], validating [passphrase] if encrypted.
      */
     suspend fun importBackup(
         passphrase: String?,
-        inputStream: InputStream,
+        backupBytes: ByteArray,
         strategy: RestoreStrategy = RestoreStrategy.MERGE
     ): BackupResult = withContext(Dispatchers.IO) {
         try {
-            val allBytes = inputStream.readBytes()
-            if (allBytes.size < 6) {
+            if (backupBytes.size < 6) {
                 return@withContext BackupResult.Error("Invalid or empty backup file.")
             }
 
-            val isQdMagic = allBytes[0] == MAGIC_HEADER[0] &&
-                    allBytes[1] == MAGIC_HEADER[1] &&
-                    allBytes[2] == MAGIC_HEADER[2] &&
-                    allBytes[3] == MAGIC_HEADER[3]
+            val isQdMagic = backupBytes[0] == MAGIC_HEADER[0] &&
+                    backupBytes[1] == MAGIC_HEADER[1] &&
+                    backupBytes[2] == MAGIC_HEADER[2] &&
+                    backupBytes[3] == MAGIC_HEADER[3]
 
             val jsonString: String
             if (isQdMagic) {
-                val flag = allBytes[5]
+                val flag = backupBytes[5]
                 if (flag == FLAG_ENCRYPTED) {
                     if (passphrase.isNullOrBlank()) {
                         return@withContext BackupResult.Error("This backup is encrypted. Please enter the password.")
                     }
-                    if (allBytes.size < 6 + SALT_SIZE_BYTES + IV_SIZE_BYTES) {
+                    if (backupBytes.size < 6 + SALT_SIZE_BYTES + IV_SIZE_BYTES) {
                         return@withContext BackupResult.Error("Corrupted encrypted backup file.")
                     }
 
-                    val salt = allBytes.copyOfRange(6, 6 + SALT_SIZE_BYTES)
-                    val iv = allBytes.copyOfRange(6 + SALT_SIZE_BYTES, 6 + SALT_SIZE_BYTES + IV_SIZE_BYTES)
-                    val ciphertext = allBytes.copyOfRange(6 + SALT_SIZE_BYTES + IV_SIZE_BYTES, allBytes.size)
+                    val salt = backupBytes.copyOfRange(6, 6 + SALT_SIZE_BYTES)
+                    val iv = backupBytes.copyOfRange(6 + SALT_SIZE_BYTES, 6 + SALT_SIZE_BYTES + IV_SIZE_BYTES)
+                    val ciphertext = backupBytes.copyOfRange(6 + SALT_SIZE_BYTES + IV_SIZE_BYTES, backupBytes.size)
 
                     val secretKey = deriveKey(passphrase.toCharArray(), salt)
                     val cipher = Cipher.getInstance("AES/GCM/NoPadding")
@@ -234,11 +263,11 @@ class BackupManager(private val context: Context) {
                     }
                     jsonString = String(decryptedBytes, Charsets.UTF_8)
                 } else {
-                    jsonString = String(allBytes.copyOfRange(6, allBytes.size), Charsets.UTF_8)
+                    jsonString = String(backupBytes.copyOfRange(6, backupBytes.size), Charsets.UTF_8)
                 }
             } else {
-                // Direct JSON format
-                jsonString = String(allBytes, Charsets.UTF_8)
+                // Direct JSON format fallback
+                jsonString = String(backupBytes, Charsets.UTF_8)
             }
 
             val payload: BackupPayload = try {
@@ -247,8 +276,8 @@ class BackupManager(private val context: Context) {
                 return@withContext BackupResult.Error("Failed to parse backup contents: ${e.message}", e)
             }
 
-            // 1. Restore Preferences into DataStore
-            context.userStoreDataStore.edit { prefs ->
+            // 1. Restore Preferences into Singleton DataStore
+            context.dataStore.edit { prefs ->
                 payload.stringPreferences.forEach { (k, v) ->
                     prefs[stringPreferencesKey(k)] = v
                 }
@@ -299,13 +328,19 @@ class BackupManager(private val context: Context) {
         }
     }
 
-    private fun deriveKey(passphrase: CharArray, salt: ByteArray): SecretKeySpec {
+    /**
+     * Import backup from [inputStream], validating [passphrase] if encrypted.
+     */
+    suspend fun importBackup(
+        passphrase: String?,
+        inputStream: InputStream,
+        strategy: RestoreStrategy = RestoreStrategy.MERGE
+    ): BackupResult = importBackup(passphrase, inputStream.readBytes(), strategy)
+
+    fun deriveKey(passphrase: CharArray, salt: ByteArray): SecretKeySpec {
         val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
         val spec = PBEKeySpec(passphrase, salt, PBKDF2_ITERATIONS, KEY_LENGTH_BITS)
         val tmp = factory.generateSecret(spec)
         return SecretKeySpec(tmp.encoded, "AES")
     }
 }
-
-// Extension to access Context preferencesDataStore directly from BackupManager
-internal val Context.userStoreDataStore by androidx.datastore.preferences.preferencesDataStore(name = "user_settings")

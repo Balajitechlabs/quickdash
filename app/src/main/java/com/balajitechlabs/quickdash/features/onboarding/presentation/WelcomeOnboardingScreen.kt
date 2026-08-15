@@ -416,14 +416,20 @@ private fun OnboardingStep1Welcome() {
             Column(modifier = Modifier.padding(16.dp)) {
                 FeatureHighlightItem(
                     icon = Icons.Filled.TouchApp,
-                    title = "Floating Bubble Access",
-                    desc = "Tap or drag the floating bubble over WhatsApp, PDFs, or YouTube."
+                    title = "Customizable Radial Bubble Wheel",
+                    desc = "Long-press the bubble (350ms) to launch your favorite 4 shortcuts. Choose your favorite tools in Settings."
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                FeatureHighlightItem(
+                    icon = Icons.Filled.Layers,
+                    title = "1-Tap Quick Tile & Glance Widgets",
+                    desc = "Turn the floating bubble on or off in 1 tap from Control Center or your Material You home screen widget."
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 FeatureHighlightItem(
                     icon = Icons.Filled.Palette,
-                    title = "15 Micro-Tools",
-                    desc = "Eyedropper, Pomodoro, Passwords, Smart Clipboard, Notes, UPI QR & more."
+                    title = "12 On-Demand Micro-Tools",
+                    desc = "UPI QR, Translator, Quick Notes, Calculator, Timer, Wi-Fi Share & AES-256 Encrypted Backups."
                 )
             }
         }

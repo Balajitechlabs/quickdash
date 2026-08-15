@@ -130,13 +130,13 @@ fun SetupScreen(
         }
 
         val launchStyleFlow = viewModel.launchStyle.collectAsState(initial = "FLOATING")
-        var isFloating by remember(launchStyleFlow?.value) { mutableStateOf(launchStyleFlow?.value == "FLOATING") }
+        var isFloating by remember(launchStyleFlow.value) { mutableStateOf(launchStyleFlow.value == "FLOATING") }
 
         val favToolsFlow = viewModel.favoriteTools.collectAsState(initial = "")
         val cs = androidx.compose.material3.MaterialTheme.colorScheme
         val allTools = remember(cs) { toolDefinitions(usePaypal = usePaypal, cs = cs) }
-        var currentFavs by remember(favToolsFlow?.value) { 
-            val str = favToolsFlow?.value ?: ""
+        var currentFavs by remember(favToolsFlow.value) { 
+            val str = favToolsFlow.value
             val initialSet = if (str.isEmpty()) emptySet() else str.split(",").mapNotNull { runCatching { QuickTool.valueOf(it) }.getOrNull() }.toSet()
             mutableStateOf(initialSet)
         }

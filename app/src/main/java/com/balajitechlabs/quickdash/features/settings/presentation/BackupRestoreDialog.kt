@@ -90,7 +90,7 @@ fun BackupRestoreDialog(
     var isPasswordVisible by remember { mutableStateOf(false) }
 
     // Import State
-    var pendingImportUri by remember { mutableStateOf<Uri?>(null) }
+    var pendingImportBytes by remember { mutableStateOf<ByteArray?>(null) }
     var isFileEncrypted by remember { mutableStateOf(false) }
     var importPassword by remember { mutableStateOf("") }
     var restoreStrategy by remember { mutableStateOf(RestoreStrategy.MERGE) }
@@ -103,27 +103,28 @@ fun BackupRestoreDialog(
         if (uri != null) {
             isProcessing = true
             scope.launch {
-                val outputStream = context.contentResolver.openOutputStream(uri)
-                if (outputStream != null) {
-                    val pass = if (usePasswordProtection && exportPassword.isNotBlank()) exportPassword.trim() else null
-                    val result = backupManager.exportBackup(pass, outputStream)
-                    isProcessing = false
-                    when (result) {
-                        is BackupResult.Success -> {
-                            Toast.makeText(
-                                context,
-                                "Backup exported successfully! (${result.notesCount} notes, ${result.preferencesCount} settings)",
-                                Toast.LENGTH_LONG
-                            ).show()
-                            onDismissRequest()
-                        }
-                        is BackupResult.Error -> {
-                            Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
-                        }
+                val result = try {
+                    context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                        val pass = if (usePasswordProtection && exportPassword.isNotBlank()) exportPassword.trim() else null
+                        backupManager.exportBackup(pass, outputStream)
+                    } ?: BackupResult.Error("Could not write to destination file.")
+                } catch (e: Exception) {
+                    BackupResult.Error("Export failed: ${e.localizedMessage ?: e.message}", e)
+                }
+
+                isProcessing = false
+                when (result) {
+                    is BackupResult.Success -> {
+                        Toast.makeText(
+                            context,
+                            "Backup exported successfully! (${result.notesCount} notes, ${result.preferencesCount} settings)",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        onDismissRequest()
                     }
-                } else {
-                    isProcessing = false
-                    Toast.makeText(context, "Could not write to destination file.", Toast.LENGTH_SHORT).show()
+                    is BackupResult.Error -> {
+                        Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
@@ -133,34 +134,47 @@ fun BackupRestoreDialog(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
         if (uri != null) {
-            pendingImportUri = uri
+            isProcessing = true
             scope.launch {
-                val inputStream = context.contentResolver.openInputStream(uri)
-                if (inputStream != null) {
-                    val (_, isEnc) = backupManager.inspectBackup(inputStream)
-                    isFileEncrypted = isEnc
-                    if (isEnc) {
-                        showPasswordPrompt = true
-                    } else {
-                        // Directly restore plaintext
-                        isProcessing = true
-                        val restoreStream = context.contentResolver.openInputStream(uri)
-                        if (restoreStream != null) {
-                            val result = backupManager.importBackup(null, restoreStream, restoreStrategy)
-                            isProcessing = false
-                            when (result) {
-                                is BackupResult.Success -> {
-                                    Toast.makeText(
-                                        context,
-                                        "Restored successfully! (${result.notesCount} notes, ${result.preferencesCount} settings)",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                    onDismissRequest()
-                                }
-                                is BackupResult.Error -> {
-                                    Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
-                                }
-                            }
+                val bytes = try {
+                    context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                } catch (e: Exception) {
+                    null
+                }
+
+                isProcessing = false
+                if (bytes == null || bytes.isEmpty()) {
+                    Toast.makeText(context, "Could not read selected backup file.", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+
+                pendingImportBytes = bytes
+                val (isValid, isEnc) = backupManager.inspectBackup(bytes)
+                if (!isValid) {
+                    Toast.makeText(context, "Invalid or unsupported backup format.", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+
+                isFileEncrypted = isEnc
+                if (isEnc) {
+                    importPassword = ""
+                    showPasswordPrompt = true
+                } else {
+                    // Directly restore plaintext
+                    isProcessing = true
+                    val result = backupManager.importBackup(null, bytes, restoreStrategy)
+                    isProcessing = false
+                    when (result) {
+                        is BackupResult.Success -> {
+                            Toast.makeText(
+                                context,
+                                "Restored successfully! (${result.notesCount} notes, ${result.preferencesCount} settings)",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            onDismissRequest()
+                        }
+                        is BackupResult.Error -> {
+                            Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
                         }
                     }
                 }
@@ -194,24 +208,69 @@ fun BackupRestoreDialog(
         },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                TabRow(
-                    selectedTabIndex = selectedTab,
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    contentColor = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clip(RoundedCornerShape(12.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                        .padding(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Tab(
-                        selected = selectedTab == 0,
-                        onClick = { selectedTab = 0 },
-                        text = { Text("Export Backup", fontWeight = FontWeight.SemiBold) },
-                        icon = { Icon(Icons.Rounded.CloudUpload, contentDescription = null, modifier = Modifier.size(18.dp)) }
-                    )
-                    Tab(
-                        selected = selectedTab == 1,
-                        onClick = { selectedTab = 1 },
-                        text = { Text("Restore", fontWeight = FontWeight.SemiBold) },
-                        icon = { Icon(Icons.Rounded.CloudDownload, contentDescription = null, modifier = Modifier.size(18.dp)) }
-                    )
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable { selectedTab = 0 },
+                        color = if (selectedTab == 0) MaterialTheme.colorScheme.primary else Color.Transparent,
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.CloudUpload,
+                                contentDescription = null,
+                                tint = if (selectedTab == 0) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Export Backup",
+                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+                                color = if (selectedTab == 0) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable { selectedTab = 1 },
+                        color = if (selectedTab == 1) MaterialTheme.colorScheme.primary else Color.Transparent,
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.CloudDownload,
+                                contentDescription = null,
+                                tint = if (selectedTab == 1) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Restore",
+                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+                                color = if (selectedTab == 1) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -382,7 +441,8 @@ fun BackupRestoreDialog(
     )
 
     // Password Unlock Prompt Dialog for Encrypted Imports
-    if (showPasswordPrompt && pendingImportUri != null) {
+    // Password Unlock Prompt Dialog for Encrypted Imports
+    if (showPasswordPrompt && pendingImportBytes != null) {
         AlertDialog(
             onDismissRequest = { showPasswordPrompt = false },
             title = {
@@ -422,31 +482,28 @@ fun BackupRestoreDialog(
             confirmButton = {
                 Button(
                     onClick = {
-                        val uri = pendingImportUri ?: return@Button
+                        val bytes = pendingImportBytes ?: return@Button
                         showPasswordPrompt = false
                         isProcessing = true
                         scope.launch {
-                            val inputStream = context.contentResolver.openInputStream(uri)
-                            if (inputStream != null) {
-                                val result = backupManager.importBackup(importPassword.trim(), inputStream, restoreStrategy)
-                                isProcessing = false
-                                when (result) {
-                                    is BackupResult.Success -> {
-                                        Toast.makeText(
-                                            context,
-                                            "Decrypted and restored successfully! (${result.notesCount} notes, ${result.preferencesCount} settings)",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                        onDismissRequest()
-                                    }
-                                    is BackupResult.Error -> {
-                                        Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
-                                    }
+                            val result = backupManager.importBackup(importPassword.trim(), bytes, restoreStrategy)
+                            isProcessing = false
+                            when (result) {
+                                is BackupResult.Success -> {
+                                    Toast.makeText(
+                                        context,
+                                        "Decrypted and restored successfully! (${result.notesCount} notes, ${result.preferencesCount} settings)",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    onDismissRequest()
+                                }
+                                is BackupResult.Error -> {
+                                    Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
                                 }
                             }
                         }
                     },
-                    enabled = importPassword.isNotBlank()
+                    enabled = importPassword.isNotBlank() && !isProcessing
                 ) {
                     Text("Unlock & Restore")
                 }

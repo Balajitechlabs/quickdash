@@ -1063,7 +1063,7 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
             }
             
             val count = if (existingEntry != null) {
-                (existingEntry!!.get("shareCount")?.asInt ?: 0) + 1
+                (existingEntry.get("shareCount")?.asInt ?: 0) + 1
             } else {
                 1
             }

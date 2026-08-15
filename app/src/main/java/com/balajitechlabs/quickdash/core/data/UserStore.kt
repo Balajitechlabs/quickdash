@@ -9,7 +9,6 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.flow
@@ -123,6 +122,9 @@ class UserStore(private val context: Context) {
         // Notification states
         val POLL_VOTES_KEY = stringPreferencesKey("poll_votes")
         val HIDDEN_NOTIFICATIONS_KEY = stringPreferencesKey("hidden_notifications")
+
+        // v5.3.0 Custom Radial & Bubble Tools
+        val RADIAL_CUSTOM_TOOLS_KEY = stringPreferencesKey("radial_custom_tools")
         val PINNED_NOTIFICATIONS_KEY = stringPreferencesKey("pinned_notifications")
         val QR_HISTORY_KEY = stringPreferencesKey("qr_history")
         val GITHUB_ACCESS_TOKEN_KEY = stringPreferencesKey("github_access_token")
@@ -316,6 +318,18 @@ class UserStore(private val context: Context) {
     suspend fun saveTabBiometricLock(locked: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[TAB_BIOMETRIC_LOCK_KEY] = locked
+        }
+    }
+
+    val radialCustomTools: Flow<List<String>> = context.dataStore.data.map { preferences ->
+        val raw = preferences[RADIAL_CUSTOM_TOOLS_KEY] ?: "upi,notes,calc,timer"
+        val list = raw.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        if (list.size >= 4) list.take(4) else listOf("upi", "notes", "calc", "timer")
+    }
+
+    suspend fun saveRadialCustomTools(tools: List<String>) {
+        context.dataStore.edit { preferences ->
+            preferences[RADIAL_CUSTOM_TOOLS_KEY] = tools.take(4).joinToString(",")
         }
     }
 
@@ -629,6 +643,8 @@ class UserStore(private val context: Context) {
             preferences[BUBBLE_ENABLED_KEY] = enabled
         }
     }
+
+    suspend fun saveBubbleEnabled(enabled: Boolean) = setBubbleEnabled(enabled)
 
     suspend fun setHapticEnabled(enabled: Boolean) {
         context.dataStore.edit { preferences ->
@@ -1067,7 +1083,7 @@ class UserStore(private val context: Context) {
             }
             
             val count = if (existingEntry != null) {
-                (existingEntry!!.get("shareCount")?.asInt ?: 0) + 1
+                (existingEntry.get("shareCount")?.asInt ?: 0) + 1
             } else {
                 1
             }

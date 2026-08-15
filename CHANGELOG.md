@@ -2,12 +2,27 @@
 
 All major updates, feature additions, bug fixes, and system improvements for **QuickDash** are documented in this file.
 
-## [5.3.0] - 2026-08-14 (UX & Power-User Controls Release) 🎨
+## [5.2.2] - 2026-08-15 (Zero-Tracker FOSS Edition & Privacy Hardening Release) 🌿
 
 ### 🚀 ADDED & IMPROVED
-- **🎯 Radial Quick-Wheel Bubble Gesture**: 350ms long-press or directional swipe on the floating bubble summons a spring-animated Material 3 circular hub to instantly launch top 4 tools (UPI QR, Notes, Calculator, Timer).
-- **📱 Glance Material 3 Responsive Widgets**: Multi-size home screen & lock screen widgets supporting 1x1 Compact Squircle, 2x1 Quick Actions Bar, and 2x2 / 4x2 Tool Dashboard with dynamic Material You container tinting.
-- **🔐 Encrypted Backup & Restore**: AES-256-GCM encrypted `.qdbackup` file export/import with PBKDF2 (100,000 iterations) passphrase key derivation, Room database notes serialization, and DataStore preferences restore with Merge/Replace conflict resolution.
+- **🌿 100% Zero-Tracker FOSS Build**: Dedicated FOSS release target for F-Droid and IzzyOnDroid with zero Firebase analytics, zero Crashlytics, and zero ML Kit proprietary trackers (verified 0 trackers on Exodus Privacy).
+- **🛡️ Split Architecture**: Clean separation between standard Google Play builds (`src/standard`) and pure FOSS builds (`src/foss`).
+- **📷 Dynamic Proxy QR Scanner**: Tracker-free QR code scanner leveraging safe reflection and ZXing fallback.
+- **🎯 4-Tool Customizable Radial Wheel**: Rapid 350ms long-press bubble tool selection.
+- **📱 1-Tap Control Center Tile & Glance Widgets**: Material You dynamic home screen widgets and 1-tap quick settings tile.
+- **🔐 AES-256-GCM Encrypted Backup & Restore**: Robust PBKDF2 local backup protection.
+
+---
+
+## [5.2.1] - 2026-08-14 (Backup & Stability Release) ⚡
+
+### 🚀 ADDED & IMPROVED
+- **🎨 Customizable Radial Bubble Wheel**: Users can now select and customize their top 4 favorite shortcut tools for the floating bubble wheel directly in Settings (`CustomizeBubbleDialog.kt` & `RadialToolCatalog.kt`).
+- **📱 1-Tap Home Screen Widget Bubble Toggle**: Instant on/off floating bubble toggling directly from Glance Material You widgets (`ToggleBubbleReceiver.kt`).
+- **⚡ 120Hz Animation Optimizations**: Offloaded radial bubble scale and alpha physics springs to GPU RenderThread via `Modifier.graphicsLayer` for zero-jank 120Hz rendering on Android 15 & 16.
+- **📱 Glance Material You Dynamic Theming**: Integrated `androidx.glance:glance-material3:1.1.1` dynamic wallpaper palette theming across 1x1 Compact, 2x1 Quick Bar, and 2x2 Tool Hub widgets.
+- **🔐 Encrypted Backup & Restore**: AES-256-GCM encrypted `.qdbackup` file export/import with PBKDF2 (100,000 iterations) passphrase key derivation, Room database notes serialization, and DataStore preferences restore.
+- **🛡️ 37 CodeQL Static Analysis Security Hardening**: Addressed all CodeQL static analysis alerts including restricted WebView file/content access, explicit PendingIntents (`setPackage`), log injection sanitization, strong biometrics (`BIOMETRIC_STRONG`), absolute binary paths, and cloud backup protection.
 - **🤖 GitHub Repository & CI Automation**: Added CodeRabbit configuration (`.coderabbit.yaml`), automated PR welcome contributor bot (`pr-welcome.yml`), Dependabot version grouping, and upgraded Gradle wrapper to 9.5 and `setup-java@v5`.
 
 ---

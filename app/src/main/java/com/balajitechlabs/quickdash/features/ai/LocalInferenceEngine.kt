@@ -12,6 +12,7 @@ import kotlinx.coroutines.withContext
  * NOTE: Model initialization is slow the first time (~5–20s depending on model size).
  * The instance is cached and reused across calls for the same model path.
  */
+@Suppress("DEPRECATION")
 class LocalInferenceEngine {
 
     private var inference: LlmInference? = null

@@ -36,18 +36,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.balajitechlabs.quickdash.core.ui.components.RoundedCardContainer
-import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import com.balajitechlabs.quickdash.features.qr.utils.QrScannerHelper
 
 /**
  * 📷 Tool #25 — Quick QR & Barcode Scanner (`QuickQrScannerScreen.kt`).
- * Camera scanner using Google Play Services GmsBarcodeScanning with URL safety verification.
+ * Clean QR and barcode scanner.
  */
 @Composable
 fun QuickQrScannerScreen() {
     val context = LocalContext.current
     var lastScannedResult by remember { mutableStateOf<String?>(null) }
-
-    val scanner = remember { GmsBarcodeScanning.getClient(context) }
 
     Column(
         modifier = Modifier
@@ -80,15 +78,16 @@ fun QuickQrScannerScreen() {
 
         Button(
             onClick = {
-                scanner.startScan()
-                    .addOnSuccessListener { barcode ->
-                        val raw = barcode.rawValue ?: "No text found"
+                QrScannerHelper.startScan(
+                    context = context,
+                    onResult = { raw ->
                         lastScannedResult = raw
                         Toast.makeText(context, "Scanned: $raw", Toast.LENGTH_SHORT).show()
+                    },
+                    onError = { err ->
+                        Toast.makeText(context, err, Toast.LENGTH_SHORT).show()
                     }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(context, "Scan failed: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
-                    }
+                )
             },
             modifier = Modifier
                 .fillMaxWidth()

@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
@@ -46,10 +46,23 @@ jobs:
         run: |
           echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --no-daemon
+      - name: Build Debug APKs (Standard & FOSS)
+        run: |
+          ./gradlew assembleDebug --parallel --build-cache --no-daemon
+          ./gradlew assembleDebug -Pfoss --parallel --build-cache --no-daemon
         env:
           CI: true
+
+      - name: Report APK Sizes
+        run: |
+          echo "### 📱 Debug APK Sizes" >> $GITHUB_STEP_SUMMARY
+          echo "| Artifact | Size |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+          for apk in app/build/outputs/apk/debug/*.apk; do
+            if [ -f "$apk" ]; then
+              echo "| \`$(basename "$apk")\` | $(ls -lh "$apk" | awk '{print $5}') |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
 
       - name: Upload Debug APK
         if: success()
@@ -69,7 +82,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
@@ -112,7 +125,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
@@ -134,8 +147,10 @@ jobs:
         run: |
           echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-      - name: Run Unit Tests
-        run: ./gradlew testDebugUnitTest --no-daemon
+      - name: Run Unit Tests (Standard & FOSS)
+        run: |
+          ./gradlew testDebugUnitTest --parallel --build-cache --no-daemon
+          ./gradlew testDebugUnitTest -Pfoss --parallel --build-cache --no-daemon
 
       - name: Upload Test Report
         if: always()
@@ -169,14 +184,24 @@ jobs:
         run: npm run build
         working-directory: website
 
-  # ── Security Scan ───────────────────────────────────────
+  # ── Security & Metadata Scan ─────────────────────────────
   security:
-    name: 🔒 Security Check
+    name: 🔒 Security & Metadata Check
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Verify Fastlane & F-Droid Metadata
+        run: |
+          echo "🔍 Validating Fastlane and F-Droid metadata files..."
+          test -f metadata/com.balajitechlabs.quickdash.yml || { echo "❌ Missing F-Droid metadata recipe"; exit 1; }
+          test -d fastlane/metadata/android/en-US || { echo "❌ Missing Fastlane metadata folder"; exit 1; }
+          test -f fastlane/metadata/android/en-US/title.txt || { echo "❌ Missing Fastlane title.txt"; exit 1; }
+          test -f fastlane/metadata/android/en-US/short_description.txt || { echo "❌ Missing Fastlane short_description.txt"; exit 1; }
+          test -f fastlane/metadata/android/en-US/full_description.txt || { echo "❌ Missing Fastlane full_description.txt"; exit 1; }
+          echo "✅ Metadata structure valid"
 
       - name: Check for hardcoded secrets
         run: |

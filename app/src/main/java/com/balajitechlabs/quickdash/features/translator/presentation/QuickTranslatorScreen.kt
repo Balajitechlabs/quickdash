@@ -114,8 +114,8 @@ fun QuickTranslatorScreen() {
             }
         }
         onDispose {
-            tts?.stop()
-            tts?.shutdown()
+            tts.stop()
+            tts.shutdown()
         }
     }
 

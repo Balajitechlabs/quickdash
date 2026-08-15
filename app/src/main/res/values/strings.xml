@@ -19,4 +19,9 @@
 
     <string name="shortcut_quick_timer_short">Timer</string>
     <string name="shortcut_quick_timer_long">Stopwatch &amp; Countdown</string>
+
+    <string name="pref_customize_bubble_title">Customize Bubble Tools</string>
+    <string name="pref_customize_bubble_subtitle">Choose your 4 shortcut tools for the radial wheel</string>
+    <string name="pref_customize_bubble_desc">Tap any cardinal slot below to assign your favorite shortcut tool to the floating radial bubble.</string>
+    <string name="widget_toggle_bubble">Toggle Floating Bubble</string>
 </resources>

@@ -1,21 +1,39 @@
 <p align="center">
-  <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" width="120" alt="QuickDash">
+  <a href="https://quickdash.balajitechlab.com" target="_blank">
+    <img src="https://i.imghippo.com/files/ehH4662Jo.png" width="75%" alt="QuickDash Banner" />
+  </a>
+  <br/><br/>
+  <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash" target="_blank">
+    <img src="https://i.imghippo.com/files/HWd3070AGs.png" height="38px" alt="Get it on Google Play" />
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://github.com/Balajitechlabs/quickdash" target="_blank">
+    <img src="https://i.imghippo.com/files/Hl6852EBQ.png" height="38px" alt="View on GitHub" />
+  </a>
 </p>
-
-<h1 align="center">QuickDash ⚡</h1>
-
+<hr>
 <p align="center">
-  <b>12 Floating Tools for Android — UPI QR, Translator, Clipboard, Notes, Calculator & More</b><br>
-  <i>Zero tracking. On-device processing. Material Design 3.</i>
+  <b>The Ultimate Floating Utility Hub for Android — Radial Wheel, Material You Widgets & 12 On-Demand Tools</b><br>
+  <i>100% On-Device Processing · Zero Tracking · Modern Material Design 3 · Fluid 120Hz Animations</i>
 </p>
-
+<hr>
 <p align="center">
   <a href="https://github.com/Balajitechlabs/quickdash/releases/latest">
-    <img src="https://img.shields.io/badge/Download_APK-2ea44f?style=for-the-badge&logo=android&logoColor=white" alt="Download APK">
+    <img src="https://img.shields.io/badge/Download_Universal_APK-2ea44f?style=for-the-badge&logo=android&logoColor=white" alt="Download Universal APK">
   </a>
-  <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash">
-    <img src="https://img.shields.io/badge/Play_Store-414141?style=for-the-badge&logo=googleplay&logoColor=white" alt="Play Store">
+  &nbsp;&nbsp;
+  <a href="https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-foss-release.apk">
+    <img src="https://img.shields.io/badge/Download_FOSS_APK-0_Trackers-brightgreen?style=for-the-badge&logo=fdroid&logoColor=white" alt="Download FOSS APK">
   </a>
+  &nbsp;&nbsp;
+  <a href="https://github.com/Balajitechlabs/quickdash/releases">
+    <img src="https://img.shields.io/github/downloads/Balajitechlabs/quickdash/total?style=for-the-badge&logo=github&logoColor=white&color=2563eb&label=TOTAL%20DOWNLOADS" alt="Total Downloads">
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://github.com/Balajitechlabs/quickdash">
+    <img src="https://komarev.com/ghpvc/?username=Balajitechlabs-quickdash&label=BADGE%20VIEWS&color=2563eb&style=for-the-badge" alt="Badge Views">
+  </a>
+  &nbsp;&nbsp;
   <a href="obtainium://app/https://github.com/Balajitechlabs/quickdash">
     <img src="https://img.shields.io/badge/Add_to_Obtainium-000000?style=for-the-badge&logo=github&logoColor=white" alt="Obtainium">
   </a>
@@ -23,6 +41,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/github/v/release/Balajitechlabs/quickdash?style=flat-square&logo=github&color=blue" alt="Version">
+  <img src="https://img.shields.io/badge/Exodus-0_Trackers_(FOSS)-success?style=flat-square&logo=shield" alt="Exodus Privacy">
+  <img src="https://img.shields.io/github/downloads/Balajitechlabs/quickdash/total?style=flat-square&logo=github&color=2563eb&label=downloads" alt="Downloads">
   <img src="https://img.shields.io/github/stars/Balajitechlabs/quickdash?style=flat-square&logo=github&color=gold" alt="Stars">
   <img src="https://img.shields.io/github/last-commit/Balajitechlabs/quickdash?style=flat-square&logo=git&color=green" alt="Last Commit">
   <img src="https://img.shields.io/github/actions/workflow/status/Balajitechlabs/quickdash/deploy-website.yml?style=flat-square&label=website" alt="Website">
@@ -35,117 +55,119 @@
 
 ---
 
-## What is QuickDash?
+## ⚡ What is QuickDash?
 
-QuickDash is an **Android floating overlay utility hub** — a single persistent bubble that puts **12 tools** right on your screen, accessible from any app.
+**QuickDash** transforms your Android experience with a lightweight, customizable floating overlay that brings **12 essential productivity utilities** to your fingertips — accessible from any app without context-switching.
 
-| Tool | Description |
-|------|-------------|
-| 🎯 **Radial Quick-Wheel** | 350ms long-press or swipe on the bubble to launch your top 4 pinned tools. |
-| 📱 **Glance M3 Widgets** | Responsive Home Screen & Lock Screen widgets (1x1, 2x1 Quick Bar, 2x2 Hub). |
-| 🔐 **Encrypted Backup** | AES-256-GCM encrypted `.qdbackup` export & restore with PBKDF2 passphrase protection. |
-| 🔤 **Translator** | On-screen translation across 100+ languages. Runs entirely on-device. |
-| 📋 **Clipboard** | Smart clipboard manager with history, favorites, and one-tap paste. |
-| 📱 **UPI QR** | Generate UPI QR codes from any screen. Tap to scan or share. |
-| 📝 **Notes** | Quick floating notes that sync with Room DB and clipboard. |
-| 🔢 **Calculator** | Floating calculator for quick arithmetic without switching apps. |
-| 📶 **Wi-Fi Share** | Share connected Wi-Fi credentials instantly as QR codes. |
-| ⚖️ **Unit Converter** | Convert length, weight, temperature, currency, and more. |
-| 👁️ **Text Extractor** | Extract text from images using on-device OCR (Optical Character Recognition). |
-| 🎨 **Color Picker** | Pick colors from any screen area and copy hex/RGB values. |
-| ⏱️ **Timer** | Floating countdown timer with preset intervals and AlarmManager exact alarms. |
-| 🔋 **Battery Info** | View battery stats, health, and estimated remaining time. |
-| 🧰 **Tool Drawer** | Quick-access drawer for all utilities in one place. |
-
-> **Zero tracking. Zero ads. Zero telemetry.** Everything runs on your device.
+Whether you need to generate a UPI QR code, translate on-screen text, jot down a note, calculate arithmetic, or set a countdown timer, QuickDash makes it instantaneous.
 
 ---
 
-## Installation
+## 🌟 Key Highlights
 
-### Option 1: Download APK
-Grab the latest APK from [GitHub Releases](https://github.com/Balajitechlabs/quickdash/releases/latest).
-
-### Option 2: Play Store (Beta)
-Join the beta on [Google Play](https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash).
-
-### Option 3: Obtainium / F-Droid
-- **Obtainium**: Add `https://github.com/Balajitechlabs/quickdash` to receive auto-updates.
-- **F-Droid**: Recipe metadata included at `metadata/com.balajitechlabs.quickdash.yml`.
+- 🎯 **Customizable Radial Wheel**: Long-press (350ms) or flick the floating bubble to instantly fire your top 4 pinned shortcuts. Customize any slot directly from Settings!
+- 📱 **Material You Glance Widgets**: Responsive 1x1 Compact (1-Tap Bubble Toggle), 2x1 Quick Bar, and 2x2 Hub widgets with Android 12+ wallpaper dynamic color theming.
+- ⚡ **120Hz Fluid Animations**: RenderThread-accelerated spring physics via `Modifier.graphicsLayer` for zero-jank performance on Android 15 & 16.
+- 🔐 **Encrypted Local Backups**: Secure AES-256-GCM encrypted `.qdbackup` export & restore with PBKDF2 passphrase protection.
+- 🛡️ **Complete Privacy**: Zero ads, zero tracking, and zero telemetry. All text extraction (OCR), calculations, and clipboard processing run locally on-device.
 
 ---
 
-## Build from Source
+## 🧰 Built-in Tool Suite
+
+| Tool | Icon | Description |
+|---|:---:|---|
+| **Radial Quick-Wheel** | 🎯 | Instant 4-cardinal directional gesture menu for top pinned tools. |
+| **Glance M3 Widgets** | 📱 | Interactive 1x1, 2x1, and 2x2 dynamic home screen widgets. |
+| **Encrypted Backup** | 🔐 | AES-256-GCM encrypted database export and password-protected restore. |
+| **Translator** | 🔤 | On-screen multi-language translator running locally on your device. |
+| **Clipboard Manager** | 📋 | Smart history tracking, search, pinned favorites, and 1-tap paste. |
+| **UPI Pay & QR** | 💳 | Instant UPI payment QR code generator with custom amounts. |
+| **Quick Notes** | 📝 | Floating scratchpad with Room DB auto-sync and markdown export. |
+| **Calculator** | 🔢 | Modern floating calculator with history and memory functions. |
+| **Wi-Fi Share** | 📶 | Share Wi-Fi credentials effortlessly via generated QR codes. |
+| **Unit Converter** | ⚖️ | Convert length, currency, weight, temperature, area, and speed. |
+| **Text Extractor (OCR)** | 👁️ | Extract text from screen captures using on-device ML Kit OCR. |
+| **Color Picker** | 🎨 | Sample screen colors with instant RGB & Hex clipboard copy. |
+| **Timer & Stopwatch** | ⏱️ | Floating countdown timers with exact `AlarmManager` triggers. |
+| **Battery Diagnostics** | 🔋 | Real-time voltage, temperature, health, and battery cycle monitor. |
+
+---
+
+## 📲 Installation Options
+
+### 1. Direct APK (Recommended)
+Download the latest signed release APK directly from [GitHub Releases](https://github.com/Balajitechlabs/quickdash/releases/latest).
+
+### 2. Google Play Store
+Get official updates and join beta releases on the [Google Play Store](https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash).
+
+### 3. Obtainium & F-Droid
+- **Obtainium**: Add `https://github.com/Balajitechlabs/quickdash` for direct GitHub release updates.
+- **F-Droid**: Build recipe metadata available in `metadata/com.balajitechlabs.quickdash.yml`.
+
+---
+
+## 💻 Build from Source
 
 ```bash
+# Clone the repository
 git clone https://github.com/Balajitechlabs/quickdash.git
 cd quickdash
 
-# Debug build
+# Build Debug APK
 ./gradlew assembleDebug
 
-# Release build
-./gradlew assembleRelease
-
-# Run tests
+# Run Unit Tests
 ./gradlew testDebugUnitTest
 
-# Lint
+# Run Lint Analysis
 ./gradlew lint
 ```
 
-**Prerequisites:** Android Studio, JDK 17+, Android SDK 36+.
-
-For detailed setup instructions, see [SETUP.md](SETUP.md).
+**Requirements:** Android Studio Ladybug+, JDK 17+, Android SDK 36 (Android 16). For complete setup steps, check out [SETUP.md](SETUP.md).
 
 ---
 
-## Tech Stack
+## 🛠️ Technology Stack
 
-| Component | Technology |
-|-----------|-----------|
-| Language | **Kotlin 2.2** |
-| UI | **Jetpack Compose** + **Material Design 3** + **Glance Widgets** |
-| Architecture | MVVM (Model-View-ViewModel) + Single-Activity Floating Dialog |
-| DI | **Hilt** (Dagger) |
-| Database & Storage | **Room DB**, **DataStore** (`UserStore`), **Proto DataStore** |
-| Encryption | **AES-256-GCM** + **PBKDF2** |
-| Networking | **OkHttp 4.12** |
-| Min SDK | **API 24** (Android 7.0) |
-| Target SDK | **API 36** (Android 16) |
-| Build | **Gradle 9.5** with Kotlin DSL |
-| CI/CD | **GitHub Actions** (6 workflows: PR checks, release, CodeQL, nightly, dependency scan, website) |
+| Layer | Technologies Used |
+|---|---|
+| **Language** | Kotlin 2.2 |
+| **UI Framework** | Jetpack Compose + Material Design 3 |
+| **App Widgets** | AndroidX Glance Material 3 (`glance-material3:1.1.1`) |
+| **Architecture** | MVVM + Repository Pattern + Clean Architecture |
+| **Dependency Injection**| Dagger Hilt |
+| **Local Persistence** | Room Database + Jetpack DataStore + Proto DataStore |
+| **Security & Crypto** | AndroidX Security Crypto (`EncryptedSharedPreferences`, AES-256-GCM, PBKDF2) |
+| **Networking** | OkHttp 4.12 |
+| **Build System** | Gradle 9.5 + Kotlin DSL + Version Catalogs |
 
 ---
 
-## Project Structure
+## 📂 Project Architecture
 
 ```
 quickdash/
-├── app/                    # Android app module
-├── website/                # Showcase website (React + GitHub Pages)
-├── .github/                # CI/CD, issue templates, community files
-├── release/                # Release process & notes
-├── metadata/               # F-Droid store metadata
-├── scripts/                # Developer helpers
-├── .githooks/              # Pre-push secret detection
-├── gradle/                 # Version catalog & wrapper
-├── screenshots/            # Store listing screenshots
-├── ARCHITECTURE.md         # Architecture deep-dive
-├── CHANGELOG.md            # Version history
-├── SETUP.md                # Developer setup guide
-├── CONTRIBUTING.md         # How to contribute
-├── SECURITY.md             # Security policy
+├── app/                    # Main Android application module
+│   ├── src/main/java/      # Kotlin source code (core, features, widgets)
+│   └── src/main/res/       # Material 3 drawables, layouts, and strings
+├── website/                # Showcase website & documentation (React + Vite)
+├── release/                # Release notes, changelogs, and APK artifacts
+├── metadata/               # F-Droid store listing metadata
+├── ARCHITECTURE.md         # Full architecture and data-flow specifications
+├── CHANGELOG.md            # Comprehensive release history
+├── SETUP.md                # Development environment setup guide
+├── CONTRIBUTING.md         # Contribution guidelines
+├── SECURITY.md             # Security policies & vulnerability reporting
 └── LICENSE                 # Open source license
 ```
-
-For a complete tour of the codebase, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ---
 
 ## 👥 Contributors & Community
 
-Thanks to all the wonderful contributors who help build and improve QuickDash!
+A huge thank you to everyone who has contributed to making QuickDash better!
 
 <p align="center">
   <a href="https://github.com/Balajitechlabs/quickdash/graphs/contributors">
@@ -153,25 +175,26 @@ Thanks to all the wonderful contributors who help build and improve QuickDash!
   </a>
 </p>
 
-Contributions of all kinds are warmly welcomed! Please read our [Contributing Guide](CONTRIBUTING.md) and [Developer Setup Guide](SETUP.md) to get started.
+Contributions of all shapes and sizes are warmly welcomed! Please read our [Contributing Guide](CONTRIBUTING.md) to get started.
 
 ---
 
-## License & Attribution
+## 📜 License & Attribution
 
-QuickDash is published under the **PocketOps Custom Open Source Fork License**.
+QuickDash is licensed under the **PocketOps Custom Open Source Fork License**.
 
-- **Original Base:** Fork of [PocketOps](https://github.com/IIXII-L192/PocketOps-app) by Aakarsh (L192) / IIXII™.
-- **Modifications:** Includes >30% major functional additions (details in [LICENSE](LICENSE)).
-- **Compliance:** All original copyright notices are preserved.
+- **Original Base:** Forked from [PocketOps](https://github.com/IIXII-L192/PocketOps-app) by Aakarsh (L192) / IIXII™.
+- **Modifications:** Includes >30% major new architecture, widgets, security hardening, and feature additions (see [LICENSE](LICENSE)).
+- **Compliance:** All original copyright notices, licenses, and acknowledgments are preserved in full.
 
-© 2026 BalajiTechLabs. Free to use and open source.
+© 2026 BalajiTechLabs. Free to use, modify, and distribute.
 
 ---
 
 <p align="center">
   <a href="https://quickdash.balajitechlab.com">Website</a> ·
+  <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash">Play Store</a> ·
+  <a href="https://github.com/Balajitechlabs/quickdash/releases">Releases</a> ·
   <a href="https://github.com/Balajitechlabs/quickdash/issues">Issues</a> ·
-  <a href="https://github.com/Balajitechlabs/quickdash/discussions">Discussions</a> ·
-  <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash">Play Store</a>
+  <a href="https://github.com/Balajitechlabs/quickdash/discussions">Discussions</a>
 </p>

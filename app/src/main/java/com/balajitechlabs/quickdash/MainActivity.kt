@@ -261,18 +261,42 @@ class MainActivity : FragmentActivity() {
             // Removed duplicate collector that caused race condition with FLAG_SECURE
         }
 
-        // Fetch and register FCM and OneSignal Diagnostics
+        // Fetch and register FCM Diagnostics (Standard release only)
         try {
-            com.google.firebase.messaging.FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val token = task.result ?: ""
-                    lifecycleScope.launch {
-                        mainViewModel.userStore.saveFcmToken(token)
+            val fmClass = Class.forName("com.google.firebase.messaging.FirebaseMessaging")
+            val getInstanceMethod = fmClass.getMethod("getInstance")
+            val fmInstance = getInstanceMethod.invoke(null)
+            val getTokenMethod = fmClass.getMethod("getToken")
+            val taskInstance = getTokenMethod.invoke(fmInstance)
+            if (taskInstance != null) {
+                val completeListenerClass = Class.forName("com.google.android.gms.tasks.OnCompleteListener")
+                val proxyHandler = java.lang.reflect.InvocationHandler { _, method, args ->
+                    if (method.name == "onComplete" && args != null && args.isNotEmpty()) {
+                        try {
+                            val task = args[0]
+                            val isSuccess = task?.javaClass?.getMethod("isSuccessful")?.invoke(task) as? Boolean ?: false
+                            if (isSuccess) {
+                                val token = task?.javaClass?.getMethod("getResult")?.invoke(task) as? String ?: ""
+                                if (token.isNotBlank()) {
+                                    lifecycleScope.launch {
+                                        mainViewModel.userStore.saveFcmToken(token)
+                                    }
+                                }
+                            }
+                        } catch (_: Exception) { }
                     }
+                    null
                 }
+                val proxy = java.lang.reflect.Proxy.newProxyInstance(
+                    completeListenerClass.classLoader,
+                    arrayOf(completeListenerClass),
+                    proxyHandler
+                )
+                val addOnCompleteMethod = taskInstance.javaClass.getMethod("addOnCompleteListener", completeListenerClass)
+                addOnCompleteMethod.invoke(taskInstance, proxy)
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (_: Throwable) {
+            // Firebase Messaging not present in FOSS build
         }
 
 
@@ -499,47 +523,10 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun checkForPlayAppUpdate() {
-        try {
-            // Using KTX-compatible coroutines API (com.google.android.play:app-update-ktx)
-            val appUpdateManager = com.google.android.play.core.appupdate.AppUpdateManagerFactory.create(this)
-            appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
-                val isUpdateAvailable = appUpdateInfo.updateAvailability() ==
-                    com.google.android.play.core.install.model.UpdateAvailability.UPDATE_AVAILABLE
-                val isFlexible = appUpdateInfo.isUpdateTypeAllowed(
-                    com.google.android.play.core.install.model.AppUpdateType.FLEXIBLE
-                )
-                if (isUpdateAvailable && isFlexible) {
-                    @Suppress("DEPRECATION")
-                    appUpdateManager.startUpdateFlowForResult(
-                        appUpdateInfo,
-                        this,
-                        com.google.android.play.core.appupdate.AppUpdateOptions.defaultOptions(
-                            com.google.android.play.core.install.model.AppUpdateType.FLEXIBLE
-                        ),
-                        9901
-                    )
-                }
-            }.addOnFailureListener { e ->
-                AppLogger.e("MainActivity", "In-App Update check failed", e)
-            }
-        } catch (e: Exception) {
-            AppLogger.e("MainActivity", "In-App Update check skipped", e)
-        }
+        com.balajitechlabs.quickdash.core.utils.PlayStoreHelper.checkForAppUpdate(this)
     }
 
     private fun requestPlayInAppReview() {
-        try {
-            // Uses com.google.android.play:review-ktx (already in build.gradle.kts)
-            val manager = com.google.android.play.core.review.ReviewManagerFactory.create(this)
-            manager.requestReviewFlow().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    manager.launchReviewFlow(this, task.result)
-                } else {
-                    AppLogger.e("MainActivity", "In-App Review request failed: ${task.exception?.message}")
-                }
-            }
-        } catch (e: Exception) {
-            AppLogger.e("MainActivity", "In-App Review request skipped", e)
-        }
+        com.balajitechlabs.quickdash.core.utils.PlayStoreHelper.requestInAppReview(this)
     }
 }

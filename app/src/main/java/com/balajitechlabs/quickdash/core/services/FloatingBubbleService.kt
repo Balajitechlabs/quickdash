@@ -358,6 +358,18 @@ class FloatingBubbleService : Service() {
             }
         }
 
+        var currentCustomTools = listOf("upi", "notes", "calc", "timer")
+        val userStore = com.balajitechlabs.quickdash.core.data.UserStore(this@FloatingBubbleService)
+        serviceScope.launch {
+            try {
+                userStore.radialCustomTools.collect { tools ->
+                    currentCustomTools = tools
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
         fun showRadialMenu(centerX: Int, centerY: Int) {
             dismissRadialMenu()
             isRadialMenuOpen = true
@@ -380,11 +392,14 @@ class FloatingBubbleService : Service() {
                 y = centerY - sizePx / 2
             }
 
+            val dynamicActions = com.balajitechlabs.quickdash.core.ui.components.RadialToolCatalog.buildRadialActions(currentCustomTools)
+
             radialView = ComposeView(this@FloatingBubbleService).apply {
                 setViewTreeLifecycleOwner(savedStateRegistryOwner)
                 setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
                 setContent {
                     com.balajitechlabs.quickdash.core.ui.components.RadialBubbleMenu(
+                        actions = dynamicActions,
                         activeSectorIndex = radialState.intValue,
                         onActionSelected = { action ->
                             triggerVibration(15)
@@ -435,15 +450,15 @@ class FloatingBubbleService : Service() {
                             if (angle < 0) angle += 360.0
 
                             // 4 Cardinal sectors:
-                            // Right (East): 315° to 45° -> Index 1 (Notes)
-                            // Bottom (South): 45° to 135° -> Index 2 (Calc)
-                            // Left (West): 135° to 225° -> Index 3 (Timer)
-                            // Top (North): 225° to 315° -> Index 0 (UPI)
+                            // Right (East): 315° to 45° -> Index 1 (Slot 1)
+                            // Bottom (South): 45° to 135° -> Index 2 (Slot 2)
+                            // Left (West): 135° to 225° -> Index 3 (Slot 3)
+                            // Top (North): 225° to 315° -> Index 0 (Slot 0)
                             val sector = when {
-                                angle >= 315.0 || angle < 45.0 -> 1 // Right / Notes
-                                angle in 45.0..135.0 -> 2            // Bottom / Calc
-                                angle in 135.0..225.0 -> 3           // Left / Timer
-                                else -> 0                            // Top / UPI
+                                angle >= 315.0 || angle < 45.0 -> 1
+                                angle in 45.0..135.0 -> 2
+                                angle in 135.0..225.0 -> 3
+                                else -> 0
                             }
                             if (sector != activeRadialSector) {
                                 activeRadialSector = sector
@@ -478,8 +493,8 @@ class FloatingBubbleService : Service() {
                         val selectedIndex = activeRadialSector
                         dismissRadialMenu()
                         if (selectedIndex in 0..3) {
-                            val actions = com.balajitechlabs.quickdash.core.ui.components.DEFAULT_RADIAL_ACTIONS
-                            val chosenAction = actions.getOrNull(selectedIndex)
+                            val dynamicActions = com.balajitechlabs.quickdash.core.ui.components.RadialToolCatalog.buildRadialActions(currentCustomTools)
+                            val chosenAction = dynamicActions.getOrNull(selectedIndex)
                             if (chosenAction != null) {
                                 triggerVibration(20)
                                 launchSection(chosenAction.actionIntent)
@@ -505,11 +520,12 @@ class FloatingBubbleService : Service() {
                                 stopSelf()
                             } else {
                                 lastTapTime = currentTime
-                                singleTapRunnable = Runnable {
+                                val runnable = Runnable {
                                     triggerVibration(20)
                                     if (bubbleMenu.visibility == View.VISIBLE) collapseMenu() else expandMenu()
                                 }
-                                tapHandler.postDelayed(singleTapRunnable!!, 300)
+                                singleTapRunnable = runnable
+                                tapHandler.postDelayed(runnable, 300)
                             }
                         }
                     }
