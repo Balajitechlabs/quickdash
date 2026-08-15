@@ -74,15 +74,18 @@ jobs:
                           -Pandroid.injected.signing.key.password=$KEY_PASSWORD"
           fi
 
-          # 1. Build Standard Release APKs & AAB (Google Play / Direct)
-          eval ./gradlew clean assembleRelease bundleRelease --parallel --build-cache "$SIGNING_FLAGS"
+          # 1. Build Standard Release APKs (Universal, arm64-v8a, armeabi-v7a)
+          eval ./gradlew clean assembleRelease --parallel --build-cache "$SIGNING_FLAGS"
 
-          # 2. Stage standard artifacts
+          # 2. Build Google Play App Bundle (.aab)
+          eval ./gradlew bundleRelease --parallel --build-cache "$SIGNING_FLAGS"
+
+          # 3. Stage standard artifacts
           mkdir -p release_artifacts
           cp app/build/outputs/apk/release/*.apk release_artifacts/ 2>/dev/null || true
           cp app/build/outputs/bundle/release/app-release.aab release_artifacts/ 2>/dev/null || true
 
-          # 3. Build 100% Zero-Tracker FOSS Release APK (for F-Droid & IzzyOnDroid)
+          # 4. Build 100% Zero-Tracker FOSS Release APK (for F-Droid & IzzyOnDroid)
           eval ./gradlew assembleRelease -Pfoss --parallel --build-cache "$SIGNING_FLAGS"
           if [ -f app/build/outputs/apk/release/app-universal-release.apk ]; then
             cp app/build/outputs/apk/release/app-universal-release.apk release_artifacts/app-foss-release.apk
@@ -135,7 +138,7 @@ jobs:
 
       - name: Create GitHub Release
         id: create_release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version.outputs.version_name }}-${{ github.run_number }}
           name: QuickDash v${{ steps.version.outputs.version_name }}
