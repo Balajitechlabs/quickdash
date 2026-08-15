@@ -34,7 +34,7 @@ object BiometricHelper {
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle("QuickDash Verification")
             .setSubtitle("Authenticate to access this tab")
-            .setNegativeButtonText("Cancel")
+            .setAllowedAuthenticators(androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG or androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL)
             .build()
 
         biometricPrompt.authenticate(promptInfo)
