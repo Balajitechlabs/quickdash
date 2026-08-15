@@ -313,7 +313,7 @@ fun QuickDashApp(
             }
             "com.balajitechlabs.quickdash.ACTION_QUICK_UPI", "com.balajitechlabs.quickdash.ACTION_SHOW_QR" -> {
                 if (activeIds.isNotEmpty()) {
-                    QuickDashUiState.EnterAmount(activeIds, activeDefaultId ?: activeIds.first())
+                    QuickDashUiState.EnterAmount(activeIds, activeDefaultId.ifEmpty { activeIds.first() })
                 } else {
                     QuickDashUiState.Setup(isManaging = false)
                 }
@@ -324,7 +324,7 @@ fun QuickDashApp(
                     triggerScanQr()
                 }
                 if (activeIds.isNotEmpty()) {
-                    QuickDashUiState.EnterAmount(activeIds, activeDefaultId ?: activeIds.first())
+                    QuickDashUiState.EnterAmount(activeIds, activeDefaultId.ifEmpty { activeIds.first() })
                 } else {
                     QuickDashUiState.Setup(isManaging = false)
                 }
@@ -453,7 +453,7 @@ fun QuickDashApp(
             val targetState = when (tool) {
                 QuickTool.UPI -> {
                     if (activeIds.isEmpty()) QuickDashUiState.Setup(isManaging = false)
-                    else QuickDashUiState.EnterAmount(activeIds, activeDefaultId ?: activeIds.first())
+                    else QuickDashUiState.EnterAmount(activeIds, activeDefaultId.ifEmpty { activeIds.first() })
                 }
                 QuickTool.WHATSAPP -> QuickDashUiState.WhatsApp
                 QuickTool.INSTAGRAM -> QuickDashUiState.Instagram

@@ -520,11 +520,12 @@ class FloatingBubbleService : Service() {
                                 stopSelf()
                             } else {
                                 lastTapTime = currentTime
-                                singleTapRunnable = Runnable {
+                                val runnable = Runnable {
                                     triggerVibration(20)
                                     if (bubbleMenu.visibility == View.VISIBLE) collapseMenu() else expandMenu()
                                 }
-                                tapHandler.postDelayed(singleTapRunnable!!, 300)
+                                singleTapRunnable = runnable
+                                tapHandler.postDelayed(runnable, 300)
                             }
                         }
                     }

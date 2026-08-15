@@ -11,14 +11,12 @@
     <img src="https://i.imghippo.com/files/Hl6852EBQ.png" height="38px" alt="View on GitHub" />
   </a>
 </p>
-
-<h1 align="center">QuickDash ⚡</h1>
-
+<hr>
 <p align="center">
   <b>The Ultimate Floating Utility Hub for Android — Radial Wheel, Material You Widgets & 12 On-Demand Tools</b><br>
   <i>100% On-Device Processing · Zero Tracking · Modern Material Design 3 · Fluid 120Hz Animations</i>
 </p>
-
+<hr>
 <p align="center">
   <a href="https://github.com/Balajitechlabs/quickdash/releases/latest">
     <img src="https://img.shields.io/badge/Download_APK-2ea44f?style=for-the-badge&logo=android&logoColor=white" alt="Download APK">

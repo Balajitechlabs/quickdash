@@ -1084,7 +1084,7 @@ class UserStore(private val context: Context) {
             }
             
             val count = if (existingEntry != null) {
-                (existingEntry!!.get("shareCount")?.asInt ?: 0) + 1
+                (existingEntry.get("shareCount")?.asInt ?: 0) + 1
             } else {
                 1
             }

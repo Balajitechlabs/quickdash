@@ -241,7 +241,7 @@ dependencies {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions {
-        freeCompilerArgs.addAll(listOf("-Xmetadata-version=2.1.0", "-Xannotation-default-target=param-property"))
+        freeCompilerArgs.addAll(listOf("-Xmetadata-version=2.1.0"))
     }
 }
 

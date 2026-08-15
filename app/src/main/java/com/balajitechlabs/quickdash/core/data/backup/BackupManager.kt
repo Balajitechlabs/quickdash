@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.balajitechlabs.quickdash.core.data.UserStore
+import com.balajitechlabs.quickdash.core.data.dataStore
 import com.balajitechlabs.quickdash.core.data.database.AppDatabase
 import com.balajitechlabs.quickdash.core.data.database.NoteEntity
 import com.google.gson.Gson
@@ -62,6 +63,11 @@ enum class RestoreStrategy {
     REPLACE
 }
 
+/**
+ * 🔐 BackupManager (`BackupManager.kt`)
+ * Handles full encrypted export and import of QuickDash DataStore preferences and Room notes
+ * using military-grade AES-256-GCM encryption with PBKDF2 passphrase key derivation.
+ */
 class BackupManager(private val context: Context) {
 
     private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
@@ -69,15 +75,15 @@ class BackupManager(private val context: Context) {
     private val userStore = UserStore(context)
 
     companion object {
-        private val MAGIC_HEADER = byteArrayOf(0x51, 0x44, 0x42, 0x4B) // "QDBK"
-        private const val CURRENT_FORMAT_VERSION: Byte = 1
-        private const val FLAG_PLAINTEXT: Byte = 0
-        private const val FLAG_ENCRYPTED: Byte = 1
+        val MAGIC_HEADER = byteArrayOf(0x51, 0x44, 0x42, 0x4B) // "QDBK"
+        const val CURRENT_FORMAT_VERSION: Byte = 1
+        const val FLAG_PLAINTEXT: Byte = 0
+        const val FLAG_ENCRYPTED: Byte = 1
 
         private const val PBKDF2_ITERATIONS = 100_000
         private const val KEY_LENGTH_BITS = 256
-        private const val SALT_SIZE_BYTES = 16
-        private const val IV_SIZE_BYTES = 12
+        const val SALT_SIZE_BYTES = 16
+        const val IV_SIZE_BYTES = 12
         private const val GCM_TAG_LENGTH_BITS = 128
     }
 
@@ -89,8 +95,8 @@ class BackupManager(private val context: Context) {
         outputStream: OutputStream
     ): BackupResult = withContext(Dispatchers.IO) {
         try {
-            // 1. Gather Preferences from DataStore
-            val allPrefs = context.userStoreDataStore.data.first().asMap()
+            // 1. Gather Preferences from Singleton DataStore
+            val allPrefs = context.dataStore.data.first().asMap()
             val stringMap = mutableMapOf<String, String>()
             val boolMap = mutableMapOf<String, Boolean>()
             val intMap = mutableMapOf<String, Int>()
@@ -138,12 +144,12 @@ class BackupManager(private val context: Context) {
             val jsonString = gson.toJson(payload)
             val jsonBytes = jsonString.toByteArray(Charsets.UTF_8)
 
-            if (isEncrypted) {
+            if (passphrase != null && isEncrypted) {
                 val secureRandom = SecureRandom()
                 val salt = ByteArray(SALT_SIZE_BYTES).also { secureRandom.nextBytes(it) }
                 val iv = ByteArray(IV_SIZE_BYTES).also { secureRandom.nextBytes(it) }
 
-                val secretKey = deriveKey(passphrase!!.toCharArray(), salt)
+                val secretKey = deriveKey(passphrase.toCharArray(), salt)
                 val cipher = Cipher.getInstance("AES/GCM/NoPadding")
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey, GCMParameterSpec(GCM_TAG_LENGTH_BITS, iv))
                 val ciphertext = cipher.doFinal(jsonBytes)
@@ -237,7 +243,7 @@ class BackupManager(private val context: Context) {
                     jsonString = String(allBytes.copyOfRange(6, allBytes.size), Charsets.UTF_8)
                 }
             } else {
-                // Direct JSON format
+                // Direct JSON format fallback
                 jsonString = String(allBytes, Charsets.UTF_8)
             }
 
@@ -247,8 +253,8 @@ class BackupManager(private val context: Context) {
                 return@withContext BackupResult.Error("Failed to parse backup contents: ${e.message}", e)
             }
 
-            // 1. Restore Preferences into DataStore
-            context.userStoreDataStore.edit { prefs ->
+            // 1. Restore Preferences into Singleton DataStore
+            context.dataStore.edit { prefs ->
                 payload.stringPreferences.forEach { (k, v) ->
                     prefs[stringPreferencesKey(k)] = v
                 }
@@ -299,13 +305,10 @@ class BackupManager(private val context: Context) {
         }
     }
 
-    private fun deriveKey(passphrase: CharArray, salt: ByteArray): SecretKeySpec {
+    fun deriveKey(passphrase: CharArray, salt: ByteArray): SecretKeySpec {
         val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
         val spec = PBEKeySpec(passphrase, salt, PBKDF2_ITERATIONS, KEY_LENGTH_BITS)
         val tmp = factory.generateSecret(spec)
         return SecretKeySpec(tmp.encoded, "AES")
     }
 }
-
-// Extension to access Context preferencesDataStore directly from BackupManager
-internal val Context.userStoreDataStore by androidx.datastore.preferences.preferencesDataStore(name = "user_settings")
