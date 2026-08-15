@@ -16,8 +16,6 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-    <!-- Required on Android 8.0+ (API 26+) for in-app direct APK updates -->
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <!-- Declare optional hardware features to prevent Google Play from excluding devices without physical camera/mic/location/wifi -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
