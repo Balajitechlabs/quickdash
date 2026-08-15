@@ -17,7 +17,9 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -502,7 +504,7 @@ fun QuickDashApp(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun QuickDashContent(
     mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
@@ -726,7 +728,42 @@ fun QuickDashContent(
                     Row(
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 52.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 52.dp)
+                            .then(
+                                if (uiState == QuickDashUiState.Dashboard) {
+                                    Modifier.combinedClickable(
+                                        onClick = {},
+                                        onLongClick = {
+                                            playClickVibration(context, hapticEnabled)
+                                            val newBubbleState = !bubbleEnabled
+                                            if (newBubbleState && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(context)) {
+                                                android.widget.Toast.makeText(
+                                                    context,
+                                                    "Please enable 'Display over other apps' to use floating bubble 🚀",
+                                                    android.widget.Toast.LENGTH_SHORT
+                                                ).show()
+                                                try {
+                                                    val intent = Intent(
+                                                        android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                                        Uri.parse("package:${context.packageName}")
+                                                    ).apply {
+                                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                                    }
+                                                    context.startActivity(intent)
+                                                } catch (e: Exception) {
+                                                    Log.e("QuickDashApp", "Failed to open overlay settings", e)
+                                                }
+                                            } else {
+                                                onToggleBubble(newBubbleState)
+                                                val toastMsg = if (newBubbleState) "Floating Bubble Enabled 🚀" else "Floating Bubble Disabled 🛑"
+                                                android.widget.Toast.makeText(context, toastMsg, android.widget.Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    )
+                                } else Modifier
+                            )
                     ) {
                         Text(
                             text = when (uiState) {

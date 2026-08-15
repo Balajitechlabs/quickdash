@@ -33,7 +33,7 @@ export default function UpdateBanner() {
           🎉 LATEST RELEASE AVAILABLE
         </p>
         <p style={{ fontSize: 14, color: 'var(--md-on-surface-variant)', marginBottom: 16 }}>
-          QuickDash v{latest.version} is now available (Build #{latest.version_code || 514})
+          QuickDash v{latest.version} is now available (Build #{latest.version_code || 523})
         </p>
         <a
           href={latest.apk_url || 'https://github.com/Balajitechlabs/quickdash/releases/latest'}
