@@ -4,8 +4,8 @@
   "min_version_code": 500,
   "changelog": "• QuickDash v5.2.2 — Zero-Tracker FOSS & Power-User Controls Release\n• 100% Zero-Tracker FOSS Edition build for F-Droid & IzzyOnDroid\n• Radial Quick-Wheel Bubble Gesture for fast 4-tool launch\n• Glance Material 3 Responsive Widgets (1x1, 2x1, 2x2)\n• Encrypted Backup & Restore (.qdbackup) with AES-256-GCM\n• 1-Tap Control Center Quick Settings Tile",
   "apk_url": "https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-universal-release.apk",
-  "apk_size_bytes": 27752336,
-  "apk_sha256": "370119131d2822f2ee7211e7f3802830d558b1422130b1d6bb15a14103fca341",
+  "apk_size_bytes": 54531041,
+  "apk_sha256": "f09487beb83b28ddc55e53f3bd28be9c70e8035a507ad8b20443b0c21628dad3",
   "release_date": "2026-08-14",
   "critical_update": false,
   "features": {
