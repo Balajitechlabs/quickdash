@@ -195,6 +195,8 @@ fun SettingsScreen(
     var showAboutDialog by remember { mutableStateOf(false) }
     var showCertificateDialog by remember { mutableStateOf(false) }
     var showBubbleLearnMoreDialog by remember { mutableStateOf(false) }
+    var showCustomizeBubbleDialog by remember { mutableStateOf(false) }
+    val radialCustomTools by viewModel.userStore.radialCustomTools.collectAsState(initial = listOf("upi", "notes", "calc", "timer"))
     var userIntendedEnable by remember { mutableStateOf(false) }
     var showTipsDialog by remember { mutableStateOf(false) }
     var showUpdateDialog by remember { mutableStateOf(false) }
@@ -808,6 +810,16 @@ fun SettingsScreen(
                     )
                 }
             }
+
+            PreferenceItem(
+                title = "Customize Bubble Tools",
+                subtitle = "Choose your 4 shortcut tools for the radial wheel",
+                iconVector = Icons.Default.Tune,
+                onClick = {
+                    triggerFeedback()
+                    showCustomizeBubbleDialog = true
+                }
+            )
 
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
@@ -2557,6 +2569,18 @@ fun SettingsScreen(
                     Text("Got it")
                 }
             }
+        )
+    }
+
+    if (showCustomizeBubbleDialog) {
+        CustomizeBubbleDialog(
+            initialTools = radialCustomTools,
+            onSave = { updatedTools ->
+                coroutineScope.launch {
+                    viewModel.userStore.saveRadialCustomTools(updatedTools)
+                }
+            },
+            onDismiss = { showCustomizeBubbleDialog = false }
         )
     }
 

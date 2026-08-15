@@ -179,6 +179,14 @@
                 android:resource="@xml/quickdash_widget_info" />
         </receiver>
 
+        <receiver
+            android:name="com.balajitechlabs.quickdash.widget.ToggleBubbleReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.balajitechlabs.quickdash.ACTION_TOGGLE_BUBBLE_WIDGET" />
+            </intent-filter>
+        </receiver>
+
 
     </application>
 
