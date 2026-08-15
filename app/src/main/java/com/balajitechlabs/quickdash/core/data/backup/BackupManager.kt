@@ -174,60 +174,83 @@ class BackupManager(private val context: Context) {
     }
 
     /**
-     * Inspect backup stream header to check whether encryption is active.
+     * Inspect backup byte array header to check whether encryption is active.
      */
-    suspend fun inspectBackup(inputStream: InputStream): Pair<Boolean, Boolean> = withContext(Dispatchers.IO) {
-        val header = ByteArray(6)
-        val read = inputStream.read(header)
-        if (read < 6) return@withContext Pair(false, false)
+    suspend fun inspectBackup(backupBytes: ByteArray): Pair<Boolean, Boolean> = withContext(Dispatchers.IO) {
+        if (backupBytes.size < 6) return@withContext Pair(false, false)
 
-        val isQdMagic = header[0] == MAGIC_HEADER[0] &&
-                header[1] == MAGIC_HEADER[1] &&
-                header[2] == MAGIC_HEADER[2] &&
-                header[3] == MAGIC_HEADER[3]
+        val isQdMagic = backupBytes[0] == MAGIC_HEADER[0] &&
+                backupBytes[1] == MAGIC_HEADER[1] &&
+                backupBytes[2] == MAGIC_HEADER[2] &&
+                backupBytes[3] == MAGIC_HEADER[3]
 
         if (!isQdMagic) {
             // Raw JSON fallback
             return@withContext Pair(true, false)
         }
 
-        val isEncrypted = header[5] == FLAG_ENCRYPTED
+        val isEncrypted = backupBytes[5] == FLAG_ENCRYPTED
         Pair(true, isEncrypted)
     }
 
     /**
-     * Import backup from [inputStream], validating [passphrase] if encrypted.
+     * Inspect backup stream header to check whether encryption is active.
+     */
+    suspend fun inspectBackup(inputStream: InputStream): Pair<Boolean, Boolean> = withContext(Dispatchers.IO) {
+        try {
+            val header = ByteArray(6)
+            val read = inputStream.read(header)
+            if (read < 6) return@withContext Pair(false, false)
+
+            val isQdMagic = header[0] == MAGIC_HEADER[0] &&
+                    header[1] == MAGIC_HEADER[1] &&
+                    header[2] == MAGIC_HEADER[2] &&
+                    header[3] == MAGIC_HEADER[3]
+
+            if (!isQdMagic) {
+                // Raw JSON fallback
+                return@withContext Pair(true, false)
+            }
+
+            val isEncrypted = header[5] == FLAG_ENCRYPTED
+            Pair(true, isEncrypted)
+        } catch (e: Exception) {
+            Pair(false, false)
+        }
+    }
+
+    /**
+     * Import backup from [backupBytes], validating [passphrase] if encrypted.
      */
     suspend fun importBackup(
         passphrase: String?,
-        inputStream: InputStream,
+        backupBytes: ByteArray,
         strategy: RestoreStrategy = RestoreStrategy.MERGE
     ): BackupResult = withContext(Dispatchers.IO) {
         try {
-            val allBytes = inputStream.readBytes()
-            if (allBytes.size < 6) {
+            if (backupBytes.size < 6) {
                 return@withContext BackupResult.Error("Invalid or empty backup file.")
             }
 
-            val isQdMagic = allBytes[0] == MAGIC_HEADER[0] &&
-                    allBytes[1] == MAGIC_HEADER[1] &&
-                    allBytes[2] == MAGIC_HEADER[2] &&
-                    allBytes[3] == MAGIC_HEADER[3]
+            val isQdMagic = backupBytes[0] == MAGIC_HEADER[0] &&
+                    backupBytes[1] == MAGIC_HEADER[1] &&
+                    backupBytes[2] == MAGIC_HEADER[2] &&
+                    backupBytes[3] == MAGIC_HEADER[3]
 
             val jsonString: String
             if (isQdMagic) {
-                val flag = allBytes[5]
+                val flag = backupBytes[5]
                 if (flag == FLAG_ENCRYPTED) {
                     if (passphrase.isNullOrBlank()) {
                         return@withContext BackupResult.Error("This backup is encrypted. Please enter the password.")
                     }
-                    if (allBytes.size < 6 + SALT_SIZE_BYTES + IV_SIZE_BYTES) {
+                    if (backupBytes.size < 6 + SALT_SIZE_BYTES + IV_SIZE_BYTES) {
                         return@withContext BackupResult.Error("Corrupted encrypted backup file.")
                     }
 
-                    val salt = allBytes.copyOfRange(6, 6 + SALT_SIZE_BYTES)
-                    val iv = allBytes.copyOfRange(6 + SALT_SIZE_BYTES, 6 + SALT_SIZE_BYTES + IV_SIZE_BYTES)
-                    val ciphertext = allBytes.copyOfRange(6 + SALT_SIZE_BYTES + IV_SIZE_BYTES, allBytes.size)
+                    val salt = backupBytes.copyOfRange(6, 6 + SALT_SIZE_BYTES)
+                    val iv = backupBytes.copyOfRange(6 + SALT_SIZE_BYTES, 6 + SALT_SIZE_BYTES + IV_SIZE_BYTES)
+                    val ciphertext = backupBytes.copyOfRange(6 + SALT_SIZE_BYTES + IV_SIZE_BYTES, backupBytes.size)
 
                     val secretKey = deriveKey(passphrase.toCharArray(), salt)
                     val cipher = Cipher.getInstance("AES/GCM/NoPadding")
@@ -240,11 +263,11 @@ class BackupManager(private val context: Context) {
                     }
                     jsonString = String(decryptedBytes, Charsets.UTF_8)
                 } else {
-                    jsonString = String(allBytes.copyOfRange(6, allBytes.size), Charsets.UTF_8)
+                    jsonString = String(backupBytes.copyOfRange(6, backupBytes.size), Charsets.UTF_8)
                 }
             } else {
                 // Direct JSON format fallback
-                jsonString = String(allBytes, Charsets.UTF_8)
+                jsonString = String(backupBytes, Charsets.UTF_8)
             }
 
             val payload: BackupPayload = try {
@@ -304,6 +327,15 @@ class BackupManager(private val context: Context) {
             BackupResult.Error("Restore failed: ${e.localizedMessage ?: e.message}", e)
         }
     }
+
+    /**
+     * Import backup from [inputStream], validating [passphrase] if encrypted.
+     */
+    suspend fun importBackup(
+        passphrase: String?,
+        inputStream: InputStream,
+        strategy: RestoreStrategy = RestoreStrategy.MERGE
+    ): BackupResult = importBackup(passphrase, inputStream.readBytes(), strategy)
 
     fun deriveKey(passphrase: CharArray, salt: ByteArray): SecretKeySpec {
         val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")

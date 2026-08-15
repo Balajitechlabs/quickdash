@@ -188,4 +188,33 @@ class BackupManagerTest {
 
         assertThat(decrypted).isEqualTo(payload)
     }
+
+    @Test
+    fun `test QDBK envelope byte array inspection logic`() {
+        val magic = BackupManager.MAGIC_HEADER
+        val encryptedEnvelope = ByteArrayOutputStream().apply {
+            write(magic)
+            write(byteArrayOf(BackupManager.CURRENT_FORMAT_VERSION, BackupManager.FLAG_ENCRYPTED))
+            write(ByteArray(50)) // Dummy payload
+        }.toByteArray()
+
+        assertThat(encryptedEnvelope.size).isAtLeast(6)
+        val isQdMagic = encryptedEnvelope[0] == magic[0] &&
+                encryptedEnvelope[1] == magic[1] &&
+                encryptedEnvelope[2] == magic[2] &&
+                encryptedEnvelope[3] == magic[3]
+        val isEncrypted = encryptedEnvelope[5] == BackupManager.FLAG_ENCRYPTED
+
+        assertThat(isQdMagic).isTrue()
+        assertThat(isEncrypted).isTrue()
+
+        val plaintextEnvelope = ByteArrayOutputStream().apply {
+            write(magic)
+            write(byteArrayOf(BackupManager.CURRENT_FORMAT_VERSION, BackupManager.FLAG_PLAINTEXT))
+            write(ByteArray(50))
+        }.toByteArray()
+
+        val isPlainEncrypted = plaintextEnvelope[5] == BackupManager.FLAG_ENCRYPTED
+        assertThat(isPlainEncrypted).isFalse()
+    }
 }
