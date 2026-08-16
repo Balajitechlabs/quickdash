@@ -5,8 +5,12 @@ on:
     branches: [main, master]
     paths-ignore:
       - README.md
+      - 'fastlane/**'
+      - 'metadata/**'
+      - 'website/**'
       - website/public/api/v1/update.json
       - website/public/api/v1/stats.json
+      - 'docs/**'
   workflow_dispatch:
 
 concurrency:

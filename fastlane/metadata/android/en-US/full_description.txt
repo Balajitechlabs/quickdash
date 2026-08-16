@@ -1,8 +1,10 @@
-QuickDash is an open-source, system-wide floating productivity overlay for Android.
+<p>QuickDash is an open-source, system-wide floating productivity overlay for Android.</p>
 
-Key Features:
-- 120Hz Customizable Radial Bubble Wheel: Long-press (350ms) or flick in any direction to access your favorite 4 shortcuts with RenderThread spring physics.
-- 1-Tap Control Center Quick Tile & Glance Home Screen Widgets: Toggle the floating bubble or launch tools instantly with Material You dynamic color theming.
-- 12 Built-in Floating Tools: Floating Calculator, Quick Notes, Offline Translator, OCR Text Extractor, Wi-Fi QR Share, Stopwatch, and universal UPI & PayPal payment QR collector.
-- 100% On-Device Offline Privacy: No accounts, no servers, zero telemetry.
-- AES-256-GCM Encrypted Local Backups: Export and restore your notes and settings securely.
+<p><b>Key Features:</b></p>
+<ul>
+  <li><b>Customizable Radial Bubble Wheel:</b> Long-press or flick in any direction to access your favorite 4 shortcuts with RenderThread spring physics.</li>
+  <li><b>1-Tap Control Center Quick Tile &amp; Glance Widgets:</b> Toggle the floating bubble or launch tools instantly with Material You dynamic color theming.</li>
+  <li><b>12 Built-in Floating Tools:</b> Floating Calculator, Quick Notes, Offline Translator, OCR Text Extractor, Wi-Fi QR Share, Stopwatch, and universal UPI &amp; PayPal payment QR collector.</li>
+  <li><b>100% On-Device Offline Privacy:</b> No accounts, no servers, zero telemetry.</li>
+  <li><b>AES-256-GCM Encrypted Local Backups:</b> Export and restore your notes and settings securely (.qdbackup).</li>
+</ul>
