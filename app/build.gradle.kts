@@ -185,7 +185,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation("androidx.fragment:fragment-ktx:1.8.2")
+    implementation("androidx.fragment:fragment-ktx:1.9.0")
     implementation(libs.zxing)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore.core)
@@ -212,7 +212,7 @@ dependencies {
     // UI & Graphics
     implementation("androidx.graphics:graphics-shapes:1.1.0")
     implementation("androidx.palette:palette-ktx:1.0.0")
-    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.appcompat:appcompat:1.8.0")
 
     // Jetpack Glance App Widget & Google Fonts
     implementation("androidx.glance:glance-appwidget:1.1.1")
