@@ -18,18 +18,6 @@
 </p>
 <hr>
 <p align="center">
-  <a href="https://github.com/Balajitechlabs/quickdash/releases/latest">
-    <img src="https://img.shields.io/badge/Download_Universal_APK-2ea44f?style=for-the-badge&logo=android&logoColor=white" alt="Download Universal APK">
-  </a>
-  &nbsp;&nbsp;
-  <a href="https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-foss-release.apk">
-    <img src="https://img.shields.io/badge/Download_FOSS_APK-0_Trackers-brightgreen?style=for-the-badge&logo=fdroid&logoColor=white" alt="Download FOSS APK">
-  </a>
-  &nbsp;&nbsp;
-  <a href="https://github.com/Balajitechlabs/quickdash/releases">
-    <img src="https://img.shields.io/github/downloads/Balajitechlabs/quickdash/total?style=for-the-badge&logo=github&logoColor=white&color=2563eb&label=TOTAL%20DOWNLOADS" alt="Total Downloads">
-  </a>
-  &nbsp;&nbsp;
   <a href="https://github.com/Balajitechlabs/quickdash">
     <img src="https://komarev.com/ghpvc/?username=Balajitechlabs-quickdash&label=BADGE%20VIEWS&color=2563eb&style=for-the-badge" alt="Badge Views">
   </a>
