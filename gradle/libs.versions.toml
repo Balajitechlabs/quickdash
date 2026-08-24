@@ -23,7 +23,7 @@ lottie = "6.7.1"
 zxing = "3.5.4"
 gson = "2.14.0"
 workmanager = "2.10.0"
-konfetti = "2.0.4"
+konfetti = "2.0.5"
 coil = "2.6.0"
 biometric = "1.1.0"
 
