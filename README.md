@@ -45,7 +45,7 @@
 
 ## ⚡ What is QuickDash?
 
-**QuickDash** transforms your Android experience with a lightweight, customizable floating overlay that brings **12 essential productivity utilities** to your fingertips — accessible from any app without context-switching.
+**QuickDash** transforms your Android experience with a lightweight, customizable floating overlay that brings **20+ essential productivity utilities** to your fingertips — accessible from any app without context-switching.
 
 Whether you need to generate a UPI QR code, translate on-screen text, jot down a note, calculate arithmetic, or set a countdown timer, QuickDash makes it instantaneous.
 
@@ -175,7 +175,7 @@ QuickDash is licensed under the **PocketOps Custom Open Source Fork License**.
 - **Modifications:** Includes >30% major new architecture, widgets, security hardening, and feature additions (see [LICENSE](LICENSE)).
 - **Compliance:** All original copyright notices, licenses, and acknowledgments are preserved in full.
 
-© 2026 BalajiTechLabs. Free to use, modify, and distribute.
+© 2026 ||BTL||™. Free to use, modify, and distribute.
 
 ---
 
