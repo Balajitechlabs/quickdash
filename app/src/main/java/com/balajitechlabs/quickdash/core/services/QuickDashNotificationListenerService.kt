@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/services
+ * File: QuickDashNotificationListenerService.kt
+ * Description: EssentialX-styled component for core/services supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.services
 
 import android.service.notification.NotificationListenerService
@@ -64,7 +73,7 @@ class QuickDashNotificationListenerService : NotificationListenerService() {
                 // Keep last 50 notification logs
                 historyRepository.saveNotificationHistory(gson.toJson(list.take(50)))
             } catch (e: Exception) {
-                e.printStackTrace()
+                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
             }
         }
     }

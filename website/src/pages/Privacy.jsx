@@ -67,6 +67,6 @@ const sections = [
   },
   {
     title: 'Contact',
-    content: 'For privacy-related questions: quickdash@balajitechlab.com or open an issue at github.com/Balajitechlabs/quickdash.',
+    content: 'For privacy-related questions: quickdash@balajitechlab.com or open an issue at github.com/balajitechlabs/quickdash.',
   },
 ]

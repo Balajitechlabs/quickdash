@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/ui
+ * File: Color.kt
+ * Description: EssentialX-styled component for core/ui supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
@@ -90,3 +99,30 @@ val AmoledBackground = Color(0xFF000000)
 val AmoledSurface = Color(0xFF000000)
 val AmoledVariant = Color(0xFF0F0F0F)
 val AmoledOutline = Color(0xFF333333)
+
+/**
+ * Deterministic Pastel and Vibrant Color generator for EssentialX / Cherrygram pill cards.
+ */
+object ColorUtil {
+    private val pastelColors = listOf(
+        Color(0xFFF48FB1), Color(0xFFCE93D8), Color(0xFFB39DDB), Color(0xFF9FA8DA),
+        Color(0xFF90CAF9), Color(0xFF81D4FA), Color(0xFF80DEEA), Color(0xFF80CBC4),
+        Color(0xFFA5D6A7), Color(0xFFC5E1A5), Color(0xFFE6EE9C), Color(0xFFFFF59D),
+        Color(0xFFFFE082), Color(0xFFFFCC80), Color(0xFFFFAB91), Color(0xFFBCAAA4),
+        Color(0xFFB0BEC5)
+    )
+
+    fun getPastelColorFor(key: Any): Color {
+        val hash = kotlin.math.abs(key.hashCode())
+        return pastelColors[hash % pastelColors.size]
+    }
+
+    fun getVibrantColorFor(key: Any): Color {
+        val baseColor = getPastelColorFor(key)
+        val hsv = FloatArray(3)
+        android.graphics.Color.colorToHSV((baseColor.value.toLong() shr 32).toInt(), hsv)
+        hsv[1] = (hsv[1] * 2.2f).coerceIn(0.6f, 1f)
+        hsv[2] = (hsv[2] * 0.7f).coerceIn(0.25f, 0.8f)
+        return Color(android.graphics.Color.HSVToColor(hsv))
+    }
+}

@@ -25,7 +25,7 @@ function ChangelogSection() {
           setReleases(data.slice(0, 3))
         } else {
           // Fallback to GitHub Releases API
-          return fetch('https://api.github.com/repos/Balajitechlabs/quickdash/releases?per_page=5')
+          return fetch('https://api.github.com/repos/balajitechlabs/quickdash/releases?per_page=5')
             .then(r => r.ok ? r.json() : [])
             .then(d => setReleases(d.slice(0, 3)))
         }

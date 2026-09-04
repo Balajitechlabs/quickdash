@@ -8,15 +8,15 @@ function GitHubRelease() {
   const [commit, setCommit] = useState(null)
 
   useEffect(() => {
-    fetch('https://api.github.com/repos/Balajitechlabs/quickdash')
+    fetch('https://api.github.com/repos/balajitechlabs/quickdash')
       .then(r => r.ok ? r.json() : null)
       .then(d => d && setRepo(d))
       .catch(() => {})
-    fetch('https://api.github.com/repos/Balajitechlabs/quickdash/releases/latest')
+    fetch('https://api.github.com/repos/balajitechlabs/quickdash/releases/latest')
       .then(r => r.ok ? r.json() : null)
       .then(d => d && setRelease(d))
       .catch(() => {})
-    fetch('https://api.github.com/repos/Balajitechlabs/quickdash/commits/master')
+    fetch('https://api.github.com/repos/balajitechlabs/quickdash/commits/master')
       .then(r => r.ok ? r.json() : null)
       .then(d => d && setCommit(d))
       .catch(() => {})
@@ -31,25 +31,25 @@ function GitHubRelease() {
 
   return (
     <div style={{ marginTop: 24, display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap', fontFamily: 'var(--body-font)', fontSize: 13 }}>
-      <a href="https://github.com/Balajitechlabs/quickdash/actions" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'build_status')}>
+      <a href="https://github.com/balajitechlabs/quickdash/actions" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'build_status')}>
         <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#4caf50' }} />
         Build passing
       </a>
       
-      <a href="https://github.com/Balajitechlabs/quickdash/releases" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'version')}>
+      <a href="https://github.com/balajitechlabs/quickdash/releases" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'version')}>
         <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#2196f3', animation: 'pulse 2s infinite' }} />
         {release ? `v${release.tag_name.replace('v', '')}` : 'v5.2.2 Latest'}
       </a>
 
-      <a href="https://github.com/Balajitechlabs/quickdash/security/policy" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'security')}>
+      <a href="https://github.com/balajitechlabs/quickdash/security/policy" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'security')}>
         🔒 Security Verified
       </a>
 
-      <a href="https://github.com/Balajitechlabs/quickdash" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'stars')}>
+      <a href="https://github.com/balajitechlabs/quickdash" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'stars')}>
         ⭐ {repo ? `${repo.stargazers_count} Stars` : 'Open Source'}
       </a>
 
-      <a href="https://github.com/Balajitechlabs/quickdash/issues" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'issues')}>
+      <a href="https://github.com/balajitechlabs/quickdash/issues" target="_blank" rel="noopener noreferrer" style={badgeStyle} onClick={() => trackEvent('badge_click', 'issues')}>
         🟢 {repo ? `${repo.open_issues_count} Issues` : 'Active Dev'}
       </a>
 
@@ -83,7 +83,7 @@ export default function HeroSection() {
         Zero tracking &bull; On-device processing &bull; Material Design 3
       </p>
       <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginTop: 12 }}>
-        <a href="https://github.com/Balajitechlabs/quickdash/releases/latest" className="btn" target="_blank" rel="noopener noreferrer" aria-label="Download QuickDash Universal APK" onClick={() => trackEvent('download_click', 'universal_apk')}>
+        <a href="https://github.com/balajitechlabs/quickdash/releases/latest" className="btn" target="_blank" rel="noopener noreferrer" aria-label="Download QuickDash Universal APK" onClick={() => trackEvent('download_click', 'universal_apk')}>
           <img src="/assets/github.svg" alt="" width="14" height="14" aria-hidden="true" />
           DOWNLOAD APK
         </a>

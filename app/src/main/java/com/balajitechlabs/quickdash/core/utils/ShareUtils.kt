@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/utils
+ * File: ShareUtils.kt
+ * Description: EssentialX-styled component for core/utils supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.utils
 
 import android.content.Context
@@ -124,16 +133,16 @@ object ShareUtils {
                 canvas.drawText("$currencySymbol$amount", width / 2f, qrTop + qrSize + 150f, textPaint)
             }
 
-            // Draw centered footer text at the bottom: QuickDash (without logo)
-            val footerText = "QuickDash"
+            // Draw centered footer text at the bottom: Generated with QuickDash ||BTL||™
+            val footerText = "Generated with QuickDash  ||BTL||™"
             val footerPaint = Paint().apply {
                 color = "#4c566a".toColorInt()
-                textSize = 34f
+                textSize = 28f
                 isAntiAlias = true
                 isFakeBoldText = true
                 textAlign = Paint.Align.CENTER
             }
-            val footerY = height - 70f
+            val footerY = height - 60f
             canvas.drawText(footerText, width / 2f, footerY, footerPaint)
 
             val cachePath = File(context.cacheDir, "images")
@@ -145,7 +154,7 @@ object ShareUtils {
 
             return file
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
             return null
         }
     }

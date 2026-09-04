@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/clipboard
+ * File: ClipboardScreen.kt
+ * Description: EssentialX-styled component for features/clipboard supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.clipboard.presentation
 
 import android.content.ClipData
@@ -8,6 +17,8 @@ import android.net.Uri
 import androidx.compose.animation.*
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.Spring
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,6 +40,8 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -39,11 +52,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 private const val TAG = "ClipboardScreen"
 
@@ -57,6 +71,29 @@ data class ActionableItem(
 fun parseClipboardContent(text: String, context: Context): List<ActionableItem> {
     val items = mutableListOf<ActionableItem>()
     val trimmed = text.trim()
+
+    // 0. OTP / Verification Code Detection (4-8 digits)
+    val otpRegex = Regex("""\b(\d{4,8})\b""")
+    val lowerText = trimmed.lowercase()
+    val isOtpContext = lowerText.contains("otp") || lowerText.contains("code") || lowerText.contains("verification") || lowerText.contains("password") || lowerText.contains("login") || lowerText.contains("pin")
+    if (isOtpContext || (trimmed.all { it.isDigit() } && trimmed.length in 4..8)) {
+        val otpMatch = otpRegex.find(trimmed)
+        if (otpMatch != null) {
+            val code = otpMatch.groupValues[1]
+            val copyIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, code)
+            }
+            items.add(
+                ActionableItem(
+                    label = "Copy OTP: $code",
+                    value = code,
+                    icon = Icons.Filled.ContentCopy,
+                    intent = copyIntent
+                )
+            )
+        }
+    }
 
     // 1. Phone number detection
     val phoneRegex = Regex("\\+?[0-9][0-9\\s-]{7,14}[0-9]")
@@ -74,6 +111,19 @@ fun parseClipboardContent(text: String, context: Context): List<ActionableItem> 
                     value = matchedPhone,
                     icon = Icons.Filled.Call,
                     intent = intent
+                )
+            )
+
+            // Direct WhatsApp Chat Pill
+            val waIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/$digits")).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            items.add(
+                ActionableItem(
+                    label = "WhatsApp $matchedPhone",
+                    value = matchedPhone,
+                    icon = Icons.Filled.Share,
+                    intent = waIntent
                 )
             )
         }
@@ -172,8 +222,21 @@ fun ClipboardScreen(
     val coroutineScope = rememberCoroutineScope()
 
 
-    val clipboardJson by viewModel.clipboardHistory.collectAsState(initial = "[]")
-    val pinnedJson by viewModel.clipboardPinned.collectAsState(initial = "[]")
+    val clipboardJson by viewModel.clipboardHistory.collectAsStateWithLifecycle(initialValue = "[]")
+    val pinnedJson by viewModel.clipboardPinned.collectAsStateWithLifecycle(initialValue = "[]")
+
+    // Auto-capture latest clipboard item when opening the screen
+    LaunchedEffect(Unit) {
+        try {
+            val clipManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+            if (clipManager != null && clipManager.hasPrimaryClip()) {
+                val clipText = clipManager.primaryClip?.getItemAt(0)?.text?.toString()
+                if (!clipText.isNullOrBlank()) {
+                    viewModel.addClipboardItem(clipText)
+                }
+            }
+        } catch (_: Exception) {}
+    }
 
     val gson = Gson()
     val listType = object : TypeToken<List<String>>() {}.type
@@ -237,7 +300,7 @@ fun ClipboardScreen(
         return false
     }
 
-    val isTabLocked by viewModel.tabBiometricLock.collectAsState(initial = false)
+    val isTabLocked by viewModel.tabBiometricLock.collectAsStateWithLifecycle(initialValue = false)
     var isUnlocked by remember { mutableStateOf(false) }
     var showClearAllConfirmation by remember { mutableStateOf(false) }
 
@@ -288,7 +351,7 @@ fun ClipboardScreen(
     }
 
     // ── Main content ──────────────────────────────────────────────────────
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.fillMaxWidth().imePadding()) {
 
         // Header with count badge
         Row(
@@ -306,7 +369,7 @@ fun ClipboardScreen(
                 )
                 if (com.balajitechlabs.quickdash.core.security.IncognitoManager.isIncognitoActive) {
                     Text(
-                        "🕵️ Incognito Mode Active — History Paused",
+                        "Incognito Active — History Paused",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.tertiary,
                         fontWeight = FontWeight.Bold
@@ -341,7 +404,7 @@ fun ClipboardScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(bottom = 8.dp)
             ) {
-                items(filters) { filter ->
+                items(filters, key = { it }) { filter ->
                     FilterChip(
                         selected = selectedFilter == filter,
                         onClick = { selectedFilter = filter },
@@ -356,42 +419,21 @@ fun ClipboardScreen(
 
         // ── Empty state ───────────────────────────────────────────────────
         if (filteredItems.isEmpty()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(48.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                    shape = MaterialTheme.shapes.extraLarge,
-                    modifier = Modifier.size(72.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                        Icon(Icons.Filled.ContentCopy, null, modifier = Modifier.size(32.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-                Text(
-                    if (clipboardItems.isEmpty()) "Nothing copied yet"
-                    else "No $selectedFilter items found",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    if (clipboardItems.isEmpty()) "Text copied while the app is running will appear here automatically."
-                    else "Try a different filter to see your clipboard history.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            com.balajitechlabs.quickdash.core.ui.components.EmptyStateCard(
+                icon = Icons.Filled.ContentCopy,
+                title = if (clipboardItems.isEmpty()) "Nothing copied yet" else "No $selectedFilter items found",
+                subtitle = if (clipboardItems.isEmpty()) "Text copied while the app is running will appear here automatically." else "Try a different filter to see your clipboard history.",
+                actionLabel = if (clipboardItems.isNotEmpty() && selectedFilter != "All") "Show All" else null,
+                onActionClick = { selectedFilter = "All" },
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
         }
 
         // ── Clipboard entries ─────────────────────────────────────────────
         val displayItems = if (isFloating) filteredItems.take(5) else filteredItems
         if (filteredItems.isNotEmpty()) {
             LazyColumn(
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 120.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
@@ -401,14 +443,73 @@ fun ClipboardScreen(
             if (selectedFilter == "All" && pinnedItems.isNotEmpty() && !isFloating) {
                 item {
                     Text(
-                        text = "📌 Pinned Items",
+                        text = "Pinned Items",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp).animateItem()
                     )
                 }
                 itemsIndexed(pinnedItems, key = { index, item -> "pinned:$index:$item" }) { _, item ->
+                    Box(modifier = Modifier.animateItem()) {
+                        ClipboardItemCard(
+                            item = item,
+                            pinnedItems = pinnedItems,
+                            clipboardItems = clipboardItems,
+                            viewModel = viewModel,
+                            onTriggerConfetti = onTriggerConfetti,
+                            coroutineScope = coroutineScope,
+                            gson = gson,
+                            context = context,
+                            sensitive = isSensitive(item),
+                            revealed = revealedItems.contains(item),
+                            onToggleReveal = {
+                                revealedItems = if (revealedItems.contains(item)) revealedItems - item else revealedItems + item
+                            }
+                        )
+                    }
+                }
+                item {
+                    Text(
+                        text = "Recent History",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        modifier = Modifier.padding(top = 12.dp, bottom = 4.dp).animateItem()
+                    )
+                }
+            }
+
+            // Render main filtered list with swipe-to-delete
+            items(displayItems, key = { it }) { item ->
+                @Suppress("DEPRECATION")
+                val dismissState = rememberSwipeToDismissBoxState(
+                    confirmValueChange = { dismissValue ->
+                        if (dismissValue == SwipeToDismissBoxValue.EndToStart || dismissValue == SwipeToDismissBoxValue.StartToEnd) {
+                            viewModel.removeClipboardItem(item)
+                            true
+                        } else false
+                    }
+                )
+
+                SwipeToDismissBox(
+                    state = dismissState,
+                    modifier = Modifier.animateItem(),
+                    backgroundContent = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 16.dp),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Delete",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                ) {
                     ClipboardItemCard(
                         item = item,
                         pinnedItems = pinnedItems,
@@ -425,34 +526,6 @@ fun ClipboardScreen(
                         }
                     )
                 }
-                item {
-                    Text(
-                        text = "Recent History",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
-                    )
-                }
-            }
-
-            // Render main filtered list
-            itemsIndexed(displayItems, key = { index, item -> "filtered:$index:$item" }) { _, item ->
-                ClipboardItemCard(
-                    item = item,
-                    pinnedItems = pinnedItems,
-                    clipboardItems = clipboardItems,
-                    viewModel = viewModel,
-                    onTriggerConfetti = onTriggerConfetti,
-                    coroutineScope = coroutineScope,
-                    gson = gson,
-                    context = context,
-                    sensitive = isSensitive(item),
-                    revealed = revealedItems.contains(item),
-                    onToggleReveal = {
-                        revealedItems = if (revealedItems.contains(item)) revealedItems - item else revealedItems + item
-                    }
-                )
             }
         }
         }
@@ -498,25 +571,25 @@ fun ClipboardItemCard(
 ) {
     val isPinned = pinnedItems.contains(item)
     
-    ElevatedCard(
+    Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp),
-        colors = CardDefaults.elevatedCardColors(
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
             containerColor = if (sensitive && !revealed)
-                MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.4f)
-            else MaterialTheme.colorScheme.surfaceContainerLow
-        )
+                Color(0xFF3B2424)
+            else Color(0xFF38393F)
+        ),
+        border = BorderStroke(1.dp, Color(0xFF44474F).copy(alpha = 0.6f))
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 10.dp)
+                .padding(horizontal = 14.dp, vertical = 12.dp)
         ) {
             // Clipboard Text (Full Width)
             Text(
-                text = if (sensitive && !revealed) "🔒 Sensitive content hidden" else item,
-                style = MaterialTheme.typography.bodyMedium,
+                text = if (sensitive && !revealed) "Sensitive content hidden" else item,
+                style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
                 maxLines = if (revealed || !sensitive) 8 else 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -544,7 +617,7 @@ fun ClipboardItemCard(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        items(actions) { action ->
+                        items(actions, key = { it.label }) { action ->
                             AssistChip(
                                 onClick = {
                                     try {
@@ -554,24 +627,32 @@ fun ClipboardItemCard(
                                             action.intent.setPackage(null)
                                             context.startActivity(action.intent)
                                         } catch (ex: Exception) {
-                                            ex.printStackTrace()
+                                            android.util.Log.e("QuickDash", "Error occurred: ${ex.message}", ex)
                                         }
                                     }
                                 },
                                 leadingIcon = {
                                     Icon(
                                         imageVector = action.icon,
-                                        contentDescription = null,
+                                        contentDescription = action.label,
                                         modifier = Modifier.size(16.dp),
-                                        tint = MaterialTheme.colorScheme.primary
+                                        tint = Color(0xFFB0C6FF)
                                     )
                                 },
                                 label = {
                                     Text(
                                         text = action.label,
-                                        style = MaterialTheme.typography.labelMedium
+                                        style = MaterialTheme.typography.labelMedium.copy(color = Color.White)
                                     )
-                                }
+                                },
+                                colors = AssistChipDefaults.assistChipColors(
+                                    containerColor = Color(0xFF1E2024),
+                                    labelColor = Color.White
+                                ),
+                                border = AssistChipDefaults.assistChipBorder(
+                                    enabled = true,
+                                    borderColor = Color(0xFF44474F)
+                                )
                             )
                         }
                     }
@@ -579,7 +660,7 @@ fun ClipboardItemCard(
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+            HorizontalDivider(color = Color(0xFF44474F).copy(alpha = 0.5f))
             Spacer(modifier = Modifier.height(2.dp))
 
             // Action Buttons Row (At the bottom)
@@ -588,6 +669,22 @@ fun ClipboardItemCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End
             ) {
+                // Sensitive Reveal / Hide Toggle
+                if (sensitive) {
+                    IconButton(
+                        onClick = onToggleReveal,
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (revealed) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                            contentDescription = if (revealed) "Hide sensitive text" else "Reveal sensitive text",
+                            modifier = Modifier.size(18.dp),
+                            tint = if (revealed) MaterialTheme.colorScheme.primary else Color(0xFFC5C6D0)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+
                 // Pin/Unpin
                 IconButton(
                     onClick = {
@@ -606,7 +703,7 @@ fun ClipboardItemCard(
                         imageVector = Icons.Filled.PushPin,
                         contentDescription = if (isPinned) "Unpin" else "Pin",
                         modifier = Modifier.size(18.dp),
-                        tint = if (isPinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                        tint = if (isPinned) Color(0xFFB0C6FF) else Color(0xFFC5C6D0)
                     )
                 }
 
@@ -626,7 +723,7 @@ fun ClipboardItemCard(
                     },
                     modifier = Modifier.size(36.dp)
                 ) {
-                    Icon(Icons.Filled.Share, "Share", modifier = Modifier.size(18.dp))
+                    Icon(Icons.Filled.Share, "Share", modifier = Modifier.size(18.dp), tint = Color.White)
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -639,7 +736,7 @@ fun ClipboardItemCard(
                     },
                     modifier = Modifier.size(36.dp)
                 ) {
-                    Icon(Icons.Filled.ContentCopy, "Copy", modifier = Modifier.size(18.dp))
+                    Icon(Icons.Filled.ContentCopy, "Copy", modifier = Modifier.size(18.dp), tint = Color.White)
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))

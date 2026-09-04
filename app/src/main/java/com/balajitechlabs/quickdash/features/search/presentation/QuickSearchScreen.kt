@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/search
+ * File: QuickSearchScreen.kt
+ * Description: EssentialX-styled component for features/search supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.search.presentation
 
 import android.content.Intent
@@ -40,6 +49,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel, onDismiss: () -> Unit) {
@@ -50,7 +60,7 @@ fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
     var query by remember { mutableStateOf("") }
     var showAddEngineDialog by remember { mutableStateOf(false) }
 
-    val searchHistoryJson by mainViewModel.userStore.searchHistory.collectAsState(initial = "[]")
+    val searchHistoryJson by mainViewModel.userStore.searchHistory.collectAsStateWithLifecycle(initialValue = "[]")
     val searchHistory = remember(searchHistoryJson) {
         try {
             val type = object : TypeToken<List<String>>() {}.type
@@ -58,7 +68,7 @@ fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
         } catch (e: Exception) { emptyList() }
     }
 
-    val customEnginesJson by mainViewModel.userStore.customSearchEngines.collectAsState(initial = "[]")
+    val customEnginesJson by mainViewModel.userStore.customSearchEngines.collectAsStateWithLifecycle(initialValue = "[]")
     
     val engines = remember(customEnginesJson) {
         val defaultEngines = listOf(
@@ -77,7 +87,7 @@ fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
         val customParsed = customList.mapNotNull {
             val name = it["name"] ?: return@mapNotNull null
             val url = it["url"] ?: return@mapNotNull null
-            "⚙️ $name" to url
+            name to url
         }
         defaultEngines + customParsed
     }
@@ -107,7 +117,7 @@ fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
                         querySuggestions = list
                     }
                 } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
+                    android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
                 }
             }
         } else {
@@ -131,7 +141,7 @@ fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
         onDismiss()
     }
 
-    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().padding(16.dp).imePadding()) {
         // Engine selector with overlaid scroll buttons
         val scrollState = rememberScrollState()
         Box(

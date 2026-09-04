@@ -1,0 +1,5 @@
+• 🔄 New Semantic In-App Update Engine with preview build detection.
+• 🌿 100% Zero-Tracker Architecture (stripped ML Kit, MediaPipe & Firebase).
+• ⚡ Hardened Android 14+ Foreground Services against crash exceptions.
+• 🛡️ Sensitive Clipboard Privacy Shield with interactive eye toggle.
+• 🎨 Essentials Floating Dock with personal brand showcase hub.

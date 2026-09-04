@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/data
+ * File: SecurityRepository.kt
+ * Description: EssentialX-styled component for core/data supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.data
 
 import android.content.Context
@@ -50,7 +59,7 @@ class SecurityRepository @Inject constructor(
         return try {
             cryptoManager.encrypt(value.toByteArray())
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
             ""
         }
     }
@@ -60,7 +69,7 @@ class SecurityRepository @Inject constructor(
             if (value.isBlank()) return ""
             String(cryptoManager.decrypt(value))
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
             ""
         }
     }

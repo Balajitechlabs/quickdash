@@ -2,7 +2,7 @@ name: Deploy Website to Cloudflare Pages
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, website]
     paths:
       - 'website/**'
       - '.github/workflows/deploy-website.yml'
@@ -19,10 +19,10 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || '2861af483292ee5ae3c882f83b782c91' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Setup Node.js 22
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
@@ -38,7 +38,7 @@ jobs:
 
       - name: Deploy to Cloudflare Pages
         if: env.CLOUDFLARE_API_TOKEN != ''
-        uses: cloudflare/wrangler-action@v4
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || '2861af483292ee5ae3c882f83b782c91' }}

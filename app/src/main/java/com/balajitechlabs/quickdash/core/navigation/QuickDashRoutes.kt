@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/navigation
+ * File: QuickDashRoutes.kt
+ * Description: EssentialX-styled component for core/navigation supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.navigation
 
 import kotlinx.serialization.Serializable

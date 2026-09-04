@@ -25,7 +25,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Setup JDK 17
         uses: actions/setup-java@v6
@@ -45,16 +45,6 @@ jobs:
           fi
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-
-      - name: Decode google-services.json
-        run: |
-          if [ -n "$GOOGLE_SERVICES_JSON_BASE64" ]; then
-            echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 -d > app/google-services.json
-          else
-            echo "Skipping — no google-services.json provided"
-          fi
-        env:
-          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
 
       - name: Create local.properties
         run: |
@@ -145,8 +135,9 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: v${{ steps.version.outputs.version_name }}-${{ github.run_number }}
+          tag_name: v${{ steps.version.outputs.version_name }}
           name: QuickDash v${{ steps.version.outputs.version_name }}
+          make_latest: true
           body: |
             ## QuickDash v${{ steps.version.outputs.version_name }}
 
@@ -168,7 +159,7 @@ jobs:
 
       - name: Commit updated update.json
         run: |
-          NEW_TAG="v${{ steps.version.outputs.version_name }}-${{ github.run_number }}"
+          NEW_TAG="v${{ steps.version.outputs.version_name }}"
           RELEASES_URL="https://github.com/${{ github.repository }}/releases/latest"
 
           git config user.name "github-actions[bot]"

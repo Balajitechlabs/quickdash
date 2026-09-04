@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/insta
+ * File: QuickSocialScreen.kt
+ * Description: EssentialX-styled component for features/insta supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.insta.presentation
 
 import android.content.ActivityNotFoundException
@@ -179,7 +188,7 @@ fun QuickSocialScreen(
                                 }
                             }
                         } catch (e: Exception) {
-                            e.printStackTrace()
+                            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
                         }
 
                         val cacheItem = GithubProfileCache(
@@ -219,7 +228,7 @@ fun QuickSocialScreen(
                     showGithubProfile = false
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
                 githubError = "Connection error. Please check your internet connection."
                 showGithubProfile = false
             } finally {

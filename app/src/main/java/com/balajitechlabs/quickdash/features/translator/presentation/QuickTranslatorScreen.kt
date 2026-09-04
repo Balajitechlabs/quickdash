@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/translator
+ * File: QuickTranslatorScreen.kt
+ * Description: EssentialX-styled component for features/translator supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.translator.presentation
 
 import android.content.ClipData
@@ -9,6 +18,7 @@ import android.speech.tts.TextToSpeech
 import android.widget.Toast
 import java.util.Locale
 import androidx.compose.animation.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -85,10 +95,10 @@ private suspend fun performGoogleTranslate(text: String, from: String, to: Strin
                 sb.toString()
             } else text
         } else {
-            "⚠️ Translation service error (HTTP ${conn.responseCode})"
+            "Translation service error (HTTP ${conn.responseCode})"
         }
     } catch (e: Exception) {
-        "⚠️ Connection failed: ${e.localizedMessage}"
+        "Connection failed: ${e.localizedMessage ?: "Please check your network"}"
     }
 }
 
@@ -179,8 +189,12 @@ fun QuickTranslatorScreen() {
 
                 Spacer(Modifier.height(10.dp))
 
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    OutlinedButton(
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(
                         onClick = {
                             val cb = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                             val clip = cb.primaryClip
@@ -190,80 +204,109 @@ fun QuickTranslatorScreen() {
                             }
                         }
                     ) {
-                        Icon(Icons.Filled.ContentPaste, null, modifier = Modifier.size(16.dp))
-                        Spacer(Modifier.width(4.dp))
-                        Text("Paste")
-                    }
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(
-                            onClick = {
-                                if (inputText.isBlank()) return@Button
-                                isTranslating = true
-                                scope.launch {
-                                    val res = performGoogleTranslate(
-                                        inputText,
-                                        LANGUAGES[sourceLanguageIndex].second,
-                                        LANGUAGES[targetLanguageIndex].second
-                                    )
-                                    translatedResult = res
-                                    isTranslating = false
-                                    if (!res.startsWith("⚠️")) {
-                                        translationHistory.add(
-                                            0,
-                                            TranslationHistoryItem(
-                                                inputText,
-                                                res,
-                                                LANGUAGES[sourceLanguageIndex].first,
-                                                LANGUAGES[targetLanguageIndex].first
-                                            )
-                                        )
-                                    }
-                                }
-                            },
-                            enabled = !isTranslating && inputText.isNotBlank()
-                        ) {
-                            if (isTranslating) {
-                                CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-                                Spacer(Modifier.width(8.dp))
-                                Text("Translating…")
-                            } else {
-                                Icon(Icons.Filled.Translate, null, modifier = Modifier.size(18.dp))
-                                Spacer(Modifier.width(6.dp))
-                                Text("Translate")
-                            }
-                        }
-
-                        // Google Translate External Launcher Button (with official Globe/Translate App Icon)
-                        OutlinedIconButton(
-                            onClick = {
-                                val encoded = runCatching { URLEncoder.encode(inputText, "UTF-8") }.getOrDefault("")
-                                val src = LANGUAGES[sourceLanguageIndex].second
-                                val tgt = LANGUAGES[targetLanguageIndex].second
-                                context.startActivity(
-                                    Intent(Intent.ACTION_VIEW, Uri.parse("https://translate.google.com/?sl=$src&tl=$tgt&text=$encoded")).apply {
-                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    }
-                                )
-                            }
-                        ) {
-                            Icon(painterResource(R.drawable.ic_globe), contentDescription = "Open Google Translate", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
-                        }
+                        Icon(Icons.Filled.ContentPaste, null, modifier = Modifier.size(16.dp), tint = Color.White)
+                        Spacer(Modifier.width(6.dp))
+                        Text("Paste from Clipboard", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Medium)
                     }
                 }
 
+                Spacer(Modifier.height(8.dp))
+
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    onClick = {
+                        if (inputText.isNotBlank() && !isTranslating) {
+                            isTranslating = true
+                            scope.launch {
+                                val res = performGoogleTranslate(
+                                    inputText,
+                                    LANGUAGES[sourceLanguageIndex].second,
+                                    LANGUAGES[targetLanguageIndex].second
+                                )
+                                val isError = res.startsWith("Translation service error") || res.startsWith("Connection failed")
+                                translatedResult = res
+                                isTranslating = false
+                                if (!isError) {
+                                    translationHistory.add(
+                                        0,
+                                        TranslationHistoryItem(
+                                            inputText,
+                                            res,
+                                            LANGUAGES[sourceLanguageIndex].first,
+                                            LANGUAGES[targetLanguageIndex].first
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    enabled = !isTranslating && inputText.isNotBlank()
+                ) {
+                    if (isTranslating) {
+                        CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp, color = Color.White)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Translating…", fontWeight = FontWeight.Bold)
+                    } else {
+                        Icon(Icons.Filled.Translate, null, tint = Color.White, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text("Translate Now", fontWeight = FontWeight.Bold)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Google Translate External Launcher Button (Full-width bar)
+                OutlinedButton(
+                    onClick = {
+                        val encoded = runCatching { URLEncoder.encode(inputText, "UTF-8") }.getOrDefault("")
+                        val src = LANGUAGES[sourceLanguageIndex].second
+                        val tgt = LANGUAGES[targetLanguageIndex].second
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://translate.google.com/?sl=$src&tl=$tgt&text=$encoded")).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                        )
+                    },
+                    shape = RoundedCornerShape(14.dp),
+                    border = BorderStroke(1.dp, Color(0xFF44474F)),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = Color(0xFF2C2C2E),
+                        contentColor = Color.White
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_globe),
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    Text(
+                        "Open in Google Translate (Web / App)",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp
+                    )
+                }
+
+                val hasError = translatedResult.startsWith("Translation service error") || translatedResult.startsWith("Connection failed")
                 AnimatedVisibility(visible = translatedResult.isNotEmpty()) {
                     Column {
                         Spacer(Modifier.height(16.dp))
                         Surface(
-                            color = if (translatedResult.startsWith("⚠️")) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.tertiaryContainer,
+                            color = if (hasError) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.tertiaryContainer,
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(modifier = Modifier.padding(14.dp)) {
                                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                                    Text("→ ${LANGUAGES[targetLanguageIndex].first}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onTertiaryContainer.copy(0.75f))
-                                    if (!translatedResult.startsWith("⚠️")) {
+                                    Text("→ ${LANGUAGES[targetLanguageIndex].first}", style = MaterialTheme.typography.labelMedium, color = if (hasError) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onTertiaryContainer.copy(0.75f))
+                                    if (!hasError) {
                                         Row {
                                             IconButton(onClick = { speakText(context, ttsEngine, translatedResult, LANGUAGES[targetLanguageIndex].second) }) {
                                                 Icon(Icons.AutoMirrored.Filled.VolumeUp, "Listen", tint = MaterialTheme.colorScheme.onTertiaryContainer)
@@ -335,6 +378,7 @@ fun QuickTranslatorScreen() {
                 }
             }
         }
+        Spacer(modifier = Modifier.height(120.dp))
     }
 }
 

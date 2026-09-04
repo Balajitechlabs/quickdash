@@ -52,4 +52,18 @@ website/node_modules/
 website/dist/
 website/server/node_modules/
 workers/node_modules/
+workers/.wrangler/
 
+app/google-services.json
+
+# AI Agent Caches, Working Directories & Dotfiles
+.local/
+.agent/
+.agents/
+**/.fingerprint
+**/*.bin
+**/*.db-shm
+**/*.db-wal
+scribe.db*
+workflow-logs/
+quickdash.jks

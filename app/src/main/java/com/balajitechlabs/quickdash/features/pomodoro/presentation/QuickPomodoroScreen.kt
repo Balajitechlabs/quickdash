@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/pomodoro
+ * File: QuickPomodoroScreen.kt
+ * Description: EssentialX-styled component for features/pomodoro supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.pomodoro.presentation
 
 import android.os.CountDownTimer
@@ -29,6 +38,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -47,6 +60,7 @@ import com.balajitechlabs.quickdash.core.ui.components.RoundedCardContainer
  * Tool #14: Quick Pomodoro Focus Timer.
  * 25-min Focus / 5-min Short Break study timer over any app.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuickPomodoroScreen(isFloating: Boolean = false) {
     var totalSeconds by remember { mutableStateOf(25 * 60) }
@@ -55,6 +69,19 @@ fun QuickPomodoroScreen(isFloating: Boolean = false) {
     var timerMode by remember { mutableStateOf("FOCUS") } // FOCUS, BREAK
 
     var timer: CountDownTimer? by remember { mutableStateOf(null) }
+
+    val resetTimer: (Int, String) -> Unit = { minutes, modeName ->
+        timer?.cancel()
+        isRunning = false
+        timerMode = modeName
+        totalSeconds = minutes * 60
+        secondsRemaining = minutes * 60
+    }
+
+    fun pauseTimer() {
+        timer?.cancel()
+        isRunning = false
+    }
 
     fun startTimer() {
         timer?.cancel()
@@ -66,22 +93,14 @@ fun QuickPomodoroScreen(isFloating: Boolean = false) {
             override fun onFinish() {
                 isRunning = false
                 secondsRemaining = 0
+                if (timerMode == "FOCUS") {
+                    resetTimer(5, "BREAK")
+                } else {
+                    resetTimer(25, "FOCUS")
+                }
             }
         }.start()
         isRunning = true
-    }
-
-    fun pauseTimer() {
-        timer?.cancel()
-        isRunning = false
-    }
-
-    fun resetTimer(minutes: Int, modeName: String) {
-        timer?.cancel()
-        isRunning = false
-        timerMode = modeName
-        totalSeconds = minutes * 60
-        secondsRemaining = minutes * 60
     }
 
     DisposableEffect(Unit) {
@@ -107,7 +126,7 @@ fun QuickPomodoroScreen(isFloating: Boolean = false) {
         ) {
             Icon(
                 imageVector = Icons.Filled.Timer,
-                contentDescription = null,
+                contentDescription = "Timer",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(28.dp)
             )
@@ -134,7 +153,7 @@ fun QuickPomodoroScreen(isFloating: Boolean = false) {
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = if (timerMode == "FOCUS") "🧠 FOCUS SESSION" else "☕ SHORT BREAK",
+                        text = if (timerMode == "FOCUS") "FOCUS SESSION" else "BREAK SESSION",
                         style = MaterialTheme.typography.labelLarge.copy(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
@@ -155,31 +174,17 @@ fun QuickPomodoroScreen(isFloating: Boolean = false) {
         Spacer(modifier = Modifier.height(16.dp))
 
         // Timer Preset Controls Pod
-        RoundedCardContainer(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                OutlinedButton(
-                    onClick = { resetTimer(25, "FOCUS") },
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Text("25m Focus")
-                }
-                OutlinedButton(
-                    onClick = { resetTimer(5, "BREAK") },
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Text("5m Break")
-                }
-                OutlinedButton(
-                    onClick = { resetTimer(15, "BREAK") },
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Text("15m Long")
-                }
+        SingleChoiceSegmentedButtonRow(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            val presets = listOf(Triple("25m Focus", 25, "FOCUS"), Triple("5m Break", 5, "BREAK"), Triple("15m Long", 15, "BREAK"))
+            presets.forEachIndexed { index, (label, min, mode) ->
+                SegmentedButton(
+                    selected = totalSeconds == min * 60 && timerMode == mode,
+                    onClick = { resetTimer(min, mode) },
+                    shape = SegmentedButtonDefaults.itemShape(index = index, count = presets.size),
+                    label = { Text(label, fontSize = 12.sp, fontWeight = FontWeight.SemiBold) }
+                )
             }
         }
 
@@ -200,7 +205,7 @@ fun QuickPomodoroScreen(isFloating: Boolean = false) {
             ) {
                 Icon(
                     imageVector = if (isRunning) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                    contentDescription = null
+                    contentDescription = "Toggle timer"
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(if (isRunning) "PAUSE" else "START")
@@ -215,5 +220,6 @@ fun QuickPomodoroScreen(isFloating: Boolean = false) {
                 Icon(imageVector = Icons.Filled.Refresh, contentDescription = "Reset")
             }
         }
+        Spacer(modifier = Modifier.height(120.dp))
     }
 }

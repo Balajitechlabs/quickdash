@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/capture
+ * File: ScreenRecorderService.kt
+ * Description: EssentialX-styled component for features/capture supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.capture.service
 
 import android.app.Notification
@@ -139,7 +148,7 @@ class ScreenRecorderService : Service() {
                 mediaRecorder = recorder
                 true
             } catch (e: Exception) {
-                e.printStackTrace()
+                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
                 false
             }
         }

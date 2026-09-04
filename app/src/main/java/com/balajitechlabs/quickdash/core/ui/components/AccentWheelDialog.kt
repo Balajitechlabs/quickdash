@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/ui
+ * File: AccentWheelDialog.kt
+ * Description: EssentialX-styled component for core/ui supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.ui.components
 
 import androidx.compose.foundation.background
@@ -31,7 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 /**
- * 🎨 Custom RGB Accent Wheel Dialog (`AccentWheelDialog.kt`).
+ * Custom RGB Accent Wheel Dialog (`AccentWheelDialog.kt`).
  * Interactive color picker allowing custom floating bubble ring and toolbar glow customization.
  */
 @Composable
@@ -50,7 +59,7 @@ fun AccentWheelDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "🎨 Custom Accent Color Picker",
+                text = "Custom Accent Color Picker",
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
             )
         },

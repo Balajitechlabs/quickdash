@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/notes
+ * File: NotesRepositoryImpl.kt
+ * Description: EssentialX-styled component for features/notes supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.notes.data
 
 import com.balajitechlabs.quickdash.core.data.database.NoteDao

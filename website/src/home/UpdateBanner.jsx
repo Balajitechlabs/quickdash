@@ -36,7 +36,7 @@ export default function UpdateBanner() {
           QuickDash v{latest.version} is now available (Build #{latest.version_code || 523})
         </p>
         <a
-          href={latest.apk_url || 'https://github.com/Balajitechlabs/quickdash/releases/latest'}
+          href={latest.apk_url || 'https://github.com/balajitechlabs/quickdash/releases/latest'}
           className="btn btn-sm"
           target="_blank"
           rel="noopener noreferrer"

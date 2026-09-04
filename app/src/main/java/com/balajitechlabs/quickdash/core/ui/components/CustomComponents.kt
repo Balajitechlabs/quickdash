@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/ui
+ * File: CustomComponents.kt
+ * Description: EssentialX-styled component for core/ui supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.ui.components
 
 import androidx.compose.animation.animateColorAsState
@@ -15,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -55,17 +65,27 @@ fun StyledSwitch(
             Switch(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
-                modifier = modifier
+                modifier = modifier,
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = Color.White,
+                    checkedTrackColor = MaterialTheme.colorScheme.primary,
+                    checkedBorderColor = Color.Transparent,
+                    uncheckedThumbColor = Color.White,
+                    uncheckedTrackColor = Color(0xFF2A2B30),
+                    uncheckedBorderColor = Color(0xFF44474F)
+                )
             )
         }
         SwitchStyle.Cupertino -> {
             val thumbOffset by animateDpAsState(if (checked) 20.dp else 2.dp, label = "thumbOffset")
-            val trackColor by animateColorAsState(if (checked) Color(0xFF34C759) else Color(0xFFE9E9EA), label = "trackColor")
+            val trackColor by animateColorAsState(if (checked) Color(0xFF34C759) else Color(0xFF2A2B30), label = "trackColor")
+            val borderColor by animateColorAsState(if (checked) Color.Transparent else Color(0xFF44474F), label = "borderColor")
             Box(
                 modifier = modifier
                     .size(51.dp, 31.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .background(trackColor)
+                    .border(1.dp, borderColor, RoundedCornerShape(16.dp))
                     .clickable(
                         interactionSource = interactionSource,
                         indication = null
@@ -83,14 +103,15 @@ fun StyledSwitch(
             }
         }
         SwitchStyle.Pixel -> {
-            val thumbOffset by animateDpAsState(if (checked) 18.dp else 2.dp, label = "thumbOffset")
-            val trackColor by animateColorAsState(if (checked) Color(0xFF1A73E8) else Color(0xFFDADCE0), label = "trackColor")
-            val thumbColor by animateColorAsState(if (checked) Color(0xFFFFFFFF) else Color(0xFF757575), label = "thumbColor")
+            val thumbOffset by animateDpAsState(if (checked) 20.dp else 2.dp, label = "thumbOffset")
+            val trackColor by animateColorAsState(if (checked) MaterialTheme.colorScheme.primary else Color(0xFF2A2B30), label = "trackColor")
+            val borderColor by animateColorAsState(if (checked) Color.Transparent else Color(0xFF44474F), label = "borderColor")
             Box(
                 modifier = modifier
                     .size(48.dp, 28.dp)
                     .clip(RoundedCornerShape(14.dp))
                     .background(trackColor)
+                    .border(1.dp, borderColor, RoundedCornerShape(14.dp))
                     .clickable(
                         interactionSource = interactionSource,
                         indication = null
@@ -102,22 +123,21 @@ fun StyledSwitch(
                         .offset(x = thumbOffset)
                         .size(22.dp)
                         .clip(CircleShape)
-                        .background(thumbColor)
+                        .background(Color.White)
                 )
             }
         }
         SwitchStyle.Fluent -> {
             val thumbOffset by animateDpAsState(if (checked) 24.dp else 4.dp, label = "thumbOffset")
-            val trackColor by animateColorAsState(if (checked) Color(0xFF0078D4) else Color.Transparent, label = "trackColor")
-            val borderColor by animateColorAsState(if (checked) Color(0xFF0078D4) else Color(0xFF8A8886), label = "borderColor")
-            val thumbColor by animateColorAsState(if (checked) Color.White else Color(0xFF323130), label = "thumbColor")
+            val trackColor by animateColorAsState(if (checked) Color(0xFF0078D4) else Color(0xFF2A2B30), label = "trackColor")
+            val borderColor by animateColorAsState(if (checked) Color(0xFF0078D4) else Color(0xFF44474F), label = "borderColor")
             val thumbSize by animateDpAsState(if (checked) 14.dp else 12.dp, label = "thumbSize")
             Box(
                 modifier = modifier
                     .size(44.dp, 20.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(trackColor)
-                    .border(if (checked) 0.dp else 1.dp, borderColor, RoundedCornerShape(10.dp))
+                    .border(1.dp, borderColor, RoundedCornerShape(10.dp))
                     .clickable(
                         interactionSource = interactionSource,
                         indication = null
@@ -129,7 +149,7 @@ fun StyledSwitch(
                         .offset(x = thumbOffset)
                         .size(thumbSize)
                         .clip(CircleShape)
-                        .background(thumbColor)
+                        .background(Color.White)
                 )
             }
         }

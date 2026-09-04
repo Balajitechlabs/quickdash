@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/settings
+ * File: SettingsScreen.kt
+ * Description: Application settings center, categorized pill groups, tactile toggle switches,
+ *              beta/pre-release build opt-in, backup/restore, and monochrome styling.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.settings.presentation
 
 import android.content.Context
@@ -11,6 +21,13 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -71,8 +88,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.core.view.drawToBitmap
 
 import android.util.Log
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.balajitechlabs.quickdash.features.settings.presentation.SettingsViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 private const val TAG = "SettingsScreen"
 
@@ -90,18 +108,18 @@ fun SettingsScreen(
     onTriggerConfetti: (String) -> Unit,
     onBackToHome: () -> Unit,
     onNavigateToSystemLogs: () -> Unit = {},
-    onManageUpiIds: () -> Unit = {}
+    onManageUpiIds: () -> Unit = {},
+    onNavigateToBubbleCustomizer: () -> Unit = {}
 ) {
     val userStore = viewModel.userStore
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val customShape = LocalCustomShape.current
 
-    // Load new visual settings reactively from UserStore datastore
-    val launchStyle by viewModel.userStore.launchStyle.collectAsState(initial = "FULL_SCREEN")
-    val seedColorHex by viewModel.userStore.seedColor.collectAsState(initial = "#1E88E5")
-    val switchStyleStr by viewModel.userStore.switchStyle.collectAsState(initial = "MaterialYou")
-    val sliderStyleStr by viewModel.userStore.sliderStyle.collectAsState(initial = "MaterialYou")
+    // Load visual settings reactively from UserStore datastore
+    val seedColorHex by viewModel.userStore.seedColor.collectAsStateWithLifecycle(initialValue = "#1E88E5")
+    val switchStyleStr by viewModel.userStore.switchStyle.collectAsStateWithLifecycle(initialValue = "MaterialYou")
+    val sliderStyleStr by viewModel.userStore.sliderStyle.collectAsStateWithLifecycle(initialValue = "MaterialYou")
 
     // Resolve active styles from switchStyleStr and sliderStyleStr
     val activeSwitchStyle = remember(switchStyleStr) {
@@ -110,29 +128,32 @@ fun SettingsScreen(
     val activeSliderStyle = remember(sliderStyleStr) {
         try { SliderStyle.valueOf(sliderStyleStr) } catch(e: Exception) { SliderStyle.MaterialYou }
     }
-    val shapeStyleStr by viewModel.userStore.shapeStyle.collectAsState(initial = "Rounded")
-    val cornerRadius by viewModel.userStore.cornerRadius.collectAsState(initial = 16f)
-    val borderWidth by viewModel.userStore.borderWidth.collectAsState(initial = 1f)
-    val fontScale by viewModel.userStore.fontScale.collectAsState(initial = 1f)
-    val fontFamilyName by viewModel.userStore.fontFamilyKey.collectAsState(initial = "system")
-    val showShadow by viewModel.userStore.showShadow.collectAsState(initial = true)
-    val showToolDescriptions by viewModel.userStore.showToolDescriptions.collectAsState(initial = true)
-    val secureMode by viewModel.userStore.secureMode.collectAsState(initial = false)
-    val maxBrightness by viewModel.userStore.maxBrightness.collectAsState(initial = false)
-    val showImagePreviews by viewModel.userStore.showImagePreviews.collectAsState(initial = true)
-    val advancedThumbnail by viewModel.userStore.advancedThumbnail.collectAsState(initial = false)
-    val emojiHeader by viewModel.userStore.emojiHeader.collectAsState(initial = "🚀")
-    val appLanguage by viewModel.userStore.appLanguage.collectAsState(initial = "en")
-    val confettiType by viewModel.userStore.confettiType.collectAsState(initial = "Default")
-    val confettiEnabled by viewModel.userStore.confettiEnabled.collectAsState(initial = true)
-    val hapticEnabled by viewModel.userStore.hapticEnabled.collectAsState(initial = true)
-    val biometricLock by viewModel.userStore.biometricLock.collectAsState(initial = false)
-    val clipboardAutocleanInterval by viewModel.userStore.clipboardAutocleanInterval.collectAsState(initial = "OFF")
-    val shakeToOpen by viewModel.userStore.shakeToOpen.collectAsState(initial = false)
-    val customSearchEnginesJson by viewModel.userStore.customSearchEngines.collectAsState(initial = "[]")
-    val shakeToTrigger by viewModel.userStore.shakeToTrigger.collectAsState(initial = false)
-    val hapticDuration by viewModel.userStore.hapticDuration.collectAsState(initial = 15f)
-    val customBackupPath by viewModel.userStore.customBackupPath.collectAsState(initial = null)
+    val shapeStyleStr by viewModel.userStore.shapeStyle.collectAsStateWithLifecycle(initialValue = "Rounded")
+    val cornerRadius by viewModel.userStore.cornerRadius.collectAsStateWithLifecycle(initialValue = 16f)
+    val borderWidth by viewModel.userStore.borderWidth.collectAsStateWithLifecycle(initialValue = 1f)
+    val fontScale by viewModel.userStore.fontScale.collectAsStateWithLifecycle(initialValue = 1f)
+    val fontFamilyName by viewModel.userStore.fontFamilyKey.collectAsStateWithLifecycle(initialValue = "system")
+    val showShadow by viewModel.userStore.showShadow.collectAsStateWithLifecycle(initialValue = true)
+    val showToolDescriptions by viewModel.userStore.showToolDescriptions.collectAsStateWithLifecycle(initialValue = true)
+    val secureMode by viewModel.userStore.secureMode.collectAsStateWithLifecycle(initialValue = false)
+    val maxBrightness by viewModel.userStore.maxBrightness.collectAsStateWithLifecycle(initialValue = false)
+    val showImagePreviews by viewModel.userStore.showImagePreviews.collectAsStateWithLifecycle(initialValue = true)
+    val advancedThumbnail by viewModel.userStore.advancedThumbnail.collectAsStateWithLifecycle(initialValue = false)
+    val emojiHeader by viewModel.userStore.emojiHeader.collectAsStateWithLifecycle(initialValue = "")
+    val appLanguage by viewModel.userStore.appLanguage.collectAsStateWithLifecycle(initialValue = "en")
+    val confettiType by viewModel.userStore.confettiType.collectAsStateWithLifecycle(initialValue = "Default")
+    val confettiEnabled by viewModel.userStore.confettiEnabled.collectAsStateWithLifecycle(initialValue = true)
+    val hapticEnabled by viewModel.userStore.hapticEnabled.collectAsStateWithLifecycle(initialValue = true)
+    val biometricLock by viewModel.userStore.biometricLock.collectAsStateWithLifecycle(initialValue = false)
+    val clipboardAutocleanInterval by viewModel.userStore.clipboardAutocleanInterval.collectAsStateWithLifecycle(initialValue = "OFF")
+    val shakeToOpen by viewModel.userStore.shakeToOpen.collectAsStateWithLifecycle(initialValue = false)
+    val shakeMode by viewModel.userStore.shakeMode.collectAsStateWithLifecycle(initialValue = "DOUBLE")
+    val shakeSensitivity by viewModel.userStore.shakeSensitivity.collectAsStateWithLifecycle(initialValue = "MEDIUM")
+    val customSearchEnginesJson by viewModel.userStore.customSearchEngines.collectAsStateWithLifecycle(initialValue = "[]")
+    val shakeToTrigger by viewModel.userStore.shakeToTrigger.collectAsStateWithLifecycle(initialValue = false)
+    val hapticDuration by viewModel.userStore.hapticDuration.collectAsStateWithLifecycle(initialValue = 25f)
+    val customBackupPath by viewModel.userStore.customBackupPath.collectAsStateWithLifecycle(initialValue = null)
+    val includePreRelease by viewModel.userStore.includePreRelease.collectAsStateWithLifecycle(initialValue = false)
 
     var localRadius by remember(cornerRadius) { mutableStateOf(cornerRadius) }
     var localBorderWidth by remember(borderWidth) { mutableStateOf(borderWidth) }
@@ -140,11 +161,11 @@ fun SettingsScreen(
 
     @Suppress("DEPRECATION")
     val vibrator = remember { context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator }
-    val hapticLevel by viewModel.userStore.hapticLevel.collectAsState(initial = "Crisp")
-    var expandedGroup by remember { mutableStateOf<String?>("Contact & Socials") }
-    val activeDefaultPaymentApp by viewModel.userStore.defaultPaymentApp.collectAsState(initial = "ANY")
-    val activeClipboardClearDelay by viewModel.userStore.clipboardClearDelay.collectAsState(initial = -1L)
-    val activeGithubAccessToken by viewModel.userStore.githubAccessToken.collectAsState(initial = "")
+    val hapticLevel by viewModel.userStore.hapticLevel.collectAsStateWithLifecycle(initialValue = "Crisp")
+    var expandedGroup by remember { mutableStateOf<String?>(null) }
+    val activeDefaultPaymentApp by viewModel.userStore.defaultPaymentApp.collectAsStateWithLifecycle(initialValue = "ANY")
+    val activeClipboardClearDelay by viewModel.userStore.clipboardClearDelay.collectAsStateWithLifecycle(initialValue = -1L)
+    val activeGithubAccessToken by viewModel.userStore.githubAccessToken.collectAsStateWithLifecycle(initialValue = "")
 
     @Composable
     fun SettingsFilterChip(
@@ -182,9 +203,9 @@ fun SettingsScreen(
         }
     }
 
-    val totalOpens by viewModel.userStore.totalAppOpens.collectAsState(initial = 0L)
-    val totalQrs by viewModel.userStore.totalQrGenerated.collectAsState(initial = 0L)
-    val totalNotes by viewModel.userStore.totalNotesSaved.collectAsState(initial = 0L)
+    val totalOpens by viewModel.userStore.totalAppOpens.collectAsStateWithLifecycle(initialValue = 0L)
+    val totalQrs by viewModel.userStore.totalQrGenerated.collectAsStateWithLifecycle(initialValue = 0L)
+    val totalNotes by viewModel.userStore.totalNotesSaved.collectAsStateWithLifecycle(initialValue = 0L)
 
     var showStatsDialog by remember { mutableStateOf(false) }
     var showFeedbackDialog by remember { mutableStateOf(false) }
@@ -196,7 +217,7 @@ fun SettingsScreen(
     var showCertificateDialog by remember { mutableStateOf(false) }
     var showBubbleLearnMoreDialog by remember { mutableStateOf(false) }
     var showCustomizeBubbleDialog by remember { mutableStateOf(false) }
-    val radialCustomTools by viewModel.userStore.radialCustomTools.collectAsState(initial = listOf("upi", "notes", "calc", "timer"))
+    val radialCustomTools by viewModel.userStore.radialCustomTools.collectAsStateWithLifecycle(initialValue = listOf("upi", "notes", "calc", "timer"))
     var userIntendedEnable by remember { mutableStateOf(false) }
     var showTipsDialog by remember { mutableStateOf(false) }
     var showUpdateDialog by remember { mutableStateOf(false) }
@@ -224,7 +245,7 @@ fun SettingsScreen(
                 screenshotBitmap = bmp
                 attachScreenshot = true
             } catch (e: Exception) {
-                e.printStackTrace()
+                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
             }
         }
     }
@@ -250,9 +271,9 @@ fun SettingsScreen(
             coroutineScope.launch {
                 val result = BackupRestoreManager.restoreDataStore(context, uri)
                 if (result.isSuccess) {
-                    android.widget.Toast.makeText(context, "Data Restored Successfully! 🔄", android.widget.Toast.LENGTH_SHORT).show()
+                    android.widget.Toast.makeText(context, "Data restored successfully", android.widget.Toast.LENGTH_SHORT).show()
                 } else {
-                    android.widget.Toast.makeText(context, "Restore Failed: ${result.exceptionOrNull()?.message}", android.widget.Toast.LENGTH_LONG).show()
+                    android.widget.Toast.makeText(context, "Restore failed: ${result.exceptionOrNull()?.message}", android.widget.Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -280,1666 +301,468 @@ fun SettingsScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF000000))
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(Color(0xFF000000))
                 .verticalScroll(rememberScrollState())
-                .padding(bottom = 24.dp),
+                .padding(bottom = 140.dp),
             horizontalAlignment = Alignment.Start
         ) {
-            var dragOffset by remember { mutableStateOf(0f) }
-            val haptic = LocalHapticFeedback.current
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp)
-                    .clickable { showUpdateDialog = true },
-                contentAlignment = Alignment.Center
-            ) {
-                Box(
-                    modifier = Modifier
-                        .width(42.dp)
-                        .height(6.dp)
-                        .offset(y = dragOffset.dp)
-                        .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f), shape = CircleShape)
-                        .pointerInput(Unit) {
-                            detectDragGestures(
-                                onDrag = { change, dragAmount ->
-                                    change.consume()
-                                    dragOffset = (dragOffset + dragAmount.y / 2f).coerceIn(-12f, 24f)
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                },
-                                onDragEnd = {
-                                    dragOffset = 0f
-                                }
-                            )
-                        }
-                )
-            }
-
-            // Top Header Bar inside Settings sheet
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = {
+            // Group 0: Dynamic Permissions
+            AppPermissionsPreferenceGroup(
+                expanded = expandedGroup == "App Permissions",
+                onHeaderClick = {
                     triggerFeedback()
-                    onBackToHome()
-                }) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_arrow_back),
-                        contentDescription = "Go to Home Screen",
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
+                    expandedGroup = if (expandedGroup == "App Permissions") null else "App Permissions"
                 }
-                Text(
-                    text = "Settings",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.width(48.dp))
-            }
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+            )
 
-            val isTabletOrLandscape = androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp >= 600
-            val column0Groups = @Composable {
-                // ── Contact Section (Top) ──────────────────────────────────────
-                PreferenceGroup(
-            title = "Contact & Socials",
-            expanded = expandedGroup == "Contact & Socials",
-            onHeaderClick = {
-                triggerFeedback()
-                expandedGroup = if (expandedGroup == "Contact & Socials") null else "Contact & Socials"
-            }
-        ) {
-            PreferenceItem(
-                title = "Join the Channel",
-                subtitle = "Quick Dash Channel",
-                iconVector = Icons.Default.Send,
-                onClick = {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Group 1: Floating Window & Overlay
+            PreferenceGroup(
+                title = "Floating Window & Bubble",
+                expanded = expandedGroup == "Floating Window & Bubble",
+                onHeaderClick = {
                     triggerFeedback()
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/+7jh0CvLVDlFjNDU1"))
-                    context.startActivity(intent)
+                    expandedGroup = if (expandedGroup == "Floating Window & Bubble") null else "Floating Window & Bubble"
                 }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "GitHub",
-                subtitle = "balajitechlabs",
-                iconVector = Icons.Default.Code,
-                onClick = {
-                    triggerFeedback()
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/balajitechlabs"))
-                    context.startActivity(intent)
-                }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "Instagram",
-                subtitle = "balajitechlabs",
-                iconVector = Icons.Default.Camera,
-                onClick = {
-                    triggerFeedback()
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://instagram.com/balajitechlabs"))
-                    context.startActivity(intent)
-                }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "Send Message to Admin",
-                subtitle = "Send direct messages or access Telegram bot channels",
-                iconVector = Icons.Default.Message,
-                onClick = {
-                    triggerFeedback()
-                    adminMessageText = ""
-                    showAdminMessageDialog = true
-                }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "Star QuickDash on GitHub",
-                subtitle = "Love QuickDash? Give us a star on our repository!",
-                iconVector = Icons.Default.Star,
-                onClick = {
-                    triggerFeedback()
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Balajitechlabs/quickdash"))
-                    context.startActivity(intent)
-                }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            // ── Donate Banner ──────────────────────────────────────────
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
-                shape = MaterialTheme.shapes.large,
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Surface(
-                            shape = CircleShape,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(36.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                                Icon(Icons.Default.Favorite, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(18.dp))
-                            }
-                        }
-                        Column {
-                            Text(
-                                text = "Support QuickDash Development ❤️",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = "Keep this project free, ad-free and open-source!",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        // Reserve Pay button (Razorpay link)
-                        Button(
-                            onClick = {
-                                triggerFeedback()
-                                try {
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://razorpay.me/@balajitechlabs"))
-                                    context.startActivity(intent)
-                                } catch (e: Exception) { Log.e(TAG, "Failed to open Razorpay link", e) }
-                            },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF007AFF), // High contrast blue for Raycast Razorpay
-                                contentColor = Color.White
-                            )
-                        ) {
-                            Icon(Icons.Default.OpenInNew, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("Razorpay", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold))
-                        }
-
-                        // Direct Pay support button
-                        Button(
-                            onClick = {
-                                triggerFeedback()
-                                try {
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("upi://pay?pa=241120067@ybl&pn=BalajiTechLabs&cu=INR"))
-                                    context.startActivity(Intent.createChooser(intent, "Support via Indian UPI Apps"))
-                                } catch (e: Exception) {
-                                    android.widget.Toast.makeText(context, "No UPI app found on device", android.widget.Toast.LENGTH_SHORT).show()
-                                }
-                            },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF4CAF50), // High contrast green for UPI
-                                contentColor = Color.White
-                            )
-                        ) {
-                            Icon(painterResource(R.drawable.ic_upi_pay), contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text("Direct Pay", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold))
-                        }
-                    }
-                }
-            }
-        }
-
-        // ── Group: Advanced & API Settings ───────────────────────────────
-        PreferenceGroup(
-            title = "Advanced & API Settings",
-            expanded = expandedGroup == "Advanced & API Settings",
-            onHeaderClick = {
-                triggerFeedback()
-                expandedGroup = if (expandedGroup == "Advanced & API Settings") null else "Advanced & API Settings"
-            }
-        ) {
-            // 1. Default Targeted App
-            var payAppExpanded by remember { mutableStateOf(false) }
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                Text(
-                    text = "Default Target Payment App",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = "Preselect target app when generating Quick Collect payment QRs.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Box {
-                    OutlinedButton(
-                        onClick = { payAppExpanded = true },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = when (activeDefaultPaymentApp) {
-                                "ANY" -> "Any Payment App"
-                                "GPAY" -> "Google Pay"
-                                "PHONEPE" -> "PhonePe"
-                                "PAYTM" -> "Paytm"
-                                "BHIM" -> "BHIM"
-                                else -> "Any Payment App"
-                            }
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = payAppExpanded,
-                        onDismissRequest = { payAppExpanded = false }
-                    ) {
-                        listOf("ANY" to "Any Payment App", "GPAY" to "Google Pay", "PHONEPE" to "PhonePe", "PAYTM" to "Paytm", "BHIM" to "BHIM").forEach { (code, label) ->
-                            DropdownMenuItem(
-                                text = { Text(label) },
-                                onClick = {
-                                    payAppExpanded = false
-                                    coroutineScope.launch {
-                                        viewModel.userStore.saveDefaultPaymentApp(code)
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            // 2. Clipboard auto-clear delay
-            var clearDelayExpanded by remember { mutableStateOf(false) }
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                Text(
-                    text = "Clipboard Auto-Clear Delay",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = "Automatically clear clipboard history after a specified period.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Box {
-                    OutlinedButton(
-                        onClick = { clearDelayExpanded = true },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = when (activeClipboardClearDelay) {
-                                -1L -> "Never (Keep History)"
-                                60000L -> "1 Minute"
-                                300000L -> "5 Minutes"
-                                600000L -> "10 Minutes"
-                                1800000L -> "30 Minutes"
-                                else -> "Never (Keep History)"
-                            }
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = clearDelayExpanded,
-                        onDismissRequest = { clearDelayExpanded = false }
-                    ) {
-                        listOf(-1L to "Never (Keep History)", 60000L to "1 Minute", 300000L to "5 Minutes", 600000L to "10 Minutes", 1800000L to "30 Minutes").forEach { (delay, label) ->
-                            DropdownMenuItem(
-                                text = { Text(label) },
-                                onClick = {
-                                    clearDelayExpanded = false
-                                    coroutineScope.launch {
-                                        viewModel.userStore.saveClipboardClearDelay(delay)
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            // 3. GitHub Personal Access Token
-            var githubTokenInput by remember(activeGithubAccessToken) { mutableStateOf(activeGithubAccessToken) }
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                Text(
-                    text = "GitHub Access Token (Optional)",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = "Enter a Personal Access Token to increase GitHub API rate limits (from 60 to 5000/hr).",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = githubTokenInput,
-                    onValueChange = { 
-                        githubTokenInput = it
-                        coroutineScope.launch {
-                            viewModel.userStore.saveGithubAccessToken(it.trim())
-                        }
-                    },
-                    placeholder = { Text("ghp_xxxxxxxxxxxxxxxxxxxx") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-
-        // ── Group 1: Launch & Window Setup ─────────────────────────────
-        PreferenceGroup(
-            title = "Launch & Windows",
-            expanded = expandedGroup == "Launch & Windows",
-            onHeaderClick = {
-                triggerFeedback()
-                expandedGroup = if (expandedGroup == "Launch & Windows") null else "Launch & Windows"
-            }
-        ) {
-            PreferenceItem(
-                title = "Launch Format",
-                subtitle = "App Icon action: $launchStyle",
-                iconVector = Icons.Default.Launch
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                SettingsFilterChip(
-                    selected = launchStyle == "FULL_SCREEN",
-                    onClick = {
-                        coroutineScope.launch {
-                            viewModel.userStore.saveLaunchStyle("FULL_SCREEN")
-                            val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                            }
-                            context.startActivity(intent)
-                            if (context is android.app.Activity) {
-                                context.finish()
-                            }
-                        }
-                    },
-                    label = "Full Screen"
-                )
-                SettingsFilterChip(
-                    selected = launchStyle == "FLOATING_DIALOG",
-                    onClick = {
-                        coroutineScope.launch {
-                            viewModel.userStore.saveLaunchStyle("FLOATING_DIALOG")
-                            val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                            }
-                            context.startActivity(intent)
-                            if (context is android.app.Activity) {
-                                context.finish()
-                            }
-                        }
-                    },
-                    label = "Floating Dialog"
-                )
-            }
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Quick Settings Tile",
-                subtitle = "Tap to add QuickDash tile to system quick settings panel",
-                iconVector = Icons.Default.SettingsSystemDaydream,
-                onClick = {
-                    if (Build.VERSION.SDK_INT >= 33) {
-                        try {
-                            val manager = context.getSystemService(Context.STATUS_BAR_SERVICE) as android.app.StatusBarManager
-                            val componentName = android.content.ComponentName(
-                                context,
-                                "com.balajitechlabs.quickdash.core.services.QuickTileService"
-                            )
-                            manager.requestAddTileService(
-                                componentName,
-                                "QuickDash Hub",
-                                android.graphics.drawable.Icon.createWithResource(context, R.mipmap.ic_launcher_round),
-                                { executor -> executor.run() },
-                                { result -> }
-                            )
-                        } catch (e: Exception) {
-                            // API fallback
-                        }
-                    } else {
-                        android.widget.Toast.makeText(context, "Pull down top notification shade, tap Edit ✏️ to add QuickDash Tile", android.widget.Toast.LENGTH_LONG).show()
-                    }
-                }
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Scan QR Code Tile",
-                subtitle = "Tap to add instant QR Scanner tile to system quick settings panel",
-                iconVector = Icons.Default.QrCodeScanner,
-                onClick = {
-                    if (Build.VERSION.SDK_INT >= 33) {
-                        try {
-                            val manager = context.getSystemService(Context.STATUS_BAR_SERVICE) as android.app.StatusBarManager
-                            val componentName = android.content.ComponentName(
-                                context,
-                                "com.balajitechlabs.quickdash.core.quicktile.QrScannerTileService"
-                            )
-                            manager.requestAddTileService(
-                                componentName,
-                                "Scan QR Code",
-                                android.graphics.drawable.Icon.createWithResource(context, R.drawable.ic_qr_code_2),
-                                { executor -> executor.run() },
-                                { result -> }
-                            )
-                        } catch (e: Exception) {
-                            // API fallback
-                        }
-                    } else {
-                        android.widget.Toast.makeText(context, "Pull down top notification shade, tap Edit ✏️ to add Scan QR Code Tile", android.widget.Toast.LENGTH_LONG).show()
-                    }
-                }
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Quick Bubble",
-                subtitle = "System-wide overlay bubble for fast toggle",
-                iconVector = Icons.Default.ChatBubbleOutline,
-                trailing = {
-                    StyledSwitch(
-                        style = activeSwitchStyle,
-                        checked = bubbleEnabled,
-                        onCheckedChange = { enabled ->
-                            if (enabled) {
-                                if (Settings.canDrawOverlays(context)) {
-                                    onToggleBubble(true)
-                                    context.startService(Intent(context, com.balajitechlabs.quickdash.core.services.FloatingBubbleService::class.java))
-                                } else {
-                                    userIntendedEnable = true
-                                    val intent = Intent(
-                                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                        Uri.parse("package:${context.packageName}")
-                                    )
-                                    context.startActivity(intent)
-                                }
-                            } else {
-                                onToggleBubble(false)
-                                context.stopService(Intent(context, com.balajitechlabs.quickdash.core.services.FloatingBubbleService::class.java))
-                            }
-                        }
-                    )
-                }
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                TextButton(
-                    onClick = { showBubbleLearnMoreDialog = true },
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
-                    modifier = Modifier.height(32.dp)
-                ) {
-                    Text(
-                        text = "Learn More",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-
-            PreferenceItem(
-                title = "Customize Bubble Tools",
-                subtitle = "Choose your 4 shortcut tools for the radial wheel",
-                iconVector = Icons.Default.Tune,
-                onClick = {
-                    triggerFeedback()
-                    showCustomizeBubbleDialog = true
-                }
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Shake to Open",
-                subtitle = "Shake your phone to instantly launch QuickDash",
-                iconVector = Icons.Default.Vibration,
-                trailing = {
-                    StyledSwitch(
-                        style = activeSwitchStyle,
-                        checked = shakeToOpen,
-                        onCheckedChange = { enabled ->
-                            triggerFeedback()
-                            coroutineScope.launch {
-                                viewModel.userStore.setShakeToOpen(enabled)
-                            }
-                            // Toggle service via application
-                            val appContext = context.applicationContext as com.balajitechlabs.quickdash.QuickDashApplication
-                            if (enabled) {
-                                appContext.startShakeDetector()
-                            } else {
-                                appContext.stopShakeDetector()
-                            }
-                        }
-                    )
-                }
-            )
-        }
-
-        // ── Group 2: Theming & Color System ────────────────────────────
-        PreferenceGroup(
-            title = "Customization",
-            expanded = expandedGroup == "Customization",
-            onHeaderClick = {
-                triggerFeedback()
-                expandedGroup = if (expandedGroup == "Customization") null else "Customization"
-            }
-        ) {
-            PreferenceItem(
-                title = "Theme Mode",
-                subtitle = "Select light / dark preference: $themeMode",
-                iconVector = Icons.Default.Palette
-            )
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                item {
-                    SettingsFilterChip(
-                        selected = themeMode == "SYSTEM",
-                        onClick = {
-                            triggerFeedback()
-                            onChangeThemeMode("SYSTEM")
-                        },
-                        label = "Sys"
-                    )
-                }
-                item {
-                    SettingsFilterChip(
-                        selected = themeMode == "LIGHT",
-                        onClick = {
-                            triggerFeedback()
-                            onChangeThemeMode("LIGHT")
-                        },
-                        label = "Light"
-                    )
-                }
-                item {
-                    SettingsFilterChip(
-                        selected = themeMode == "DARK",
-                        onClick = {
-                            triggerFeedback()
-                            onChangeThemeMode("DARK")
-                        },
-                        label = "Dark"
-                    )
-                }
-                item {
-                    SettingsFilterChip(
-                        selected = themeMode == "AMOLED",
-                        onClick = {
-                            triggerFeedback()
-                            onChangeThemeMode("AMOLED")
-                        },
-                        label = "AMOLED"
-                    )
-                }
-            }
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Curated Theme Presets",
-                subtitle = "Apply distinct seed style palettes instantly",
-                iconVector = Icons.Default.Style
-            )
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                val presets = listOf(
-                    "Default" to "#1E88E5",
-                    "Cyberpunk" to "#FF0055",
-                    "Hacker" to "#39FF14",
-                    "Midnight" to "#1976D2",
-                    "Lavender" to "#9575CD",
-                    "Sunset" to "#FF7043",
-                    "Ocean" to "#00ACC1",
-                    "Forest" to "#43A047"
-                )
-                items(presets) { (name, hex) ->
-                    val isSelected = seedColorHex.equals(hex, ignoreCase = true)
-                    SettingsFilterChip(
-                        selected = isSelected,
-                        onClick = {
-                            triggerFeedback()
-                            coroutineScope.launch { viewModel.userStore.saveSeedColor(hex) }
-                        },
-                        label = name
-                    )
-                }
-            }
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Aesthetic Seed Color",
-                subtitle = "Tonal palettes generated from: $seedColorHex",
-                iconVector = Icons.Default.ColorLens
-            )
-
-            // Horizontal color picker of presets
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 6.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                val colors = listOf(
-                    "#1E88E5", // Blue
-                    "#9C27B0", // Purple
-                    "#E91E63", // Pink
-                    "#4CAF50", // Green
-                    "#FF9800", // Orange
-                    "#FFC107", // Amber
-                    "#E53935", // Red
-                    "#009688", // Teal
-                    "#00F0FF", // Neon Cyber
-                    "#212121"  // Dark Gray
-                )
-                items(colors) { hex ->
-                    val color = Color(android.graphics.Color.parseColor(hex))
-                    Box(
-                        modifier = Modifier
-                            .size(42.dp)
-                            .clip(CircleShape)
-                            .background(color)
-                            .clickable {
-                                coroutineScope.launch { viewModel.userStore.saveSeedColor(hex) }
-                            }
-                            .border(
-                                width = if (seedColorHex == hex) 3.dp else 1.dp,
-                                color = if (seedColorHex == hex) MaterialTheme.colorScheme.onSurface else Color.Transparent,
-                                shape = CircleShape
-                            )
-                    ) {
-                        if (seedColorHex == hex) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null,
-                                tint = if (hex == "#212121") Color.White else Color.Black,
-                                modifier = Modifier.align(Alignment.Center).size(20.dp)
-                            )
-                        }
-                    }
-                }
-            }
-
-            // Custom hex input
-            var hexInput by remember(seedColorHex) { mutableStateOf(seedColorHex) }
-            OutlinedTextField(
-                value = hexInput,
-                onValueChange = {
-                    hexInput = it
-                    if (it.matches(Regex("^#[0-9a-fA-F]{6}$"))) {
-                        coroutineScope.launch { viewModel.userStore.saveSeedColor(it) }
-                    }
-                },
-                label = { Text("Manual Hex Code") },
-                singleLine = true,
-                placeholder = { Text("#1E88E5") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 6.dp),
-                shape = customShape
-            )
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                 PreferenceItem(
-                    title = "Monet Dynamic Colors",
-                    subtitle = "Extract primary accents from phone wallpaper",
-                    iconVector = Icons.Default.Wallpaper,
+                    title = "Quick Bubble",
+                    subtitle = "System-wide floating bubble on top of any app",
+                    iconVector = Icons.Default.ChatBubbleOutline,
                     trailing = {
                         StyledSwitch(
                             style = activeSwitchStyle,
-                            checked = dynamicColor,
-                            onCheckedChange = {
-                                triggerFeedback()
-                                onToggleDynamicColor(it)
+                            checked = bubbleEnabled,
+                            onCheckedChange = { enabled ->
+                                if (enabled) {
+                                    if (Settings.canDrawOverlays(context)) {
+                                        onToggleBubble(true)
+                                        context.startService(Intent(context, com.balajitechlabs.quickdash.core.services.FloatingBubbleService::class.java))
+                                    } else {
+                                        userIntendedEnable = true
+                                        val intent = Intent(
+                                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                            Uri.parse("package:${context.packageName}")
+                                        )
+                                        context.startActivity(intent)
+                                    }
+                                } else {
+                                    onToggleBubble(false)
+                                    context.stopService(Intent(context, com.balajitechlabs.quickdash.core.services.FloatingBubbleService::class.java))
+                                }
                             }
                         )
                     }
                 )
-            }
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            val qrUseEmojiOverlay by viewModel.userStore.qrUseEmojiOverlay.collectAsState(initial = false)
-            PreferenceItem(
-                title = "QR Emoji Badges",
-                subtitle = "Overlay signature emoji inside QR codes instead of app logo",
-                iconVector = Icons.Default.QrCode,
-                trailing = {
-                    StyledSwitch(
-                        style = activeSwitchStyle,
-                        checked = qrUseEmojiOverlay,
-                        onCheckedChange = {
-                            triggerFeedback()
-                            coroutineScope.launch { viewModel.userStore.saveQrUseEmojiOverlay(it) }
-                        }
-                    )
-                }
-            )
-
-
-        }
-
-        // ── Group 3: Component Skins, Borders & Shadows ───────────────
-        PreferenceGroup(
-            title = "Borders & Shapes",
-            expanded = expandedGroup == "Borders & Shapes",
-            onHeaderClick = {
-                triggerFeedback()
-                expandedGroup = if (expandedGroup == "Borders & Shapes") null else "Borders & Shapes"
-            }
-        ) {
-            PreferenceItem(
-                title = "Switch Visual Skin",
-                subtitle = "Active style: $switchStyleStr",
-                iconVector = Icons.Default.ToggleOn
-            )
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(listOf("MaterialYou", "Cupertino", "Pixel", "Fluent", "LiquidGlass")) { style ->
-                    SettingsFilterChip(
-                        selected = switchStyleStr == style,
-                        onClick = {
-                            triggerFeedback()
-                            coroutineScope.launch { viewModel.userStore.saveSwitchStyle(style) }
-                        },
-                        label = style
-                    )
-                }
-            }
-            
-            // Switch Preview Block
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Switch Preview", style = MaterialTheme.typography.bodyMedium)
-                var previewChecked by remember { mutableStateOf(true) }
-                StyledSwitch(
-                    style = activeSwitchStyle,
-                    checked = previewChecked,
-                    onCheckedChange = {
-                        triggerFeedback()
-                        previewChecked = it
-                    }
-                )
-            }
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Slider Visual Skin",
-                subtitle = "Active style: $sliderStyleStr",
-                iconVector = Icons.Default.Tune
-            )
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(listOf("MaterialYou", "Fancy", "HyperOS")) { style ->
-                    SettingsFilterChip(
-                        selected = sliderStyleStr == style,
-                        onClick = {
-                            triggerFeedback()
-                            coroutineScope.launch { viewModel.userStore.saveSliderStyle(style) }
-                        },
-                        label = style
-                    )
-                }
-            }
-
-            // Slider Preview Block
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 6.dp)
-            ) {
-                Text("Slider Preview", style = MaterialTheme.typography.bodyMedium)
-                Spacer(modifier = Modifier.height(4.dp))
-                var previewValue by remember { mutableStateOf(0.6f) }
-                StyledSlider(
-                    style = activeSliderStyle,
-                    value = previewValue,
-                    onValueChange = {
-                        previewValue = it
-                    },
-                    valueRange = 0f..1f
-                )
-            }
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Corner Shape Style",
-                subtitle = "Active style: $shapeStyleStr",
-                iconVector = Icons.Default.RoundedCorner
-            )
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(listOf("Rounded", "Cut", "Squircle", "Smooth", "Octagon", "Pentagon", "Clover", "Star", "Heart")) { shape ->
-                    SettingsFilterChip(
-                        selected = shapeStyleStr == shape,
-                        onClick = {
-                            triggerFeedback()
-                            coroutineScope.launch { viewModel.userStore.saveShapeStyle(shape) }
-                        },
-                        label = shape
-                    )
-                }
-            }
-
-            // 3D Visual Style Preview Panel at the top of customization
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                Text("Visual Style Preview", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                Spacer(modifier = Modifier.height(6.dp))
-                val customShape = com.balajitechlabs.quickdash.core.ui.components.getCustomShape(shapeStyleStr, localRadius)
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .then(if (showShadow) Modifier.shadow(8.dp, customShape) else Modifier)
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), customShape)
-                        .border(localBorderWidth.dp, MaterialTheme.colorScheme.primary, customShape),
-                    shape = customShape,
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text("3D Card Preview", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                        Spacer(modifier = Modifier.height(10.dp))
-                        
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text("Switch Skin", style = MaterialTheme.typography.bodySmall)
-                            var previewChecked by remember { mutableStateOf(true) }
-                            StyledSwitch(
-                                style = activeSwitchStyle,
-                                checked = previewChecked,
-                                onCheckedChange = {
-                                    triggerFeedback()
-                                    previewChecked = it
-                                }
-                            )
-                        }
-                        
-                        Spacer(modifier = Modifier.height(12.dp))
-                        
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            Text("Slider Skin", style = MaterialTheme.typography.bodySmall)
-                            Spacer(modifier = Modifier.height(4.dp))
-                            var previewValue by remember { mutableStateOf(0.6f) }
-                            StyledSlider(
-                                style = activeSliderStyle,
-                                value = previewValue,
-                                onValueChange = { previewValue = it },
-                                valueRange = 0f..1f
-                            )
-                        }
-                    }
-                }
-            }
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Corner Radius Size",
-                subtitle = "Radius: ${localRadius.toInt()}dp",
-                iconVector = Icons.Default.Architecture
-            )
-            StyledSlider(
-                style = activeSliderStyle,
-                value = localRadius,
-                onValueChange = {
-                    localRadius = it
-                },
-                onValueChangeFinished = {
-                    coroutineScope.launch { viewModel.userStore.saveCornerRadius(localRadius) }
-                },
-                valueRange = 4f..32f,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Border Line Thickness",
-                subtitle = "Thickness: ${"%.1f".format(localBorderWidth)}dp",
-                iconVector = Icons.Default.LineWeight
-            )
-            StyledSlider(
-                style = activeSliderStyle,
-                value = localBorderWidth,
-                onValueChange = {
-                    localBorderWidth = it
-                },
-                onValueChangeFinished = {
-                    coroutineScope.launch { viewModel.userStore.saveBorderWidth(localBorderWidth) }
-                },
-                valueRange = 0f..4f,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Show Card Shadows",
-                subtitle = "Master shadow overlay switch",
-                iconVector = Icons.Default.FilterFrames,
-                trailing = {
-                    StyledSwitch(
-                        style = activeSwitchStyle,
-                        checked = showShadow,
-                        onCheckedChange = {
-                            triggerFeedback()
-                            coroutineScope.launch { viewModel.userStore.saveShowShadow(it) }
-                        }
-                    )
-                }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "Show Tool Descriptions",
-                subtitle = "Render description text on dashboard cards",
-                iconVector = Icons.Default.Description,
-                trailing = {
-                    StyledSwitch(
-                        style = activeSwitchStyle,
-                        checked = showToolDescriptions,
-                        onCheckedChange = {
-                            triggerFeedback()
-                            coroutineScope.launch { viewModel.userStore.saveShowToolDescriptions(it) }
-                        }
-                    )
-                }
-            )
-        }
-    }
-
-    val column1Groups = @Composable {
-        // ── Group 4: Typography & Fonts ───────────────────────────────
-            PreferenceGroup(
-            title = "Typography & Fonts",
-            expanded = expandedGroup == "Typography & Fonts",
-            onHeaderClick = {
-                triggerFeedback()
-                expandedGroup = if (expandedGroup == "Typography & Fonts") null else "Typography & Fonts"
-            }
-        ) {
-            PreferenceItem(
-                title = "Typography Font Size Scale",
-                subtitle = "Scale factor: ${"%.2f".format(localFontScale)}x",
-                iconVector = Icons.Default.FormatSize
-            )
-            StyledSlider(
-                style = activeSliderStyle,
-                value = localFontScale,
-                onValueChange = {
-                    localFontScale = it
-                },
-                onValueChangeFinished = {
-                    coroutineScope.launch { viewModel.userStore.saveFontScale(localFontScale) }
-                },
-                valueRange = 0.8f..1.4f,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
-            PreferenceItem(
-                title = "App Font Family",
-                subtitle = "Active font: ${fontFamilyName.lowercase().replaceFirstChar { it.uppercase() }}",
-                iconVector = Icons.Default.TextFields
-            )
-            val fontFamilies = listOf(
-                "Default" to "SYSTEM",
-                "Sans-Serif" to "SANSSERIF",
-                "Serif" to "SERIF",
-                "Monospace" to "MONOSPACE",
-                "Cursive" to "CURSIVE",
-                "Nunito" to "NUNITO",
-                "Poppins" to "POPPINS",
-                "Space Grotesk" to "SPACE_GROTESK"
-            )
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                items(fontFamilies) { (label, code) ->
-                    SettingsFilterChip(
-                        selected = fontFamilyName.uppercase() == code.uppercase(),
-                        onClick = {
-                            triggerFeedback()
-                            coroutineScope.launch { viewModel.userStore.saveFontFamilyKey(code) }
-                        },
-                        label = label
-                    )
-                }
-            }
-        }
-
-        // ── Group 5: Behavior & Security Settings ─────────────────────
-        PreferenceGroup(
-            title = "Behavior & Security",
-            expanded = expandedGroup == "Behavior & Security",
-            onHeaderClick = {
-                triggerFeedback()
-                expandedGroup = if (expandedGroup == "Behavior & Security") null else "Behavior & Security"
-            }
-        ) {
-            PreferenceItem(
-                title = "Secure Mode",
-                subtitle = "Blocks screenshots and app switching previews",
-                iconVector = Icons.Default.Security,
-                trailing = {
-                    StyledSwitch(
-                        style = activeSwitchStyle,
-                        checked = secureMode,
-                        onCheckedChange = {
-                            coroutineScope.launch { viewModel.userStore.saveSecureMode(it) }
-                        }
-                    )
-                }
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Max Brightness on QR",
-                subtitle = "Force 100% brightness when showing QR Code",
-                iconVector = Icons.Default.BrightnessHigh,
-                trailing = {
-                    StyledSwitch(
-                        style = activeSwitchStyle,
-                        checked = maxBrightness,
-                        onCheckedChange = {
-                            coroutineScope.launch { viewModel.userStore.saveMaxBrightness(it) }
-                        }
-                    )
-                }
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Show Image Previews",
-                subtitle = "Render images inline inside the notifications feed",
-                iconVector = Icons.Default.Image,
-                trailing = {
-                    StyledSwitch(
-                        style = activeSwitchStyle,
-                        checked = showImagePreviews,
-                        onCheckedChange = {
-                            coroutineScope.launch { viewModel.userStore.saveShowImagePreviews(it) }
-                        }
-                    )
-                }
-            )
-            PreferenceItem(
-                title = "Advanced Thumbnail",
-                subtitle = "Enable advanced thumbnail options based on your preference",
-                iconVector = Icons.Default.Image,
-                trailing = {
-                    StyledSwitch(
-                        style = activeSwitchStyle,
-                        checked = advancedThumbnail,
-                        onCheckedChange = {
-                            coroutineScope.launch { viewModel.userStore.saveAdvancedThumbnail(it) }
-                        }
-                    )
-                }
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Custom Top Bar Emoji",
-                subtitle = "Emoji: $emojiHeader",
-                iconVector = Icons.Default.Mood
-            )
-            OutlinedTextField(
-                value = emojiHeader,
-                onValueChange = {
-                    if (it.length <= 4) {
-                        coroutineScope.launch { viewModel.userStore.saveEmojiHeader(it) }
-                    }
-                },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                shape = customShape
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Confetti Effect Player",
-                subtitle = "Toggle visual effects on successful actions",
-                iconVector = Icons.Default.Celebration,
-                trailing = {
-                    StyledSwitch(
-                        style = activeSwitchStyle,
-                        checked = confettiEnabled,
-                        onCheckedChange = {
-                            triggerFeedback()
-                            coroutineScope.launch { viewModel.userStore.saveConfettiEnabled(it) }
-                        }
-                    )
-                }
-            )
-
-            if (confettiEnabled) {
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                 PreferenceItem(
-                    title = "Confetti Effect Style",
-                    subtitle = "Select overlay style: $confettiType",
-                    iconVector = Icons.Default.AutoAwesome
+                    title = "Bubble Appearance",
+                    subtitle = "Customize icon size, transparency, glow & quick tools",
+                    iconVector = Icons.Default.Palette,
+                    onClick = {
+                        triggerFeedback()
+                        onNavigateToBubbleCustomizer()
+                    }
                 )
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(listOf("Default", "Right", "Corner", "Export")) { type ->
-                        SettingsFilterChip(
-                            selected = confettiType == type,
-                            onClick = {
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                PreferenceItem(
+                    title = "Shake to Open QuickDash",
+                    subtitle = "Shake your phone in any app (e.g. WhatsApp) to launch QuickDash",
+                    iconVector = Icons.Default.ScreenRotation,
+                    trailing = {
+                        StyledSwitch(
+                            style = activeSwitchStyle,
+                            checked = shakeToOpen,
+                            onCheckedChange = { enabled ->
                                 triggerFeedback()
-                                coroutineScope.launch { viewModel.userStore.saveConfettiType(type) }
-                                onTriggerConfetti(type)
+                                coroutineScope.launch {
+                                    viewModel.userStore.saveShakeToOpen(enabled)
+                                    val serviceIntent = Intent(context, com.balajitechlabs.quickdash.core.services.ShakeDetectorService::class.java)
+                                    if (enabled) {
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) context.startForegroundService(serviceIntent)
+                                        else context.startService(serviceIntent)
+                                    } else {
+                                        context.stopService(serviceIntent)
+                                    }
+                                }
+                            }
+                        )
+                    }
+                )
+                if (shakeToOpen) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        Text(
+                            text = "Shake Trigger Mode",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White.copy(alpha = 0.7f)
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            listOf("SINGLE" to "Single Shake", "DOUBLE" to "Double Shake").forEach { (mode, label) ->
+                                val isSelected = shakeMode == mode
+                                FilterChip(
+                                    selected = isSelected,
+                                    onClick = {
+                                        triggerFeedback()
+                                        coroutineScope.launch { viewModel.userStore.saveShakeMode(mode) }
+                                    },
+                                    label = { Text(label, fontSize = 12.sp) },
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                                        containerColor = Color(0xFF2A2B30),
+                                        labelColor = Color.White
+                                    )
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "Shake Sensitivity",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White.copy(alpha = 0.7f)
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            listOf("LOW" to "Low", "MEDIUM" to "Medium", "HIGH" to "High").forEach { (sens, label) ->
+                                val isSelected = shakeSensitivity == sens
+                                FilterChip(
+                                    selected = isSelected,
+                                    onClick = {
+                                        triggerFeedback()
+                                        coroutineScope.launch { viewModel.userStore.saveShakeSensitivity(sens) }
+                                    },
+                                    label = { Text(label, fontSize = 12.sp) },
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                                        containerColor = Color(0xFF2A2B30),
+                                        labelColor = Color.White
+                                    )
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "Vibration Intensity on Shake: ${hapticDuration.toInt()}ms",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White.copy(alpha = 0.7f)
+                        )
+                        Slider(
+                            value = hapticDuration,
+                            onValueChange = { dur ->
+                                coroutineScope.launch { viewModel.userStore.saveHapticDuration(dur) }
                             },
-                            label = type
+                            valueRange = 10f..80f,
+                            steps = 7,
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
                 }
-            }
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Tactile Vibration Duration",
-                subtitle = "Vibration length: ${hapticDuration.toInt()} ms ${if (hapticDuration <= 0f) "(Off)" else ""}",
-                iconVector = Icons.Default.Vibration
-            )
-            Slider(
-                value = hapticDuration,
-                onValueChange = {
-                    coroutineScope.launch { viewModel.userStore.saveHapticDuration(it) }
-                },
-                valueRange = 0f..100f,
-                steps = 20,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Clipboard Auto-Clean",
-                subtitle = "Interval: $clipboardAutocleanInterval",
-                iconVector = Icons.Default.CleaningServices
-            )
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(listOf("OFF", "1H", "12H", "1D")) { interval ->
-                    SettingsFilterChip(
-                        selected = clipboardAutocleanInterval == interval,
-                        onClick = {
-                            triggerFeedback()
-                            coroutineScope.launch { viewModel.userStore.setClipboardAutocleanInterval(interval) }
-                        },
-                        label = when (interval) {
-                            "OFF" -> "Off"
-                            "1H" -> "1 Hour"
-                            "12H" -> "12 Hours"
-                            "1D" -> "1 Day"
-                            else -> interval
-                        }
-                    )
-                }
-            }
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Shake to Open Bubble",
-                subtitle = "Shake device to quickly launch floating bubble",
-                iconVector = Icons.Default.ScreenRotation,
-                trailing = {
-                    StyledSwitch(
-                        style = activeSwitchStyle,
-                        checked = shakeToTrigger,
-                        onCheckedChange = {
-                            triggerFeedback()
-                            coroutineScope.launch { viewModel.userStore.saveShakeToTrigger(it) }
-                        }
-                    )
-                }
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Custom Search Engines",
-                subtitle = "Configure custom search engines in app",
-                iconVector = Icons.Default.Search,
-                onClick = {
-                    triggerFeedback()
-                    showCustomSearchDialog = true
-                }
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            PreferenceItem(
-                title = "Support Development (Donate)",
-                subtitle = "Keep the project rockin'! 🎸",
-                iconVector = Icons.Default.Favorite,
-                onClick = {
-                    triggerFeedback()
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://razorpay.me/@balajitechlabs"))
-                    context.startActivity(intent)
-                }
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            val isAppLocked by viewModel.userStore.isAppLocked.collectAsState(initial = false)
-            PreferenceItem(
-                title = "Biometric Lock",
-                subtitle = "App lock protection switch",
-                iconVector = Icons.Default.Lock,
-                trailing = {
-                    StyledSwitch(
-                        style = activeSwitchStyle,
-                        checked = isAppLocked,
-                        onCheckedChange = { enabled ->
-                            triggerFeedback()
-                            coroutineScope.launch { viewModel.userStore.setAppLocked(enabled) }
-                        }
-                    )
-                }
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-            val isTabLocked by viewModel.userStore.tabBiometricLock.collectAsState(initial = false)
-            PreferenceItem(
-                title = "Lock Private Tabs",
-                subtitle = "Require authentication for Clipboard & Notes",
-                iconVector = Icons.Default.LockClock,
-                trailing = {
-                    StyledSwitch(
-                        style = activeSwitchStyle,
-                        checked = isTabLocked,
-                        onCheckedChange = { enabled ->
-                            triggerFeedback()
-                            coroutineScope.launch { viewModel.userStore.saveTabBiometricLock(enabled) }
-                        }
-                    )
-                }
-            )
-        }
-
-        // ── Group 6: Data & Backup ─────────────────────────────────────
-        PreferenceGroup(
-            title = "Data Management",
-            expanded = expandedGroup == "Data Management",
-            onHeaderClick = {
-                triggerFeedback()
-                expandedGroup = if (expandedGroup == "Data Management") null else "Data Management"
-            }
-        ) {
-            PreferenceItem(
-                title = "Backup Data",
-                subtitle = "Export your settings and preferences to a JSON file",
-                iconVector = Icons.Default.Upload,
-                onClick = {
-                    triggerFeedback()
-                    showBackupOptionsDialog = true
-                }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "Restore Data",
-                subtitle = "Import your settings and preferences",
-                iconVector = Icons.Default.Download,
-                onClick = {
-                    restoreLauncher.launch(arrayOf("application/json", "*/*"))
-                }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "Manage UPI & Payment IDs",
-                subtitle = "Add, edit, or remove your payment UPI IDs and display name",
-                iconVector = Icons.Default.Payment,
-                onClick = {
-                    triggerFeedback()
-                    onManageUpiIds()
-                }
-            )
-        }
-
-        // ── Group: Recommendations & Tips ───────────────────────────────
-        PreferenceGroup(
-            title = "Usage Tips & Recommendations",
-            expanded = expandedGroup == "Usage Tips & Recommendations",
-            onHeaderClick = {
-                triggerFeedback()
-                expandedGroup = if (expandedGroup == "Usage Tips & Recommendations") null else "Usage Tips & Recommendations"
-            }
-        ) {
-            PreferenceItem(
-                title = "💡 View All Tips & Recommendations",
-                subtitle = "Tap to see quick tips to get the most out of QuickDash",
-                iconVector = Icons.Default.Lightbulb,
-                onClick = {
-                    triggerFeedback()
-                    showTipsDialog = true
-                }
-            )
-        }
-
-        // ── Group 7: Stats & Developer Info ────────────────────────────
-        PreferenceGroup(
-            title = "About QuickDash",
-            expanded = expandedGroup == "About QuickDash",
-            onHeaderClick = {
-                triggerFeedback()
-                showAboutDialog = true
-                expandedGroup = if (expandedGroup == "About QuickDash") null else "About QuickDash"
-            }
-        ) {
-            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            val versionName = packageInfo.versionName
-            val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                packageInfo.longVersionCode
-            } else {
-                @Suppress("DEPRECATION")
-                packageInfo.versionCode.toLong()
-            }
-            PreferenceItem(
-                title = "About QuickDash",
-                subtitle = "QuickDash $versionName · Check for updates, version info",
-                iconVector = Icons.Default.Info,
-                onClick = {
-                    triggerFeedback()
-                    showAboutDialog = true
-                }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "What's New",
-                subtitle = "View the latest features and bug fixes",
-                iconVector = Icons.Default.NewReleases,
-                onClick = {
-                    triggerFeedback()
-                    showWhatsNewDialog = true
-                }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "Privacy Policy",
-                subtitle = "View our data collection policy",
-                iconVector = Icons.Default.PrivacyTip,
-                onClick = {
-                    triggerFeedback()
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Balajitechlabs/quickdash/blob/main/PRIVACY_POLICY.md"))
-                    context.startActivity(intent)
-                }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "Rate QuickDash",
-                subtitle = "Tell us what you think!",
-                iconVector = Icons.Default.Star,
-                onClick = {
-                    triggerFeedback()
-                    showRatingDialog = true
-                }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "App License",
-                subtitle = "View open source license guidelines",
-                iconVector = Icons.Default.Gavel,
-                onClick = {
-                    triggerFeedback()
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Balajitechlabs/quickdash/blob/main/LICENSE"))
-                    context.startActivity(intent)
-                }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "Project Changelog",
-                subtitle = "View full release updates history",
-                iconVector = Icons.Default.HistoryEdu,
-                onClick = {
-                    triggerFeedback()
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Balajitechlabs/quickdash/blob/main/CHANGELOG.md"))
-                    context.startActivity(intent)
-                }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "App Statistics",
-                subtitle = "View your usage statistics",
-                iconVector = Icons.Default.BarChart,
-                onClick = { showStatsDialog = true }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "Bug Reporter",
-                subtitle = "Submit issue report directly to dev logs",
-                iconVector = Icons.Default.BugReport,
-                onClick = { showFeedbackDialog = true }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            PreferenceItem(
-                title = "Request a Feature",
-                subtitle = "Request features or enhancements",
-                iconVector = Icons.Default.Lightbulb,
-                onClick = { showFeatureRequestDialog = true }
-            )
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-            
-            var isLoggingActive by remember { mutableStateOf(com.balajitechlabs.quickdash.core.utils.DiagnosticLogger.isActive()) }
-            PreferenceItem(
-                title = "Diagnostic Logs (Crash Reporter)",
-                subtitle = if (isLoggingActive) "Recording active process logcat..." else "Record diagnostic logs for developer crash reports",
-                iconVector = Icons.Default.BugReport,
-                onClick = {
-                    triggerFeedback()
-                    if (isLoggingActive) {
-                        val logFile = com.balajitechlabs.quickdash.core.utils.DiagnosticLogger.stopLogging(context)
-                        if (logFile != null) {
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                PreferenceItem(
+                    title = "Quick Settings Tile",
+                    subtitle = "Add QuickDash tile to system notification shade",
+                    iconVector = Icons.Default.SettingsSystemDaydream,
+                    onClick = {
+                        if (Build.VERSION.SDK_INT >= 33) {
                             try {
-                                val authority = "${context.packageName}.provider"
-                                val uri = androidx.core.content.FileProvider.getUriForFile(context, authority, logFile)
-                                val intent = Intent(Intent.ACTION_SEND).apply {
-                                    type = "application/json"
-                                    putExtra(Intent.EXTRA_STREAM, uri)
-                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                }
-                                context.startActivity(Intent.createChooser(intent, "Share Diagnostic Log"))
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                                android.widget.Toast.makeText(context, "Failed to share log", android.widget.Toast.LENGTH_SHORT).show()
-                            }
+                                val manager = context.getSystemService(Context.STATUS_BAR_SERVICE) as android.app.StatusBarManager
+                                val componentName = android.content.ComponentName(
+                                    context,
+                                    "com.balajitechlabs.quickdash.core.services.QuickTileService"
+                                )
+                                manager.requestAddTileService(
+                                    componentName,
+                                    "QuickDash Hub",
+                                    android.graphics.drawable.Icon.createWithResource(context, R.mipmap.ic_launcher_round),
+                                    { executor -> executor.run() },
+                                    { _ -> }
+                                )
+                            } catch (_: Exception) {}
+                        } else {
+                            android.widget.Toast.makeText(context, "Pull down top notification shade, tap Edit to add QuickDash Tile", android.widget.Toast.LENGTH_LONG).show()
                         }
-                        isLoggingActive = false
-                    } else {
-                        com.balajitechlabs.quickdash.core.utils.DiagnosticLogger.startLogging(context)
-                        isLoggingActive = true
                     }
-                }
-            )
+                )
+            }
 
-            // Developer Logs - Prominent Button
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Group 2: Payment & UPI Setup
+            PreferenceGroup(
+                title = "Payments & UPI",
+                expanded = expandedGroup == "Payments & UPI",
+                onHeaderClick = {
+                    triggerFeedback()
+                    expandedGroup = if (expandedGroup == "Payments & UPI") null else "Payments & UPI"
+                }
             ) {
-                FilledTonalButton(
+                PreferenceItem(
+                    title = "Manage UPI IDs",
+                    subtitle = "Configure your payment UPI IDs and display name",
+                    iconVector = Icons.Default.Payment,
                     onClick = {
                         triggerFeedback()
-                        try { onNavigateToSystemLogs() } catch (e: Exception) { Log.e(TAG, "Failed to navigate to system logs", e) }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = MaterialTheme.shapes.large
-                ) {
-                    Icon(Icons.Default.Terminal, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("View Developer Logs", fontWeight = FontWeight.SemiBold)
+                        onManageUpiIds()
+                    }
+                )
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                var payAppExpanded by remember { mutableStateOf(false) }
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    Text(
+                        text = "Default Target Payment App",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = "Preselect target app when generating Quick Collect payment QRs.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box {
+                        OutlinedButton(
+                            onClick = { payAppExpanded = true },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = when (activeDefaultPaymentApp) {
+                                    "ANY" -> "Any Payment App"
+                                    "GPAY" -> "Google Pay"
+                                    "PHONEPE" -> "PhonePe"
+                                    "PAYTM" -> "Paytm"
+                                    "BHIM" -> "BHIM"
+                                    else -> "Any Payment App"
+                                }
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = payAppExpanded,
+                            onDismissRequest = { payAppExpanded = false }
+                        ) {
+                            listOf("ANY" to "Any Payment App", "GPAY" to "Google Pay", "PHONEPE" to "PhonePe", "PAYTM" to "Paytm", "BHIM" to "BHIM").forEach { (code, label) ->
+                                DropdownMenuItem(
+                                    text = { Text(label) },
+                                    onClick = {
+                                        payAppExpanded = false
+                                        coroutineScope.launch {
+                                            viewModel.userStore.saveDefaultPaymentApp(code)
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
-            // 7 interactive star buttons row
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Group 3: Security & Privacy
+            PreferenceGroup(
+                title = "Security & Privacy",
+                expanded = expandedGroup == "Security & Privacy",
+                onHeaderClick = {
+                    triggerFeedback()
+                    expandedGroup = if (expandedGroup == "Security & Privacy") null else "Security & Privacy"
+                }
+            ) {
+                val isAppLocked by viewModel.userStore.isAppLocked.collectAsStateWithLifecycle(initialValue = false)
+                PreferenceItem(
+                    title = "Biometric Lock",
+                    subtitle = "Require fingerprint / face to open QuickDash",
+                    iconVector = Icons.Default.Lock,
+                    trailing = {
+                        StyledSwitch(
+                            style = activeSwitchStyle,
+                            checked = isAppLocked,
+                            onCheckedChange = { enabled ->
+                                triggerFeedback()
+                                coroutineScope.launch { viewModel.userStore.setAppLocked(enabled) }
+                            }
+                        )
+                    }
+                )
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                val isTabLocked by viewModel.userStore.tabBiometricLock.collectAsStateWithLifecycle(initialValue = false)
+                PreferenceItem(
+                    title = "Lock Private Tabs",
+                    subtitle = "Require authentication for Clipboard & Notes",
+                    iconVector = Icons.Default.LockClock,
+                    trailing = {
+                        StyledSwitch(
+                            style = activeSwitchStyle,
+                            checked = isTabLocked,
+                            onCheckedChange = { enabled ->
+                                triggerFeedback()
+                                coroutineScope.launch { viewModel.userStore.saveTabBiometricLock(enabled) }
+                            }
+                        )
+                    }
+                )
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                val isSecureMode by viewModel.userStore.secureMode.collectAsStateWithLifecycle(initialValue = false)
+                PreferenceItem(
+                    title = "Secure Mode",
+                    subtitle = "Block screenshots and hide app preview in recents",
+                    iconVector = Icons.Default.Security,
+                    trailing = {
+                        StyledSwitch(
+                            style = activeSwitchStyle,
+                            checked = isSecureMode,
+                            onCheckedChange = { enabled ->
+                                triggerFeedback()
+                                coroutineScope.launch { viewModel.userStore.saveSecureMode(enabled) }
+                            }
+                        )
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Group 4: Data & Backup
+            PreferenceGroup(
+                title = "Data Management",
+                expanded = expandedGroup == "Data Management",
+                onHeaderClick = {
+                    triggerFeedback()
+                    expandedGroup = if (expandedGroup == "Data Management") null else "Data Management"
+                }
+            ) {
+                PreferenceItem(
+                    title = "Backup Data",
+                    subtitle = "Export your settings and preferences to a JSON file",
+                    iconVector = Icons.Default.Upload,
+                    onClick = {
+                        triggerFeedback()
+                        showBackupOptionsDialog = true
+                    }
+                )
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                PreferenceItem(
+                    title = "Restore Data",
+                    subtitle = "Import your settings and preferences",
+                    iconVector = Icons.Default.Download,
+                    onClick = {
+                        restoreLauncher.launch(arrayOf("application/json", "*/*"))
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Group 5: Updates & System
+            PreferenceGroup(
+                title = "Updates & System",
+                expanded = expandedGroup == "Updates & System",
+                onHeaderClick = {
+                    triggerFeedback()
+                    expandedGroup = if (expandedGroup == "Updates & System") null else "Updates & System"
+                }
+            ) {
+                PreferenceItem(
+                    title = "Pre-Release (Beta) Builds",
+                    subtitle = "Receive experimental builds and early feature updates from GitHub Releases",
+                    iconVector = Icons.Default.SystemUpdate,
+                    trailing = {
+                        StyledSwitch(
+                            style = activeSwitchStyle,
+                            checked = includePreRelease,
+                            onCheckedChange = { enabled ->
+                                triggerFeedback()
+                                coroutineScope.launch {
+                                    viewModel.userStore.saveIncludePreRelease(enabled)
+                                }
+                            }
+                        )
+                    }
+                )
+            }
+
+            val infiniteTransition = rememberInfiniteTransition(label = "heart_pulse")
+            val heartScale by infiniteTransition.animateFloat(
+                initialValue = 1.0f,
+                targetValue = 1.35f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(durationMillis = 650, easing = FastOutSlowInEasing),
+                    repeatMode = RepeatMode.Reverse
+                ),
+                label = "heart_scale"
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp),
+                    .padding(bottom = 36.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val starLabels = listOf("⭐", "⭐", "⭐", "🎸", "⭐", "⭐", "⭐")
-                starLabels.forEachIndexed { index, emoji ->
-                    IconButton(
-                        onClick = {
-                            triggerFeedback()
-                            if (index == 3) {
-                                // Guitar special star
-                                android.widget.Toast.makeText(context, "🎸 Rock on!", android.widget.Toast.LENGTH_SHORT).show()
-                            } else {
-                                showRatingDialog = true
-                            }
-                        },
-                        modifier = Modifier.size(40.dp)
-                    ) {
-                        Text(text = emoji, style = MaterialTheme.typography.titleMedium)
+                Surface(
+                    shape = CircleShape,
+                    color = Color(0xFF2A2B30),
+                    border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)),
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clickable {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://balajitechlab.com"))
+                            context.startActivity(intent)
+                        }
+                ) {
+                    androidx.compose.foundation.Image(
+                        painter = painterResource(R.drawable.ic_developer_avatar),
+                        contentDescription = "balajitechlabs avatar",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = "Made with ",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFFC5C6D0)
+                )
+                Text(
+                    text = "❤️",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.graphicsLayer {
+                        scaleX = heartScale
+                        scaleY = heartScale
                     }
-                }
+                )
+                Text(
+                    text = " by ",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFFC5C6D0)
+                )
+                Text(
+                    text = "balajitechlabs  ||BTL||™",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://balajitechlab.com"))
+                        context.startActivity(intent)
+                    }
+                )
             }
         }
-        }
-
-        if (isTabletOrLandscape) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    column0Groups()
-                }
-                Column(modifier = Modifier.weight(1f)) {
-                    column1Groups()
-                }
-            }
-        } else {
-            column0Groups()
-            column1Groups()
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Made by ",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = "BalajiTechLabs",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/balajitechlabs"))
-                    context.startActivity(intent)
-                }
-            )
-        }
-
-
     }
 
     if (showWhatsNewDialog) {
@@ -2076,7 +899,7 @@ fun SettingsScreen(
                                 modifier = Modifier.size(18.dp)
                             )
                             Text(
-                                if (attachScreenshot) "📸 Screenshot attached" else "Attach screenshot (optional)",
+                                if (attachScreenshot) "Screenshot attached" else "Attach screenshot (optional)",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = if (attachScreenshot) MaterialTheme.colorScheme.onPrimaryContainer
                                 else MaterialTheme.colorScheme.onSurfaceVariant
@@ -2103,7 +926,7 @@ fun SettingsScreen(
                             try {
                                 galleryLauncher.launch("image/*")
                             } catch (e: Exception) {
-                                e.printStackTrace()
+                                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -2112,7 +935,7 @@ fun SettingsScreen(
                         Icon(Icons.Default.Image, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            if (galleryBitmap != null) "✅ Image from Gallery attached" else "Upload from Gallery",
+                            if (galleryBitmap != null) "Image attached from gallery" else "Upload from gallery",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -2127,7 +950,7 @@ fun SettingsScreen(
                             try {
                                 val safeFeedback = capturedText
                                     .replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-                                val message = "🐞 <b>Bug Report</b>\nModel: ${Build.MODEL}\nReport: $safeFeedback"
+                                val message = "<b>Bug Report</b>\nModel: ${Build.MODEL}\nReport: $safeFeedback"
                                 if (capturedBitmap != null) {
                                     com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker.sendPhoto(
                                         caption = message.replace(Regex("<[^>]*>"), ""),
@@ -2137,7 +960,7 @@ fun SettingsScreen(
                                     com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker.sendMessage(message)
                                 }
                             } catch (e: Exception) {
-                                e.printStackTrace()
+                                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
                             }
                         }
                     }
@@ -2184,7 +1007,7 @@ fun SettingsScreen(
                         val currentText = featureRequestText
                         coroutineScope.launch {
                             val safeIdea = currentText.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-                            com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker.sendMessage("💡 <b>Feature Request</b>\nIdea: $safeIdea")
+                            com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker.sendMessage("<b>Feature Request</b>\nIdea: $safeIdea")
                         }
                     }
                     showFeatureRequestDialog = false 
@@ -2326,16 +1149,16 @@ fun SettingsScreen(
                     onClick = {
                         coroutineScope.launch {
                             try {
-                                val message = "🌟 <b>New App Rating</b>\nStars: $selectedStars⭐\nReview: ${if (reviewText.isBlank()) "None" else reviewText}\nDevice: ${Build.MODEL}"
+                                val message = "<b>New App Rating</b>\nStars: $selectedStars\nReview: ${if (reviewText.isBlank()) "None" else reviewText}\nDevice: ${Build.MODEL}"
                                 com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker.sendBroadcastBotMessage(message)
                                 // Record rating stat
                                 viewModel.userStore.incrementAppOpens()
                             } catch (e: Exception) {
-                                e.printStackTrace()
+                                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
                             }
                         }
                         showRatingDialog = false
-                        android.widget.Toast.makeText(context, "Thank you for your rating! ⭐", android.widget.Toast.LENGTH_SHORT).show()
+                        android.widget.Toast.makeText(context, "Thank you for your rating", android.widget.Toast.LENGTH_SHORT).show()
                     },
                     enabled = selectedStars > 0
                 ) {
@@ -2375,7 +1198,7 @@ fun SettingsScreen(
                         Column(modifier = Modifier.padding(16.dp).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             Text("QuickDash", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onPrimaryContainer)
                             Text(
-                                "Version $vNameAbout (Build $vCodeAbout) 🚀",
+                                "Version $vNameAbout (Build $vCodeAbout)",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -2385,7 +1208,7 @@ fun SettingsScreen(
                                     try { com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(context, manual = true) } catch (e: Exception) { Log.e(TAG, "Failed to check for updates", e) }
                                 }
                             )
-                            Text("Made with ❤️ by BalajiTechLabs", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f))
+                            Text("Developed by balajitechlabs", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f))
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 "Fork of IIXII™ Product .",
@@ -2452,7 +1275,7 @@ fun SettingsScreen(
                                     Text("Checking for updates...", style = MaterialTheme.typography.bodySmall)
                                 }
                                 is com.balajitechlabs.quickdash.core.utils.UpdateState.Error -> {
-                                    Text("Error checking updates ❌", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
+                                    Text("Error checking updates", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
                                     Text(updateState.message, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
                                     Button(
                                         onClick = {
@@ -2464,14 +1287,14 @@ fun SettingsScreen(
                                     }
                                 }
                                 is com.balajitechlabs.quickdash.core.utils.UpdateState.UpdateAvailable -> {
-                                    Text("New Update Available! 🎉\nVersion v${updateState.versionName}", style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                                    Text("New Update Available\nVersion v${updateState.versionName.removePrefix("v")}", style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                                     Button(
                                         onClick = {
                                             try { com.balajitechlabs.quickdash.core.utils.UpdateManager.startDownload(context, updateState.apkUrl, updateState.versionName) } catch (e: Exception) { Log.e(TAG, "Failed to start update download", e) }
                                         },
                                         shape = RoundedCornerShape(8.dp)
                                     ) {
-                                        Text("Download v${updateState.versionName}")
+                                        Text("Download v${updateState.versionName.removePrefix("v")}")
                                     }
                                 }
                                 is com.balajitechlabs.quickdash.core.utils.UpdateState.Downloading -> {
@@ -2483,7 +1306,7 @@ fun SettingsScreen(
                                     )
                                 }
                                 is com.balajitechlabs.quickdash.core.utils.UpdateState.ReadyToInstall -> {
-                                    Text("Update ready to install! 📦", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = Color(0xFF4CAF50))
+                                    Text("Update ready to install", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = Color(0xFF4CAF50))
                                     Button(
                                         onClick = {
                                             try { com.balajitechlabs.quickdash.core.utils.UpdateManager.installApk(context, updateState.fileName) } catch (e: Exception) { Log.e(TAG, "Failed to install APK", e) }
@@ -2591,19 +1414,19 @@ fun SettingsScreen(
         )
     }
 
-    // ── Tips & Recommendations Dialog ────────────────────────────────────
+    // Tips & Recommendations Dialog
     if (showTipsDialog) {
         val tips = listOf(
-            "🔑 GitHub Rate Limit" to "Generate a Personal Access Token on GitHub (Settings → Developer Settings → Tokens) and paste it in Advanced & API Settings. Raises limit from 60 to 5,000 requests/hour.",
-            "📱 Social Link Routing" to "Social media profile links open natively in their apps when installed. On emulators, they fallback to your browser automatically.",
-            "🛡️ Play Protect" to "For sideloaded APKs, tap 'More details → Install anyway' on the Play Protect prompt. The Play Store version is auto-trusted.",
-            "📸 QR Scanner First Load" to "First QR scan may show a brief overlay — Google Play Services sets up the barcode engine once. Subsequent scans are instant.",
-            "💾 Backup Your Data" to "Use Data Management → Backup Data to export all settings, notes, and clipboard history as a JSON file before switching phones.",
-            "🌙 Save Battery" to "Switch to AMOLED theme in Launch & Windows for true-black backgrounds that save battery on OLED displays.",
-            "🔔 Manage Notifications" to "Swipe LEFT on any notification to dismiss it. Swipe RIGHT to pin it to the top of the feed for quick access.",
-            "⚡ Quick Collect" to "Set your Default Target Payment App in Advanced & API Settings to pre-select GPay, PhonePe, or Paytm for faster QR generation.",
-            "🎨 Custom Seed Color" to "Use the seed color picker in Appearance to create a unique color theme applied across the entire app.",
-            "⏱️ Timer Persistence" to "Countdown timers use AlarmManager exact alarms — they continue even in deep Doze mode when the phone is idle.",
+            "GitHub Rate Limit" to "Generate a Personal Access Token on GitHub (Settings → Developer Settings → Tokens) and paste it in Advanced & API Settings. Raises limit from 60 to 5,000 requests/hour.",
+            "Social Link Routing" to "Social media profile links open natively in their apps when installed. On emulators, they fallback to your browser automatically.",
+            "Play Protect" to "For sideloaded APKs, tap 'More details → Install anyway' on the Play Protect prompt. The Play Store version is auto-trusted.",
+            "QR Scanner First Load" to "First QR scan may show a brief overlay — Google Play Services sets up the barcode engine once. Subsequent scans are instant.",
+            "Backup Your Data" to "Use Data Management → Backup Data to export all settings, notes, and clipboard history as a JSON file before switching phones.",
+            "Save Battery" to "Switch to AMOLED theme in Launch & Windows for true-black backgrounds that save battery on OLED displays.",
+            "Manage Notifications" to "Swipe LEFT on any notification to dismiss it. Swipe RIGHT to pin it to the top of the feed for quick access.",
+            "Quick Collect" to "Set your Default Target Payment App in Advanced & API Settings to pre-select GPay, PhonePe, or Paytm for faster QR generation.",
+            "Custom Seed Color" to "Use the seed color picker in Appearance to create a unique color theme applied across the entire app.",
+            "Timer Persistence" to "Countdown timers use AlarmManager exact alarms — they continue even in deep Doze mode when the phone is idle."
         )
         AlertDialog(
             onDismissRequest = { showTipsDialog = false },
@@ -2642,7 +1465,6 @@ fun SettingsScreen(
             onDismissRequest = { showBackupOptionsDialog = false }
         )
     }
-}
 }
 
 
@@ -2689,7 +1511,7 @@ private fun captureScreenshot(activity: android.app.Activity, callback: (android
             callback(bitmap)
         }
     } catch (e: java.lang.Exception) {
-        e.printStackTrace()
+        android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
         callback(null)
     }
 }
@@ -2719,7 +1541,7 @@ private fun shareBackupFile(context: android.content.Context, jsonString: String
         chooserIntent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(chooserIntent)
     } catch (e: Exception) {
-        e.printStackTrace()
+        android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
         android.widget.Toast.makeText(context, "Could not open target app. Falling back to share chooser.", android.widget.Toast.LENGTH_SHORT).show()
         if (targetPackage != null) {
             shareBackupFile(context, jsonString, null)

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: app
+ * File: MainViewModel.kt
+ * Description: Central ViewModel orchestrating UI state, UserStore data collection, tool interactions, and update checks.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash
 
 import androidx.lifecycle.ViewModel

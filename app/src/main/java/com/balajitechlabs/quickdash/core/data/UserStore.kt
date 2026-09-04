@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/data
+ * File: UserStore.kt
+ * Description: Central Jetpack DataStore preferences repository managing user settings,
+ *              theme configuration, payment identifiers, tool states, and beta channel flags.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.data
 
 import android.content.Context
@@ -97,6 +107,8 @@ class UserStore(private val context: Context) {
         val NOTIFICATION_HISTORY_KEY = stringPreferencesKey("notification_history")
         val SHAKE_TO_OPEN_KEY = booleanPreferencesKey("shake_to_open")
         val SHAKE_TO_TRIGGER_KEY = booleanPreferencesKey("shake_to_trigger")
+        val SHAKE_MODE_KEY = stringPreferencesKey("shake_mode")
+        val SHAKE_SENSITIVITY_KEY = stringPreferencesKey("shake_sensitivity")
         val HAPTIC_DURATION_KEY = floatPreferencesKey("haptic_duration")
         val CUSTOM_BACKUP_PATH_KEY = stringPreferencesKey("custom_backup_path")
         
@@ -142,6 +154,7 @@ class UserStore(private val context: Context) {
         val FAVORITE_TOOLS_KEY = stringPreferencesKey("favorite_tools")
         val INCOGNITO_MODE_KEY = booleanPreferencesKey("incognito_mode")
         val VIBRATION_STRENGTH_KEY = intPreferencesKey("vibration_strength")
+        val INCLUDE_PRE_RELEASE_KEY = booleanPreferencesKey("include_pre_release")
     }
 
     // ── Incognito Mode (persisted, survives process death) ────────
@@ -377,7 +390,7 @@ class UserStore(private val context: Context) {
         context.dataStore.data.map { preferences -> preferences[SHOW_UPI_ID_KEY] ?: true }
 
     val themeMode: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[THEME_MODE_KEY] ?: "LIGHT"
+        preferences[THEME_MODE_KEY] ?: "AMOLED"
     }
 
     val dynamicColor: Flow<Boolean> = context.dataStore.data.map { preferences ->
@@ -444,6 +457,16 @@ class UserStore(private val context: Context) {
     suspend fun setBiometricGuardEnabled(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[BIOMETRIC_GUARD_ENABLED_KEY] = enabled
+        }
+    }
+
+    val includePreRelease: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[INCLUDE_PRE_RELEASE_KEY] ?: false
+    }
+
+    suspend fun saveIncludePreRelease(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[INCLUDE_PRE_RELEASE_KEY] = enabled
         }
     }
 
@@ -749,11 +772,11 @@ class UserStore(private val context: Context) {
 
     // Custom UI settings
     val launchStyle: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[LAUNCH_STYLE_KEY] ?: "FULL_SCREEN"
+        preferences[LAUNCH_STYLE_KEY] ?: "FLOATING_DIALOG"
     }
 
     val displayMode: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[DISPLAY_MODE_KEY] ?: "FULL_SCREEN"
+        preferences[DISPLAY_MODE_KEY] ?: "FLOATING_DIALOG"
     }
 
     suspend fun saveDisplayMode(mode: String) {
@@ -821,7 +844,7 @@ class UserStore(private val context: Context) {
     }
 
     val emojiHeader: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[EMOJI_HEADER_KEY] ?: "🚀"
+        preferences[EMOJI_HEADER_KEY] ?: ""
     }
 
 
@@ -840,6 +863,30 @@ class UserStore(private val context: Context) {
 
     val shakeToTrigger: Flow<Boolean> = context.dataStore.data.map { preferences ->
         preferences[SHAKE_TO_TRIGGER_KEY] ?: false
+    }
+
+    val shakeMode: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[SHAKE_MODE_KEY] ?: "DOUBLE"
+    }
+
+    val shakeSensitivity: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[SHAKE_SENSITIVITY_KEY] ?: "MEDIUM"
+    }
+
+    suspend fun saveShakeToOpen(enabled: Boolean) {
+        context.dataStore.edit { it[SHAKE_TO_OPEN_KEY] = enabled }
+    }
+
+    suspend fun saveShakeMode(mode: String) {
+        context.dataStore.edit { it[SHAKE_MODE_KEY] = mode }
+    }
+
+    suspend fun saveShakeSensitivity(sensitivity: String) {
+        context.dataStore.edit { it[SHAKE_SENSITIVITY_KEY] = sensitivity }
+    }
+
+    suspend fun saveHapticDuration(duration: Float) {
+        context.dataStore.edit { it[HAPTIC_DURATION_KEY] = duration }
     }
 
     val customSearchEngines: Flow<String> = context.dataStore.data.map { preferences ->
@@ -973,11 +1020,6 @@ class UserStore(private val context: Context) {
 
     suspend fun saveShakeToTrigger(enabled: Boolean) {
         context.dataStore.edit { preferences -> preferences[SHAKE_TO_TRIGGER_KEY] = enabled }
-    }
-    suspend fun saveHapticDuration(duration: Float) {
-        context.dataStore.edit { preferences ->
-            preferences[HAPTIC_DURATION_KEY] = duration
-        }
     }
 
     suspend fun saveVibrationStrength(strength: Int) {
@@ -1254,7 +1296,7 @@ class UserStore(private val context: Context) {
             }
             return true
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
             return false
         }
     }

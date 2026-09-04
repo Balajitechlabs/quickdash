@@ -9,15 +9,16 @@
 QuickDash is an **Android floating utility app** — it lives in a bubble on your screen and gives you 25+ tools (calculator, translator, QR codes, timer, notes, clipboard, AI actions, etc.) without leaving your current app.
 
 **Tech Stack:**
-- **Language**: Kotlin 2.1.x
-- **UI**: Jetpack Compose + Material Design 3
-- **Architecture**: MVVM (Model-View-ViewModel)
+- **Language**: Kotlin 2.4.10
+- **UI**: Jetpack Compose + Material Design 3 Expressive
+- **Architecture**: MVVM / UDF + Clean Architecture
 - **State**: DataStore (settings), Room (notes), Proto DataStore (history)
-- **DI**: Hilt + manual `AppContainer`
-- **Network**: OkHttp 4.12
-- **Build**: Gradle 8.x with Kotlin DSL + version catalog
-- **Min SDK**: Android 7.0 (API 24)
-- **Target SDK**: Android 16 (API 36)
+- **DI**: Dagger Hilt 2.59 (Pure KSP)
+- **Network**: OkHttp 5.5.0 + GitHub Releases API
+- **QR / Barcode**: ZXing Core 3.5.3 + ZXing Android Embedded 4.3.0
+- **Build**: Gradle 9.3 with Kotlin DSL + Version Catalog (`libs.versions.toml`)
+- **Min SDK**: Android 8.0 (API 26)
+- **Target SDK**: Android 16 / Vanilla Ice Cream Preview (API 37)
 
 ---
 

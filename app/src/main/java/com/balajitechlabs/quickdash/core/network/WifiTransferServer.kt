@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/network
+ * File: WifiTransferServer.kt
+ * Description: EssentialX-styled component for core/network supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.network
 
 import android.content.Context
@@ -26,7 +35,7 @@ class WifiTransferServer(private val port: Int = 8080) {
                     handleClient(client)
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
             }
         }
     }
@@ -39,10 +48,10 @@ class WifiTransferServer(private val port: Int = 8080) {
                 <html>
                 <head><title>QuickDash Wi-Fi Transfer</title></head>
                 <body style="font-family:sans-serif; text-align:center; padding:40px; background:#0f172a; color:#f8fafc;">
-                    <h1>⚡ QuickDash Wi-Fi Transfer</h1>
-                    <p>Send text & notes live to your Android device!</p>
+                    <h1>QuickDash Wi-Fi Transfer</h1>
+                    <p>Send text and notes directly to your device</p>
                     <textarea style="width:80%; height:150px; border-radius:12px; padding:12px; font-size:16px;"></textarea><br><br>
-                    <button style="padding:12px 24px; font-size:16px; border-radius:8px; background:#6366f1; color:white; border:none; cursor:pointer;">Send to Phone 🚀</button>
+                    <button style="padding:12px 24px; font-size:16px; border-radius:8px; background:#6366f1; color:white; border:none; cursor:pointer;">Send to Phone</button>
                 </body>
                 </html>
             """.trimIndent()
@@ -52,7 +61,7 @@ class WifiTransferServer(private val port: Int = 8080) {
             output.flush()
             socket.close()
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
         }
     }
 
@@ -61,7 +70,7 @@ class WifiTransferServer(private val port: Int = 8080) {
         try {
             serverSocket?.close()
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
         }
     }
 }

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/utils
+ * File: UpdateDownloadWorker.kt
+ * Description: EssentialX-styled component for core/utils supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.utils
 
 import android.content.Context
@@ -28,7 +37,7 @@ class UpdateDownloadWorker(
             if (!response.isSuccessful) return@withContext Result.retry()
 
             val file = File(applicationContext.cacheDir, "QuickDash-$versionName.apk")
-            response.body?.byteStream()?.use { input ->
+            response.body.byteStream().use { input ->
                 file.outputStream().use { output ->
                     input.copyTo(output)
                 }

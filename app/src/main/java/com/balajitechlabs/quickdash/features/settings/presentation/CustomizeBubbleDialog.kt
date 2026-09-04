@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/settings
+ * File: CustomizeBubbleDialog.kt
+ * Description: EssentialX-styled component for features/settings supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.settings.presentation
 
 import androidx.compose.foundation.background
@@ -59,7 +68,7 @@ fun CustomizeBubbleDialog(
 
     var activeSlotToChange by remember { mutableIntStateOf(-1) }
 
-    val slotLabels = listOf("⬆️ Top (North)", "➡️ Right (East)", "⬇️ Bottom (South)", "⬅️ Left (West)")
+    val slotLabels = listOf("Top (North)", "Right (East)", "Bottom (South)", "Left (West)")
 
     if (activeSlotToChange >= 0) {
         // Tool Picker Dialog
@@ -115,11 +124,6 @@ fun CustomizeBubbleDialog(
                                         fontWeight = FontWeight.SemiBold,
                                         fontSize = 14.sp,
                                         color = if (isCurrent) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Text(
-                                        text = tool.description,
-                                        fontSize = 11.sp,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }

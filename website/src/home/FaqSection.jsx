@@ -12,7 +12,7 @@ const faqs = [
   { q: 'Can I customize which tools appear?', a: 'Yes. Open the Tool Drawer, tap the edit icon, and toggle which tools you want visible in your floating dock.' },
   { q: 'How do I uninstall?', a: 'Long-press the app icon and drag to Uninstall, or go to Settings > Apps > QuickDash > Uninstall.' },
   { q: 'How do I enable overlay permission?', a: 'Go to Settings > Apps > QuickDash > Display over other apps and toggle it on. The app will guide you if needed.' },
-  { q: 'How do I report a bug?', a: 'Open a GitHub Issue at github.com/Balajitechlabs/quickdash/issues, message us on Telegram, or email quickdash@balajitechlab.com.' },
+  { q: 'How do I report a bug?', a: 'Open a GitHub Issue at github.com/balajitechlabs/quickdash/issues, message us on Telegram, or email quickdash@balajitechlab.com.' },
 ]
 
 export default function FaqSection() {

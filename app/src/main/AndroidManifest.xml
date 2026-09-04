@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
     <!-- Required on Android 13+ (API 33) to show push notifications -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -53,7 +54,17 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:usesCleartextTraffic="false"
         tools:targetApi="31">
-        
+
+
+        <!-- Shizuku ContentProvider: Enables privileged binder IPC from Shizuku service -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="false"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -130,20 +141,17 @@
             android:exported="false" />
 
         <service
-            android:name=".core.services.QuickDashFirebaseMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-
-        <service
             android:name=".core.services.SideBarDockService"
             android:exported="false" />
 
         <service
             android:name=".core.services.ShakeDetectorService"
-            android:exported="false" />
+            android:foregroundServiceType="specialUse"
+            android:exported="false">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Detect shake motion gesture to launch quick utility hub" />
+        </service>
 
         <service
             android:name=".core.services.QuickDashNotificationListenerService"
@@ -154,6 +162,11 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
+
+        <service
+            android:name=".features.voicememos.service.VoiceRecorderService"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -187,6 +200,20 @@
             </intent-filter>
         </receiver>
 
+        <!-- Universal ZXing Scanner Trampoline Activity -->
+        <activity
+            android:name=".features.qr.presentation.QrScanActivity"
+            android:exported="false"
+            android:theme="@style/Theme.QuickDash.Dialog" />
+
+        <!-- Custom EssentialX Styled QR/Barcode Camera Scanner Activity -->
+        <activity
+            android:name=".features.qr.presentation.CustomCaptureActivity"
+            android:screenOrientation="portrait"
+            android:stateNotNeeded="true"
+            android:theme="@style/Theme.QuickDash"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:exported="false" />
 
     </application>
 

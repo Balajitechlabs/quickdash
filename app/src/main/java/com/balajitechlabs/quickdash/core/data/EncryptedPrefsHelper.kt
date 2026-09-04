@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/data
+ * File: EncryptedPrefsHelper.kt
+ * Description: EssentialX-styled component for core/data supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 @file:Suppress("DEPRECATION")
 package com.balajitechlabs.quickdash.core.data
 
@@ -31,7 +40,7 @@ object EncryptedPrefsHelper {
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
             // Fallback to normal shared preferences if keystore is corrupted or unavailable
             prefs = context.getSharedPreferences("secure_prefs_fallback", Context.MODE_PRIVATE)
         }

@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Setup JDK 17
         uses: actions/setup-java@v6
@@ -35,16 +35,6 @@ jobs:
 
       - name: Setup Gradle cache
         uses: gradle/actions/setup-gradle@v6
-
-      - name: Decode google-services.json
-        run: |
-          if [ -n "$GOOGLE_SERVICES_JSON_BASE64" ]; then
-            echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 -d > app/google-services.json
-          else
-            echo '{"project_info":{"project_number":"0","project_id":"quickdash-mock","storage_bucket":"quickdash.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:0:android:0","android_client_info":{"package_name":"com.balajitechlabs.quickdash"}},"api_key":[{"current_key":"mock"}]}]}' > app/google-services.json
-          fi
-        env:
-          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
 
       - name: Create local.properties
         run: |

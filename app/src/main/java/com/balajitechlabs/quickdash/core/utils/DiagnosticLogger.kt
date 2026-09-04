@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/utils
+ * File: DiagnosticLogger.kt
+ * Description: EssentialX-styled component for core/utils supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.utils
 
 import android.content.Context
@@ -84,7 +93,7 @@ object DiagnosticLogger {
             cacheFile.writeText(jsonLog.toString(2))
             return cacheFile
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
         }
         return null
     }
@@ -97,7 +106,7 @@ object DiagnosticLogger {
                 file.copyTo(destFile, overwrite = true)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
         }
     }
 
@@ -112,7 +121,7 @@ object DiagnosticLogger {
                 file.delete()
                 return cacheFile
             } catch (e: Exception) {
-                e.printStackTrace()
+                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
             }
         }
         return null

@@ -1,24 +1,37 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/onboarding
+ * File: WelcomeOnboardingScreen.kt
+ * Description: Full-screen Arc/Raycast-style onboarding flow — logo-only splash,
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.onboarding.presentation
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,53 +40,45 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Fingerprint
-import androidx.compose.material.icons.filled.Layers
-import androidx.compose.material.icons.filled.LockOpen
-import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.TouchApp
-import androidx.compose.material.icons.filled.Wifi
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.CameraAlt
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Layers
+import androidx.compose.material.icons.rounded.Mic
+import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.Payment
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Slider
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -82,994 +87,658 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.balajitechlabs.quickdash.R
 import com.balajitechlabs.quickdash.core.data.UserStore
 import com.balajitechlabs.quickdash.core.ui.components.RoundedCardContainer
-import com.google.gson.Gson
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import nl.dionsegijn.konfetti.compose.KonfettiView
-import nl.dionsegijn.konfetti.core.Party
-import nl.dionsegijn.konfetti.core.Position
-import nl.dionsegijn.konfetti.core.emitter.Emitter
-import java.util.concurrent.TimeUnit
-import kotlin.math.roundToInt
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-/**
- * 👋 Non-Tech Interactive Onboarding & Master Setup Wizard (`WelcomeOnboardingScreen.kt`).
- * 7-Step guided setup with Unified Permission Hub & direct DataStore state persistence.
- */
+private enum class OnboardingStep {
+    SPLASH, WELCOME, PERMISSIONS, PREFERENCES, DONE
+}
+
 @Composable
-fun WelcomeOnboardingScreen(
-    onFinishOnboarding: () -> Unit
-) {
+fun WelcomeOnboardingScreen(onFinishOnboarding: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val userStore = remember { UserStore(context) }
-    val pagerState = rememberPagerState(pageCount = { 7 })
 
-    var hasOverlayPermission by remember {
+    var step by remember { mutableStateOf(OnboardingStep.SPLASH) }
+
+    // Permission state
+    var hasOverlay by remember {
         mutableStateOf(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Settings.canDrawOverlays(context)
-            } else true
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Settings.canDrawOverlays(context)
+            else true
         )
     }
-    var hasNotificationPermission by remember {
+    var hasNotifications by remember {
         mutableStateOf(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                 ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-            } else true
+            else true
         )
     }
-    var hasCameraPermission by remember {
-        mutableStateOf(
-            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-        )
+    var hasCamera by remember {
+        mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
     }
-    var hasAudioPermission by remember {
-        mutableStateOf(
-            ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-        )
+    var hasMic by remember {
+        mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)
     }
 
-    var showConfetti by remember { mutableStateOf(false) }
-
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                val updatedOverlay = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    Settings.canDrawOverlays(context)
-                } else true
-                val updatedNotif = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                hasOverlay = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Settings.canDrawOverlays(context) else true
+                hasNotifications = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                     ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-                } else true
-                val updatedCam = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-                val updatedAudio = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-
-                if (updatedOverlay && !hasOverlayPermission) {
-                    hasOverlayPermission = true
-                    showConfetti = true
-                }
-                hasNotificationPermission = updatedNotif
-                hasCameraPermission = updatedCam
-                hasAudioPermission = updatedAudio
+                else true
+                hasCamera = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+                hasMic = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    val notifPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        hasNotificationPermission = isGranted
-        if (isGranted) Toast.makeText(context, "Notification permission granted! 🔔", Toast.LENGTH_SHORT).show()
-    }
+    val notifLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { hasNotifications = it }
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { hasCamera = it }
+    val micLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { hasMic = it }
 
-    val cameraPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        hasCameraPermission = isGranted
-        if (isGranted) Toast.makeText(context, "Camera permission granted! 📸", Toast.LENGTH_SHORT).show()
-    }
+    // Preferences state
+    val themeMode by userStore.themeMode.collectAsStateWithLifecycle(initialValue = "SYSTEM")
+    var selectedTheme by remember(themeMode) { mutableStateOf(themeMode) }
 
-    val audioPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        hasAudioPermission = isGranted
-        if (isGranted) Toast.makeText(context, "Audio capture permission granted! 🎙️", Toast.LENGTH_SHORT).show()
-    }
+    // UPI state
+    var upiId by remember { mutableStateOf("") }
+    var payeeName by remember { mutableStateOf("") }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Header Title & Step Counter
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "QuickDash",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Black,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    )
-                    Text(
-                        text = "Step ${pagerState.currentPage + 1} of 7",
-                        style = MaterialTheme.typography.labelLarge.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    )
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        AnimatedContent(
+            targetState = step,
+            transitionSpec = {
+                if (targetState.ordinal > initialState.ordinal) {
+                    (slideInHorizontally { it } + fadeIn(tween(340))) togetherWith
+                            (slideOutHorizontally { -it } + fadeOut(tween(280)))
+                } else {
+                    (slideInHorizontally { -it } + fadeIn(tween(340))) togetherWith
+                            (slideOutHorizontally { it } + fadeOut(tween(280)))
                 }
-
-                // Pager Content — userScrollEnabled=false ensures users go through each step
-                // via the Next button and cannot swipe past mandatory permission steps
-                HorizontalPager(
-                    state = pagerState,
-                    userScrollEnabled = false,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp)
-                ) { page ->
-                    when (page) {
-                        0 -> OnboardingStep1Welcome()
-                        1 -> OnboardingStep2PermissionsHub(
-                            hasOverlay = hasOverlayPermission,
-                            hasNotification = hasNotificationPermission,
-                            hasCamera = hasCameraPermission,
-                            hasAudio = hasAudioPermission,
-                            onRequestOverlay = {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                    val intent = Intent(
-                                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                        Uri.parse("package:${context.packageName}")
-                                    )
-                                    context.startActivity(intent)
-                                }
-                            },
-                            onRequestNotification = {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                    notifPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                                } else {
-                                    Toast.makeText(context, "Notifications active!", Toast.LENGTH_SHORT).show()
-                                }
-                            },
-                            onRequestCamera = {
-                                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                            },
-                            onRequestAudio = {
-                                audioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            },
+            label = "onboarding_step"
+        ) { currentStep ->
+            when (currentStep) {
+                OnboardingStep.SPLASH -> SplashStep(onContinue = { step = OnboardingStep.WELCOME })
+                OnboardingStep.WELCOME -> WelcomeStep(
+                    onContinue = { step = OnboardingStep.PERMISSIONS }
+                )
+                OnboardingStep.PERMISSIONS -> PermissionsStep(
+                    hasOverlay = hasOverlay,
+                    hasNotifications = hasNotifications,
+                    hasCamera = hasCamera,
+                    hasMic = hasMic,
+                    onGrantOverlay = {
+                        context.startActivity(
+                            Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
+                        )
+                    },
+                    onGrantNotifications = {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                            notifLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    },
+                    onGrantCamera = { cameraLauncher.launch(Manifest.permission.CAMERA) },
+                    onGrantMic = { micLauncher.launch(Manifest.permission.RECORD_AUDIO) },
+                    onBack = { step = OnboardingStep.WELCOME },
+                    onContinue = { step = OnboardingStep.PREFERENCES }
+                )
+                OnboardingStep.PREFERENCES -> PreferencesStep(
+                    selectedTheme = selectedTheme,
+                    onThemeChange = {
+                        selectedTheme = it
+                        scope.launch { userStore.saveThemeMode(it) }
+                    },
+                    upiId = upiId,
+                    onUpiIdChange = { upiId = it },
+                    payeeName = payeeName,
+                    onPayeeNameChange = { payeeName = it },
+                    onBack = { step = OnboardingStep.PERMISSIONS },
+                    onContinue = {
+                        scope.launch {
+                            if (upiId.isNotBlank()) {
+                                userStore.saveUpiIds(listOf(upiId))
+                                userStore.saveDefaultUpiId(upiId)
+                                if (payeeName.isNotBlank()) userStore.savePayeeName(payeeName)
                             }
-                        )
-                        2 -> OnboardingStep3PaymentSetup(userStore = userStore)
-                        3 -> OnboardingStep4PinTools(userStore = userStore)
-                        4 -> OnboardingStep5ThemePicker(userStore = userStore)
-                        5 -> OnboardingStep6GestureSandbox()
-                        6 -> OnboardingStep7GetStarted(onFinish = onFinishOnboarding)
-                    }
-                }
-
-                // Bottom Navigation & Pager Indicator Dots
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        repeat(7) { index ->
-                            val isSelected = pagerState.currentPage == index
-                            val width by animateFloatAsState(
-                                targetValue = if (isSelected) 24f else 8f,
-                                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-                                label = "dotWidth"
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .height(8.dp)
-                                    .width(width.dp)
-                                    .clip(CircleShape)
-                                    .background(
-                                        if (isSelected) MaterialTheme.colorScheme.primary
-                                        else MaterialTheme.colorScheme.surfaceVariant
-                                    )
-                            )
+                            step = OnboardingStep.DONE
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    if (pagerState.currentPage < 6) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            OutlinedButton(
-                                onClick = { onFinishOnboarding() },
-                                shape = RoundedCornerShape(18.dp)
-                            ) {
-                                Text("Skip")
-                            }
-
-                            Button(
-                                onClick = {
-                                    scope.launch {
-                                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                                    }
-                                },
-                                shape = RoundedCornerShape(18.dp)
-                            ) {
-                                Text("Next")
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Icon(imageVector = Icons.Filled.ChevronRight, contentDescription = null)
-                            }
-                        }
-                    } else {
-                        Button(
-                            onClick = onFinishOnboarding,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp),
-                            shape = RoundedCornerShape(28.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                        ) {
-                            Text(
-                                text = "LAUNCH QUICKDASH 🚀",
-                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold)
-                            )
+                )
+                OnboardingStep.DONE -> DoneStep(
+                    onFinish = {
+                        scope.launch {
+                            userStore.setOnboardingComplete()
+                            onFinishOnboarding()
                         }
                     }
-                }
+                )
             }
         }
+    }
+}
 
-        // Confetti Burst Overlay
-        if (showConfetti) {
-            KonfettiView(
-                modifier = Modifier.fillMaxSize(),
-                parties = listOf(
-                    Party(
-                        speed = 0f,
-                        maxSpeed = 30f,
-                        damping = 0.9f,
-                        spread = 360,
-                        colors = listOf(0xf1c40f, 0xe74c3c, 0x3498db, 0x2ecc71),
-                        position = Position.Relative(0.5, 0.3),
-                        emitter = Emitter(duration = 2, TimeUnit.SECONDS).perSecond(80)
-                    )
+// ─── Splash — Arc-style logo-only entrance ───────────────────────────────────
+
+@Composable
+private fun SplashStep(onContinue: () -> Unit) {
+    val scale = remember { Animatable(0.25f) }
+    val alpha = remember { Animatable(0f) }
+    val taglineAlpha = remember { Animatable(0f) }
+
+    LaunchedEffect(Unit) {
+        launch { scale.animateTo(1f, spring(dampingRatio = 0.55f, stiffness = Spring.StiffnessLow)) }
+        launch { alpha.animateTo(1f, tween(500)) }
+        delay(1000)
+        taglineAlpha.animateTo(1f, tween(500))
+        delay(600)
+        onContinue()
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(120.dp)
+                    .graphicsLayer {
+                        scaleX = scale.value
+                        scaleY = scale.value
+                        this.alpha = alpha.value
+                    }
+                    .clip(RoundedCornerShape(28.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                androidx.compose.foundation.Image(
+                    painter = painterResource(R.drawable.app_logo),
+                    contentDescription = "QuickDash",
+                    modifier = Modifier.size(80.dp)
                 )
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            Text(
+                text = "QuickDash",
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.graphicsLayer { this.alpha = alpha.value }
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            Text(
+                text = "Your floating toolkit",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.graphicsLayer { this.alpha = taglineAlpha.value }
             )
         }
     }
 }
 
+// ─── Step 1 — Welcome ────────────────────────────────────────────────────────
+
 @Composable
-private fun OnboardingStep1Welcome() {
+private fun WelcomeStep(onContinue: () -> Unit) {
+    val features = listOf(
+        Triple(Icons.Rounded.Layers, "Works everywhere", "Floating overlay on any app — no switching required"),
+        Triple(Icons.Rounded.Payment, "22+ productivity tools", "Calculator, UPI QR, translator, clipboard and more"),
+        Triple(Icons.Rounded.Palette, "Adapts to your style", "Wallpaper-aware M3 theming with AMOLED mode"),
+    )
+
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
+            .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column {
+            Spacer(Modifier.height(48.dp))
+            Text(
+                text = "Welcome to\nQuickDash",
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                lineHeight = 44.sp
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "Set up in under a minute.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(32.dp))
+
+            RoundedCardContainer {
+                features.forEach { (icon, title, subtitle) ->
+                    ListItem(
+                        leadingContent = {
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
+                            }
+                        },
+                        headlineContent = {
+                            Text(title, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyLarge)
+                        },
+                        supportingContent = {
+                            Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    )
+                }
+            }
+        }
+
+        Column(modifier = Modifier.padding(bottom = 32.dp)) {
+            StepDots(current = 0, total = 4)
+            Spacer(Modifier.height(16.dp))
+            Button(
+                onClick = onContinue,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp)
+            ) {
+                Text("Get Started", modifier = Modifier.padding(vertical = 4.dp))
+            }
+        }
+    }
+}
+
+// ─── Step 2 — Permissions ────────────────────────────────────────────────────
+
+@Composable
+private fun PermissionsStep(
+    hasOverlay: Boolean,
+    hasNotifications: Boolean,
+    hasCamera: Boolean,
+    hasMic: Boolean,
+    onGrantOverlay: () -> Unit,
+    onGrantNotifications: () -> Unit,
+    onGrantCamera: () -> Unit,
+    onGrantMic: () -> Unit,
+    onBack: () -> Unit,
+    onContinue: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            Spacer(Modifier.height(48.dp))
+            Text(
+                text = "Permissions",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "Grant access for the full QuickDash experience.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(24.dp))
+
+            RoundedCardContainer {
+                PermissionRow(
+                    icon = Icons.Rounded.Layers,
+                    title = "Display over other apps",
+                    subtitle = "Required — enables the floating overlay",
+                    isGranted = hasOverlay,
+                    isRequired = true,
+                    onGrant = onGrantOverlay
+                )
+                PermissionRow(
+                    icon = Icons.Rounded.Notifications,
+                    title = "Notifications",
+                    subtitle = "For reminders and alerts",
+                    isGranted = hasNotifications,
+                    onGrant = onGrantNotifications
+                )
+                PermissionRow(
+                    icon = Icons.Rounded.CameraAlt,
+                    title = "Camera",
+                    subtitle = "For QR scanning and capture",
+                    isGranted = hasCamera,
+                    onGrant = onGrantCamera
+                )
+                PermissionRow(
+                    icon = Icons.Rounded.Mic,
+                    title = "Microphone",
+                    subtitle = "For voice memos recording",
+                    isGranted = hasMic,
+                    isLast = true,
+                    onGrant = onGrantMic
+                )
+            }
+        }
+
+        Column(modifier = Modifier.padding(bottom = 32.dp)) {
+            StepDots(current = 1, total = 4)
+            Spacer(Modifier.height(16.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                @Suppress("DEPRECATION")
+                OutlinedButton(onClick = onBack, modifier = Modifier.weight(1f), shape = RoundedCornerShape(14.dp)) {
+                    Icon(Icons.Rounded.ArrowBack, null, modifier = Modifier.size(18.dp))
+                }
+                Button(
+                    onClick = onContinue,
+                    modifier = Modifier.weight(3f),
+                    shape = RoundedCornerShape(14.dp),
+                    enabled = hasOverlay
+                ) {
+                    Text(if (hasOverlay) "Continue" else "Grant Overlay First")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PermissionRow(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    title: String,
+    subtitle: String,
+    isGranted: Boolean,
+    isRequired: Boolean = false,
+    isLast: Boolean = false,
+    onGrant: () -> Unit
+) {
+    ListItem(
+        leadingContent = {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        if (isGranted) MaterialTheme.colorScheme.primaryContainer
+                        else MaterialTheme.colorScheme.surfaceVariant,
+                        CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    icon, null,
+                    tint = if (isGranted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+        },
+        headlineContent = {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text(title, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyLarge)
+                if (isRequired) {
+                    Surface(
+                        shape = RoundedCornerShape(4.dp),
+                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
+                    ) {
+                        Text(
+                            "Required",
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            }
+        },
+        supportingContent = { Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) },
+        trailingContent = {
+            if (isGranted) {
+                Icon(Icons.Rounded.CheckCircle, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
+            } else {
+                OutlinedButton(onClick = onGrant, shape = RoundedCornerShape(10.dp)) {
+                    Text("Grant", style = MaterialTheme.typography.labelMedium)
+                }
+            }
+        },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+    )
+}
+
+// ─── Step 3 — Preferences ────────────────────────────────────────────────────
+
+@Composable
+private fun PreferencesStep(
+    selectedTheme: String,
+    onThemeChange: (String) -> Unit,
+    upiId: String,
+    onUpiIdChange: (String) -> Unit,
+    payeeName: String,
+    onPayeeNameChange: (String) -> Unit,
+    onBack: () -> Unit,
+    onContinue: () -> Unit
+) {
+    val themes = listOf("SYSTEM" to "Auto", "LIGHT" to "Light", "DARK" to "Dark", "AMOLED" to "AMOLED")
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            Spacer(Modifier.height(48.dp))
+            Text(
+                text = "Preferences",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "Customize how QuickDash looks and works.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(24.dp))
+
+            Text(
+                text = "Theme",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                themes.forEachIndexed { index, (key, label) ->
+                    SegmentedButton(
+                        selected = selectedTheme == key,
+                        onClick = { onThemeChange(key) },
+                        shape = SegmentedButtonDefaults.itemShape(index, themes.size),
+                        label = { Text(label, style = MaterialTheme.typography.labelMedium) }
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
+            Text(
+                text = "Quick Collect (optional)",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            RoundedCardContainer {
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    TextField(
+                        value = upiId,
+                        onValueChange = onUpiIdChange,
+                        placeholder = { Text("UPI ID — name@bank") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        )
+                    )
+                    TextField(
+                        value = payeeName,
+                        onValueChange = onPayeeNameChange,
+                        placeholder = { Text("Your name (shown on QR)") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        )
+                    )
+                }
+            }
+        }
+
+        Column(modifier = Modifier.padding(bottom = 32.dp)) {
+            StepDots(current = 2, total = 4)
+            Spacer(Modifier.height(16.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                @Suppress("DEPRECATION")
+                OutlinedButton(onClick = onBack, modifier = Modifier.weight(1f), shape = RoundedCornerShape(14.dp)) {
+                    Icon(Icons.Rounded.ArrowBack, null, modifier = Modifier.size(18.dp))
+                }
+                Button(onClick = onContinue, modifier = Modifier.weight(3f), shape = RoundedCornerShape(14.dp)) {
+                    Text(if (upiId.isBlank()) "Skip & Continue" else "Save & Continue")
+                }
+            }
+        }
+    }
+}
+
+// ─── Step 4 — Done ───────────────────────────────────────────────────────────
+
+@Composable
+private fun DoneStep(onFinish: () -> Unit) {
+    val scale = remember { Animatable(0.4f) }
+    val alpha = remember { Animatable(0f) }
+
+    LaunchedEffect(Unit) {
+        launch { scale.animateTo(1f, spring(dampingRatio = 0.5f, stiffness = Spring.StiffnessMediumLow)) }
+        launch { alpha.animateTo(1f, tween(500)) }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Box(
             modifier = Modifier
                 .size(100.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primaryContainer),
+                .graphicsLayer { scaleX = scale.value; scaleY = scale.value; this.alpha = alpha.value }
+                .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(28.dp)),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Filled.Layers,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.size(52.dp)
-            )
+            Icon(Icons.Rounded.CheckCircle, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(52.dp))
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(Modifier.height(28.dp))
 
         Text(
-            text = "Welcome to QuickDash!",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            textAlign = TextAlign.Center
+            text = "You're all set!",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.graphicsLayer { this.alpha = alpha.value }
         )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
+        Spacer(Modifier.height(8.dp))
         Text(
-            text = "Your 15 floating micro-tools available anywhere, over any application, with a single tap.",
+            text = "QuickDash is ready to float over any app.\nTap the bubble or Quick Settings tile anytime.",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.graphicsLayer { this.alpha = alpha.value }
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(Modifier.height(40.dp))
 
-        RoundedCardContainer {
-            Column(modifier = Modifier.padding(16.dp)) {
-                FeatureHighlightItem(
-                    icon = Icons.Filled.TouchApp,
-                    title = "Customizable Radial Bubble Wheel",
-                    desc = "Long-press the bubble (350ms) to launch your favorite 4 shortcuts. Choose your favorite tools in Settings."
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                FeatureHighlightItem(
-                    icon = Icons.Filled.Layers,
-                    title = "1-Tap Quick Tile & Glance Widgets",
-                    desc = "Turn the floating bubble on or off in 1 tap from Control Center or your Material You home screen widget."
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                FeatureHighlightItem(
-                    icon = Icons.Filled.Palette,
-                    title = "12 On-Demand Micro-Tools",
-                    desc = "UPI QR, Translator, Quick Notes, Calculator, Timer, Wi-Fi Share & AES-256 Encrypted Backups."
-                )
-            }
-        }
-    }
-}
-
-/**
- * 🛡️ Step 2: Unified Permission Hub ("All Permissions in One Place")
- */
-@Composable
-private fun OnboardingStep2PermissionsHub(
-    hasOverlay: Boolean,
-    hasNotification: Boolean,
-    hasCamera: Boolean,
-    hasAudio: Boolean,
-    onRequestOverlay: () -> Unit,
-    onRequestNotification: () -> Unit,
-    onRequestCamera: () -> Unit,
-    onRequestAudio: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            imageVector = Icons.Filled.LockOpen,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(48.dp)
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = "Unified Permissions Hub",
-            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-            textAlign = TextAlign.Center
-        )
-
-        Text(
-            text = "All required & optional permissions in one place. Manage them effortlessly below.",
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        RoundedCardContainer {
-            Column(modifier = Modifier.padding(12.dp)) {
-                // 1. Overlay Permission [Required]
-                PermissionRowItem(
-                    title = "Draw Over Other Apps",
-                    subtitle = "Required to render the floating bubble overlay",
-                    icon = Icons.Filled.Layers,
-                    isGranted = hasOverlay,
-                    isMandatory = true,
-                    onGrantClick = onRequestOverlay
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // 2. Notification Permission [Recommended]
-                PermissionRowItem(
-                    title = "Push Notifications",
-                    subtitle = "For Quick Settings tile & instant update alerts",
-                    icon = Icons.Filled.Notifications,
-                    isGranted = hasNotification,
-                    isMandatory = false,
-                    onGrantClick = onRequestNotification
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // 3. Camera Scanner [Optional]
-                PermissionRowItem(
-                    title = "Camera Access",
-                    subtitle = "Required for QR code & Barcode scanner tool",
-                    icon = Icons.Filled.CameraAlt,
-                    isGranted = hasCamera,
-                    isMandatory = false,
-                    onGrantClick = onRequestCamera
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // 4. Audio & Screen Capture [Optional]
-                PermissionRowItem(
-                    title = "Audio & Screen Capture",
-                    subtitle = "For Quick Capture screen recorder & doodle tool",
-                    icon = Icons.Filled.Mic,
-                    isGranted = hasAudio,
-                    isMandatory = false,
-                    onGrantClick = onRequestAudio
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun PermissionRowItem(
-    title: String,
-    subtitle: String,
-    icon: ImageVector,
-    isGranted: Boolean,
-    isMandatory: Boolean,
-    onGrantClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isGranted) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-            else MaterialTheme.colorScheme.surfaceVariant
-        )
-    ) {
-        Row(
+        Button(
+            onClick = onFinish,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .graphicsLayer { this.alpha = alpha.value },
+            shape = RoundedCornerShape(14.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.weight(1f)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(
-                            if (isGranted) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = if (isGranted) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Column {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
-                        )
-                        if (isMandatory) {
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "*Required",
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    color = MaterialTheme.colorScheme.error,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            )
-                        }
-                    }
-                    Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            if (isGranted) {
-                Icon(
-                    imageVector = Icons.Filled.CheckCircle,
-                    contentDescription = "Granted",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp)
-                )
-            } else {
-                Button(
-                    onClick = onGrantClick,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) {
-                    Text(
-                        text = "Grant",
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
-                    )
-                }
-            }
+            Text("Open QuickDash", modifier = Modifier.padding(vertical = 4.dp))
         }
+
+        Spacer(Modifier.height(16.dp))
+
+        StepDots(current = 3, total = 4)
     }
 }
 
-/**
- * 💳 Step 3: Quick Collect Setup (UPI / PayPal ID)
- */
+// ─── Progress dots ────────────────────────────────────────────────────────────
+
 @Composable
-private fun OnboardingStep3PaymentSetup(userStore: com.balajitechlabs.quickdash.core.data.UserStore) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    var upiInput by remember { mutableStateOf("") }
-    var payeeInput by remember { mutableStateOf("") }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "💳 Quick Collect Setup",
-            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-            textAlign = TextAlign.Center
-        )
-
-        Text(
-            text = "Enter your primary UPI ID or PayPal username to generate instant payment QR codes.",
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        RoundedCardContainer {
-            Column(modifier = Modifier.padding(16.dp)) {
-                OutlinedTextField(
-                    value = payeeInput,
-                    onValueChange = {
-                        payeeInput = it
-                        scope.launch { userStore.savePayeeName(it) }
-                    },
-                    label = { Text("Your Name / Business Name") },
-                    placeholder = { Text("e.g. Balaji Tech Labs") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                OutlinedTextField(
-                    value = upiInput,
-                    onValueChange = {
-                        upiInput = it
-                        if (it.isNotBlank()) {
-                            scope.launch { userStore.saveUpiIds(listOf(it)) }
-                        }
-                    },
-                    label = { Text("UPI ID or PayPal Handle") },
-                    placeholder = { Text("e.g. name@upi or paypal.me/handle") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(
-                    onClick = {
-                        scope.launch {
-                            if (payeeInput.isNotBlank()) userStore.savePayeeName(payeeInput)
-                            if (upiInput.isNotBlank()) userStore.saveUpiIds(listOf(upiInput))
-                            Toast.makeText(context, "Payment details saved! 💳", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp)
-                ) {
-                    Text("Save Payment Details")
-                }
-            }
-        }
-    }
-}
-
-/**
- * ⭐ Step 4: Favorite Tools Pinning
- */
-@Composable
-private fun OnboardingStep4PinTools(userStore: com.balajitechlabs.quickdash.core.data.UserStore) {
-    val scope = rememberCoroutineScope()
-    val launchStyle by userStore.launchStyle.collectAsState(initial = "FULL_SCREEN")
-    val initialPinnedJson by userStore.pinnedToolsJson.collectAsState(initial = "[]")
-
-    val allTools = remember {
-        listOf(
-            "Quick Collect", "Quick Chat", "Smart Clipboard", "Quick Notes",
-            "Quick Eyedropper", "Quick Pomodoro", "Quick Password", "Quick Translate",
-            "Quick Calculator", "Quick Wi-Fi", "Quick Converter", "Quick Capture"
-        )
-    }
-    val selectedTools = remember { mutableStateListOf<String>() }
-
-    LaunchedEffect(initialPinnedJson) {
-        val gson = Gson()
-        val type = object : com.google.gson.reflect.TypeToken<List<String>>() {}.type
-        val list: List<String> = try {
-            gson.fromJson(initialPinnedJson, type) ?: listOf("Quick Collect", "Smart Clipboard", "Quick Notes")
-        } catch (_: Exception) {
-            listOf("Quick Collect", "Smart Clipboard", "Quick Notes")
-        }
-        selectedTools.clear()
-        selectedTools.addAll(list.ifEmpty { listOf("Quick Collect", "Smart Clipboard", "Quick Notes") })
-    }
-
-    fun syncPinnedTools() {
-        scope.launch {
-            val gson = Gson()
-            userStore.savePinnedToolsJson(gson.toJson(selectedTools.toList()))
-        }
-    }
-
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "⭐ Pin Favorites & Display Format",
-            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-            textAlign = TextAlign.Center
-        )
-
-        Text(
-            text = "Choose your preferred layout mode and pin your top tools for priority access.",
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        // 📱 Launch Display Format Selector Card
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(18.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f))
-        ) {
-            Column(modifier = Modifier.padding(14.dp)) {
-                Text(
-                    text = "Launch Display Mode",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    OutlinedButton(
-                        onClick = { scope.launch { userStore.saveLaunchStyle("FULL_SCREEN") } },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = if (launchStyle == "FULL_SCREEN") ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = Color.White)
-                        else ButtonDefaults.outlinedButtonColors()
-                    ) {
-                        Text("📱 Full App", fontWeight = FontWeight.Bold)
-                    }
-
-                    OutlinedButton(
-                        onClick = { scope.launch { userStore.saveLaunchStyle("FLOATING_DIALOG") } },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = if (launchStyle == "FLOATING_DIALOG") ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = Color.White)
-                        else ButtonDefaults.outlinedButtonColors()
-                    ) {
-                        Text("🪟 Floating Card", fontWeight = FontWeight.Bold)
-                    }
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp)
-        ) {
-            items(allTools) { tool ->
-                val isSelected = selectedTools.contains(tool)
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            if (isSelected) {
-                                selectedTools.remove(tool)
-                            } else if (selectedTools.size < 6) {
-                                selectedTools.add(tool)
-                            }
-                            syncPinnedTools()
-                        },
-                    shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer
-                        else MaterialTheme.colorScheme.surfaceVariant
-                    ),
-                    border = if (isSelected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null
-                ) {
-                    Row(
-                        modifier = Modifier.padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = tool,
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                            ),
-                            modifier = Modifier.weight(1f)
-                        )
-                        if (isSelected) {
-                            Icon(
-                                imageVector = Icons.Filled.Star,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-/**
- * 🎛️ Step 5: Bubble Theme & Size Quick-Pick
- */
-@Composable
-private fun OnboardingStep5ThemePicker(userStore: com.balajitechlabs.quickdash.core.data.UserStore) {
-    val scope = rememberCoroutineScope()
-    var bubbleSize by remember { mutableFloatStateOf(64f) }
-    var opacity by remember { mutableFloatStateOf(0.9f) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "🎛️ Customize Floating Bubble",
-            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-            textAlign = TextAlign.Center
-        )
-
-        Text(
-            text = "Set your preferred bubble size & transparency.",
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Live Preview Bubble
-        Box(
-            modifier = Modifier
-                .size(bubbleSize.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = opacity)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Layers,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size((bubbleSize * 0.45f).dp)
+private fun StepDots(current: Int, total: Int) {
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        repeat(total) { i ->
+            val width by animateFloatAsState(
+                targetValue = if (i == current) 20f else 6f,
+                animationSpec = spring(stiffness = Spring.StiffnessMedium),
+                label = "dot_$i"
             )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        RoundedCardContainer {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = "Bubble Size: ${bubbleSize.toInt()} dp",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
-                )
-                Slider(
-                    value = bubbleSize,
-                    onValueChange = {
-                        bubbleSize = it
-                        scope.launch { userStore.saveBubbleSizeDp(it) }
-                    },
-                    valueRange = 48f..84f,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = "Glass Opacity: ${(opacity * 100).toInt()}%",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
-                )
-                Slider(
-                    value = opacity,
-                    onValueChange = {
-                        opacity = it
-                        scope.launch { userStore.saveBubbleOpacityAlpha(it) }
-                    },
-                    valueRange = 0.3f..1.0f,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-    }
-}
-
-/**
- * 🖐️ Step 6: Interactive Gesture Practice Sandbox
- */
-@Composable
-private fun OnboardingStep6GestureSandbox() {
-    var offsetX by remember { mutableFloatStateOf(0f) }
-    var offsetY by remember { mutableFloatStateOf(0f) }
-
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Gesture Practice Sandbox 🖐️",
-            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-            textAlign = TextAlign.Center
-        )
-
-        Text(
-            text = "Try dragging the bubble below! In actual use, it snaps to screen edges automatically.",
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .clip(RoundedCornerShape(24.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)),
-            contentAlignment = Alignment.Center
-        ) {
             Box(
                 modifier = Modifier
-                    .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
-                    .size(64.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary)
-                    .pointerInput(Unit) {
-                        detectDragGestures { change, dragAmount ->
-                            change.consume()
-                            offsetX += dragAmount.x
-                            offsetY += dragAmount.y
-                        }
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.TouchApp,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(32.dp)
-                )
-            }
-        }
-    }
-}
-
-/**
- * 🎉 Step 7: Launch & Finish
- */
-@Composable
-private fun OnboardingStep7GetStarted(onFinish: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "🎉 You're All Set!",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            textAlign = TextAlign.Center
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = "QuickDash is fully configured and ready. Tap below to launch your floating productivity dashboard!",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
-
-@Composable
-private fun FeatureHighlightItem(
-    icon: ImageVector,
-    title: String,
-    desc: String
-) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.secondaryContainer),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.size(24.dp)
-            )
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-        Column {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-            )
-            Text(
-                text = desc,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                    .width(width.dp)
+                    .height(6.dp)
+                    .background(
+                        if (i == current) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.outlineVariant,
+                        RoundedCornerShape(3.dp)
+                    )
             )
         }
     }

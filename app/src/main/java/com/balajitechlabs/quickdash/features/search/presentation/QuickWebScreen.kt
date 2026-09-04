@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/search
+ * File: QuickWebScreen.kt
+ * Description: EssentialX-styled component for features/search supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.search.presentation
 
 import android.annotation.SuppressLint

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/settings
+ * File: BackupRestoreDialog.kt
+ * Description: EssentialX-styled component for features/settings supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.settings.presentation
 
 import android.content.Context
@@ -43,6 +52,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -300,7 +310,15 @@ fun BackupRestoreDialog(
                                 }
                                 Switch(
                                     checked = usePasswordProtection,
-                                    onCheckedChange = { usePasswordProtection = it }
+                                    onCheckedChange = { usePasswordProtection = it },
+                                    colors = SwitchDefaults.colors(
+                                        checkedThumbColor = Color.White,
+                                        checkedTrackColor = MaterialTheme.colorScheme.primary,
+                                        checkedBorderColor = Color.Transparent,
+                                        uncheckedThumbColor = Color.White,
+                                        uncheckedTrackColor = Color(0xFF2A2B30),
+                                        uncheckedBorderColor = Color(0xFF44474F)
+                                    )
                                 )
                             }
 

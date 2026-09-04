@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/onboarding
+ * File: WelcomeStep.kt
+ * Description: EssentialX-styled component for features/onboarding supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.onboarding.presentation.steps
 
 import androidx.compose.foundation.layout.*
@@ -26,7 +35,7 @@ fun WelcomeStep(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Welcome to QuickDash ⚡",
+            text = "Welcome to QuickDash",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,

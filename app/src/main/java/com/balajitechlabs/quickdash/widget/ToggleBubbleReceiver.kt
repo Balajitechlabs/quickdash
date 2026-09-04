@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: app
+ * File: ToggleBubbleReceiver.kt
+ * Description: EssentialX-styled component for app supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.widget
 
 import android.content.BroadcastReceiver
@@ -14,7 +23,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
- * ⚡ BroadcastReceiver (`ToggleBubbleReceiver.kt`)
+ * BroadcastReceiver (`ToggleBubbleReceiver.kt`)
  * Enables instant 1-tap toggling of the QuickDash Floating Bubble directly
  * from Home Screen Glance Widgets and Quick Actions.
  */
@@ -44,13 +53,13 @@ class ToggleBubbleReceiver : BroadcastReceiver() {
                     } else {
                         context.startService(serviceIntent)
                     }
-                    Toast.makeText(context, "Quick Bubble: Enabled ⚡", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Quick Bubble enabled", Toast.LENGTH_SHORT).show()
                 } else {
                     context.stopService(serviceIntent)
                     Toast.makeText(context, "Quick Bubble: Disabled", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
             } finally {
                 pendingResult.finish()
             }

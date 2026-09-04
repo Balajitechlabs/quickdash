@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/services
+ * File: QuickTileService.kt
+ * Description: EssentialX-styled component for core/services supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.services
 
 import android.content.Intent
@@ -17,7 +26,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * ⚡ Android Quick Settings Tile ("QuickDash Bubble").
+ * Android Quick Settings Tile ("QuickDash Bubble").
  * Enables instant 1-tap toggling of the floating overlay bubble directly
  * from the notification / Control Center swipe-down shade.
  */
@@ -76,7 +85,7 @@ class QuickTileService : TileService() {
                     } else {
                         context.startService(serviceIntent)
                     }
-                    Toast.makeText(context, "Quick Bubble: Enabled ⚡", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Quick Bubble enabled", Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
                     android.util.Log.w("QuickTileService", "Fallback startService", e)
                     try {

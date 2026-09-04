@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/quicktile
+ * File: QrScannerTileService.kt
+ * Description: Android System Quick Settings Tile for instant QR and Barcode scanner invocation.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.quicktile
 
 import android.annotation.SuppressLint

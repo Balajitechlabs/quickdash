@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: app
+ * File: QuickDashApplication.kt
+ * Description: Application class initializing Hilt dependency injection, notification channels, and global crash reporting.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash
 
 import android.app.Application
@@ -16,7 +25,6 @@ import android.content.Intent
 import com.balajitechlabs.quickdash.core.utils.LogManager
 import com.balajitechlabs.quickdash.core.utils.ShakeDetector
 import com.balajitechlabs.quickdash.core.data.EncryptedPrefsHelper
-import com.balajitechlabs.quickdash.core.data.RemoteConfigManager
 import com.balajitechlabs.quickdash.core.data.UserStore
 import com.balajitechlabs.quickdash.features.broadcast.data.TelegramPollerWorker
 import com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker
@@ -60,32 +68,13 @@ class QuickDashApplication : Application() {
         try { EncryptedPrefsHelper.init(this) } catch (e: Exception) {
             Log.e("QuickDashApp", "EncryptedPrefsHelper init failed", e)
         }
-        try {
-            val fbClass = Class.forName("com.google.firebase.FirebaseApp")
-            val initMethod = fbClass.getMethod("initializeApp", Context::class.java)
-            initMethod.invoke(null, this)
-        } catch (_: Throwable) {
-            // FirebaseApp not present in FOSS build
-        }
-        try { RemoteConfigManager.fetchAndActivate() } catch (e: Exception) {
-            Log.e("QuickDashApp", "RemoteConfig fetch failed", e)
-        }
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val analyticsEnabled = userStore.isAnalyticsEnabled()
+                val store = try { userStore } catch (_: Throwable) { UserStore(this@QuickDashApplication) }
+                val analyticsEnabled = store.isAnalyticsEnabled()
                 
-                try {
-                    val crashlyticsClass = Class.forName("com.google.firebase.crashlytics.FirebaseCrashlytics")
-                    val getInstanceMethod = crashlyticsClass.getMethod("getInstance")
-                    val instance = getInstanceMethod.invoke(null)
-                    val setEnabledMethod = crashlyticsClass.getMethod("setCrashlyticsCollectionEnabled", Boolean::class.javaPrimitiveType)
-                    setEnabledMethod.invoke(instance, analyticsEnabled)
-                } catch (_: Throwable) {
-                    // Crashlytics not present in FOSS build
-                }
-
-                if (userStore.shakeToOpen.first()) {
+                if (store.shakeToOpen.first()) {
                     startShakeDetector()
                 }
             } catch (e: Exception) {
@@ -128,7 +117,7 @@ class QuickDashApplication : Application() {
                 oneTimeRequest
             )
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
         }
     }
 
@@ -138,7 +127,7 @@ class QuickDashApplication : Application() {
         val androidVersion = Build.VERSION.RELEASE
         
         val message = """
-            🚨 <b>QuickDash Crash Report</b> 🚨
+            <b>QuickDash Crash Report</b>
             <b>Device:</b> $deviceModel (Android $androidVersion)
             <b>Thread:</b> ${thread.name}
             
@@ -177,5 +166,15 @@ class QuickDashApplication : Application() {
             sensorManager?.unregisterListener(it)
         }
         shakeDetector = null
+    }
+
+    @Suppress("DEPRECATION")
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        try {
+            if (level >= TRIM_MEMORY_MODERATE) {
+                coil.Coil.imageLoader(this).memoryCache?.clear()
+            }
+        } catch (_: Throwable) {}
     }
 }

@@ -188,10 +188,8 @@
 -keepattributes Signature
 
 # ======================================================================
-# 14. FIREBASE / GOOGLE PLAY SERVICES
+# 14. FIREBASE / GOOGLE PLAY SERVICES (REMOVED)
 # ======================================================================
--keep class com.google.firebase.** { *; }
--keep class com.google.android.gms.** { *; }
 
 # ======================================================================
 # 15. OKHTTP
@@ -205,12 +203,6 @@
 # ======================================================================
 -keep class com.google.zxing.** { *; }
 
-# ======================================================================
-# 17. ML KIT CODE SCANNER
-# ======================================================================
--keep class com.google.mlkit.** { *; }
--keep class com.google.android.gms.internal.mlkit_code_scanner.** { *; }
--keep class com.google.android.gms.vision.** { *; }
 
 # ======================================================================
 # 18. ANDROIDX SECURITY / CRYPTO / TINK
@@ -291,10 +283,6 @@
 # ======================================================================
 # 28. WARNING SUPPRESSION
 # ======================================================================
--dontwarn com.google.firebase.**
--dontwarn com.google.android.gms.**
--dontwarn com.google.mlkit.**
--dontwarn com.google.android.gms.internal.mlkit_code_scanner.**
 -dontwarn com.google.crypto.tink.**
 -dontwarn com.google.zxing.**
 -dontwarn com.google.android.gms.fonts.**
@@ -321,3 +309,5 @@
 # 30. R8 OPTIMIZATIONS
 # ======================================================================
 -allowaccessmodification
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+-keep class * extends com.google.protobuf.GeneratedMessageLite { *; }

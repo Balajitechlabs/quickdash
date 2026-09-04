@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/timer
+ * File: QuickTimerScreen.kt
+ * Description: EssentialX-styled component for features/timer supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.timer.presentation
 
 import androidx.compose.animation.AnimatedContent
@@ -31,7 +40,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -39,6 +48,7 @@ import kotlinx.coroutines.flow.first
 import com.balajitechlabs.quickdash.core.data.UserStore
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 private fun formatMs(ms: Long): String {
     val hours = ms / 3_600_000L
@@ -118,6 +128,7 @@ fun QuickTimerScreen(viewModel: QuickTimerViewModel = hiltViewModel(), isFloatin
                 else -> TimerHistoryContent(viewModel = viewModel, isFloating = isFloating)
             }
         }
+        Spacer(modifier = Modifier.height(120.dp))
     }
 }
 
@@ -349,10 +360,10 @@ private fun CountdownContent(viewModel: QuickTimerViewModel, scope: kotlinx.coro
                         )
                     }
                 } catch (ex: Exception) {
-                    ex.printStackTrace()
+                    android.util.Log.e("QuickDash", "Error occurred: ${ex.message}", ex)
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
             }
 
             val startRemaining = remainingMs
@@ -458,7 +469,7 @@ private fun CountdownContent(viewModel: QuickTimerViewModel, scope: kotlinx.coro
                     textAlign = TextAlign.Center
                 )
                 if (finished) {
-                    Text("Done! 🎉", fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
+                    Text("Done", fontSize = 12.sp, color = MaterialTheme.colorScheme.error)
                 }
             }
         }
@@ -493,7 +504,7 @@ private fun CountdownContent(viewModel: QuickTimerViewModel, scope: kotlinx.coro
             ) {
                 Icon(
                     imageVector = if (isRunning) Icons.Filled.Pause else if (finished) Icons.Filled.Refresh else Icons.Filled.PlayArrow,
-                    contentDescription = null,
+                    contentDescription = "Toggle timer",
                     modifier = Modifier.size(32.dp)
                 )
             }
@@ -503,7 +514,7 @@ private fun CountdownContent(viewModel: QuickTimerViewModel, scope: kotlinx.coro
 
 @Composable
 private fun TimerHistoryContent(viewModel: QuickTimerViewModel, isFloating: Boolean) {
-    val historyJson by viewModel.timerHistory.collectAsState(initial = "[]")
+    val historyJson by viewModel.timerHistory.collectAsStateWithLifecycle(initialValue = "[]")
     val gson = remember { Gson() }
     val listType = remember { object : TypeToken<List<TimerHistoryEntry>>() {}.type }
     val entries = remember(historyJson) {
@@ -552,7 +563,7 @@ private fun TimerHistoryContent(viewModel: QuickTimerViewModel, isFloating: Bool
             ) {
                 Icon(
                     imageVector = Icons.Filled.History,
-                    contentDescription = null,
+                    contentDescription = "Timer history",
                     modifier = Modifier.size(48.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                 )
@@ -663,7 +674,7 @@ private fun addTimerHistoryEntry(
             val newList = (listOf(entry) + currentList).take(50)
             viewModel.saveTimerHistory(gson.toJson(newList))
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
         }
     }
 }

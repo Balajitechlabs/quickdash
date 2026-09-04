@@ -1,6 +1,15 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/wifi
+ * File: QuickWifiScreen.kt
+ * Description: EssentialX-styled component for features/wifi supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.wifi.presentation
 
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import android.Manifest
 import com.balajitechlabs.quickdash.core.utils.AppLogger
 import android.content.Context
@@ -32,11 +41,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -46,6 +57,7 @@ import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 data class WifiEntry(val ssid: String, val password: String, val savedAt: Long)
 
@@ -56,11 +68,11 @@ fun QuickWifiScreen(viewModel: WifiViewModel = hiltViewModel(), isFloating: Bool
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    val savedSsid by viewModel.wifiSsid.collectAsState()
-    val savedPassword by viewModel.wifiPassword.collectAsState()
-    val wifiHistoryJson by viewModel.wifiHistoryJson.collectAsState()
-    val emojiHeader by viewModel.emojiHeader.collectAsState()
-    val qrUseEmojiOverlay by viewModel.qrUseEmojiOverlay.collectAsState()
+    val savedSsid by viewModel.wifiSsid.collectAsStateWithLifecycle()
+    val savedPassword by viewModel.wifiPassword.collectAsStateWithLifecycle()
+    val wifiHistoryJson by viewModel.wifiHistoryJson.collectAsStateWithLifecycle()
+    val emojiHeader by viewModel.emojiHeader.collectAsStateWithLifecycle()
+    val qrUseEmojiOverlay by viewModel.qrUseEmojiOverlay.collectAsStateWithLifecycle()
 
     val wifiHistory = remember(wifiHistoryJson) {
         try {
@@ -80,7 +92,7 @@ fun QuickWifiScreen(viewModel: WifiViewModel = hiltViewModel(), isFloating: Bool
     var password by remember { mutableStateOf("") }
     var encryptionType by remember { mutableStateOf("WPA") }
     var isHidden by remember { mutableStateOf(false) }
-    val savedHotspotMode by viewModel.wifiHotspotMode.collectAsState()
+    val savedHotspotMode by viewModel.wifiHotspotMode.collectAsStateWithLifecycle()
     var hotspotMode by remember(savedHotspotMode) { mutableStateOf(savedHotspotMode) }
     var showHistory by remember { mutableStateOf(false) }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -146,25 +158,25 @@ fun QuickWifiScreen(viewModel: WifiViewModel = hiltViewModel(), isFloating: Bool
         "WIFI:S:$escapedSsid;T:$encryptionType;P:$escapedPassword;;"
     }
 
-    val primaryColor = MaterialTheme.colorScheme.primary.toArgb()
-    val secondaryColor = MaterialTheme.colorScheme.secondary.toArgb()
-    LaunchedEffect(ssid, password, encryptionType, isHidden, emojiHeader, qrUseEmojiOverlay, primaryColor, useCircularDots, useGradient) {
-        qrBitmap = if (ssid.isNotEmpty()) {
-            withContext(Dispatchers.Default) {
+    var showQrDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(showQrDialog, ssid, password, encryptionType, isHidden) {
+        if (showQrDialog && ssid.isNotEmpty()) {
+            qrBitmap = withContext(Dispatchers.Default) {
                 try {
                     QRCodeGenerator.generateQRCode(
                         context = context,
                         text = wifiString,
                         width = 800,
                         height = 800,
-                        qrColor = primaryColor,
-                        centerEmoji = if (qrUseEmojiOverlay) emojiHeader else null,
-                        qrGradientColors = if (useGradient) Pair(primaryColor, secondaryColor) else null,
-                        useCircularDots = useCircularDots
+                        qrColor = android.graphics.Color.BLACK,
+                        centerEmoji = null,
+                        qrGradientColors = null,
+                        useCircularDots = false
                     )
                 } catch (e: Exception) { null }
             }
-        } else null
+        }
     }
 
     Column(
@@ -174,14 +186,21 @@ fun QuickWifiScreen(viewModel: WifiViewModel = hiltViewModel(), isFloating: Bool
             .padding(16.dp)
     ) {
         // ── Header ─────────────────────────────────────────────────────
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Wi-Fi Share", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            Text(
+                "Wi-Fi Share",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth().align(Alignment.Center)
+            )
             // History toggle
-            IconButton(onClick = { showHistory = true }) {
+            IconButton(
+                onClick = { showHistory = true },
+                modifier = Modifier.align(Alignment.CenterEnd)
+            ) {
                 Icon(
                     imageVector = Icons.Filled.History,
                     contentDescription = "Show history",
@@ -226,7 +245,15 @@ fun QuickWifiScreen(viewModel: WifiViewModel = hiltViewModel(), isFloating: Bool
                         onCheckedChange = {
                             hotspotMode = it
                             viewModel.saveWifiHotspotMode(it)
-                        }
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary,
+                            checkedBorderColor = Color.Transparent,
+                            uncheckedThumbColor = Color.White,
+                            uncheckedTrackColor = Color(0xFF2A2B30),
+                            uncheckedBorderColor = Color(0xFF44474F)
+                        )
                     )
                 }
 
@@ -447,7 +474,7 @@ fun QuickWifiScreen(viewModel: WifiViewModel = hiltViewModel(), isFloating: Bool
                 var user by remember { mutableStateOf("") }
                 var pass by remember { mutableStateOf("") }
                 
-                val serverJson by viewModel.serverCredentials.collectAsState()
+                val serverJson by viewModel.serverCredentials.collectAsStateWithLifecycle()
                 LaunchedEffect(serverJson) {
                     try {
                         val obj = com.google.gson.JsonParser.parseString(serverJson).asJsonObject
@@ -557,46 +584,30 @@ fun QuickWifiScreen(viewModel: WifiViewModel = hiltViewModel(), isFloating: Bool
         
         Spacer(Modifier.height(8.dp))
 
-        // ── QR Code Styling Selectors ──────────────────────────────────
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)
-        ) {
-            FilterChip(
-                selected = useCircularDots,
-                onClick = { useCircularDots = !useCircularDots },
-                label = { Text("Circular Dots") }
-            )
-            FilterChip(
-                selected = useGradient,
-                onClick = { useGradient = !useGradient },
-                label = { Text("Gradient Colors") }
-            )
-        }
-
-        // ── QR Code Display ────────────────────────────────────────────
-        qrBitmap?.let { bitmap ->
-            Spacer(Modifier.height(20.dp))
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Surface(
-                    shape = RoundedCornerShape(20.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    modifier = Modifier.size(260.dp)
-                ) {
-                    Image(
-                        bitmap = bitmap.asImageBitmap(),
-                        contentDescription = "Wi-Fi QR Code",
-                        modifier = Modifier
-                            .size(240.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .padding(10.dp),
-                        filterQuality = FilterQuality.None
-                    )
-                }
-            }
-        }
-
         Spacer(Modifier.height(16.dp))
+
+        // On-demand QR Code Generator Button
+        Button(
+            onClick = {
+                if (ssid.isNotBlank()) {
+                    showQrDialog = true
+                } else {
+                    android.widget.Toast.makeText(context, "Please enter a Wi-Fi network name", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            },
+            modifier = Modifier.fillMaxWidth().height(52.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF2C2C2E),
+                contentColor = Color.White
+            )
+        ) {
+            Icon(Icons.Filled.QrCode, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+            Spacer(Modifier.width(10.dp))
+            Text("Generate & View Wi-Fi QR Code", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+        }
+
+        Spacer(Modifier.height(14.dp))
 
         // ── Save Button ────────────────────────────────────────────────
         Button(
@@ -626,6 +637,8 @@ fun QuickWifiScreen(viewModel: WifiViewModel = hiltViewModel(), isFloating: Bool
                 Text("Done")
             }
         }
+
+        Spacer(Modifier.height(120.dp))
     }
 
     if (showHistory) {
@@ -642,6 +655,72 @@ fun QuickWifiScreen(viewModel: WifiViewModel = hiltViewModel(), isFloating: Bool
                 password = selectedPassword
             },
             onDismiss = { showHistory = false }
+        )
+    }
+
+    if (showQrDialog) {
+        AlertDialog(
+            onDismissRequest = { showQrDialog = false },
+            containerColor = Color(0xFF1E2024),
+            title = {
+                Text(
+                    text = "Wi-Fi QR Code",
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    Text(
+                        text = ssid,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        textAlign = TextAlign.Center
+                    )
+                    qrBitmap?.let { bitmap ->
+                        Surface(
+                            shape = RoundedCornerShape(16.dp),
+                            color = Color.White,
+                            modifier = Modifier.size(240.dp)
+                        ) {
+                            Image(
+                                bitmap = bitmap.asImageBitmap(),
+                                contentDescription = "Wi-Fi QR Code",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(8.dp),
+                                filterQuality = FilterQuality.None
+                            )
+                        }
+                    } ?: Box(
+                        modifier = Modifier.size(240.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(modifier = Modifier.size(36.dp), color = Color.White)
+                    }
+                    Text(
+                        text = "Scan with any camera or Wi-Fi scanner to instantly connect.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFFC5C6D0),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showQrDialog = false },
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Done")
+                }
+            }
         )
     }
 }

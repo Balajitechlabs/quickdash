@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/timer
+ * File: TimerAlarmReceiver.kt
+ * Description: EssentialX-styled component for features/timer supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.timer.presentation
 
 import android.app.NotificationChannel
@@ -44,10 +53,13 @@ class TimerAlarmReceiver : BroadcastReceiver() {
         val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
             ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
+        val title = intent.getStringExtra("EXTRA_TITLE") ?: "Timer Finished!"
+        val message = intent.getStringExtra("EXTRA_MESSAGE") ?: "Your QuickDash countdown timer has completed."
+
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-            .setContentTitle("Timer Finished!")
-            .setContentText("Your QuickDash countdown timer has completed.")
+            .setContentTitle(title)
+            .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setContentIntent(pendingIntent)
@@ -62,7 +74,7 @@ class TimerAlarmReceiver : BroadcastReceiver() {
             val ringtone = RingtoneManager.getRingtone(context, alarmUri)
             ringtone?.play()
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
         }
     }
 }

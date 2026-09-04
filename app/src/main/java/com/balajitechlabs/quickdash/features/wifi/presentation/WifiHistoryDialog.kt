@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/wifi
+ * File: WifiHistoryDialog.kt
+ * Description: EssentialX-styled component for features/wifi supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.wifi.presentation
 
 import androidx.compose.foundation.BorderStroke
@@ -127,18 +136,11 @@ fun WifiHistoryDialog(
 
                 if (selectedTab == 0) {
                     if (items.isEmpty()) {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(
-                                    Icons.Filled.Wifi,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(48.dp),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text("No saved networks found.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                        }
+                        com.balajitechlabs.quickdash.core.ui.components.EmptyStateCard(
+                            icon = Icons.Filled.Wifi,
+                            title = "No Saved Networks",
+                            subtitle = "Wi-Fi networks you share or configure in QuickDash will appear here automatically."
+                        )
                     } else {
                         LazyColumn(
                             verticalArrangement = Arrangement.spacedBy(8.dp),

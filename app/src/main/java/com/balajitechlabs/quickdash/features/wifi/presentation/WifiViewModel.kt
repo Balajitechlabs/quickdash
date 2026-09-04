@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/wifi
+ * File: WifiViewModel.kt
+ * Description: EssentialX-styled component for features/wifi supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.wifi.presentation
 
 import androidx.lifecycle.ViewModel
@@ -26,7 +35,7 @@ class WifiViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "[]")
         
     val emojiHeader: StateFlow<String> = userStore.emojiHeader
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "🚀")
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
         
     val qrUseEmojiOverlay: StateFlow<Boolean> = userStore.qrUseEmojiOverlay
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)

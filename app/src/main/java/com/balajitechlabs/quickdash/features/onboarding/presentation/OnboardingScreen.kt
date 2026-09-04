@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/onboarding
+ * File: OnboardingScreen.kt
+ * Description: EssentialX-styled component for features/onboarding supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.onboarding.presentation
 
 import android.app.NotificationChannel
@@ -26,6 +35,7 @@ import nl.dionsegijn.konfetti.core.emitter.Emitter
 import nl.dionsegijn.konfetti.core.models.Size
 import java.util.concurrent.TimeUnit
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 /**
  * Onboarding flow orchestrator.
@@ -50,18 +60,18 @@ fun OnboardingScreen(
 
     var step by remember { mutableIntStateOf(0) }
     var showConfetti by remember { mutableStateOf(false) }
-    val confettiEnabled by mainViewModel.userStore.confettiEnabled.collectAsState(initial = true)
+    val confettiEnabled by mainViewModel.userStore.confettiEnabled.collectAsStateWithLifecycle(initialValue = true)
 
     // --- Persisted state ---
-    val savedUpiIds by mainViewModel.userStore.upiIds.collectAsState(initial = emptyList())
-    val savedDefaultUpiId by mainViewModel.userStore.defaultUpiId.collectAsState(initial = null)
-    val savedPayeeName by mainViewModel.userStore.payeeName.collectAsState(initial = null)
-    val themeMode by mainViewModel.userStore.themeMode.collectAsState(initial = "SYSTEM")
-    val shapeStyle by mainViewModel.userStore.shapeStyle.collectAsState(initial = "Rounded")
-    val cornerRadius by mainViewModel.userStore.cornerRadius.collectAsState(initial = 16f)
-    val borderWidth by mainViewModel.userStore.borderWidth.collectAsState(initial = 1f)
-    val fontFamilyName by mainViewModel.userStore.fontFamilyKey.collectAsState(initial = "SYSTEM")
-    val fontScale by mainViewModel.userStore.fontScale.collectAsState(initial = 1f)
+    val savedUpiIds by mainViewModel.userStore.upiIds.collectAsStateWithLifecycle(initialValue = emptyList())
+    val savedDefaultUpiId by mainViewModel.userStore.defaultUpiId.collectAsStateWithLifecycle(initialValue = null)
+    val savedPayeeName by mainViewModel.userStore.payeeName.collectAsStateWithLifecycle(initialValue = null)
+    val themeMode by mainViewModel.userStore.themeMode.collectAsStateWithLifecycle(initialValue = "SYSTEM")
+    val shapeStyle by mainViewModel.userStore.shapeStyle.collectAsStateWithLifecycle(initialValue = "Rounded")
+    val cornerRadius by mainViewModel.userStore.cornerRadius.collectAsStateWithLifecycle(initialValue = 16f)
+    val borderWidth by mainViewModel.userStore.borderWidth.collectAsStateWithLifecycle(initialValue = 1f)
+    val fontFamilyName by mainViewModel.userStore.fontFamilyKey.collectAsStateWithLifecycle(initialValue = "SYSTEM")
+    val fontScale by mainViewModel.userStore.fontScale.collectAsStateWithLifecycle(initialValue = 1f)
 
     // --- Ephemeral permission state ---
     var notifGranted by remember { mutableStateOf(false) }

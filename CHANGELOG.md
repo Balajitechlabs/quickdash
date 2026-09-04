@@ -2,6 +2,19 @@
 
 All major updates, feature additions, bug fixes, and system improvements for **QuickDash** are documented in this file.
 
+## [5.2.3] - 2026-09-04 (Architecture Modernization, 100% Zero-Tracker & Update Overhaul) 🚀
+
+### 🚀 ADDED & IMPROVED
+- **🔄 Semantic In-App Update Engine**: Complete overhaul modeled after EssentialX with semver parser (`SemanticVersion.kt`), channel isolation, intelligent preview build detection ("Ahead of latest public release"), ABI matching, and GitHub tag hygiene (no run numbers or `vv` prefix artifacts).
+- **🌿 100% True Zero-Tracker Pure FOSS Architecture**: Completely stripped Firebase Crashlytics, Firebase Messaging, Google ML Kit, Google MediaPipe, and Play Services Location dependencies from the APK. Binary size dropped by over 30MB.
+- **⚡ Background Service Hardening**: Fully resolved Android 14+ `ForegroundServiceDidNotStartInTimeException` with proper `specialUse` manifest declarations, service properties, and defensive fallbacks in `ShakeDetectorService`.
+- **🛡️ Sensitive Clipboard Privacy Shield**: Automatic masking for credentials, credit cards (with Luhn check), OTP tokens, and secrets with an interactive eye reveal toggle in `ClipboardScreen`.
+- **🎨 Essentials Floating Dock & Personal Brand Hub**: Modern spring-animated bottom dock with [Settings, Home, About], personal brand showcase for balajitechlabs with dynamic gateway reflection to `quickdash.balajitechlab.com`.
+- **🚀 Compose Lifecycle Leaks & Memory Trimming**: Migrated all UI state collection to `collectAsStateWithLifecycle()`, added `animateItem()` and lazy list keys, and wired `onTrimMemory` to clear Coil image caches.
+- **🏷️ Consistent Casing & Licensing Compliance**: Enforced lowercase `balajitechlabs` across all documentation, metadata, website feeds, and source headers; copyright attributed to `||BTL||™ (balajitechlabs)`.
+
+---
+
 ## [5.2.2] - 2026-08-15 (Zero-Tracker FOSS Edition & Privacy Hardening Release) 🌿
 
 ### 🚀 ADDED & IMPROVED

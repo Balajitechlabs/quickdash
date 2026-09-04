@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/capture
+ * File: QuickCaptureScreen.kt
+ * Description: EssentialX-styled component for features/capture supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.capture.presentation
 
 import android.Manifest
@@ -170,28 +179,14 @@ fun QuickCaptureScreen(isFloating: Boolean = false) {
     ) {
         // Tab Row
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            // Recorder tab with BETA badge
-            Box(modifier = Modifier.weight(1f)) {
-                Button(
-                    onClick = { selectedTab = CaptureTab.RECORDER },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedTab == CaptureTab.RECORDER) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-                        contentColor = if (selectedTab == CaptureTab.RECORDER) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text("🎥 Recorder", fontWeight = FontWeight.Bold) }
-                // BETA badge
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .offset(x = 4.dp, y = (-6).dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color(0xFFFF9500))
-                        .padding(horizontal = 5.dp, vertical = 2.dp)
-                ) {
-                    Text("BETA", fontSize = 8.sp, fontWeight = FontWeight.ExtraBold, color = Color.White, letterSpacing = 0.5.sp)
-                }
-            }
+            Button(
+                onClick = { selectedTab = CaptureTab.RECORDER },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (selectedTab == CaptureTab.RECORDER) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = if (selectedTab == CaptureTab.RECORDER) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                ),
+                modifier = Modifier.weight(1f)
+            ) { Text("🎥 Screen Recorder", fontWeight = FontWeight.Bold) }
 
             Button(
                 onClick = { selectedTab = CaptureTab.ANNOTATOR },
@@ -200,44 +195,13 @@ fun QuickCaptureScreen(isFloating: Boolean = false) {
                     contentColor = if (selectedTab == CaptureTab.ANNOTATOR) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 modifier = Modifier.weight(1f)
-            ) { Text("✏️ Annotator", fontWeight = FontWeight.Bold) }
+            ) { Text("🎨 Annotator", fontWeight = FontWeight.Bold) }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Crossfade(targetState = selectedTab, label = "CaptureTabTransition") { currentTab ->
             if (currentTab == CaptureTab.RECORDER) {
-            // ── BETA Notice Card ──────────────────────────────────────────────────────
-            Surface(
-                color = Color(0xFF332200),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.padding(12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Text("🧪", fontSize = 20.sp)
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(4.dp))
-                                    .background(Color(0xFFFF9500))
-                                    .padding(horizontal = 6.dp, vertical = 2.dp)
-                            ) { Text("BETA", fontSize = 9.sp, fontWeight = FontWeight.ExtraBold, color = Color.White) }
-                            Text("Screen Recorder", fontWeight = FontWeight.Bold, color = Color(0xFFFFCC00), fontSize = 13.sp)
-                        }
-                        Spacer(Modifier.height(2.dp))
-                        Text(
-                            "This feature is in beta. Screen recording works on most devices but some may experience issues with audio sync or resolution. A fully refined version is coming in the next update.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFFFFCC00).copy(alpha = 0.8f)
-                        )
-                    }
-                }
-            }
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -427,29 +391,44 @@ fun QuickCaptureScreen(isFloating: Boolean = false) {
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    // Quality chips
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("Resolution", style = MaterialTheme.typography.labelSmall, color = Color(0xFF8E8E93))
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    // Quality Selection (Dedicated Row with full-width chips)
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            "Recording Resolution",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFFC5C6D0)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             listOf("720p HD", "1080p FHD", "4K Ultra").forEach { res ->
                                 FilterChip(
                                     selected = qualityRes == res,
                                     onClick = { if (!isRecording) qualityRes = res },
                                     enabled = !isRecording,
                                     label = {
-                                        Text(
-                                            res, fontSize = 10.sp,
-                                            color = if (qualityRes == res) Color.White else Color(0xFF8E8E93)
-                                        )
+                                        Box(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                res,
+                                                fontSize = 11.sp,
+                                                fontWeight = if (qualityRes == res) FontWeight.Bold else FontWeight.Medium,
+                                                color = if (qualityRes == res) Color.White else Color(0xFF8E8E93),
+                                                maxLines = 1
+                                            )
+                                        }
                                     },
+                                    shape = RoundedCornerShape(12.dp),
                                     colors = FilterChipDefaults.filterChipColors(
                                         selectedContainerColor = MaterialTheme.colorScheme.primary,
                                         containerColor = Color(0xFF2C2C2E)
-                                    )
+                                    ),
+                                    modifier = Modifier.weight(1f)
                                 )
                             }
                         }
@@ -475,30 +454,18 @@ fun QuickCaptureScreen(isFloating: Boolean = false) {
                 shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        // Color palette
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            listOf(
-                                Color(0xFFFF3B30), Color(0xFFFF9500), Color(0xFFFFCC00),
-                                Color(0xFF34C759), Color(0xFF007AFF), Color(0xFFAF52DE),
-                                Color.White, Color.Black
-                            ).forEach { color ->
-                                Box(
-                                    modifier = Modifier
-                                        .size(if (selectedColor == color && !isEraser) 28.dp else 24.dp)
-                                        .clip(CircleShape)
-                                        .background(color)
-                                        .border(
-                                            width = if (selectedColor == color && !isEraser) 2.5.dp else 1.dp,
-                                            color = if (selectedColor == color && !isEraser) MaterialTheme.colorScheme.primary else Color.Gray.copy(0.5f),
-                                            shape = CircleShape
-                                        )
-                                        .clickable { selectedColor = color; isEraser = false }
-                                )
-                            }
-                        }
-
-                        Row {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Doodle & Canvas",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFC5C6D0)
+                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
                             // Eraser
                             IconButton(
                                 onClick = { isEraser = !isEraser },
@@ -512,10 +479,43 @@ fun QuickCaptureScreen(isFloating: Boolean = false) {
                             IconButton(onClick = { if (paths.isNotEmpty()) paths.removeAt(paths.lastIndex) }) {
                                 @Suppress("DEPRECATION") Icon(Icons.Filled.Undo, "Undo")
                             }
-                            // Clear
-                            IconButton(onClick = { paths.clear() }) {
-                                Icon(Icons.Filled.Delete, "Clear all")
+                            // Clear Canvas
+                            TextButton(
+                                onClick = { paths.clear() },
+                                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                            ) {
+                                Icon(Icons.Filled.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Spacer(Modifier.width(4.dp))
+                                Text("Clear", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                             }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Color palette
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        listOf(
+                            Color(0xFFFF3B30), Color(0xFFFF9500), Color(0xFFFFCC00),
+                            Color(0xFF34C759), Color(0xFF007AFF), Color(0xFFAF52DE),
+                            Color.White, Color.Black
+                        ).forEach { color ->
+                            Box(
+                                modifier = Modifier
+                                    .size(if (selectedColor == color && !isEraser) 28.dp else 24.dp)
+                                    .clip(CircleShape)
+                                    .background(color)
+                                    .border(
+                                        width = if (selectedColor == color && !isEraser) 2.5.dp else 1.dp,
+                                        color = if (selectedColor == color && !isEraser) MaterialTheme.colorScheme.primary else Color.Gray.copy(0.5f),
+                                        shape = CircleShape
+                                    )
+                                    .clickable { selectedColor = color; isEraser = false }
+                            )
                         }
                     }
 
@@ -638,6 +638,7 @@ fun QuickCaptureScreen(isFloating: Boolean = false) {
                 }
             }
         }
+        Spacer(modifier = Modifier.height(120.dp))
     }
     }
 
@@ -752,7 +753,7 @@ private fun saveCanvasToGallery(context: Context, paths: List<LinePath>, bgColor
             context.contentResolver.openOutputStream(it)?.use { s: OutputStream ->
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, s)
             }
-            Toast.makeText(context, "✅ Saved to Pictures/QuickDash!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "✅ Saved: Pictures/QuickDash/$filename", Toast.LENGTH_LONG).show()
         }
     } catch (e: Exception) {
         Toast.makeText(context, "Save failed: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -816,7 +817,7 @@ private fun saveCanvasToPdf(context: Context, paths: List<LinePath>, bgColor: Co
             context.contentResolver.openOutputStream(it)?.use { s: OutputStream ->
                 pdfDocument.writeTo(s)
             }
-            Toast.makeText(context, "✅ Saved PDF to Download/QuickDash!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "✅ Saved PDF: Download/QuickDash/$filename", Toast.LENGTH_LONG).show()
         }
         pdfDocument.close()
     } catch (e: Exception) {

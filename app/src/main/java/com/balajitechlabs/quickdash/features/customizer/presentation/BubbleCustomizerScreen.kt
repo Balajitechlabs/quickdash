@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/customizer
+ * File: BubbleCustomizerScreen.kt
+ * Description: EssentialX-styled component for features/customizer supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.customizer.presentation
 
 import androidx.compose.foundation.background
@@ -26,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -39,12 +49,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.balajitechlabs.quickdash.core.ui.components.RoundedCardContainer
 import kotlinx.coroutines.launch
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 /**
- * 🎛️ Glassmorphism & Bubble Customizer Screen (`BubbleCustomizerScreen.kt`).
+ * Glassmorphism & Bubble Customizer Screen (`BubbleCustomizerScreen.kt`).
  * Sliders for Bubble Size (48–84dp), Opacity (30–100%), 6 Neon Swatches, and Wallpaper Sync.
  */
 @Composable
@@ -52,11 +63,11 @@ fun BubbleCustomizerScreen(viewModel: CustomizerViewModel = hiltViewModel()) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    val bubbleSizeDp by viewModel.bubbleSizeDp.collectAsState(initial = 60f)
-    val bubbleOpacity by viewModel.bubbleOpacityAlpha.collectAsState(initial = 0.9f)
-    val glowColorHex by viewModel.bubbleGlowColorHex.collectAsState(initial = "#3DDC84")
-    val useDynamicWallpaper by viewModel.useDynamicWallpaperColor.collectAsState(initial = true)
-    val soundEffectsEnabled by viewModel.soundEffectsEnabled.collectAsState(initial = true)
+    val bubbleSizeDp by viewModel.bubbleSizeDp.collectAsStateWithLifecycle(initialValue = 60f)
+    val bubbleOpacity by viewModel.bubbleOpacityAlpha.collectAsStateWithLifecycle(initialValue = 0.9f)
+    val glowColorHex by viewModel.bubbleGlowColorHex.collectAsStateWithLifecycle(initialValue = "#3DDC84")
+    val useDynamicWallpaper by viewModel.useDynamicWallpaperColor.collectAsStateWithLifecycle(initialValue = true)
+    val soundEffectsEnabled by viewModel.soundEffectsEnabled.collectAsStateWithLifecycle(initialValue = true)
 
     val swatches = listOf(
         "#3DDC84", // Neon Green
@@ -223,7 +234,15 @@ fun BubbleCustomizerScreen(viewModel: CustomizerViewModel = hiltViewModel()) {
                     }
                     Switch(
                         checked = useDynamicWallpaper,
-                        onCheckedChange = { scope.launch { viewModel.saveUseDynamicWallpaperColor(it) } }
+                        onCheckedChange = { scope.launch { viewModel.saveUseDynamicWallpaperColor(it) } },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary,
+                            checkedBorderColor = Color.Transparent,
+                            uncheckedThumbColor = Color.White,
+                            uncheckedTrackColor = Color(0xFF2A2B30),
+                            uncheckedBorderColor = Color(0xFF44474F)
+                        )
                     )
                 }
 
@@ -243,7 +262,15 @@ fun BubbleCustomizerScreen(viewModel: CustomizerViewModel = hiltViewModel()) {
                     }
                     Switch(
                         checked = soundEffectsEnabled,
-                        onCheckedChange = { scope.launch { viewModel.saveSoundEffectsEnabled(it) } }
+                        onCheckedChange = { scope.launch { viewModel.saveSoundEffectsEnabled(it) } },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary,
+                            checkedBorderColor = Color.Transparent,
+                            uncheckedThumbColor = Color.White,
+                            uncheckedTrackColor = Color(0xFF2A2B30),
+                            uncheckedBorderColor = Color(0xFF44474F)
+                        )
                     )
                 }
             }

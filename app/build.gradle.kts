@@ -9,12 +9,10 @@ plugins {
     alias(libs.plugins.protobuf)
 }
 
-val isFossBuild = project.hasProperty("foss") || gradle.startParameter.taskNames.any { it.contains("foss", ignoreCase = true) }
-
-if (!isFossBuild) {
-    apply(plugin = "com.google.gms.google-services")
-    apply(plugin = "com.google.firebase.crashlytics")
+hilt {
+    enableAggregatingTask = false
 }
+
 
 // Secrets from local.properties (gitignored — never committed)
 // For CI, set KEYSTORE_PASSWORD / KEY_ALIAS / KEY_PASSWORD / KEYSTORE_PATH as GitHub Secrets
@@ -26,14 +24,14 @@ if (localPropertiesFile.exists()) {
 
 android {
     namespace = "com.balajitechlabs.quickdash"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.balajitechlabs.quickdash"
-        minSdk = 24
-        targetSdk = 36
-        versionCode = 523
-        versionName = "5.2.2"
+        minSdk = 26
+        targetSdk = 37
+        versionCode = 524
+        versionName = "5.2.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -101,6 +99,7 @@ android {
     packaging {
         jniLibs {
             useLegacyPackaging = false
+            keepDebugSymbols += listOf("**/libandroidx.graphics.path.so", "**/libdatastore_shared_counter.so")
         }
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -137,18 +136,6 @@ android {
         buildConfig = true  // Required to generate BuildConfig fields
     }
 
-    sourceSets {
-        getByName("main") {
-            val flavorDir = if (isFossBuild) "src/foss/java" else "src/standard/java"
-            java.srcDirs("src/main/java", flavorDir)
-            kotlin.srcDirs("src/main/java", flavorDir)
-        }
-    }
-
-    lint {
-        abortOnError = false
-        checkReleaseBuilds = false
-    }
 }
 
 
@@ -175,18 +162,20 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
-    implementation("androidx.compose.material:material-icons-extended") // Version managed by Compose BOM
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
-    implementation("androidx.core:core-splashscreen:1.2.0")
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.lottie)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation("androidx.fragment:fragment-ktx:1.9.0")
     implementation(libs.zxing)
+    implementation(libs.zxing.android.embedded)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore.core)
     implementation(libs.protobuf.javalite)
@@ -197,12 +186,18 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.coroutines.android)
 
+    // Security & Biometric
     implementation(libs.androidx.biometric)
-    implementation(libs.gson)
-    implementation(libs.workmanager)
-    implementation(libs.konfetti)
     implementation("androidx.security:security-crypto:1.1.0")
+
+    // Utilities & Parsing
+    implementation(libs.gson)
+    implementation(libs.jsoup)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.konfetti)
+    implementation(libs.androidx.exifinterface)
 
     // Room Database
     implementation(libs.room.runtime)
@@ -210,32 +205,26 @@ dependencies {
     ksp(libs.room.compiler)
 
     // UI & Graphics
-    implementation("androidx.graphics:graphics-shapes:1.1.0")
-    implementation("androidx.palette:palette-ktx:1.0.0")
-    implementation("androidx.appcompat:appcompat:1.8.0")
+    implementation(libs.androidx.graphics.shapes)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
 
     // Jetpack Glance App Widget & Google Fonts
-    implementation("androidx.glance:glance-appwidget:1.1.1")
-    implementation("androidx.glance:glance-material3:1.1.1")
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.material3)
     implementation("androidx.compose.ui:ui-text-google-fonts:1.6.0")
 
-    if (!isFossBuild) {
-        implementation(platform(libs.firebase.bom))
-        implementation("com.google.firebase:firebase-messaging-ktx")
-        implementation("com.google.firebase:firebase-config")
-        implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
-        implementation("com.google.android.play:app-update-ktx:2.1.0")
-        implementation("com.google.android.play:review-ktx:2.0.2")
-        implementation("com.google.android.play:integrity:1.4.0")
-        implementation("com.google.firebase:firebase-analytics")
-        implementation("com.google.firebase:firebase-crashlytics")
-    }
-    implementation(libs.coil)
+    // Coil Image & GIF Loading
+    implementation(libs.coil.compose)
+    implementation(libs.coil.gif)
 
-    // MediaPipe LLM Inference (on-device AI with Gemma / Phi models)
-    implementation("com.google.mediapipe:tasks-genai:0.10.35")
+    // Shizuku Elevated Power-User Capabilities
+    implementation(libs.shizuku.api)
+    implementation(libs.shizuku.provider)
+    implementation(libs.hiddenapibypass)
 
-    
+
+
     testImplementation(libs.junit)
     testImplementation("app.cash.turbine:turbine:1.2.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
@@ -250,9 +239,21 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
 
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xmetadata-version=2.1.0")
+    }
+}
+
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions {
-        freeCompilerArgs.addAll(listOf("-Xmetadata-version=2.1.0"))
+        freeCompilerArgs.add("-Xmetadata-version=2.1.0")
+    }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
+    compilerOptions {
+        freeCompilerArgs.add("-Xmetadata-version=2.1.0")
     }
 }
 

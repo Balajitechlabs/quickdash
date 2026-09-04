@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/settings
+ * File: BlogPostsScreen.kt
+ * Description: EssentialX-styled component for features/settings supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.settings.presentation
 
 import androidx.compose.foundation.background
@@ -33,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.content.Context
 import android.content.Intent
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
@@ -58,6 +67,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.content.ContentValues
 import android.widget.Toast
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 fun saveImageToGallery(context: Context, imageUrl: String, coroutineScope: kotlinx.coroutines.CoroutineScope) {
     coroutineScope.launch(kotlinx.coroutines.Dispatchers.IO) {
@@ -95,7 +105,7 @@ fun saveImageToGallery(context: Context, imageUrl: String, coroutineScope: kotli
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
             kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
                 Toast.makeText(context, "Failed to save image", Toast.LENGTH_SHORT).show()
             }
@@ -118,10 +128,10 @@ fun BlogPostsScreen(viewModel: BlogViewModel = hiltViewModel()) {
         }
     }
 
-    val rawPostsJson by viewModel.firebaseBlogPosts.collectAsState(initial = "[]")
-    val pollVotesJson by viewModel.pollVotes.collectAsState(initial = "{}")
-    val hiddenJson by viewModel.hiddenNotifications.collectAsState(initial = "[]")
-    val pinnedJson by viewModel.pinnedNotifications.collectAsState(initial = "[]")
+    val rawPostsJson by viewModel.firebaseBlogPosts.collectAsStateWithLifecycle(initialValue = "[]")
+    val pollVotesJson by viewModel.pollVotes.collectAsStateWithLifecycle(initialValue = "{}")
+    val hiddenJson by viewModel.hiddenNotifications.collectAsStateWithLifecycle(initialValue = "[]")
+    val pinnedJson by viewModel.pinnedNotifications.collectAsStateWithLifecycle(initialValue = "[]")
 
     val posts = remember(rawPostsJson) {
         try {
@@ -179,7 +189,7 @@ fun BlogPostsScreen(viewModel: BlogViewModel = hiltViewModel()) {
         }
     }
 
-    val showImagePreviews by viewModel.showImagePreviews.collectAsState(initial = true)
+    val showImagePreviews by viewModel.showImagePreviews.collectAsStateWithLifecycle(initialValue = true)
     var previewPost by remember { mutableStateOf<Map<String, Any>?>(null) }
     Column(
         modifier = Modifier
@@ -289,7 +299,7 @@ fun BlogPostsScreen(viewModel: BlogViewModel = hiltViewModel()) {
                                             val newHiddenSet = hiddenSet + postKey
                                             viewModel.saveHiddenNotifications(gson.toJson(newHiddenSet))
                                         } catch (e: Exception) {
-                                            e.printStackTrace()
+                                            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
                                         }
                                     }
                                     true
@@ -300,7 +310,7 @@ fun BlogPostsScreen(viewModel: BlogViewModel = hiltViewModel()) {
                                             val newPinnedSet = if (isPinned) pinnedSet - postKey else pinnedSet + postKey
                                             viewModel.savePinnedNotifications(gson.toJson(newPinnedSet))
                                         } catch (e: Exception) {
-                                            e.printStackTrace()
+                                            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
                                         }
                                     }
                                     false
@@ -699,11 +709,11 @@ fun BlogPostsScreen(viewModel: BlogViewModel = hiltViewModel()) {
                     coroutineScope.launch {
                         viewModel.saveHiddenNotifications("[]")
                     }
-                    Toast.makeText(context, "All notifications restored!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "All notifications restored", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text("Restore Dismissed Notifications 🔄", style = MaterialTheme.typography.labelMedium)
+                Text("Restore Dismissed Notifications", style = MaterialTheme.typography.labelMedium)
             }
         }
 
@@ -726,17 +736,10 @@ fun BlogPostsScreen(viewModel: BlogViewModel = hiltViewModel()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.65f))
+                .background(Color.Black.copy(alpha = 0.75f))
                 .zIndex(9999f),
             contentAlignment = Alignment.Center
         ) {
-            // Backdrop Blur Effect
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .blur(20.dp)
-                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.2f))
-            )
             
             Card(
                 modifier = Modifier
@@ -819,7 +822,7 @@ fun BlogPostsScreen(viewModel: BlogViewModel = hiltViewModel()) {
                                         }
                                         context.startActivity(Intent.createChooser(intent, "Share Image"))
                                     } catch (e: Exception) {
-                                        e.printStackTrace()
+                                        android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
                                     }
                                 },
                                 modifier = Modifier.weight(1f),

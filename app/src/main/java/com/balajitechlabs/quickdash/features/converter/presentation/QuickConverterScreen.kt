@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/converter
+ * File: QuickConverterScreen.kt
+ * Description: EssentialX-styled component for features/converter supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.converter.presentation
 
 import android.content.ClipData

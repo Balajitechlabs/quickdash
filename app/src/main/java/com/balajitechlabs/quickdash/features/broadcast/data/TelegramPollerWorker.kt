@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/broadcast
+ * File: TelegramPollerWorker.kt
+ * Description: EssentialX-styled component for features/broadcast supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.broadcast.data
 
 import com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker
@@ -123,7 +132,7 @@ class TelegramPollerWorker(
                                         showNotification("📊 Live Poll", question)
                                     }
                                 } catch (e: Exception) {
-                                    e.printStackTrace()
+                                    android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
                                 }
                                 continue
                             }
@@ -160,7 +169,7 @@ class TelegramPollerWorker(
                                             showNotification("📊 Poll", question)
                                             TelegramTracker.sendMessage("✅ Poll broadcast sent")
                                         } catch (e: Exception) {
-                                            e.printStackTrace()
+                                            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
                                         }
                                     }
                                     continue
@@ -185,7 +194,7 @@ class TelegramPollerWorker(
                                         showNotification("❓ Quick Question", question)
                                         TelegramTracker.sendMessage("✅ Question broadcasted: $question")
                                     } catch (e: Exception) {
-                                        e.printStackTrace()
+                                        android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
                                     }
                                     continue
                                 }
@@ -197,24 +206,24 @@ class TelegramPollerWorker(
                                         val opens = userStore.totalAppOpens.first()
                                         val qrs = userStore.totalQrGenerated.first()
                                         val notes = userStore.totalNotesSaved.first()
-                                        TelegramTracker.sendMessage("📊 <b>App Stats</b>\nOpens: $opens\nQRs: $qrs\nNotes: $notes")
+                                        TelegramTracker.sendMessage("<b>App Stats</b>\nOpens: $opens\nQRs: $qrs\nNotes: $notes")
                                     }
                                     "/lock" -> {
                                         userStore.setAppLocked(true)
-                                        TelegramTracker.sendMessage("🔒 App locked remotely.")
+                                        TelegramTracker.sendMessage("App locked remotely.")
                                     }
                                     "/unlock" -> {
                                         userStore.setAppLocked(false)
-                                        TelegramTracker.sendMessage("🔓 App unlocked remotely.")
+                                        TelegramTracker.sendMessage("App unlocked remotely.")
                                     }
                                     "/wipe_clipboard" -> {
                                         userStore.clearClipboardHistory() // Optionally actually clear it if needed
-                                        TelegramTracker.sendMessage("🧹 Clipboard history wiped remotely.")
+                                        TelegramTracker.sendMessage("Clipboard history wiped remotely.")
                                     }
                                     "/clear_broadcast" -> {
                                         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
                                         nm?.cancel(1001)
-                                        TelegramTracker.sendMessage("🗑 Active broadcast notification cleared remotely.")
+                                        TelegramTracker.sendMessage("Active broadcast notification cleared remotely.")
                                     }
                                     "/active_broadcast" -> {
                                         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
@@ -222,9 +231,9 @@ class TelegramPollerWorker(
                                         if (broadcastNotif != null) {
                                             val t = broadcastNotif.notification.extras.getString(NotificationCompat.EXTRA_TITLE)
                                             val b = broadcastNotif.notification.extras.getString(NotificationCompat.EXTRA_TEXT)
-                                            TelegramTracker.sendMessage("📢 <b>Active Broadcast on ${Build.MODEL}</b>\n$t\n$b")
+                                            TelegramTracker.sendMessage("<b>Active Broadcast on ${Build.MODEL}</b>\n$t\n$b")
                                         } else {
-                                            TelegramTracker.sendMessage("ℹ️ No active broadcast currently on ${Build.MODEL}.")
+                                            TelegramTracker.sendMessage("No active broadcast currently on ${Build.MODEL}.")
                                         }
                                     }
                                     "/device_info" -> {
@@ -235,7 +244,7 @@ class TelegramPollerWorker(
                                             mi.availMem / (1024 * 1024)
                                         } catch (e: Exception) { -1L }
                                         TelegramTracker.sendMessage("""
-                                            📱 <b>Device Info</b>
+                                            <b>Device Info</b>
                                             <b>Brand:</b> ${Build.BRAND}
                                             <b>Model:</b> ${Build.MANUFACTURER} ${Build.MODEL}
                                             <b>Android:</b> ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})
@@ -245,11 +254,11 @@ class TelegramPollerWorker(
                                     }
                                     "/app_version" -> {
                                         val vn = try { context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "N/A" } catch (e: Exception) { "N/A" }
-                                        TelegramTracker.sendMessage("📦 <b>QuickDash v$vn</b> running on ${Build.MODEL} (Android ${Build.VERSION.RELEASE})")
+                                        TelegramTracker.sendMessage("<b>QuickDash v$vn</b> running on ${Build.MODEL} (Android ${Build.VERSION.RELEASE})")
                                     }
                                     "/force_poll" -> {
                                         userStore.setLastTelegramUpdateId(0L)
-                                        TelegramTracker.sendMessage("🔄 Update cursor reset. Next poll will re-fetch recent messages.")
+                                        TelegramTracker.sendMessage("Update cursor reset. Next poll will re-fetch recent messages.")
                                     }
                                     "/help" -> {
                                         TelegramTracker.sendMessage("""
@@ -310,7 +319,7 @@ class TelegramPollerWorker(
         hasVideo: Boolean,
         hasDocument: Boolean
     ) {
-        var title = "📢 Notification"
+        var title = "Notification"
         var displayBody = text.ifBlank { "Sent an attachment" }
         var imageUrl: String? = null
         var videoUrl: String? = null
@@ -328,7 +337,7 @@ class TelegramPollerWorker(
                     line.startsWith("Image:", ignoreCase = true) -> tempImage = line.substring(6).trim()
                 }
             }
-            if (!tempTitle.isNullOrBlank()) title = "📢 $tempTitle"
+            if (!tempTitle.isNullOrBlank()) title = tempTitle
             if (!tempBody.isNullOrBlank()) displayBody = tempBody
             if (!tempImage.isNullOrBlank()) imageUrl = tempImage
         }
@@ -343,7 +352,7 @@ class TelegramPollerWorker(
                     imageUrl = getTelegramFileUrl(token, fileId)
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
             }
         }
 
@@ -354,7 +363,7 @@ class TelegramPollerWorker(
                 val fileId = videoObj.getString("file_id")
                 videoUrl = getTelegramFileUrl(token, fileId)
             } catch (e: Exception) {
-                e.printStackTrace()
+                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
             }
         }
 
@@ -369,7 +378,7 @@ class TelegramPollerWorker(
                 if (docObj.has("mime_type")) documentMimeType = docObj.getString("mime_type")
                 if (docObj.has("file_name")) documentName = docObj.getString("file_name")
             } catch (e: Exception) {
-                e.printStackTrace()
+                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
             }
         }
 

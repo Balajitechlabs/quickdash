@@ -19,7 +19,7 @@ export default function StatsBar() {
           setStats(prev => ({ ...prev, downloads: d.downloads }))
         } else {
           // 2. Fallback to GitHub Releases API
-          fetch('https://api.github.com/repos/Balajitechlabs/quickdash/releases?per_page=100')
+          fetch('https://api.github.com/repos/balajitechlabs/quickdash/releases?per_page=100')
             .then(r => r.ok ? r.json() : [])
             .then(releases => {
               if (Array.isArray(releases) && releases.length > 0) {
@@ -37,7 +37,7 @@ export default function StatsBar() {
       })
       .catch(() => {
         // Fallback to GitHub API if worker endpoint is unavailable
-        fetch('https://api.github.com/repos/Balajitechlabs/quickdash/releases?per_page=100')
+        fetch('https://api.github.com/repos/balajitechlabs/quickdash/releases?per_page=100')
           .then(r => r.ok ? r.json() : [])
           .then(releases => {
             if (Array.isArray(releases) && releases.length > 0) {

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/chat
+ * File: QuickChatScreen.kt
+ * Description: EssentialX-styled component for features/chat supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.chat.presentation
 
 import android.annotation.SuppressLint
@@ -18,6 +27,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
@@ -27,11 +38,17 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -52,7 +69,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import com.balajitechlabs.quickdash.R
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 data class Country(val code: String, val iso: String, val name: String, val flag: String)
 
@@ -69,10 +87,10 @@ fun QuickChatScreen(
     val scope = rememberCoroutineScope()
 
     // Collect settings from ViewModel
-    val defaultCode by viewModel.chatDefaultCode.collectAsState(initial = "91")
-    val defaultIso by viewModel.chatDefaultIso.collectAsState(initial = "IN")
-    val historyList by viewModel.chatHistory.collectAsState(initial = emptyList())
-    val pauseHistory by viewModel.chatPauseHistory.collectAsState(initial = false)
+    val defaultCode by viewModel.chatDefaultCode.collectAsStateWithLifecycle(initialValue = "91")
+    val defaultIso by viewModel.chatDefaultIso.collectAsStateWithLifecycle(initialValue = "IN")
+    val historyList by viewModel.chatHistory.collectAsStateWithLifecycle(initialValue = emptyList())
+    val pauseHistory by viewModel.chatPauseHistory.collectAsStateWithLifecycle(initialValue = false)
 
     var phoneNumber by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
@@ -329,23 +347,11 @@ fun QuickChatScreen(
     fun detectCountryIso(input: String): String {
         val cleanInput = input.trim()
         val digits = cleanInput.replace(Regex("[^0-9]"), "")
-        if (cleanInput.startsWith("+")) {
-            if (digits.length >= 3 && countryCodeToIso.containsKey(digits.substring(0, 3))) {
-                return countryCodeToIso[digits.substring(0, 3)]!!
-            }
-            if (digits.length >= 2 && countryCodeToIso.containsKey(digits.substring(0, 2))) {
-                return countryCodeToIso[digits.substring(0, 2)]!!
-            }
-            if (digits.length >= 1 && countryCodeToIso.containsKey(digits.substring(0, 1))) {
-                return countryCodeToIso[digits.substring(0, 1)]!!
-            }
-        } else {
-            // Check if digits start with a known country code
-            if (digits.length > 10) {
-                val potentialCodeLength = digits.length - 10
-                val possibleCode = digits.substring(0, potentialCodeLength)
-                if (countryCodeToIso.containsKey(possibleCode)) {
-                    return countryCodeToIso[possibleCode]!!
+        if (digits.isNotEmpty()) {
+            for (len in minOf(3, digits.length) downTo 1) {
+                val candidate = digits.substring(0, len)
+                if (countryCodeToIso.containsKey(candidate)) {
+                    return countryCodeToIso[candidate]!!
                 }
             }
         }
@@ -411,7 +417,12 @@ fun QuickChatScreen(
             }
         } else {
             // --- Quick Chat Settings Main View ---
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = 96.dp)
+            ) {
                 // Country Selection Card
                 Text(
                     text = "Default Country",
@@ -447,7 +458,11 @@ fun QuickChatScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        Icon(painterResource(R.drawable.ic_keyboard_arrow_down), contentDescription = "Select")
+                        Icon(
+                            imageVector = Icons.Rounded.KeyboardArrowDown,
+                            contentDescription = "Select",
+                            tint = Color.White
+                        )
                     }
                 }
 
@@ -471,7 +486,7 @@ fun QuickChatScreen(
                             modifier = Modifier.size(36.dp)
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_delete),
+                                imageVector = Icons.Rounded.Delete,
                                 contentDescription = "Clear History",
                                 tint = Color.Red,
                                 modifier = Modifier.size(20.dp)
@@ -506,7 +521,15 @@ fun QuickChatScreen(
                         }
                         Switch(
                             checked = pauseHistory,
-                            onCheckedChange = { viewModel.saveChatPauseHistory(it) }
+                            onCheckedChange = { viewModel.saveChatPauseHistory(it) },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = Color.White,
+                                checkedTrackColor = MaterialTheme.colorScheme.primary,
+                                checkedBorderColor = Color.Transparent,
+                                uncheckedThumbColor = Color.White,
+                                uncheckedTrackColor = Color(0xFF2A2B30),
+                                uncheckedBorderColor = Color(0xFF44474F)
+                            )
                         )
                     }
                 }
@@ -596,37 +619,6 @@ fun QuickChatScreen(
         // --- Redesigned Smart Chat Input Screen ---
         var selectedTab by remember { mutableStateOf("WhatsApp") } // "WhatsApp", "Telegram", "Signal", "SMS"
         var telegramMode by remember { mutableStateOf("Username") } // "Username" or "Phone"
-        var messageText by remember { mutableStateOf("") }
-        
-        val templates = when (selectedTab) {
-            "WhatsApp" -> listOf(
-                "Hello! 👋",
-                "Urgent! Please check. 🚨",
-                "Busy now, call later. ⏳",
-                "Let's meet up! ☕",
-                "Can you share the files? 📁"
-            )
-            "Telegram" -> listOf(
-                "Hello! 👋",
-                "Hey! Let's chat on Telegram. ✈️",
-                "Join community link: https://t.me/+7jh0CvLVDlFjNDU1 📢",
-                "Busy now, call later. ⏳",
-                "Can you check the updates? 🔄"
-            )
-            "Signal" -> listOf(
-                "Hello! 👋",
-                "Secure message on Signal. 🔒",
-                "Urgent! Please check. 🚨",
-                "Busy now, call later. ⏳"
-            )
-            else -> listOf(
-                "Urgent SMS! Call me when free. 📱",
-                "Busy now, call later. ⏳",
-                "Where are you? 📍",
-                "I'm on my way. 🚗",
-                "Let's meet up! ☕"
-            )
-        }
 
         val detectedIso = detectCountryIso(phoneNumber)
         val activeFlag = getFlagEmoji(detectedIso)
@@ -654,12 +646,16 @@ fun QuickChatScreen(
             }
         }
 
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+        ) {
             Text(
                 text = "Select Target App",
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
+                color = Color.White,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
@@ -671,12 +667,6 @@ fun QuickChatScreen(
                 val tabs = listOf("WhatsApp", "Telegram", "Signal", "SMS")
                 tabs.forEach { tab ->
                     val isSelected = selectedTab == tab
-                    val color = when (tab) {
-                        "WhatsApp" -> Color(0xFF25D366)
-                        "Telegram" -> Color(0xFF0088CC)
-                        "Signal" -> Color(0xFF3A76F0)
-                        else -> Color(0xFFE91E63)
-                    }
                     val iconRes = when (tab) {
                         "WhatsApp" -> R.drawable.ic_whatsapp
                         "Telegram" -> R.drawable.ic_telegram
@@ -685,14 +675,14 @@ fun QuickChatScreen(
                     }
                     Card(
                         onClick = { selectedTab = tab },
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(16.dp),
                         modifier = Modifier.weight(1f),
                         colors = CardDefaults.cardColors(
-                            containerColor = if (isSelected) color.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                            containerColor = if (isSelected) Color(0xFF38393F) else Color(0xFF1E2024)
                         ),
                         border = BorderStroke(
-                            width = if (isSelected) 2.dp else 1.dp,
-                            color = if (isSelected) color else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.15f)
+                            width = if (isSelected) 1.5.dp else 1.dp,
+                            color = if (isSelected) Color.White else Color(0xFF44474F).copy(alpha = 0.4f)
                         )
                     ) {
                         Box(
@@ -703,7 +693,7 @@ fun QuickChatScreen(
                                 painter = painterResource(iconRes),
                                 contentDescription = tab,
                                 modifier = Modifier.size(24.dp),
-                                tint = Color.Unspecified
+                                tint = if (isSelected) Color.White else Color(0xFFC5C6D0)
                             )
                         }
                     }
@@ -765,12 +755,11 @@ fun QuickChatScreen(
                 keyboardOptions = KeyboardOptions(
                     keyboardType = if (isUsername) KeyboardType.Text else KeyboardType.Phone
                 ),
-                shape = RoundedCornerShape(16.dp),
                 leadingIcon = {
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
-                            .padding(start = 12.dp, end = 4.dp)
+                            .padding(start = 12.dp, end = 6.dp)
                             .then(
                                 if (!isUsername) {
                                     Modifier.clickable { onToggleSelectingCountry(true) }
@@ -779,15 +768,25 @@ fun QuickChatScreen(
                                 }
                             )
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = if (isUsername) "👤" else activeFlag, fontSize = 20.sp)
-                            if (!isUsername) {
-                                Spacer(modifier = Modifier.width(2.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            if (isUsername) {
+                                Text(text = "👤", fontSize = 18.sp)
+                            } else {
+                                Text(text = activeFlag, fontSize = 18.sp)
+                                Text(
+                                    text = "+$defaultCode",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
                                 Icon(
-                                    painter = painterResource(R.drawable.ic_keyboard_arrow_down),
+                                    imageVector = Icons.Rounded.KeyboardArrowDown,
                                     contentDescription = "Select country code",
                                     modifier = Modifier.size(16.dp),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    tint = Color(0xFFC5C6D0)
                                 )
                             }
                         }
@@ -798,8 +797,9 @@ fun QuickChatScreen(
                         if (phoneNumber.isNotEmpty()) {
                             IconButton(onClick = { phoneNumber = "" }) {
                                 Icon(
-                                    painter = painterResource(R.drawable.ic_close),
-                                    contentDescription = "Clear"
+                                    imageVector = Icons.Rounded.Close,
+                                    contentDescription = "Clear",
+                                    tint = Color(0xFFC5C6D0)
                                 )
                             }
                         }
@@ -825,78 +825,57 @@ fun QuickChatScreen(
                                                 .find(clean)?.groupValues?.get(1)
                                         }
                                     } else {
-                                        // Non-WhatsApp content: only accept if it looks like a valid phone number
                                         if (clean.matches(Regex("^[+0-9]+$"))) {
                                             parsed = clean
                                         }
                                     }
 
                                     if (parsed != null) {
-                                        phoneNumber = parsed
+                                        phoneNumber = parsed.removePrefix("+$defaultCode").removePrefix("+")
                                     } else {
                                         android.widget.Toast.makeText(context, "Invalid WhatsApp QR code", android.widget.Toast.LENGTH_SHORT).show()
                                     }
                                 }
                             )
                         }) {
-                            Icon(Icons.Filled.QrCodeScanner, "Scan QR")
+                            Icon(
+                                imageVector = Icons.Rounded.QrCodeScanner,
+                                contentDescription = "Scan QR",
+                                tint = Color(0xFFC5C6D0)
+                            )
                         }
                     }
                 },
                 singleLine = true,
+                shape = RoundedCornerShape(20.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFF44474F),
+                    unfocusedBorderColor = Color(0xFF44474F).copy(alpha = 0.6f),
+                    focusedContainerColor = Color(0xFF38393F),
+                    unfocusedContainerColor = Color(0xFF38393F),
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    cursorColor = Color.White
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Message Input
-            OutlinedTextField(
-                value = messageText,
-                onValueChange = { messageText = it },
-                label = { Text("Message (Optional)") },
-                placeholder = { Text("Type custom message here...") },
-                shape = RoundedCornerShape(16.dp),
-                singleLine = false,
-                maxLines = 3,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Templates Chips
-            androidx.compose.foundation.lazy.LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                items(templates) { template ->
-                    Card(
-                        onClick = { messageText = template },
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                        ),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
-                    ) {
-                        Text(
-                            text = template,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             // Action Button
+            val cleanNumericDigits = when {
+                phoneNumber.trim().startsWith("+") -> phoneNumber.trim().removePrefix("+").replace(Regex("[^0-9]"), "")
+                phoneNumber.replace(Regex("[^0-9]"), "").startsWith(defaultCode) && phoneNumber.replace(Regex("[^0-9]"), "").length > 10 -> phoneNumber.replace(Regex("[^0-9]"), "")
+                else -> "$defaultCode${phoneNumber.replace(Regex("[^0-9]"), "")}"
+            }
+
             Button(
                 onClick = {
                     if (isValid) {
                         scope.launch {
                             val flagToSave = if (isUsername) "👤" else activeFlag
                             viewModel.saveChatNumberToHistory(
-                                if (isUsername) phoneNumber.trim() else finalNumber,
+                                if (isUsername) phoneNumber.trim() else "+$cleanNumericDigits",
                                 flagToSave
                             )
                         }
@@ -904,44 +883,39 @@ fun QuickChatScreen(
                         try {
                             when (selectedTab) {
                                 "WhatsApp" -> {
-                                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                                        data = Uri.parse("https://api.whatsapp.com/send?phone=$finalNumber&text=${Uri.encode(messageText)}")
+                                    val waUri = Uri.parse("https://wa.me/$cleanNumericDigits")
+                                    val waIntent = Intent(Intent.ACTION_VIEW, waUri).apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                     }
-                                    context.startActivity(intent)
+                                    context.startActivity(waIntent)
                                 }
                                 "Telegram" -> {
-                                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                                        data = if (isLink) {
-                                            var url = phoneNumber.trim()
-                                            if (url.startsWith("t.me")) {
-                                                url = "https://$url"
-                                            }
-                                            Uri.parse(url)
-                                        } else if (isUsername) {
-                                            val user = phoneNumber.trim().removePrefix("@")
-                                            if (user.startsWith("+")) {
-                                                Uri.parse("https://t.me/$user")
-                                            } else {
-                                                Uri.parse("https://t.me/$user?text=${Uri.encode(messageText)}")
-                                            }
-                                        } else {
-                                            Uri.parse("tg://msg?text=${Uri.encode(messageText)}&to=$finalNumber")
-                                        }
+                                    val tgUri = if (isLink) {
+                                        var url = phoneNumber.trim()
+                                        if (!url.startsWith("http")) url = "https://$url"
+                                        Uri.parse(url)
+                                    } else if (isUsername) {
+                                        val user = phoneNumber.trim().removePrefix("@")
+                                        Uri.parse("https://t.me/$user")
+                                    } else {
+                                        Uri.parse("https://t.me/+$cleanNumericDigits")
                                     }
-                                    context.startActivity(intent)
+                                    val tgIntent = Intent(Intent.ACTION_VIEW, tgUri).apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                    context.startActivity(tgIntent)
                                 }
                                 "Signal" -> {
-                                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                                        data = Uri.parse("https://signal.me/#p/$finalNumber")
+                                    val signalIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://signal.me/#p/+$cleanNumericDigits")).apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                     }
-                                    context.startActivity(intent)
+                                    context.startActivity(signalIntent)
                                 }
                                 "SMS" -> {
-                                    val intent = Intent(Intent.ACTION_SENDTO).apply {
-                                        data = Uri.parse("smsto:$finalNumber")
-                                        putExtra("sms_body", messageText)
+                                    val smsIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:+$cleanNumericDigits")).apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                     }
-                                    context.startActivity(intent)
+                                    context.startActivity(smsIntent)
                                 }
                             }
                         } catch (e: Exception) {
@@ -951,29 +925,43 @@ fun QuickChatScreen(
                     }
                 },
                 enabled = isValid,
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White,
+                    disabledContainerColor = Color(0xFF2A2B30),
+                    disabledContentColor = Color(0xFF8E9099)
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp)
+                    .height(52.dp)
             ) {
-                val iconRes = when (selectedTab) {
-                    "WhatsApp" -> R.drawable.ic_whatsapp
-                    "Telegram" -> R.drawable.ic_share // Use share icon for Telegram
-                    "Signal" -> R.drawable.ic_quickdash_tile // Fallback to tile
-                    else -> R.drawable.ic_phone // SMS
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    val iconRes = when (selectedTab) {
+                        "WhatsApp" -> R.drawable.ic_whatsapp
+                        "Telegram" -> R.drawable.ic_telegram
+                        "Signal" -> R.drawable.ic_signal
+                        else -> R.drawable.ic_sms
+                    }
+                    Icon(
+                        painter = painterResource(iconRes),
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = "Open Chat in $selectedTab",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp
+                    )
                 }
-                Icon(
-                    painter = painterResource(iconRes),
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    "Start $selectedTab Chat",
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold
-                )
             }
+
+            Spacer(modifier = Modifier.height(96.dp))
         }
     }
 }

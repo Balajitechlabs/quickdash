@@ -11,7 +11,7 @@ Welcome to the Developer Setup guide for QuickDash. This project is built using 
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/Balajitechlabs/quickdash.git
+   git clone https://github.com/balajitechlabs/quickdash.git
    cd quickdash
    ```
 

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/security
+ * File: SecurityGuardManager.kt
+ * Description: EssentialX-styled component for core/security supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.security
 
 import android.content.Context
@@ -7,7 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 
 /**
- * 🔒 Biometric Guard & Security Manager (`SecurityGuardManager.kt`).
+ * Biometric Guard & Security Manager (`SecurityGuardManager.kt`).
  * Handles fingerprint and face unlock authentication for sensitive features (Clipboard, Passwords, Notes).
  */
 object SecurityGuardManager {

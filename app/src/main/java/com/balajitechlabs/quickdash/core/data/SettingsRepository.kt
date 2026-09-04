@@ -1234,7 +1234,7 @@ class SettingsRepository @Inject constructor(@ApplicationContext private val con
             }
             return true
         } catch (e: Exception) {
-            e.printStackTrace()
+            android.util.Log.e("SettingsRepository", "Restore failed: ${e.message}", e)
             return false
         }
     }

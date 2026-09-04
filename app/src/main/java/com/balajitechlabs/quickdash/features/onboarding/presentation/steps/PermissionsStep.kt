@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/onboarding
+ * File: PermissionsStep.kt
+ * Description: EssentialX-styled component for features/onboarding supporting high performance productivity tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.onboarding.presentation.steps
 
 import android.Manifest
@@ -94,7 +103,7 @@ fun PermissionsStep(
                         context.startActivity(intent)
                         overlayGranted = Settings.canDrawOverlays(context)
                     } catch (e: Exception) {
-                        e.printStackTrace()
+                        android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
                     }
                 }
             }
