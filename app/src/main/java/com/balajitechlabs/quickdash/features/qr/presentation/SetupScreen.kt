@@ -2,13 +2,11 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: Quick Collect / UPI Setup
+ * Feature Module: features/qr/presentation
  * File: SetupScreen.kt
- * Description: Configuration screen for managing UPI/PayPal accounts, primary default selection,
- *              tactile floating mode switch, and strict monochrome iconography.
+ * Description: Configuration screen for setting up primary merchant UPI ID and payee details.
  * Developer: balajitechlabs
  */
-
 package com.balajitechlabs.quickdash.features.qr.presentation
 
 import androidx.compose.foundation.BorderStroke

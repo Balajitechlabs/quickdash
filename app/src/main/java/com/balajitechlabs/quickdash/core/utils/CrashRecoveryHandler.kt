@@ -4,13 +4,14 @@
  *
  * Feature Module: core/utils
  * File: CrashRecoveryHandler.kt
- * Description: EssentialX-styled component for core/utils supporting high performance productivity tools.
+ * Description: UncaughtExceptionHandler providing graceful crash recovery, diagnostic logging, and restart options.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.utils
 
 import android.content.Context
 import java.io.File
+import android.util.Log
 
 object CrashRecoveryHandler {
 
@@ -23,7 +24,7 @@ object CrashRecoveryHandler {
                 val file = File(context.filesDir, CRASH_FLAG_FILE)
                 file.writeText("CRASH: ${throwable.localizedMessage}\n${throwable.stackTraceToString()}")
             } catch (e: Exception) {
-                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+                Log.e("QuickDash", "Error occurred: ${e.message}", e)
             }
             defaultHandler?.uncaughtException(thread, throwable)
         }
@@ -39,7 +40,7 @@ object CrashRecoveryHandler {
             val file = File(context.filesDir, CRASH_FLAG_FILE)
             if (file.exists()) file.delete()
         } catch (e: Exception) {
-            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+            Log.e("QuickDash", "Error occurred: ${e.message}", e)
         }
     }
 }

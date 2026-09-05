@@ -4,7 +4,7 @@
  *
  * Feature Module: core/navigation
  * File: QuickDashNavHost.kt
- * Description: EssentialX-styled component for core/navigation supporting high performance productivity tools.
+ * Description: Composable navigation graph coordinating transitions between dashboard tools, settings, and full-screen screens.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.navigation

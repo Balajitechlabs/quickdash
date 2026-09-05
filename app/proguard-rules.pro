@@ -9,7 +9,6 @@
 -keep class com.balajitechlabs.quickdash.MainActivity { *; }
 -keep class com.balajitechlabs.quickdash.features.dashboard.presentation.FloatingDialogActivity { *; }
 -keep class com.balajitechlabs.quickdash.core.services.FloatingBubbleService { *; }
--keep class com.balajitechlabs.quickdash.core.services.QuickDashFirebaseMessagingService { *; }
 -keep class com.balajitechlabs.quickdash.core.services.QuickDashNotificationListenerService { *; }
 -keep class com.balajitechlabs.quickdash.core.quicktile.QuickTileService { *; }
 -keep class com.balajitechlabs.quickdash.core.quicktile.QrScannerTileService { *; }
@@ -57,6 +56,9 @@
 # ======================================================================
 # 7. HILT / DAGGER DI
 # ======================================================================
+-keep class dagger.hilt.** { *; }
+-keep class javax.inject.** { *; }
+-keep class * extends dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper { *; }
 
 # ======================================================================
 # 8. CORE SINGLETONS & UTILITIES
@@ -68,6 +70,8 @@
 -keep class com.balajitechlabs.quickdash.core.utils.LogManager { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.AppLogger { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.UpdateManager* { *; }
+-keep class com.balajitechlabs.quickdash.core.utils.SemanticVersion { *; }
+-keepclassmembers class com.balajitechlabs.quickdash.core.utils.SemanticVersion { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.UpdateState { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.UpdateState$* { *; }
 -keep class com.balajitechlabs.quickdash.core.utils.ShakeDetector { *; }
@@ -131,6 +135,9 @@
 -keep class com.balajitechlabs.quickdash.core.network.AnnouncementResponse { *; }
 -keep class com.balajitechlabs.quickdash.core.network.FeedbackRequest { *; }
 -keep class com.balajitechlabs.quickdash.core.network.CrashReportRequest { *; }
+-keep class com.balajitechlabs.quickdash.core.network.UpdateInfo { *; }
+-keep class com.balajitechlabs.quickdash.core.network.Announcement { *; }
+-keep class com.balajitechlabs.quickdash.core.network.** { *; }
 
 # ======================================================================
 # 10. DATA MODELS / ENUMS / SEALED CLASSES
@@ -202,6 +209,12 @@
 # 16. ZXING QR
 # ======================================================================
 -keep class com.google.zxing.** { *; }
+
+# ======================================================================
+# 17. SHIZUKU PRIVILEGED API
+# ======================================================================
+-keep class rikka.shizuku.** { *; }
+-dontwarn rikka.shizuku.**
 
 
 # ======================================================================

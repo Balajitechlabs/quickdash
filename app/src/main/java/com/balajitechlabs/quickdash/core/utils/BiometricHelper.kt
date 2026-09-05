@@ -4,7 +4,7 @@
  *
  * Feature Module: core/utils
  * File: BiometricHelper.kt
- * Description: EssentialX-styled component for core/utils supporting high performance productivity tools.
+ * Description: Helper wrapping BiometricPrompt to authenticate users via fingerprint or face recognition.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.utils

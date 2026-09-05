@@ -4,7 +4,7 @@
  *
  * Feature Module: core/data
  * File: HistorySerializer.kt
- * Description: EssentialX-styled component for core/data supporting high performance productivity tools.
+ * Description: JSON serialization and deserialization helpers for polymorphic history and event records.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.data

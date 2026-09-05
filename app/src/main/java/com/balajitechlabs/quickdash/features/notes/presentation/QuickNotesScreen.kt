@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/notes
+ * Feature Module: features/notes/presentation
  * File: QuickNotesScreen.kt
- * Description: EssentialX-styled component for features/notes supporting high performance productivity tools.
+ * Description: Lightweight notes tool supporting fast scratchpad capture, markdown formatting, and sharing.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.notes.presentation
@@ -76,19 +76,19 @@ fun FormattedMarkdown(text: String, modifier: Modifier = Modifier) {
                     }
                     line.startsWith("[ ] ") -> {
                         withStyle(SpanStyle(color = Color.Gray)) {
-                            append("☐  ")
+                            append("  ")
                         }
                         append(line.removePrefix("[ ] "))
                     }
                     line.startsWith("[x] ") -> {
                         withStyle(SpanStyle(color = primaryColor, fontWeight = FontWeight.Bold)) {
-                            append("☑  ")
+                            append("  ")
                         }
                         append(line.removePrefix("[x] "))
                     }
                     line.startsWith("> ") -> {
                         withStyle(SpanStyle(color = Color(0xFF81C784), fontStyle = androidx.compose.ui.text.font.FontStyle.Italic)) {
-                            append("❝ ${line.removePrefix("> ")}")
+                            append(" ${line.removePrefix("> ")}")
                         }
                     }
                     line.startsWith("`") && line.endsWith("`") -> {
@@ -164,7 +164,10 @@ fun QuickNotesScreen(
             listOf("Write" to Icons.Default.Edit, "Preview" to Icons.Default.Visibility).forEach { (mode, icon) ->
                 val isSelected = selectedMode == mode
                 Surface(
-                    onClick = { selectedMode = mode },
+                    onClick = {
+                        com.balajitechlabs.quickdash.core.ui.playClickVibration(context, true)
+                        selectedMode = mode
+                    },
                     shape = RoundedCornerShape(16.dp),
                     color = if (isSelected) MaterialTheme.colorScheme.primary else Color(0xFF2A2B30),
                     modifier = Modifier.weight(1f).height(38.dp)
@@ -197,7 +200,7 @@ fun QuickNotesScreen(
                 "# Header" to "# ",
                 "**Bold**" to "**bold**",
                 "- Bullet" to "- ",
-                "☐ Todo" to "[ ] ",
+                " Todo" to "[ ] ",
                 "> Quote" to "> ",
                 "`Code`" to "`code`"
             )
@@ -207,7 +210,10 @@ fun QuickNotesScreen(
             ) {
                 items(markdownShortcuts) { (label, snippet) ->
                     Surface(
-                        onClick = { noteInput += if (noteInput.isEmpty() || noteInput.endsWith("\n")) snippet else "\n$snippet" },
+                        onClick = {
+                            com.balajitechlabs.quickdash.core.ui.playClickVibration(context, true, 16L)
+                            noteInput += if (noteInput.isEmpty() || noteInput.endsWith("\n")) snippet else "\n$snippet"
+                        },
                         shape = RoundedCornerShape(12.dp),
                         color = Color(0xFF2A2B30),
                         border = BorderStroke(1.dp, Color(0xFF44474F))
@@ -245,13 +251,14 @@ fun QuickNotesScreen(
 
             Button(
                 onClick = {
+                    com.balajitechlabs.quickdash.core.ui.playHeavyVibration(context, true, 28L)
                     val trimmed = noteInput.trim()
                     if (trimmed.isNotBlank()) {
                         coroutineScope.launch {
                             noteDao.insertNote(NoteEntity(text = trimmed))
                             mainViewModel.userStore.incrementNotesSaved()
                             noteInput = ""
-                            Toast.makeText(context, "Note Saved ✓", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Note Saved ", Toast.LENGTH_SHORT).show()
                         }
                     }
                 },
@@ -364,6 +371,7 @@ fun QuickNotesScreen(
                             ) {
                                 IconButton(
                                     onClick = {
+                                        com.balajitechlabs.quickdash.core.ui.playClickVibration(context, true, 18L)
                                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
                                         clipboard?.setPrimaryClip(ClipData.newPlainText("QuickNote", note.text))
                                         Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
@@ -380,6 +388,7 @@ fun QuickNotesScreen(
                                 Spacer(modifier = Modifier.width(6.dp))
                                 IconButton(
                                     onClick = {
+                                        com.balajitechlabs.quickdash.core.ui.playClickVibration(context, true, 18L)
                                         val shareIntent = Intent(Intent.ACTION_SEND).apply {
                                             type = "text/plain"
                                             putExtra(Intent.EXTRA_TEXT, note.text)

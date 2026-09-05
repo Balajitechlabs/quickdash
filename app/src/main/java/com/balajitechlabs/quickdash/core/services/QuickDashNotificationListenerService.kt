@@ -4,11 +4,14 @@
  *
  * Feature Module: core/services
  * File: QuickDashNotificationListenerService.kt
- * Description: EssentialX-styled component for core/services supporting high performance productivity tools.
+ * Description: Notification listener service monitoring incoming alerts to provide quick reply and notification capture.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.services
 
+
+import com.google.gson.reflect.TypeToken
+import com.google.gson.Gson
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.content.Intent
@@ -16,12 +19,11 @@ import com.balajitechlabs.quickdash.core.data.UserStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
+import android.util.Log
 
 @AndroidEntryPoint
 class QuickDashNotificationListenerService : NotificationListenerService() {
@@ -73,7 +75,7 @@ class QuickDashNotificationListenerService : NotificationListenerService() {
                 // Keep last 50 notification logs
                 historyRepository.saveNotificationHistory(gson.toJson(list.take(50)))
             } catch (e: Exception) {
-                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+                Log.e("QuickDash", "Error occurred: ${e.message}", e)
             }
         }
     }

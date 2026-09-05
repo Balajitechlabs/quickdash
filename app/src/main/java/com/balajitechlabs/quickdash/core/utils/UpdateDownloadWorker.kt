@@ -4,7 +4,7 @@
  *
  * Feature Module: core/utils
  * File: UpdateDownloadWorker.kt
- * Description: EssentialX-styled component for core/utils supporting high performance productivity tools.
+ * Description: WorkManager worker downloading APK release assets in the background with progress reporting.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.utils

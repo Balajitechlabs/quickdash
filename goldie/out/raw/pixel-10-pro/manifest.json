@@ -1,0 +1,28 @@
+{
+  "device": "pixel-10-pro",
+  "udid": "192.168.1.15:40475",
+  "capturedAt": "2026-09-05T17:10:00.000Z",
+  "screenshots": [
+    {
+      "sceneId": "home",
+      "file": "/Users/btl/Documents/btl-all-projects/quickdash/goldie/out/raw/pixel-10-pro/home.png"
+    },
+    {
+      "sceneId": "about_me",
+      "file": "/Users/btl/Documents/btl-all-projects/quickdash/goldie/out/raw/pixel-10-pro/about_me.png"
+    },
+    {
+      "sceneId": "settings",
+      "file": "/Users/btl/Documents/btl-all-projects/quickdash/goldie/out/raw/pixel-10-pro/settings.png"
+    },
+    {
+      "sceneId": "about_dash",
+      "file": "/Users/btl/Documents/btl-all-projects/quickdash/goldie/out/raw/pixel-10-pro/about_dash.png"
+    },
+    {
+      "sceneId": "community",
+      "file": "/Users/btl/Documents/btl-all-projects/quickdash/goldie/out/raw/pixel-10-pro/community.png"
+    }
+  ],
+  "preview": null
+}

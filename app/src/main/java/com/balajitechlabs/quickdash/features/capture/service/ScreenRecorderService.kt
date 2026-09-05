@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/capture
+ * Feature Module: features/capture/service
  * File: ScreenRecorderService.kt
- * Description: EssentialX-styled component for features/capture supporting high performance productivity tools.
+ * Description: Foreground service coordinating Android MediaProjection screen capture and video encoding.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.capture.service
@@ -148,7 +148,7 @@ class ScreenRecorderService : Service() {
                 mediaRecorder = recorder
                 true
             } catch (e: Exception) {
-                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+                Log.e("QuickDash", "Error occurred: ${e.message}", e)
                 false
             }
         }
@@ -234,7 +234,7 @@ class ScreenRecorderService : Service() {
                     contentResolver.update(it, cv, null, null)
                 }
                 file.delete() // Remove cache copy
-                Toast.makeText(this, "✅ Recording saved to Movies/QuickDash!", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, " Recording saved to Movies/QuickDash!", Toast.LENGTH_LONG).show()
             }
         } catch (e: Exception) {
             Toast.makeText(this, "Recording saved to: ${file.absolutePath}", Toast.LENGTH_LONG).show()
@@ -264,10 +264,10 @@ class ScreenRecorderService : Service() {
         val stopPi = PendingIntent.getService(this, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("🔴 Recording Screen")
+            .setContentTitle(" Recording Screen")
             .setContentText("Tap to stop recording")
             .setSmallIcon(R.drawable.ic_quickdash_tile)
-            .addAction(0, "⏹ Stop", stopPi)
+            .addAction(0, " Stop", stopPi)
             .setOngoing(true)
             .setSilent(true)
             .build()

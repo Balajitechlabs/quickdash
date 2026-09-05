@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: viewmodel
+ * File: ClipboardViewModelTest.kt
+ * Description: Unit tests verifying clipboard item management, search filtering, and deletion.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.viewmodel
 
 import com.balajitechlabs.quickdash.core.data.UserStore

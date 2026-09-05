@@ -4,7 +4,7 @@
  *
  * Feature Module: core/services
  * File: QuickTileCategoryService.kt
- * Description: EssentialX-styled component for core/services supporting high performance productivity tools.
+ * Description: Quick Settings tile enabling instant toggling of category-specific floating tool panels.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.services
@@ -17,7 +17,7 @@ import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
 
 /**
- * 🧱 Dedicated Quick Settings Tile Categories (`QuickTileCategoryService.kt`).
+ *  Dedicated Quick Settings Tile Categories (`QuickTileCategoryService.kt`).
  * Enables 1-tap launching of Quick Collect, Quick Password, or Quick Eyedropper directly from notification shade.
  */
 @RequiresApi(Build.VERSION_CODES.N)

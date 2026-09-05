@@ -46,7 +46,7 @@ function ChangelogSection() {
           <div key={r.id || r.version || idx} className="card" style={{ padding: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8, flexWrap: 'wrap', gap: 4 }}>
               <span style={{ fontFamily: 'var(--pixel-font)', fontSize: 9, color: 'var(--md-primary)' }}>
-                v{r.version || (r.tag_name ? r.tag_name.replace('v', '') : '')}
+                v{r.version || (r.tag_name ? r.tag_name.replace(/^v/, '').replace(/-\d+$/, '') : '')}
               </span>
               <span style={{ fontSize: 11, color: 'var(--md-on-surface-variant)' }}>
                 {r.date || (r.published_at ? new Date(r.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '')}

@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: core/data
+ * Feature Module: core/data/database
  * File: AppDatabase.kt
- * Description: EssentialX-styled component for core/data supporting high performance productivity tools.
+ * Description: Room database definition maintaining tables and DAOs for local offline persistence.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.data.database

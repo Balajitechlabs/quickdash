@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: core/ui
+ * Feature Module: core/ui/components
  * File: EmptyStateCard.kt
- * Description: EssentialX-styled empty state component with monochrome icon badges, titles, and actionable prompts.
+ * Description: Reusable empty-state visual card displaying contextual icons, explanatory copy, and call-to-action buttons.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.ui.components
@@ -14,6 +14,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -98,5 +100,23 @@ fun EmptyStateCard(
                 }
             }
         }
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "Empty State Card - Dark",
+    showBackground = true,
+    backgroundColor = 0xFF000000
+)
+@Composable
+fun EmptyStateCardPreview() {
+    MaterialTheme {
+        EmptyStateCard(
+            icon = Icons.Filled.Info,
+            title = "No History Found",
+            subtitle = "Your recent activities and items will be displayed here securely.",
+            actionLabel = "Refresh",
+            onActionClick = {}
+        )
     }
 }

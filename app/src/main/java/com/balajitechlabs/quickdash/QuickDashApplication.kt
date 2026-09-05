@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: app
+ * Feature Module: root
  * File: QuickDashApplication.kt
- * Description: Application class initializing Hilt dependency injection, notification channels, and global crash reporting.
+ * Description: Application class configuring Hilt dependency injection, notification channels, and global crash reporting.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash
@@ -22,7 +22,7 @@ import android.content.Context
 import android.content.Intent
 
 
-import com.balajitechlabs.quickdash.core.utils.LogManager
+import com.balajitechlabs.quickdash.core.utils.AppLogger
 import com.balajitechlabs.quickdash.core.utils.ShakeDetector
 import com.balajitechlabs.quickdash.core.data.EncryptedPrefsHelper
 import com.balajitechlabs.quickdash.core.data.UserStore
@@ -31,6 +31,7 @@ import com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker
 import com.balajitechlabs.quickdash.features.dashboard.presentation.FloatingDialogActivity
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
+import java.io.File
 
 @HiltAndroidApp
 class QuickDashApplication : Application() {
@@ -50,10 +51,10 @@ class QuickDashApplication : Application() {
         val earlyDefaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             try {
-                val stackTrace = android.util.Log.getStackTraceString(throwable)
+                val stackTrace = Log.getStackTraceString(throwable)
                 val msg = "THREAD: ${thread.name}\n\n$stackTrace"
                 val dir = getExternalFilesDir(null) ?: filesDir
-                val crashFile = java.io.File(dir, "quickdash_crash.txt")
+                val crashFile = File(dir, "quickdash_crash.txt")
                 crashFile.writeText(msg)
             } catch (e: Exception) {
                 Log.e("QuickDashApp", "Failed to write crash capture file", e)
@@ -62,8 +63,8 @@ class QuickDashApplication : Application() {
         }
         // ── END CRASH CAPTURE ────────────────────────────────────────────────────
         
-        try { LogManager.init(this) } catch (e: Exception) { Log.e("QuickDashApp", "LogManager init failed", e) }
-        LogManager.d("QuickDashApp", "Application starting up...")
+        try { AppLogger.init(this) } catch (e: Exception) { Log.e("QuickDashApp", "AppLogger init failed", e) }
+        AppLogger.d("QuickDashApp", "Application starting up...")
         
         try { EncryptedPrefsHelper.init(this) } catch (e: Exception) {
             Log.e("QuickDashApp", "EncryptedPrefsHelper init failed", e)
@@ -117,7 +118,7 @@ class QuickDashApplication : Application() {
                 oneTimeRequest
             )
         } catch (e: Exception) {
-            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+            Log.e("QuickDash", "Error occurred: ${e.message}", e)
         }
     }
 
@@ -137,7 +138,7 @@ class QuickDashApplication : Application() {
         
         // Use global scope since the app is crashing and lifecycle scopes are dying
         CoroutineScope(Dispatchers.IO).launch {
-            LogManager.e("CRASH", "Uncaught Exception in ${thread.name}", exception)
+            AppLogger.e("CRASH", "Uncaught Exception in ${thread.name}", exception)
             TelegramTracker.sendMessage(message)
         }
         

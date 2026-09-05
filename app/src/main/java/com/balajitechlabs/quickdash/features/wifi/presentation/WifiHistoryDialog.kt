@@ -2,13 +2,15 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/wifi
+ * Feature Module: features/wifi/presentation
  * File: WifiHistoryDialog.kt
- * Description: EssentialX-styled component for features/wifi supporting high performance productivity tools.
+ * Description: Dialog displaying previously saved Wi-Fi networks with one-tap QR generation.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.wifi.presentation
 
+
+import com.google.gson.JsonParser
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -28,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.google.gson.JsonParser
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

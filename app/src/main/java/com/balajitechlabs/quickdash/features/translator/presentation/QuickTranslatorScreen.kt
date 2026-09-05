@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/translator
+ * Feature Module: features/translator/presentation
  * File: QuickTranslatorScreen.kt
- * Description: EssentialX-styled component for features/translator supporting high performance productivity tools.
+ * Description: Text translation tool supporting language pairs with clipboard integration.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.translator.presentation
@@ -333,7 +333,7 @@ fun QuickTranslatorScreen() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("📜 Recent Translations", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                Text(" Recent Translations", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
                 TextButton(onClick = { translationHistory.clear() }) {
                     Text("Clear", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error)
                 }

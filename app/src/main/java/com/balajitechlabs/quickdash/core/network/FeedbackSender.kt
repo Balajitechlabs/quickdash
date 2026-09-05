@@ -4,7 +4,7 @@
  *
  * Feature Module: core/network
  * File: FeedbackSender.kt
- * Description: EssentialX-styled component for core/network supporting high performance productivity tools.
+ * Description: Dispatches user feedback, diagnostics, and issue reports to the developer support channel.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.network

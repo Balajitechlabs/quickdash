@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/qr
+ * Feature Module: features/qr/presentation
  * File: EnterAmountScreen.kt
- * Description: EssentialX-styled component for features/qr supporting high performance productivity tools.
+ * Description: Fast amount entry screen generating dynamic UPI QR codes for merchant collection.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.qr.presentation

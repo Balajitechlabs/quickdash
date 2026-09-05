@@ -4,7 +4,7 @@
  *
  * Feature Module: core/ui/components
  * File: EssentialsFloatingToolbar.kt
- * Description: EssentialX-inspired spring-animated floating bottom navigation toolbar
+ * Description: Spring-animated pill toolbar anchored above navigation bars for high-speed tab switching.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.ui.components
@@ -167,5 +167,20 @@ fun EssentialsFloatingToolbar(
                 }
             }
         }
+    }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(
+    name = "Essentials Floating Toolbar - Dark",
+    showBackground = true,
+    backgroundColor = 0xFF000000
+)
+@Composable
+fun EssentialsFloatingToolbarPreview() {
+    MaterialTheme {
+        EssentialsFloatingToolbar(
+            selectedTab = 1,
+            onSelectTab = {}
+        )
     }
 }

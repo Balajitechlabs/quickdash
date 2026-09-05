@@ -1,0 +1,1024 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:AiTextCategorizer.kt$AiTextCategorizer$trimmed.length in 8..32 &amp;&amp; !trimmed.contains(" ") &amp;&amp; ((hasUpper &amp;&amp; hasLower &amp;&amp; hasDigit) || (hasDigit &amp;&amp; hasSpecial))</ID>
+    <ID>ComplexCondition:AiTextCategorizer.kt$AiTextCategorizer$trimmed.startsWith("http://", ignoreCase = true) || trimmed.startsWith("https://", ignoreCase = true) || (trimmed.contains(".") &amp;&amp; !trimmed.contains(" ") &amp;&amp; trimmed.length &gt; 4 &amp;&amp; android.util.Patterns.WEB_URL.matcher(trimmed).matches())</ID>
+    <ID>ComplexCondition:ClipboardScreen.kt$lower.contains("password") || lower.contains("key") || lower.contains("token") || lower.contains("secret") || lower.contains("pwd") || lower.contains("pin") || (text.length &gt; 25 &amp;&amp; !text.contains(" ") &amp;&amp; !text.contains("/"))</ID>
+    <ID>ComplexCondition:PaymentSetupStep.kt$isIdValid &amp;&amp; !isDuplicate &amp;&amp; newIdInput.isNotEmpty() &amp;&amp; currentIds.size &lt; 3</ID>
+    <ID>ComplexCondition:QuickCalculatorScreen.kt$Parser$ch &gt;= '0'.code &amp;&amp; ch &lt;= '9'.code || ch == '.'.code || ch == 'e'.code || ch == 'E'.code || ((ch == '+'.code || ch == '-'.code) &amp;&amp; (pos &gt; 0 &amp;&amp; (str[pos - 1] == 'e' || str[pos - 1] == 'E')))</ID>
+    <ID>ComplexCondition:QuickContactQrScreen.kt$fullName.isBlank() &amp;&amp; phone.isBlank() &amp;&amp; email.isBlank() &amp;&amp; website.isBlank()</ID>
+    <ID>ComplexCondition:QuickWifiScreen.kt$c == '\\' || c == ';' || c == ':' || c == '"'</ID>
+    <ID>ComplexCondition:SpotlightLauncher.kt$clean.length &gt;= 2 &amp;&amp; clean.all { it.isDigit() || it in "+-*/().%^ xX" } &amp;&amp; clean.any { it in "+-*/%xX" }</ID>
+    <ID>ComplexCondition:TelegramPollerWorker.kt$TelegramPollerWorker$!(hasText || hasPhoto || hasCaption || hasVideo || hasPoll || hasDocument)</ID>
+    <ID>ComplexCondition:TelegramPollerWorker.kt$TelegramPollerWorker$text.isNotBlank() || hasPhoto || hasVideo || hasDocument</ID>
+    <ID>ConstructorParameterNaming:ApiModels.kt$CrashReportRequest$val android_version: String</ID>
+    <ID>ConstructorParameterNaming:ApiModels.kt$CrashReportRequest$val app_version: String</ID>
+    <ID>ConstructorParameterNaming:ApiModels.kt$CrashReportRequest$val last_action: String = ""</ID>
+    <ID>ConstructorParameterNaming:ApiModels.kt$CrashReportRequest$val version_code: Int</ID>
+    <ID>ConstructorParameterNaming:ApiModels.kt$FeedbackRequest$val android_version: String</ID>
+    <ID>ConstructorParameterNaming:ApiModels.kt$FeedbackRequest$val app_version: String</ID>
+    <ID>CyclomaticComplexMethod:AboutScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun AboutScreen()</ID>
+    <ID>CyclomaticComplexMethod:AiTextCategorizer.kt$AiTextCategorizer$fun categorize(text: String): TextCategory</ID>
+    <ID>CyclomaticComplexMethod:AiTextCategorizer.kt$AiTextCategorizer$fun getQuickActions(text: String, category: TextCategory): List&lt;QuickAction&gt;</ID>
+    <ID>CyclomaticComplexMethod:AppPermissionsPreferenceGroup.kt$@Composable fun AppPermissionsPreferenceGroup( expanded: Boolean, onHeaderClick: () -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:BackupManager.kt$BackupManager$suspend fun importBackup( passphrase: String?, backupBytes: ByteArray, strategy: RestoreStrategy = RestoreStrategy.MERGE ): BackupResult</ID>
+    <ID>CyclomaticComplexMethod:BackupRestoreDialog.kt$@Composable fun BackupRestoreDialog( onDismissRequest: () -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:BackupRestoreManager.kt$BackupRestoreManager$suspend fun restoreFromJsonString(context: Context, jsonString: String): Result&lt;Unit&gt;</ID>
+    <ID>CyclomaticComplexMethod:BlogPostsScreen.kt$@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class) @Composable fun BlogPostsScreen(viewModel: BlogViewModel = hiltViewModel())</ID>
+    <ID>CyclomaticComplexMethod:ClipboardScreen.kt$@Composable fun ClipboardItemCard( item: String, pinnedItems: List&lt;String&gt;, clipboardItems: List&lt;String&gt;, viewModel: ClipboardViewModel, onTriggerConfetti: () -&gt; Unit, coroutineScope: kotlinx.coroutines.CoroutineScope, gson: com.google.gson.Gson, context: android.content.Context, sensitive: Boolean, revealed: Boolean, onToggleReveal: () -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:ClipboardScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ClipboardScreen( viewModel: ClipboardViewModel = hiltViewModel(), isFloating: Boolean = false, onTriggerConfetti: () -&gt; Unit = {}, onDismiss: () -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:ClipboardScreen.kt$fun parseClipboardContent(text: String, context: Context): List&lt;ActionableItem&gt;</ID>
+    <ID>CyclomaticComplexMethod:CustomComponents.kt$@Composable fun StyledSwitch( style: SwitchStyle, checked: Boolean, onCheckedChange: (Boolean) -&gt; Unit, modifier: Modifier = Modifier )</ID>
+    <ID>CyclomaticComplexMethod:DataMigrationManager.kt$DataMigrationManager$suspend fun migrateLegacyHistoryIfNeeded(): Boolean</ID>
+    <ID>CyclomaticComplexMethod:Dimens.kt$@Composable fun responsiveDimensions(): ResponsiveDimensions</ID>
+    <ID>CyclomaticComplexMethod:EnterAmountScreen.kt$@Composable @OptIn(ExperimentalMaterial3Api::class) fun EnterAmountScreen( recentAmounts: List&lt;String&gt;, upiIds: List&lt;String&gt;, defaultUpiId: String, defaultPaymentApp: String, usePaypal: Boolean = false, isFloating: Boolean = false, qrHistoryJson: String, onClearQrHistory: () -&gt; Unit, onScanQr: () -&gt; Unit, onGenerateQr: (String, String, String, PaymentTargetApp, String, Boolean, Boolean) -&gt; Unit, onManageUpiIds: () -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:FloatingBubbleService.kt$FloatingBubbleService$override fun onCreate()</ID>
+    <ID>CyclomaticComplexMethod:FloatingDialogActivity.kt$FloatingDialogActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
+    <ID>CyclomaticComplexMethod:FontStep.kt$@Composable fun FontStep( currentFontFamily: String, currentFontScale: Float, shapeStyle: String, cornerRadius: Float, borderWidth: Float, onFontFamilySelected: (String) -&gt; Unit, onFontScaleChanged: (Float) -&gt; Unit, onBack: () -&gt; Unit, onNext: () -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:OnboardingScreen.kt$@Composable fun OnboardingScreen( mainViewModel: com.balajitechlabs.quickdash.MainViewModel, onComplete: () -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:PaymentSetupStep.kt$@Composable fun PaymentSetupStep( upiIds: List&lt;String&gt;, defaultUpiId: String?, payeeName: String?, onSave: (List&lt;String&gt;, String, String) -&gt; Unit, onBack: () -&gt; Unit, onSkip: () -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:QRCodeGenerator.kt$QRCodeGenerator$@Throws(WriterException::class) fun generateQRCode( context: Context, text: String, width: Int = 512, height: Int = 512, qrColor: Int = Color.BLACK, centerEmoji: String? = null, qrGradientColors: Pair&lt;Int, Int&gt;? = null, useCircularDots: Boolean = false, addBrandingFooter: Boolean = false ): Bitmap</ID>
+    <ID>CyclomaticComplexMethod:QrHistoryDialog.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun QrHistoryDialog( historyJson: String, onClearHistory: () -&gt; Unit, onDismiss: () -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:QuickCalculatorScreen.kt$@Composable private fun CalcButton( key: CalcKey, size: androidx.compose.ui.unit.Dp, fontSize: androidx.compose.ui.unit.TextUnit, onClick: () -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:QuickCalculatorScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun QuickCalculatorScreen(isFloating: Boolean = false)</ID>
+    <ID>CyclomaticComplexMethod:QuickCalculatorScreen.kt$Parser$private fun parseFactor(): Double</ID>
+    <ID>CyclomaticComplexMethod:QuickCaptureScreen.kt$@Composable fun QuickCaptureScreen(isFloating: Boolean = false)</ID>
+    <ID>CyclomaticComplexMethod:QuickChatScreen.kt$@Composable fun QuickChatScreen( viewModel: QuickChatViewModel = hiltViewModel(), showSettings: Boolean, onToggleSettings: (Boolean) -&gt; Unit, selectingCountry: Boolean, onToggleSelectingCountry: (Boolean) -&gt; Unit, onDismiss: () -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:QuickContactQrScreen.kt$@Composable fun QuickContactQrScreen( isFloating: Boolean = false, onBack: () -&gt; Unit = {} )</ID>
+    <ID>CyclomaticComplexMethod:QuickConverterScreen.kt$@Composable fun QuickConverterScreen()</ID>
+    <ID>CyclomaticComplexMethod:QuickConverterScreen.kt$private fun convertUnits(category: UnitCategory, fromIdx: Int, toIdx: Int, value: Double): Double</ID>
+    <ID>CyclomaticComplexMethod:QuickDashApiClient.kt$QuickDashApiClient$private fun selectBestApkUrl(assets: org.json.JSONArray?, fallbackTag: String): String</ID>
+    <ID>CyclomaticComplexMethod:QuickDashApiClient.kt$QuickDashApiClient$suspend fun checkForUpdates(currentVersionCode: Int, includePreRelease: Boolean = false): UpdateInfo</ID>
+    <ID>CyclomaticComplexMethod:QuickDashApp.kt$@Composable fun QuickDashApp( mainViewModel: com.balajitechlabs.quickdash.MainViewModel, shortcutAction: String? = null, notificationTitle: String? = null, notificationMessage: String? = null, notificationImageUrl: String? = null, notificationIsPoll: Boolean = false, themeMode: String = "SYSTEM", dynamicColor: Boolean = false, isFloating: Boolean = false, onToggleDynamicColor: (Boolean) -&gt; Unit = {}, onChangeThemeMode: (String) -&gt; Unit = {}, onQrShown: () -&gt; Unit = {}, onRestoreBrightness: () -&gt; Unit = {}, onDismiss: () -&gt; Unit = {} )</ID>
+    <ID>CyclomaticComplexMethod:QuickDashApp.kt$@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class) @Composable fun QuickDashContent( mainViewModel: com.balajitechlabs.quickdash.MainViewModel, uiState: QuickDashUiState, usePaypal: Boolean = false, onTogglePaypal: (Boolean) -&gt; Unit = {}, isFloating: Boolean = false, recentAmounts: List&lt;String&gt; = emptyList(), upiIds: List&lt;String&gt; = emptyList(), defaultUpiId: String? = null, payeeName: String? = null, showUpiId: Boolean = true, themeMode: String = "SYSTEM", dynamicColor: Boolean = false, hapticEnabled: Boolean = true, onChangeThemeMode: (String) -&gt; Unit = {}, onToggleDynamicColor: (Boolean) -&gt; Unit = {}, showChatSettings: Boolean = false, onToggleChatSettings: (Boolean) -&gt; Unit = {}, selectingCountry: Boolean = false, onToggleSelectingCountry: (Boolean) -&gt; Unit = {}, defaultPaymentApp: String = "ANY", qrHistoryJson: String = "[]", onClearQrHistory: () -&gt; Unit = {}, onScanQr: () -&gt; Unit = {}, onSaveUpiIds: (List&lt;String&gt;, String, String) -&gt; Unit, onGenerateQr: (String, String, String, PaymentTargetApp, String, Boolean, Boolean) -&gt; Unit, onManageUpiIds: () -&gt; Unit, onBackToHome: () -&gt; Unit, onOpenSettings: () -&gt; Unit = {}, onNavigateTo: (QuickDashUiState) -&gt; Unit = {}, onToolSelected: (QuickTool) -&gt; Unit = {}, onQrShown: () -&gt; Unit = {}, onRestoreBrightness: () -&gt; Unit = {}, onDismiss: () -&gt; Unit = {}, onGenerateWifiQr: (String) -&gt; Unit = {}, onOnboardingComplete: () -&gt; Unit = {}, bubbleEnabled: Boolean = true, onToggleBubble: (Boolean) -&gt; Unit = {}, onNavigateToSystemLogs: () -&gt; Unit = {}, showNotificationPopup: Boolean = false, onToggleNotificationPopup: (Boolean) -&gt; Unit = {}, onNavigateToTab: (Int) -&gt; Unit = {}, onNavigateToBubbleCustomizer: () -&gt; Unit = {} )</ID>
+    <ID>CyclomaticComplexMethod:QuickDashWelcomeScreen.kt$@Composable fun QuickDashWelcomeScreen( onFinishOnboarding: () -&gt; Unit, modifier: Modifier = Modifier, hapticEnabled: Boolean = true )</ID>
+    <ID>CyclomaticComplexMethod:QuickNotesScreen.kt$@Composable fun FormattedMarkdown(text: String, modifier: Modifier = Modifier)</ID>
+    <ID>CyclomaticComplexMethod:QuickSearchScreen.kt$@Composable fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel, onDismiss: () -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:QuickSocialScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun QuickSocialScreen( mainViewModel: com.balajitechlabs.quickdash.MainViewModel, onDismiss: () -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:QuickTimerScreen.kt$@Composable private fun CountdownContent(viewModel: QuickTimerViewModel, scope: kotlinx.coroutines.CoroutineScope, isFloating: Boolean)</ID>
+    <ID>CyclomaticComplexMethod:QuickTimerScreen.kt$@Composable private fun StopwatchContent(viewModel: QuickTimerViewModel, scope: kotlinx.coroutines.CoroutineScope, isFloating: Boolean)</ID>
+    <ID>CyclomaticComplexMethod:QuickTranslatorScreen.kt$@Composable fun QuickTranslatorScreen()</ID>
+    <ID>CyclomaticComplexMethod:QuickVoiceMemosScreen.kt$@Composable fun QuickVoiceMemosScreen(isFloating: Boolean = false)</ID>
+    <ID>CyclomaticComplexMethod:QuickWebScreen.kt$@SuppressLint("SetJavaScriptEnabled") @Composable fun QuickWebScreen( initialUrl: String = "https://www.google.com", isFloating: Boolean = false, onClose: () -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:QuickWifiScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun QuickWifiScreen(viewModel: WifiViewModel = hiltViewModel(), isFloating: Boolean = false, onDismiss: () -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:ScreenRecorderService.kt$ScreenRecorderService$private fun startRecording(intent: Intent)</ID>
+    <ID>CyclomaticComplexMethod:SettingsScreen.kt$@Suppress("DEPRECATION") @OptIn(ExperimentalMaterial3Api::class) @Composable fun SettingsScreen( viewModel: SettingsViewModel = hiltViewModel(), themeMode: String, dynamicColor: Boolean, bubbleEnabled: Boolean, onChangeThemeMode: (String) -&gt; Unit, onToggleDynamicColor: (Boolean) -&gt; Unit, onToggleBubble: (Boolean) -&gt; Unit, onTriggerConfetti: (String) -&gt; Unit, onBackToHome: () -&gt; Unit, onNavigateToSystemLogs: () -&gt; Unit = {}, onManageUpiIds: () -&gt; Unit = {}, onNavigateToBubbleCustomizer: () -&gt; Unit = {} )</ID>
+    <ID>CyclomaticComplexMethod:SetupScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SetupScreen( upiIds: List&lt;String&gt;, defaultUpiId: String?, payeeName: String?, usePaypal: Boolean = false, viewModel: QrViewModel = hiltViewModel(), onSaveUpiIds: (List&lt;String&gt;, String, String) -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:ShowQrScreen.kt$@Composable fun ShowQrScreen( amount: String, qrBitmap: Bitmap, upiId: String, payeeName: String, showUpiId: Boolean, payUrl: String, usePaypal: Boolean = false, showShareButton: Boolean = true, confettiType: String = "Default", hapticLevel: String = "Crisp", isFloating: Boolean = false, onQrShown: () -&gt; Unit, onRestoreBrightness: () -&gt; Unit, onDismiss: () -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:SpotlightLauncher.kt$@Composable fun SpotlightLauncher( hapticEnabled: Boolean, isFloating: Boolean, mainViewModel: MainViewModel?, listState: LazyListState, onToolSelected: (QuickTool) -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:SpotlightLauncher.kt$private fun evaluateMathExpression(expr: String): String</ID>
+    <ID>CyclomaticComplexMethod:SpotlightLauncher.kt$private fun evaluateSpotlightQuery(query: String): SpotlightShortcutResult?</ID>
+    <ID>CyclomaticComplexMethod:TelegramPollerWorker.kt$TelegramPollerWorker$override suspend fun doWork(): Result</ID>
+    <ID>CyclomaticComplexMethod:TelegramPollerWorker.kt$TelegramPollerWorker$private suspend fun broadcastMessage( userStore: UserStore, token: String, message: JSONObject, text: String, hasPhoto: Boolean, hasVideo: Boolean, hasDocument: Boolean )</ID>
+    <ID>CyclomaticComplexMethod:Theme.kt$@Composable fun QuickDashTheme( themeMode: String = "SYSTEM", darkTheme: Boolean = isSystemInDarkTheme(), dynamicColor: Boolean = true, content: @Composable () -&gt; Unit )</ID>
+    <ID>CyclomaticComplexMethod:WelcomeOnboardingScreen.kt$@Composable fun WelcomeOnboardingScreen(onFinishOnboarding: () -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:WifiHistoryDialog.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun WifiHistoryDialog( historyJson: String, onClearHistory: () -&gt; Unit, onRemoveEntry: (String) -&gt; Unit, onSelectNetwork: (String, String) -&gt; Unit, onDismiss: () -&gt; Unit )</ID>
+    <ID>EmptyCatchBlock:QuickWifiScreen.kt${ }</ID>
+    <ID>EmptyFunctionBlock:ShakeDetectorService.kt$ShakeDetectorService${}</ID>
+    <ID>FunctionOnlyReturningConstant:PlayIntegrityManager.kt$PlayIntegrityManager$@Suppress("UNUSED_PARAMETER") suspend fun requestIntegrityToken(context: Context, nonce: String): String?</ID>
+    <ID>ImplicitDefaultLocale:QuickPomodoroScreen.kt$String.format("%02d:%02d", minutes, seconds)</ID>
+    <ID>ImplicitDefaultLocale:QuickVoiceMemosScreen.kt$String.format("%02d:%02d", mins, secs)</ID>
+    <ID>ImplicitDefaultLocale:VoiceRecorderService.kt$VoiceRecorderService$String.format("%02d:%02d", mins, secs)</ID>
+    <ID>LongMethod:AboutScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun AboutScreen()</ID>
+    <ID>LongMethod:AppPermissionsPreferenceGroup.kt$@Composable fun AppPermissionsPreferenceGroup( expanded: Boolean, onHeaderClick: () -&gt; Unit )</ID>
+    <ID>LongMethod:AppUpdateDialog.kt$@Composable fun AppUpdateDialog( onDismiss: () -&gt; Unit )</ID>
+    <ID>LongMethod:AppUpdateDialog.kt$@Composable fun DownloadingProgressDialog( state: UpdateState.Downloading, onDismissRequest: () -&gt; Unit = {} )</ID>
+    <ID>LongMethod:AppUpdateDialog.kt$@Composable fun ReadyToInstallDialog( state: UpdateState.ReadyToInstall, onInstall: () -&gt; Unit, onDismiss: () -&gt; Unit )</ID>
+    <ID>LongMethod:AppUpdateDialog.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun AppUpdateBottomSheet( updateState: UpdateState.UpdateAvailable, onDismissRequest: () -&gt; Unit, onStartDownload: () -&gt; Unit )</ID>
+    <ID>LongMethod:BackupManager.kt$BackupManager$suspend fun exportBackup( passphrase: String?, outputStream: OutputStream ): BackupResult</ID>
+    <ID>LongMethod:BackupManager.kt$BackupManager$suspend fun importBackup( passphrase: String?, backupBytes: ByteArray, strategy: RestoreStrategy = RestoreStrategy.MERGE ): BackupResult</ID>
+    <ID>LongMethod:BackupRestoreDialog.kt$@Composable fun BackupRestoreDialog( onDismissRequest: () -&gt; Unit )</ID>
+    <ID>LongMethod:BlogPostsScreen.kt$@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class) @Composable fun BlogPostsScreen(viewModel: BlogViewModel = hiltViewModel())</ID>
+    <ID>LongMethod:BubbleCustomizerScreen.kt$@Composable fun BubbleCustomizerScreen(viewModel: CustomizerViewModel = hiltViewModel())</ID>
+    <ID>LongMethod:CategoryExpandableSection.kt$@Composable fun CategoryExpandableSection( title: String, itemCount: Int, isExpanded: Boolean, onToggleExpand: () -&gt; Unit, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -&gt; Unit )</ID>
+    <ID>LongMethod:ClipboardScreen.kt$@Composable fun ClipboardItemCard( item: String, pinnedItems: List&lt;String&gt;, clipboardItems: List&lt;String&gt;, viewModel: ClipboardViewModel, onTriggerConfetti: () -&gt; Unit, coroutineScope: kotlinx.coroutines.CoroutineScope, gson: com.google.gson.Gson, context: android.content.Context, sensitive: Boolean, revealed: Boolean, onToggleReveal: () -&gt; Unit )</ID>
+    <ID>LongMethod:ClipboardScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ClipboardScreen( viewModel: ClipboardViewModel = hiltViewModel(), isFloating: Boolean = false, onTriggerConfetti: () -&gt; Unit = {}, onDismiss: () -&gt; Unit )</ID>
+    <ID>LongMethod:ClipboardScreen.kt$fun parseClipboardContent(text: String, context: Context): List&lt;ActionableItem&gt;</ID>
+    <ID>LongMethod:CompletionStep.kt$@Composable fun CompletionStep( notifGranted: Boolean, locationGranted: Boolean, upiConfigured: Boolean, themeMode: String, shapeStyle: String, fontName: String, onLaunch: () -&gt; Unit )</ID>
+    <ID>LongMethod:CustomComponents.kt$@Composable fun StyledSlider( style: SliderStyle, value: Float, onValueChange: (Float) -&gt; Unit, modifier: Modifier = Modifier, valueRange: ClosedFloatingPointRange&lt;Float&gt; = 0f..1f, onValueChangeFinished: (() -&gt; Unit)? = null )</ID>
+    <ID>LongMethod:CustomComponents.kt$@Composable fun StyledSwitch( style: SwitchStyle, checked: Boolean, onCheckedChange: (Boolean) -&gt; Unit, modifier: Modifier = Modifier )</ID>
+    <ID>LongMethod:CustomizeBubbleDialog.kt$@Composable fun CustomizeBubbleDialog( initialTools: List&lt;String&gt;, onSave: (List&lt;String&gt;) -&gt; Unit, onDismiss: () -&gt; Unit )</ID>
+    <ID>LongMethod:DataMigrationManager.kt$DataMigrationManager$suspend fun migrateLegacyHistoryIfNeeded(): Boolean</ID>
+    <ID>LongMethod:EmptyStateCard.kt$@Composable fun EmptyStateCard( icon: ImageVector, title: String, subtitle: String, actionLabel: String? = null, onActionClick: (() -&gt; Unit)? = null, modifier: Modifier = Modifier )</ID>
+    <ID>LongMethod:EnterAmountScreen.kt$@Composable @OptIn(ExperimentalMaterial3Api::class) fun EnterAmountScreen( recentAmounts: List&lt;String&gt;, upiIds: List&lt;String&gt;, defaultUpiId: String, defaultPaymentApp: String, usePaypal: Boolean = false, isFloating: Boolean = false, qrHistoryJson: String, onClearQrHistory: () -&gt; Unit, onScanQr: () -&gt; Unit, onGenerateQr: (String, String, String, PaymentTargetApp, String, Boolean, Boolean) -&gt; Unit, onManageUpiIds: () -&gt; Unit )</ID>
+    <ID>LongMethod:EssentialsFloatingToolbar.kt$@Composable fun EssentialsFloatingToolbar( selectedTab: Int, onSelectTab: (Int) -&gt; Unit, modifier: Modifier = Modifier, hapticEnabled: Boolean = true )</ID>
+    <ID>LongMethod:FavoriteCarousel.kt$@OptIn(ExperimentalFoundationApi::class) @Composable private fun FavoriteCardItem( item: FavoriteCarouselItem, onClick: () -&gt; Unit, onLongClick: (() -&gt; Unit)? = null, modifier: Modifier = Modifier )</ID>
+    <ID>LongMethod:FeatureHighlightCard.kt$@Composable fun FeatureHighlightCard( icon: ImageVector, title: String, description: String, accentColor: Color, delayMillis: Int = 0, modifier: Modifier = Modifier )</ID>
+    <ID>LongMethod:FloatingBubbleService.kt$FloatingBubbleService$override fun onCreate()</ID>
+    <ID>LongMethod:FloatingDialogActivity.kt$FloatingDialogActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
+    <ID>LongMethod:FontStep.kt$@Composable fun FontStep( currentFontFamily: String, currentFontScale: Float, shapeStyle: String, cornerRadius: Float, borderWidth: Float, onFontFamilySelected: (String) -&gt; Unit, onFontScaleChanged: (Float) -&gt; Unit, onBack: () -&gt; Unit, onNext: () -&gt; Unit )</ID>
+    <ID>LongMethod:LivePreviewCard.kt$@Composable fun LivePreviewCard( themeIsDark: Boolean, themeLabel: String, shapeStyle: String, cornerRadius: Float, borderWidth: Float, fontFamily: FontFamily, fontScale: Float, modifier: Modifier = Modifier )</ID>
+    <ID>LongMethod:MainActivity.kt$MainActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
+    <ID>LongMethod:OnboardingScaffold.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun OnboardingScaffold( stepTitle: String, stepSubtitle: String, currentStep: Int, totalSteps: Int, showBack: Boolean = true, showSkip: Boolean = false, onBack: () -&gt; Unit, onSkip: (() -&gt; Unit)? = null, content: @Composable ColumnScope.() -&gt; Unit )</ID>
+    <ID>LongMethod:OnboardingScreen.kt$@Composable fun OnboardingScreen( mainViewModel: com.balajitechlabs.quickdash.MainViewModel, onComplete: () -&gt; Unit )</ID>
+    <ID>LongMethod:PaymentSetupStep.kt$@Composable fun PaymentSetupStep( upiIds: List&lt;String&gt;, defaultUpiId: String?, payeeName: String?, onSave: (List&lt;String&gt;, String, String) -&gt; Unit, onBack: () -&gt; Unit, onSkip: () -&gt; Unit )</ID>
+    <ID>LongMethod:PermissionExplanationCard.kt$@Composable fun PermissionExplanationCard( icon: ImageVector, title: String, description: String, whyTitle: String, whyExplanation: String, isGranted: Boolean, onGrantClick: () -&gt; Unit, modifier: Modifier = Modifier )</ID>
+    <ID>LongMethod:PermissionsStep.kt$@Composable fun PermissionsStep( onBack: () -&gt; Unit, onNext: () -&gt; Unit, onSkip: () -&gt; Unit, notifGranted: Boolean, locationGranted: Boolean, onNotifGranted: () -&gt; Unit, onLocationGranted: () -&gt; Unit )</ID>
+    <ID>LongMethod:PreferenceGroup.kt$@Composable fun PreferenceGroup( title: String, modifier: Modifier = Modifier, expanded: Boolean = true, onHeaderClick: (() -&gt; Unit)? = null, content: @Composable ColumnScope.() -&gt; Unit )</ID>
+    <ID>LongMethod:PreferenceItem.kt$@Composable fun PreferenceItem( title: String, subtitle: String? = null, iconRes: Int? = null, iconVector: ImageVector? = null, iconColor: Color? = null, iconContainerColor: Color? = null, onClick: (() -&gt; Unit)? = null, trailing: @Composable (() -&gt; Unit)? = null )</ID>
+    <ID>LongMethod:QRCodeGenerator.kt$QRCodeGenerator$@Throws(WriterException::class) fun generateQRCode( context: Context, text: String, width: Int = 512, height: Int = 512, qrColor: Int = Color.BLACK, centerEmoji: String? = null, qrGradientColors: Pair&lt;Int, Int&gt;? = null, useCircularDots: Boolean = false, addBrandingFooter: Boolean = false ): Bitmap</ID>
+    <ID>LongMethod:QrHistoryDialog.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun QrHistoryDialog( historyJson: String, onClearHistory: () -&gt; Unit, onDismiss: () -&gt; Unit )</ID>
+    <ID>LongMethod:QuickCalculatorScreen.kt$@Composable private fun CalcButton( key: CalcKey, size: androidx.compose.ui.unit.Dp, fontSize: androidx.compose.ui.unit.TextUnit, onClick: () -&gt; Unit )</ID>
+    <ID>LongMethod:QuickCalculatorScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun QuickCalculatorScreen(isFloating: Boolean = false)</ID>
+    <ID>LongMethod:QuickCalculatorScreen.kt$fun handleKey(key: CalcKey)</ID>
+    <ID>LongMethod:QuickCaptureScreen.kt$@Composable fun QuickCaptureScreen(isFloating: Boolean = false)</ID>
+    <ID>LongMethod:QuickChatScreen.kt$@Composable fun QuickChatScreen( viewModel: QuickChatViewModel = hiltViewModel(), showSettings: Boolean, onToggleSettings: (Boolean) -&gt; Unit, selectingCountry: Boolean, onToggleSelectingCountry: (Boolean) -&gt; Unit, onDismiss: () -&gt; Unit )</ID>
+    <ID>LongMethod:QuickContactQrScreen.kt$@Composable fun QuickContactQrScreen( isFloating: Boolean = false, onBack: () -&gt; Unit = {} )</ID>
+    <ID>LongMethod:QuickConverterScreen.kt$@Composable fun QuickConverterScreen()</ID>
+    <ID>LongMethod:QuickConverterScreen.kt$private fun convertUnits(category: UnitCategory, fromIdx: Int, toIdx: Int, value: Double): Double</ID>
+    <ID>LongMethod:QuickDashApiClient.kt$QuickDashApiClient$suspend fun checkForUpdates(currentVersionCode: Int, includePreRelease: Boolean = false): UpdateInfo</ID>
+    <ID>LongMethod:QuickDashApp.kt$@Composable fun QuickDashApp( mainViewModel: com.balajitechlabs.quickdash.MainViewModel, shortcutAction: String? = null, notificationTitle: String? = null, notificationMessage: String? = null, notificationImageUrl: String? = null, notificationIsPoll: Boolean = false, themeMode: String = "SYSTEM", dynamicColor: Boolean = false, isFloating: Boolean = false, onToggleDynamicColor: (Boolean) -&gt; Unit = {}, onChangeThemeMode: (String) -&gt; Unit = {}, onQrShown: () -&gt; Unit = {}, onRestoreBrightness: () -&gt; Unit = {}, onDismiss: () -&gt; Unit = {} )</ID>
+    <ID>LongMethod:QuickDashApp.kt$@Composable fun UpdateTag(onShowUpdateDialog: () -&gt; Unit = {})</ID>
+    <ID>LongMethod:QuickDashApp.kt$@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class) @Composable fun QuickDashContent( mainViewModel: com.balajitechlabs.quickdash.MainViewModel, uiState: QuickDashUiState, usePaypal: Boolean = false, onTogglePaypal: (Boolean) -&gt; Unit = {}, isFloating: Boolean = false, recentAmounts: List&lt;String&gt; = emptyList(), upiIds: List&lt;String&gt; = emptyList(), defaultUpiId: String? = null, payeeName: String? = null, showUpiId: Boolean = true, themeMode: String = "SYSTEM", dynamicColor: Boolean = false, hapticEnabled: Boolean = true, onChangeThemeMode: (String) -&gt; Unit = {}, onToggleDynamicColor: (Boolean) -&gt; Unit = {}, showChatSettings: Boolean = false, onToggleChatSettings: (Boolean) -&gt; Unit = {}, selectingCountry: Boolean = false, onToggleSelectingCountry: (Boolean) -&gt; Unit = {}, defaultPaymentApp: String = "ANY", qrHistoryJson: String = "[]", onClearQrHistory: () -&gt; Unit = {}, onScanQr: () -&gt; Unit = {}, onSaveUpiIds: (List&lt;String&gt;, String, String) -&gt; Unit, onGenerateQr: (String, String, String, PaymentTargetApp, String, Boolean, Boolean) -&gt; Unit, onManageUpiIds: () -&gt; Unit, onBackToHome: () -&gt; Unit, onOpenSettings: () -&gt; Unit = {}, onNavigateTo: (QuickDashUiState) -&gt; Unit = {}, onToolSelected: (QuickTool) -&gt; Unit = {}, onQrShown: () -&gt; Unit = {}, onRestoreBrightness: () -&gt; Unit = {}, onDismiss: () -&gt; Unit = {}, onGenerateWifiQr: (String) -&gt; Unit = {}, onOnboardingComplete: () -&gt; Unit = {}, bubbleEnabled: Boolean = true, onToggleBubble: (Boolean) -&gt; Unit = {}, onNavigateToSystemLogs: () -&gt; Unit = {}, showNotificationPopup: Boolean = false, onToggleNotificationPopup: (Boolean) -&gt; Unit = {}, onNavigateToTab: (Int) -&gt; Unit = {}, onNavigateToBubbleCustomizer: () -&gt; Unit = {} )</ID>
+    <ID>LongMethod:QuickDashApplication.kt$QuickDashApplication$override fun onCreate()</ID>
+    <ID>LongMethod:QuickDashTipsSheet.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun QuickDashTipsSheet( onDismissRequest: () -&gt; Unit )</ID>
+    <ID>LongMethod:QuickDashWelcomeScreen.kt$@Composable fun QuickDashWelcomeScreen( onFinishOnboarding: () -&gt; Unit, modifier: Modifier = Modifier, hapticEnabled: Boolean = true )</ID>
+    <ID>LongMethod:QuickDashWelcomeScreen.kt$@Composable private fun CommunityRowItem( title: String, subtitle: String, iconBadgeColor: Color, iconTint: Color, iconRes: Int? = null, imageVector: androidx.compose.ui.graphics.vector.ImageVector? = null, onClick: () -&gt; Unit )</ID>
+    <ID>LongMethod:QuickDashWelcomeScreen.kt$@Composable private fun PermissionRowItem( title: String, subtitle: String, iconBadgeColor: Color, iconTint: Color, imageVector: androidx.compose.ui.graphics.vector.ImageVector, isGranted: Boolean, isRequired: Boolean = false, isOptional: Boolean = false, onGrant: () -&gt; Unit )</ID>
+    <ID>LongMethod:QuickDashWelcomeScreen.kt$@Composable private fun PermissionsContent( overlayGranted: Boolean, notificationGranted: Boolean, cameraGranted: Boolean, micGranted: Boolean, exactAlarmGranted: Boolean, shizukuGranted: Boolean, hapticEnabled: Boolean, onRequestOverlay: () -&gt; Unit, onRequestNotification: () -&gt; Unit, onRequestCamera: () -&gt; Unit, onRequestMic: () -&gt; Unit, onRequestExactAlarm: () -&gt; Unit, onRequestShizuku: () -&gt; Unit, onBack: () -&gt; Unit, onFinish: () -&gt; Unit )</ID>
+    <ID>LongMethod:QuickDashWelcomeScreen.kt$@Composable private fun WelcomeContent( hapticEnabled: Boolean, onContinue: () -&gt; Unit )</ID>
+    <ID>LongMethod:QuickDashWidget.kt$QuickDashWidget$@androidx.compose.runtime.Composable private fun QuickHubWidget(context: Context)</ID>
+    <ID>LongMethod:QuickNotesScreen.kt$@Composable fun FormattedMarkdown(text: String, modifier: Modifier = Modifier)</ID>
+    <ID>LongMethod:QuickNotesScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun QuickNotesScreen( mainViewModel: MainViewModel, isFloating: Boolean = false, onDismiss: () -&gt; Unit = {} )</ID>
+    <ID>LongMethod:QuickPasswordScreen.kt$@Composable fun QuickPasswordScreen(isFloating: Boolean = false)</ID>
+    <ID>LongMethod:QuickPomodoroScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun QuickPomodoroScreen(isFloating: Boolean = false)</ID>
+    <ID>LongMethod:QuickQrScannerScreen.kt$@Composable fun QuickQrScannerScreen( hapticEnabled: Boolean = true )</ID>
+    <ID>LongMethod:QuickRemindersScreen.kt$@Composable fun QuickRemindersScreen()</ID>
+    <ID>LongMethod:QuickSearchScreen.kt$@Composable fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel, onDismiss: () -&gt; Unit)</ID>
+    <ID>LongMethod:QuickSocialScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun QuickSocialScreen( mainViewModel: com.balajitechlabs.quickdash.MainViewModel, onDismiss: () -&gt; Unit )</ID>
+    <ID>LongMethod:QuickSocialScreen.kt$fun fetchGithubProfile(targetUsername: String)</ID>
+    <ID>LongMethod:QuickTileService.kt$QuickTileService$override fun onClick()</ID>
+    <ID>LongMethod:QuickTimerScreen.kt$@Composable private fun CountdownContent(viewModel: QuickTimerViewModel, scope: kotlinx.coroutines.CoroutineScope, isFloating: Boolean)</ID>
+    <ID>LongMethod:QuickTimerScreen.kt$@Composable private fun StopwatchContent(viewModel: QuickTimerViewModel, scope: kotlinx.coroutines.CoroutineScope, isFloating: Boolean)</ID>
+    <ID>LongMethod:QuickTimerScreen.kt$@Composable private fun TimerHistoryContent(viewModel: QuickTimerViewModel, isFloating: Boolean)</ID>
+    <ID>LongMethod:QuickTranslatorScreen.kt$@Composable fun QuickTranslatorScreen()</ID>
+    <ID>LongMethod:QuickVoiceMemosScreen.kt$@Composable fun QuickVoiceMemosScreen(isFloating: Boolean = false)</ID>
+    <ID>LongMethod:QuickWebScreen.kt$@SuppressLint("SetJavaScriptEnabled") @Composable fun QuickWebScreen( initialUrl: String = "https://www.google.com", isFloating: Boolean = false, onClose: () -&gt; Unit )</ID>
+    <ID>LongMethod:QuickWifiScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun QuickWifiScreen(viewModel: WifiViewModel = hiltViewModel(), isFloating: Boolean = false, onDismiss: () -&gt; Unit)</ID>
+    <ID>LongMethod:RadialBubbleMenu.kt$@Composable fun RadialBubbleMenu( actions: List&lt;RadialAction&gt;, activeSectorIndex: Int = -1, onActionSelected: (RadialAction) -&gt; Unit, onDismiss: () -&gt; Unit )</ID>
+    <ID>LongMethod:SettingsScreen.kt$@Suppress("DEPRECATION") @OptIn(ExperimentalMaterial3Api::class) @Composable fun SettingsScreen( viewModel: SettingsViewModel = hiltViewModel(), themeMode: String, dynamicColor: Boolean, bubbleEnabled: Boolean, onChangeThemeMode: (String) -&gt; Unit, onToggleDynamicColor: (Boolean) -&gt; Unit, onToggleBubble: (Boolean) -&gt; Unit, onTriggerConfetti: (String) -&gt; Unit, onBackToHome: () -&gt; Unit, onNavigateToSystemLogs: () -&gt; Unit = {}, onManageUpiIds: () -&gt; Unit = {}, onNavigateToBubbleCustomizer: () -&gt; Unit = {} )</ID>
+    <ID>LongMethod:SetupScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SetupScreen( upiIds: List&lt;String&gt;, defaultUpiId: String?, payeeName: String?, usePaypal: Boolean = false, viewModel: QrViewModel = hiltViewModel(), onSaveUpiIds: (List&lt;String&gt;, String, String) -&gt; Unit )</ID>
+    <ID>LongMethod:ShapeStep.kt$@Composable fun ShapeStep( currentShape: String, currentRadius: Float, currentBorder: Float, onShapeSelected: (String) -&gt; Unit, onRadiusChanged: (Float) -&gt; Unit, onBorderChanged: (Float) -&gt; Unit, onBack: () -&gt; Unit, onNext: () -&gt; Unit )</ID>
+    <ID>LongMethod:ShareReceiverActivity.kt$ShareReceiverActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
+    <ID>LongMethod:ShareUtils.kt$ShareUtils$private fun generateShareableImage( context: Context, qrBitmap: Bitmap, name: String, upiId: String, amount: String, showUpiId: Boolean, usePaypal: Boolean = false ): File?</ID>
+    <ID>LongMethod:ShowQrScreen.kt$@Composable fun ShowQrScreen( amount: String, qrBitmap: Bitmap, upiId: String, payeeName: String, showUpiId: Boolean, payUrl: String, usePaypal: Boolean = false, showShareButton: Boolean = true, confettiType: String = "Default", hapticLevel: String = "Crisp", isFloating: Boolean = false, onQrShown: () -&gt; Unit, onRestoreBrightness: () -&gt; Unit, onDismiss: () -&gt; Unit )</ID>
+    <ID>LongMethod:SplashStep.kt$@Composable fun SplashStep( onFinished: () -&gt; Unit )</ID>
+    <ID>LongMethod:SpotlightLauncher.kt$@Composable fun SpotlightLauncher( hapticEnabled: Boolean, isFloating: Boolean, mainViewModel: MainViewModel?, listState: LazyListState, onToolSelected: (QuickTool) -&gt; Unit )</ID>
+    <ID>LongMethod:SpotlightLauncher.kt$@Composable private fun CustomizeFavoritesDialog( currentFavorites: List&lt;QuickTool&gt;, allTools: List&lt;SpotlightToolItem&gt;, onSave: (List&lt;QuickTool&gt;) -&gt; Unit, onDismiss: () -&gt; Unit )</ID>
+    <ID>LongMethod:SpotlightLauncher.kt$@Composable private fun TelegramPinDialog( toolItem: SpotlightToolItem, isPinned: Boolean, onTogglePin: () -&gt; Unit, onOpenTool: () -&gt; Unit, onDismiss: () -&gt; Unit )</ID>
+    <ID>LongMethod:SpotlightLauncher.kt$@OptIn(ExperimentalFoundationApi::class) @Composable private fun ToolListItemRow( item: SpotlightToolItem, isPinned: Boolean = false, onToolSelected: (QuickTool) -&gt; Unit, onToolLongClick: (() -&gt; Unit)? = null, triggerClickHaptic: () -&gt; Unit )</ID>
+    <ID>LongMethod:SpotlightLauncher.kt$private fun evaluateSpotlightQuery(query: String): SpotlightShortcutResult?</ID>
+    <ID>LongMethod:SystemLogsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SystemLogsScreen(onDismiss: () -&gt; Unit)</ID>
+    <ID>LongMethod:TelegramPollerWorker.kt$TelegramPollerWorker$override suspend fun doWork(): Result</ID>
+    <ID>LongMethod:TelegramPollerWorker.kt$TelegramPollerWorker$private suspend fun broadcastMessage( userStore: UserStore, token: String, message: JSONObject, text: String, hasPhoto: Boolean, hasVideo: Boolean, hasDocument: Boolean )</ID>
+    <ID>LongMethod:Theme.kt$@Composable fun QuickDashTheme( themeMode: String = "SYSTEM", darkTheme: Boolean = isSystemInDarkTheme(), dynamicColor: Boolean = true, content: @Composable () -&gt; Unit )</ID>
+    <ID>LongMethod:Theme.kt$private fun generateColorScheme(seed: Color, isDark: Boolean): ColorScheme</ID>
+    <ID>LongMethod:ThemeStep.kt$@Composable fun ThemeStep( currentTheme: String, onThemeSelected: (String) -&gt; Unit, onBack: () -&gt; Unit, onNext: () -&gt; Unit )</ID>
+    <ID>LongMethod:UpdateManager.kt$UpdateManager$fun startDownload(context: Context, urlStr: String, remoteVersionName: String, expectedSha256: String = "")</ID>
+    <ID>LongMethod:WelcomeOnboardingScreen.kt$@Composable fun WelcomeOnboardingScreen(onFinishOnboarding: () -&gt; Unit)</ID>
+    <ID>LongMethod:WelcomeOnboardingScreen.kt$@Composable private fun PermissionsStep( hasOverlay: Boolean, hasNotifications: Boolean, hasCamera: Boolean, hasMic: Boolean, onGrantOverlay: () -&gt; Unit, onGrantNotifications: () -&gt; Unit, onGrantCamera: () -&gt; Unit, onGrantMic: () -&gt; Unit, onBack: () -&gt; Unit, onContinue: () -&gt; Unit )</ID>
+    <ID>LongMethod:WelcomeOnboardingScreen.kt$@Composable private fun PreferencesStep( selectedTheme: String, onThemeChange: (String) -&gt; Unit, upiId: String, onUpiIdChange: (String) -&gt; Unit, payeeName: String, onPayeeNameChange: (String) -&gt; Unit, onBack: () -&gt; Unit, onContinue: () -&gt; Unit )</ID>
+    <ID>LongMethod:WelcomeOnboardingScreen.kt$@Composable private fun WelcomeStep(onContinue: () -&gt; Unit)</ID>
+    <ID>LongMethod:WelcomeStep.kt$@Composable fun WelcomeStep( onNext: () -&gt; Unit )</ID>
+    <ID>LongMethod:WhatsNewDialog.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun WhatsNewDialog( versionName: String = "5.2.1", onDismiss: () -&gt; Unit )</ID>
+    <ID>LongMethod:WifiHistoryDialog.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun WifiHistoryDialog( historyJson: String, onClearHistory: () -&gt; Unit, onRemoveEntry: (String) -&gt; Unit, onSelectNetwork: (String, String) -&gt; Unit, onDismiss: () -&gt; Unit )</ID>
+    <ID>LoopWithTooManyJumpStatements:QuickDashApiClient.kt$QuickDashApiClient$for</ID>
+    <ID>LoopWithTooManyJumpStatements:TelegramPollerWorker.kt$TelegramPollerWorker$for</ID>
+    <ID>MatchingDeclarationName:Dimens.kt$ResponsiveDimensions</ID>
+    <ID>MatchingDeclarationName:FavoriteCarousel.kt$FavoriteCarouselItem</ID>
+    <ID>MatchingDeclarationName:QrHistoryDialog.kt$QrHistoryItem</ID>
+    <ID>MatchingDeclarationName:QuickChatScreen.kt$Country</ID>
+    <ID>MatchingDeclarationName:QuickDashRoutes.kt$QuickDashRoute</ID>
+    <ID>MatchingDeclarationName:QuickDashTipsSheet.kt$QuickTip</ID>
+    <ID>MatchingDeclarationName:QuickDashWelcomeScreen.kt$QuickDashWelcomeStep</ID>
+    <ID>MatchingDeclarationName:QuickSocialScreen.kt$GithubProfileCache</ID>
+    <ID>MatchingDeclarationName:QuickVoiceMemosScreen.kt$VoiceMemoItem</ID>
+    <ID>MatchingDeclarationName:QuickWifiScreen.kt$WifiEntry</ID>
+    <ID>MatchingDeclarationName:RadialBubbleMenu.kt$RadialAction</ID>
+    <ID>MatchingDeclarationName:WifiHistoryDialog.kt$WifiHistoryItem</ID>
+    <ID>MaxLineLength:AboutScreen.kt$"QuickDash v${upToDate.currentVersion} • ${if (isPreReleaseChannel) "Beta (Pre-Release)" else "Stable Release"}"</ID>
+    <ID>MaxLineLength:AboutScreen.kt$.</ID>
+    <ID>MaxLineLength:AboutScreen.kt$CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp, color = Color.White)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$Column</ID>
+    <ID>MaxLineLength:AboutScreen.kt$Icon(Icons.Rounded.CheckCircle, null, tint = Color(0xFF81C784), modifier = Modifier.size(24.dp))</ID>
+    <ID>MaxLineLength:AboutScreen.kt$Icon(Icons.Rounded.CloudDownload, contentDescription = null, modifier = Modifier.size(18.dp))</ID>
+    <ID>MaxLineLength:AboutScreen.kt$Icon(Icons.Rounded.Download, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))</ID>
+    <ID>MaxLineLength:AboutScreen.kt$Row</ID>
+    <ID>MaxLineLength:AboutScreen.kt$SocialPill("Email", "admin@balajitechlab.com", "mailto:admin@balajitechlab.com", Color(0xFF2A2B30), Color.White, imageVector = Icons.Rounded.Email)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$SocialPill("GitHub Profile", "github.com/balajitechlabs", "https://balajitechlab.com/go/github", Color(0xFF2A2B30), Color.White, iconRes = R.drawable.ic_github)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$SocialPill("GitLab", "gitlab.com/balajitechlabs", "https://balajitechlab.com/go/gitlab", Color(0xFF2A2B30), Color.White, imageVector = Icons.Rounded.Code)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$SocialPill("LinkedIn", "linkedin.com/in/balajitechlabs", "https://balajitechlab.com/go/linkedin", Color(0xFF2A2B30), Color.White, imageVector = Icons.Rounded.Work)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$SocialPill("Play Store", "balajitechlabs Developer Apps", "https://balajitechlab.com/go/playstore", Color(0xFF2A2B30), Color.White, imageVector = Icons.Rounded.Shop)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$SocialPill("Portfolio Website", "balajitechlab.com", "https://balajitechlab.com", Color(0xFF2A2B30), Color.White, imageVector = Icons.Rounded.Public)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$SocialPill("QuickDash Website", "quickdash.balajitechlab.com", "https://balajitechlab.com/go/quickdash", Color(0xFF2A2B30), Color.White, imageVector = Icons.Rounded.Language)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$SocialPill("Reddit Community", "r/balajitechlabs", "https://balajitechlab.com/go/reddit", Color(0xFF2A2B30), Color.White, imageVector = Icons.Rounded.Forum)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$SocialPill("Telegram Community", "t.me/QuickDash Group", "https://balajitechlab.com/go/quickdash-community", Color(0xFF2A2B30), Color.White, iconRes = R.drawable.ic_telegram)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$SocialPill("X / Twitter", "@balajitechlabs", "https://balajitechlab.com/go/x", Color(0xFF2A2B30), Color.White, imageVector = Icons.Rounded.Share)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$Text("${dl.progress}%", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold, fontSize = 12.sp)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$Text("Ahead of latest public release (v${upToDate.latestVersion}) ▾", color = Color(0xFF81C784), fontSize = 11.sp)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$Text("Downloading v${dl.versionName.removePrefix("v")}...", color = Color.White, fontSize = 12.sp)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$Text("Install Update (v${ready.versionName.removePrefix("v")})", fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$Text("Preview Build (v${upToDate.currentVersion}) ✅", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$Text("Tap below to inspect changelogs &amp; download", color = Color(0xFFC5C6D0), fontSize = 11.sp)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$Text("Tap to view release notes &amp; details ▾", color = Color(0xFF81C784), fontSize = 11.sp)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$Text("Update Available: v${info.versionName.removePrefix("v")}", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$Text("Update check error: ${err.message}", color = MaterialTheme.colorScheme.error, fontSize = 12.sp)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$Text("View Changelog &amp; Install v${info.versionName.removePrefix("v")}", fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$Text("You are on the latest version (v${upToDate.currentVersion})! ✅", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:AboutScreen.kt$border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.8f))</ID>
+    <ID>MaxLineLength:AboutScreen.kt$context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://balajitechlab.com/privacy")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))</ID>
+    <ID>MaxLineLength:AboutScreen.kt$modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp))</ID>
+    <ID>MaxLineLength:AboutScreen.kt$onClick = { UpdateManager.checkForUpdates(context, manual = true, includePreRelease = isPreReleaseChannel) }</ID>
+    <ID>MaxLineLength:AboutScreen.kt$text = "Forked &amp; Maintained by ||BTL||™ (balajitechlabs)\nOriginal Property © 2026 Aakarsh (L192) / IIXII™"</ID>
+    <ID>MaxLineLength:AboutScreen.kt$text = "QuickDash is an all-in-one floating productivity companion featuring 15+ daily tools: Quick Collect, Quick Chat, Smart Clipboard, Quick Notes, Voice Memos, Wi-Fi Hub, Pomodoro, and more."</ID>
+    <ID>MaxLineLength:AboutScreen.kt$text = "Your application is fully updated with all the latest tools, design refinements, and performance upgrades. No new updates are available."</ID>
+    <ID>MaxLineLength:AboutScreen.kt$text = if (upToDate.isAheadOfLatest) "Preview / Development Build" else "You're on the Latest Build!"</ID>
+    <ID>MaxLineLength:AboutScreen.kt$val</ID>
+    <ID>MaxLineLength:AiTextCategorizer.kt$AiTextCategorizer$(trimmed.contains(".") &amp;&amp; !trimmed.contains(" ") &amp;&amp; trimmed.length &gt; 4 &amp;&amp; android.util.Patterns.WEB_URL.matcher(trimmed).matches())</ID>
+    <ID>MaxLineLength:AiTextCategorizer.kt$AiTextCategorizer$ctx.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$trimmed")).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })</ID>
+    <ID>MaxLineLength:AiTextCategorizer.kt$AiTextCategorizer$ctx.startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$trimmed")).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })</ID>
+    <ID>MaxLineLength:AiTextCategorizer.kt$AiTextCategorizer$ctx.startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$trimmed")).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })</ID>
+    <ID>MaxLineLength:AiTextCategorizer.kt$AiTextCategorizer$ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })</ID>
+    <ID>MaxLineLength:AiTextCategorizer.kt$AiTextCategorizer$if</ID>
+    <ID>MaxLineLength:AppPermissionsPreferenceGroup.kt$ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED</ID>
+    <ID>MaxLineLength:AppPermissionsPreferenceGroup.kt$Uri.parse("https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api")</ID>
+    <ID>MaxLineLength:AppPermissionsPreferenceGroup.kt$cameraGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED</ID>
+    <ID>MaxLineLength:AppPermissionsPreferenceGroup.kt$micGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED</ID>
+    <ID>MaxLineLength:AppPermissionsPreferenceGroup.kt$mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)</ID>
+    <ID>MaxLineLength:AppPermissionsPreferenceGroup.kt$mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)</ID>
+    <ID>MaxLineLength:AppPermissionsPreferenceGroup.kt$title = if (missingPermissions.isEmpty()) "App Permissions (All Granted ✓)" else "App Permissions (${missingPermissions.size} Pending)"</ID>
+    <ID>MaxLineLength:AppPermissionsPreferenceGroup.kt$val</ID>
+    <ID>MaxLineLength:AppPermissionsPreferenceGroup.kt$val launchIntent = context.packageManager.getLaunchIntentForPackage("moe.shizuku.privileged.api")</ID>
+    <ID>MaxLineLength:AppUpdateDialog.kt$Icon(Icons.Default.CloudDownload, contentDescription = null, modifier = Modifier.size(16.dp))</ID>
+    <ID>MaxLineLength:AppUpdateDialog.kt$Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))</ID>
+    <ID>MaxLineLength:AppUpdateDialog.kt$Icon(Icons.Default.SystemUpdate, contentDescription = null, modifier = Modifier.size(18.dp))</ID>
+    <ID>MaxLineLength:AppUpdateDialog.kt$UpdateManager.startDownload(context, targetState.apkUrl, targetState.versionName, targetState.sha256)</ID>
+    <ID>MaxLineLength:AppUpdateDialog.kt$text = "QuickDash is running the latest version with all security patches and performance enhancements."</ID>
+    <ID>MaxLineLength:AppUpdateDialog.kt$text = "QuickDash v${state.versionName.removePrefix("v")} is ready to install. Tap below to begin installation."</ID>
+    <ID>MaxLineLength:AppUpdateDialog.kt$text = "QuickDash v${targetState.versionName} is ready. Tap below to launch the Android installer."</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$"Backup exported successfully! (${result.notesCount} notes, ${result.preferencesCount} settings)"</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$"Decrypted and restored successfully! (${result.notesCount} notes, ${result.preferencesCount} settings)"</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$"Restored successfully! (${result.notesCount} notes, ${result.preferencesCount} settings)"</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$"This backup archive is encrypted with AES-256-GCM. Please enter the passphrase used to create it:"</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onPrimary)</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$Icon(Icons.Rounded.CloudDownload, contentDescription = null, modifier = Modifier.size(18.dp))</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$Row</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$Text("AES-256-GCM Secure Archive", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$Text("Conflict Strategy", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$Text("Encrypt with Password", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$Text("Encrypted Backup &amp; Restore", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$Text("Keeps current notes and adds backup notes", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$Text("Merge with existing notes", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$Text("Overwrites existing notes and settings", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$Text("Replace all data", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$color = if (selectedTab == 0) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$color = if (selectedTab == 1) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$imageVector = if (isPasswordVisible) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$imageVector = if (usePasswordProtection) Icons.Rounded.Lock else Icons.Rounded.LockOpen</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$tint = if (selectedTab == 0) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$tint = if (selectedTab == 1) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$tint = if (usePasswordProtection) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$val pass = if (usePasswordProtection &amp;&amp; exportPassword.isNotBlank()) exportPassword.trim() else null</ID>
+    <ID>MaxLineLength:BackupRestoreDialog.kt$visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation()</ID>
+    <ID>MaxLineLength:BackupRestoreManager.kt$BackupRestoreManager$preferences[androidx.datastore.preferences.core.floatPreferencesKey(keyName)] = value.toFloat()</ID>
+    <ID>MaxLineLength:BackupRestoreManager.kt$BackupRestoreManager$preferences[androidx.datastore.preferences.core.longPreferencesKey(keyName)] = value.toLong()</ID>
+    <ID>MaxLineLength:BackupRestoreManager.kt$BackupRestoreManager$suspend</ID>
+    <ID>MaxLineLength:BackupRestoreManager.kt$BackupRestoreManager$val encryptedKeys = listOf("notes_history", "clipboard_history", "clipboard_pinned", "wifi_password", "server_credentials", "github_access_token")</ID>
+    <ID>MaxLineLength:BiometricHelper.kt$BiometricHelper$.</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$"💬 &lt;b&gt;User Data Response&lt;/b&gt;\nQuestion: $body\nResponse: $responseText"</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$"🗳 &lt;b&gt;New Poll Vote&lt;/b&gt;\nQuestion: $body\nVote: $option"</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$.</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$Text(if (isSubmitted) "Submitted ✓" else "Submit Response", style = MaterialTheme.typography.labelMedium)</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$containerColor</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$context.startActivity(Intent.createChooser(intent, "Open Image"))</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$else</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$placeholder = { Text("Type your response here...", style = MaterialTheme.typography.bodyMedium) }</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$pushStringAnnotation(tag = "URL", annotation = body.substring(start, end))</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$putExtra(Intent.EXTRA_TEXT, "Check out this image from QuickDash: $imageUrl")</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$val</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$val mockBaseVotes = (option.hashCode() % 50).let { if (it &lt; 0) -it else it }</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$val newPinnedSet = if (isPinned) pinnedSet - postKey else pinnedSet + postKey</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$val oneTimeRequest = androidx.work.OneTimeWorkRequestBuilder&lt;com.balajitechlabs.quickdash.features.broadcast.data.TelegramPollerWorker&gt;().build()</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$val percentage = if (totalVotes == 0) 0 else (displayVotes * 100) / totalVotes</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$val totalVotes = options.sumOf { (it.hashCode() % 50).let { v -&gt; if (v &lt; 0) -v else v } } + (if (myVote != null) 1 else 0)</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$vibrator?.vibrate(android.os.VibrationEffect.createOneShot(50, android.os.VibrationEffect.DEFAULT_AMPLITUDE))</ID>
+    <ID>MaxLineLength:BlogPostsScreen.kt$withStyle</ID>
+    <ID>MaxLineLength:BubbleCustomizerScreen.kt$Icon(imageVector = Icons.Filled.BubbleChart, contentDescription = null, modifier = Modifier.size(20.dp))</ID>
+    <ID>MaxLineLength:BubbleCustomizerScreen.kt$Icon(imageVector = Icons.Filled.ColorLens, contentDescription = null, modifier = Modifier.size(20.dp))</ID>
+    <ID>MaxLineLength:BubbleCustomizerScreen.kt$colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))</ID>
+    <ID>MaxLineLength:BubbleCustomizerScreen.kt$style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:CategoryExpandableSection.kt$style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 11.sp)</ID>
+    <ID>MaxLineLength:ClipboardScreen.kt$"Links" -&gt; clipboardItems.filter { it.contains("http://") || it.contains("https://") || it.contains("www.") }</ID>
+    <ID>MaxLineLength:ClipboardScreen.kt$Icon(Icons.Filled.Delete, "Delete", modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.error)</ID>
+    <ID>MaxLineLength:ClipboardScreen.kt$if</ID>
+    <ID>MaxLineLength:ClipboardScreen.kt$revealedItems = if (revealedItems.contains(item)) revealedItems - item else revealedItems + item</ID>
+    <ID>MaxLineLength:ClipboardScreen.kt$subtitle = if (clipboardItems.isEmpty()) "Text copied while the app is running will appear here automatically." else "Try a different filter to see your clipboard history."</ID>
+    <ID>MaxLineLength:ClipboardScreen.kt$val hasOtpKeyword = lower.contains("otp") || lower.contains("code") || lower.contains("verification") || lower.contains("passcode") || lower.contains("one-time")</ID>
+    <ID>MaxLineLength:ClipboardScreen.kt$val isOtpContext = lowerText.contains("otp") || lowerText.contains("code") || lowerText.contains("verification") || lowerText.contains("password") || lowerText.contains("login") || lowerText.contains("pin")</ID>
+    <ID>MaxLineLength:CustomComponents.kt$.</ID>
+    <ID>MaxLineLength:CustomComponents.kt$val borderColor by animateColorAsState(if (checked) Color(0x7FFF5722) else Color(0x33FFFFFF), label = "borderColor")</ID>
+    <ID>MaxLineLength:CustomComponents.kt$val borderColor by animateColorAsState(if (checked) Color(0xFF0078D4) else Color(0xFF44474F), label = "borderColor")</ID>
+    <ID>MaxLineLength:CustomComponents.kt$val borderColor by animateColorAsState(if (checked) Color.Transparent else Color(0xFF44474F), label = "borderColor")</ID>
+    <ID>MaxLineLength:CustomComponents.kt$val trackColor by animateColorAsState(if (checked) Color(0x33FF5722) else Color(0x1AFFFFFF), label = "trackColor")</ID>
+    <ID>MaxLineLength:CustomComponents.kt$val trackColor by animateColorAsState(if (checked) Color(0xFF0078D4) else Color(0xFF2A2B30), label = "trackColor")</ID>
+    <ID>MaxLineLength:CustomComponents.kt$val trackColor by animateColorAsState(if (checked) Color(0xFF34C759) else Color(0xFF2A2B30), label = "trackColor")</ID>
+    <ID>MaxLineLength:CustomComponents.kt$val trackColor by animateColorAsState(if (checked) MaterialTheme.colorScheme.primary else Color(0xFF2A2B30), label = "trackColor")</ID>
+    <ID>MaxLineLength:CustomizeBubbleDialog.kt$.</ID>
+    <ID>MaxLineLength:CustomizeBubbleDialog.kt$color = if (isCurrent) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface</ID>
+    <ID>MaxLineLength:CustomizeBubbleDialog.kt$color = if (isCurrent) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh</ID>
+    <ID>MaxLineLength:CustomizeBubbleDialog.kt$text = "Tap any cardinal slot below to assign your favorite shortcut tool to the floating radial bubble."</ID>
+    <ID>MaxLineLength:CustomizeBubbleDialog.kt$tint = if (isCurrent) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface</ID>
+    <ID>MaxLineLength:EnterAmountScreen.kt$.</ID>
+    <ID>MaxLineLength:EnterAmountScreen.kt$leadingIcon = { Text(currencySymbol, color = Color.White, modifier = Modifier.padding(start = 12.dp)) }</ID>
+    <ID>MaxLineLength:EnterAmountScreen.kt$onGenerateQr(amount, "", selectedUpiId, selectedTargetApp, selectedCategory, useCircularDots, useGradient)</ID>
+    <ID>MaxLineLength:EnterAmountScreen.kt$onGenerateQr(amountInput, "", selectedUpiId, selectedTargetApp, selectedCategory, useCircularDots, useGradient)</ID>
+    <ID>MaxLineLength:FloatingBubbleService.kt$FloatingBubbleService$addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)</ID>
+    <ID>MaxLineLength:FloatingBubbleService.kt$FloatingBubbleService$v.vibrate(android.os.VibrationEffect.createOneShot(duration, android.os.VibrationEffect.DEFAULT_AMPLITUDE))</ID>
+    <ID>MaxLineLength:FloatingBubbleService.kt$FloatingBubbleService$v.vibrate(android.os.VibrationEffect.createWaveform(longArrayOf(0, 15, 100, 15), intArrayOf(0, 255, 0, 255), -1))</ID>
+    <ID>MaxLineLength:FloatingDialogActivity.kt$FloatingDialogActivity$android.widget.Toast.makeText(this, "Floating window screenshot saved", android.widget.Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:FloatingDialogActivity.kt$FloatingDialogActivity$android.widget.Toast.makeText(this, "Screenshot failed: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:FloatingDialogActivity.kt$FloatingDialogActivity$android.widget.Toast.makeText(this@FloatingDialogActivity, "Saved to QuickDash Clipboard", android.widget.Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:FloatingDialogActivity.kt$FloatingDialogActivity$interactionSource = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }</ID>
+    <ID>MaxLineLength:FloatingDialogActivity.kt$FloatingDialogActivity$val bitmap = android.graphics.Bitmap.createBitmap(rootView.width, rootView.height, android.graphics.Bitmap.Config.ARGB_8888)</ID>
+    <ID>MaxLineLength:FloatingDialogActivity.kt$FloatingDialogActivity$val isOnboardingComplete by mainViewModel.userStore.isOnboardingComplete.collectAsStateWithLifecycle(initialValue = null)</ID>
+    <ID>MaxLineLength:FloatingDialogActivity.kt$FloatingDialogActivity$val serviceIntent = Intent(this, com.balajitechlabs.quickdash.core.services.FloatingBubbleService::class.java)</ID>
+    <ID>MaxLineLength:MainActivity.kt$MainActivity$val</ID>
+    <ID>MaxLineLength:MainActivity.kt$MainActivity$val isOnboardingComplete by mainViewModel.userStore.isOnboardingComplete.collectAsStateWithLifecycle(initialValue = null)</ID>
+    <ID>MaxLineLength:MainActivity.kt$MainActivity$val serviceIntent = Intent(this@MainActivity, FloatingBubbleService::class.java)</ID>
+    <ID>MaxLineLength:MainViewModel.kt$/* * Copyright (c) 2026 ||BTL||™ (balajitechlabs) * License: PocketOps Custom Open Source Fork License * * Feature Module: app * File: MainViewModel.kt * Description: Central ViewModel orchestrating UI state, UserStore data collection, tool interactions, and update checks. * Developer: balajitechlabs */</ID>
+    <ID>MaxLineLength:PaymentSetupStep.kt$stepSubtitle = "Add your $idTypeLabel ID to generate instant payment QR codes. You can skip this and add later."</ID>
+    <ID>MaxLineLength:PermissionsStep.kt$whyExplanation = "Android system rules require Location permission to read Wi-Fi network names. QuickDash never tracks, stores, or transmits your GPS location."</ID>
+    <ID>MaxLineLength:PermissionsStep.kt$whyExplanation = "QuickDash sends overlay notifications when payments succeed and when sync events complete. We never send ad or marketing notifications."</ID>
+    <ID>MaxLineLength:PermissionsStep.kt$whyExplanation = "Required for QuickDash floating bubbles and mini-widget launcher. Granting this allows QuickDash to appear over any app."</ID>
+    <ID>MaxLineLength:QrHistoryDialog.kt$Row</ID>
+    <ID>MaxLineLength:QrHistoryDialog.kt$Text("$count QRs generated", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:QrHistoryDialog.kt$Text("Total Volume Generated", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:QrHistoryDialog.kt$Text(category, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium)</ID>
+    <ID>MaxLineLength:QrHistoryDialog.kt$Text(label, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium)</ID>
+    <ID>MaxLineLength:QrHistoryDialog.kt$else</ID>
+    <ID>MaxLineLength:QrHistoryDialog.kt$val appList = listOf("ANY" to "Any Payment App", "GPAY" to "Google Pay", "PHONEPE" to "PhonePe", "PAYTM" to "Paytm", "BHIM" to "BHIM")</ID>
+    <ID>MaxLineLength:QuickCalculatorScreen.kt$@Suppress("DEPRECATION") Icon(Icons.Filled.Backspace, contentDescription = "Backspace", modifier = Modifier.size(18.dp))</ID>
+    <ID>MaxLineLength:QuickCalculatorScreen.kt$Text("Calculation History", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:QuickCalculatorScreen.kt$Text("No past calculations yet.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:QuickCalculatorScreen.kt$Text(label, fontSize = if (label.length &gt; 2) (fontSize.value - 4).sp else fontSize, fontWeight = FontWeight.Medium)</ID>
+    <ID>MaxLineLength:QuickCalculatorScreen.kt$expression = if (justEvaluated) key.name else expression.dropLastWhile { it.isDigit() || it == '.' } + key.name</ID>
+    <ID>MaxLineLength:QuickCalculatorScreen.kt$listOf(CalcKey.ScientificOp("ln"), CalcKey.ScientificOp("log"), CalcKey.ScientificOp("π"), CalcKey.ScientificOp("e"))</ID>
+    <ID>MaxLineLength:QuickCalculatorScreen.kt$listOf(CalcKey.ScientificOp("sin"), CalcKey.ScientificOp("cos"), CalcKey.ScientificOp("tan"), CalcKey.ScientificOp("^"))</ID>
+    <ID>MaxLineLength:QuickCalculatorScreen.kt$val isFunc = key is CalcKey.Clear || key is CalcKey.ToggleSign || key is CalcKey.Percent || key is CalcKey.Sqrt || key is CalcKey.ScientificOp</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$.</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$Icon(Icons.Filled.Edit, "Eraser", tint = if (isEraser) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$Row</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$Text("Android will ask for screen capture permission on the next step.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$Toast.makeText(context, "Microphone permission denied. Disable audio toggle to record without mic.", Toast.LENGTH_LONG).show()</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$color = if (canvasBgColor == Color.White || canvasBgColor == Color(0xFFF5F5F7) || canvasBgColor == Color(0xFFFFFDE7)) Color(0xFF888888) else Color(0xFFAAAAAA)</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray.copy(alpha = 0.4f)</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$color = if (selectedColor == color &amp;&amp; !isEraser) MaterialTheme.colorScheme.primary else Color.Gray.copy(0.5f)</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$containerColor = if (selectedTab == CaptureTab.ANNOTATOR) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$containerColor = if (selectedTab == CaptureTab.RECORDER) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$contentColor = if (selectedTab == CaptureTab.ANNOTATOR) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$contentColor = if (selectedTab == CaptureTab.RECORDER) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$drawPath(path = path, color = color, style = Stroke(width = strokeWidth, cap = StrokeCap.Round, join = StrokeJoin.Round))</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$fontWeight = if (qualityRes == res) FontWeight.Bold else FontWeight.Medium</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$if</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$isRecording &amp;&amp; !isPaused -&gt; "REC ${String.format(Locale.US, "%02d:%02d", minutes, seconds)}"</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$tint = if (recordAudio) MaterialTheme.colorScheme.onPrimaryContainer else Color(0xFF636366)</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$val bgColors = listOf(Color.White, Color(0xFFF5F5F7), Color(0xFFFFFDE7), Color(0xFF121212), Color(0xFF1E293B))</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$val hasMic = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED</ID>
+    <ID>MaxLineLength:QuickCaptureScreen.kt$val pm = context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager</ID>
+    <ID>MaxLineLength:QuickChatScreen.kt$Box</ID>
+    <ID>MaxLineLength:QuickChatScreen.kt$HorizontalDivider(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.08f))</ID>
+    <ID>MaxLineLength:QuickChatScreen.kt$android.widget.Toast.makeText(context, "Could not open $selectedTab client", android.widget.Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:QuickChatScreen.kt$android.widget.Toast.makeText(context, "Invalid WhatsApp QR code", android.widget.Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:QuickChatScreen.kt$color = if (isSelected) Color(0xFF0088CC) else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:QuickChatScreen.kt$color = if (isSelected) Color(0xFF0088CC) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.15f)</ID>
+    <ID>MaxLineLength:QuickChatScreen.kt$listOf("Username" to "Open with Wizard ID", "Phone" to "Open with Phone Number")</ID>
+    <ID>MaxLineLength:QuickChatScreen.kt$phoneNumber.replace(Regex("[^0-9]"), "").startsWith(defaultCode) &amp;&amp; phoneNumber.replace(Regex("[^0-9]"), "").length &gt; 10 -&gt; phoneNumber.replace(Regex("[^0-9]"), "")</ID>
+    <ID>MaxLineLength:QuickChatScreen.kt$val</ID>
+    <ID>MaxLineLength:QuickChatScreen.kt$val activeCountryName = countries.find { it.code == defaultCode &amp;&amp; it.iso == defaultIso }?.name ?: "Default"</ID>
+    <ID>MaxLineLength:QuickChatScreen.kt$val isLink = phoneNumber.trim().startsWith("http") || phoneNumber.trim().startsWith("t.me") || phoneNumber.trim().contains("/")</ID>
+    <ID>MaxLineLength:QuickContactQrScreen.kt$text = if (qrBitmap != null) "Scan with any camera or Google Lens to save contact" else "Fill in details below to generate your digital contact card"</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$CircularProgressIndicator(modifier = Modifier.size(10.dp), strokeWidth = 1.5.dp, color = Color.White)</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$CurrencyDropdown(selectedIndex = fromCurrencyIndex, onSelect = { fromCurrencyIndex = it }, modifier = Modifier.weight(1.4f))</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$CurrencyDropdown(selectedIndex = toCurrencyIndex, onSelect = { toCurrencyIndex = it }, modifier = Modifier.fillMaxWidth())</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Icon(Icons.Filled.ContentCopy, "Copy", tint = MaterialTheme.colorScheme.onPrimaryContainer)</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Icon(Icons.Filled.ContentCopy, "Copy", tint = MaterialTheme.colorScheme.onSecondaryContainer)</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Icon(Icons.Filled.Refresh, contentDescription = "Refresh rates", tint = MaterialTheme.colorScheme.primary)</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Icon(Icons.Filled.SwapVert, "Swap currencies", tint = MaterialTheme.colorScheme.onPrimaryContainer)</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Row</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Surface</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Text("Category", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Text("Converted Amount", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(0.7f))</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Text("From Currency", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Text("Input Value", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Text("Result", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSecondaryContainer.copy(0.7f))</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Text("To Currency", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Text(CURRENCY_DISPLAY[selectedIndex].second, fontWeight = FontWeight.Bold, fontSize = 12.sp, modifier = Modifier.weight(1f))</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Text(if (selectedIndex in units.indices) units[selectedIndex] else "", fontSize = 11.sp, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Text(rateHint, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.7f))</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Text(resultText, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$Text(unitResultText, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSecondaryContainer)</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$UnitCategory$LENGTH : UnitCategory</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$UnitCategory$WEIGHT : UnitCategory</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$containerColor = if (selectedTab == ConverterTab.CURRENCY) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$containerColor = if (selectedTab == ConverterTab.UNITS) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$contentColor = if (selectedTab == ConverterTab.CURRENCY) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$contentColor = if (selectedTab == ConverterTab.UNITS) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$else</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$private</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$val</ID>
+    <ID>MaxLineLength:QuickConverterScreen.kt$val temp = fromCurrencyIndex; fromCurrencyIndex = toCurrencyIndex; toCurrencyIndex = temp</ID>
+    <ID>MaxLineLength:QuickDashApiClient.kt$QuickDashApiClient$apkUrl = data.apkUrl.ifEmpty { "https://github.com/balajitechlabs/quickdash/releases/latest/download/app-universal-release.apk" }</ID>
+    <ID>MaxLineLength:QuickDashApiClient.kt$QuickDashApiClient$return "https://github.com/balajitechlabs/quickdash/releases/download/v$fallbackTag/app-universal-release.apk"</ID>
+    <ID>MaxLineLength:QuickDashApiClient.kt$QuickDashApiClient$suspend</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$(slideInHorizontally(animationSpec = spring(stiffness = Spring.StiffnessMediumLow, dampingRatio = Spring.DampingRatioNoBouncy)) { width -&gt; -width / 4 } + fadeIn(animationSpec = tween(180)))</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$(slideInHorizontally(animationSpec = spring(stiffness = Spring.StiffnessMediumLow, dampingRatio = Spring.DampingRatioNoBouncy)) { width -&gt; width / 4 } + fadeIn(animationSpec = tween(180)))</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$.</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$&lt;no name provided&gt;$override</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$Icon(imageVector = icon, contentDescription = label, tint = contentColor, modifier = Modifier.size(20.dp))</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$QuickDashUiState.About -&gt; com.balajitechlabs.quickdash.features.about.presentation.AboutScreen()</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$QuickDashUiState.ContactQr -&gt; com.balajitechlabs.quickdash.features.qr.presentation.QuickContactQrScreen(isFloating = isFloating, onBack = onBackToHome)</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$QuickDashUiState.Onboarding</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$QuickDashUiState.ShowQr$val amount: String</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$QuickNotesScreen(mainViewModel = mainViewModel, isFloating = isFloating, onDismiss = onBackToHome)</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$android.net.Uri.parse("package:${context.packageName}")</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$android.widget.Toast.makeText(appContext, "Chat Contact Loaded", android.widget.Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$android.widget.Toast.makeText(appContext, "Failed to launch payment app. Copied UPI link.", android.widget.Toast.LENGTH_LONG).show()</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$android.widget.Toast.makeText(appContext, "Saved to QuickDash Clipboard", android.widget.Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$android.widget.Toast.makeText(appContext, "Scanned: $rawValue (Copied)", android.widget.Toast.LENGTH_LONG).show()</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$android.widget.Toast.makeText(appContext, "Wi-Fi: $ssid (Password copied)", android.widget.Toast.LENGTH_LONG).show()</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$android.widget.Toast.makeText(context, "Enable 'Display over other apps' to minimize into a bubble", android.widget.Toast.LENGTH_LONG).show()</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$animation = androidx.compose.animation.core.tween(1200, easing = androidx.compose.animation.core.LinearEasing)</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$animation = androidx.compose.animation.core.tween(800, easing = androidx.compose.animation.core.FastOutSlowInEasing)</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF44474F).copy(alpha = 0.7f))</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned Contact", phone ?: rawValue))</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$com.balajitechlabs.quickdash.features.calculator.presentation</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$com.balajitechlabs.quickdash.features.customizer.presentation.BubbleCustomizerScreen()</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$emitter = nl.dionsegijn.konfetti.core.emitter.Emitter(duration = 100, java.util.concurrent.TimeUnit.MILLISECONDS).max(80)</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$emitter = nl.dionsegijn.konfetti.core.emitter.Emitter(duration = 1000, java.util.concurrent.TimeUnit.MILLISECONDS).max(100)</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$emitter = nl.dionsegijn.konfetti.core.emitter.Emitter(duration = 200, java.util.concurrent.TimeUnit.MILLISECONDS).max(100)</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$emitter = nl.dionsegijn.konfetti.core.emitter.Emitter(duration = 300, java.util.concurrent.TimeUnit.MILLISECONDS).max(100)</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$emitter = nl.dionsegijn.konfetti.core.emitter.Emitter(duration = 500, java.util.concurrent.TimeUnit.MILLISECONDS).max(50)</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$enter = androidx.compose.animation.fadeIn() + androidx.compose.animation.scaleIn()</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$exit = androidx.compose.animation.fadeOut() + androidx.compose.animation.scaleOut()</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$if</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$lower.contains("wa.me/") || lower.contains("whatsapp://send") || lower.contains("api.whatsapp.com/") || lower.contains("t.me/")</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$position = nl.dionsegijn.konfetti.core.Position.Relative(0.0, 0.0).between(nl.dionsegijn.konfetti.core.Position.Relative(1.0, 0.0))</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$rawValue.startsWith("upi://") || rawValue.startsWith("gpay://") || rawValue.startsWith("phonepe://") || rawValue.startsWith("paytmmp://") || rawValue.startsWith("bhim://")</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$shapes = listOf(nl.dionsegijn.konfetti.core.models.Shape.Circle, nl.dionsegijn.konfetti.core.models.Shape.Square)</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$size = listOf(nl.dionsegijn.konfetti.core.models.Size(32, 6f), nl.dionsegijn.konfetti.core.models.Size(42, 8f))</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$targetValue = if (selected) MaterialTheme.colorScheme.primaryContainer else androidx.compose.ui.graphics.Color.Transparent</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$val activeDefaultId = if (usePaypal) savedDefaultPaypalId ?: savedPaypalIds.firstOrNull() ?: "" else savedDefaultUpiId ?: savedUpiIds.firstOrNull() ?: ""</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$val bitmap = android.graphics.Bitmap.createBitmap(width, height, android.graphics.Bitmap.Config.ARGB_8888)</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$val confettiTypeFlow = mainViewModel.userStore.confettiType.collectAsStateWithLifecycle(initialValue = "Default")</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$val contentColor = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$val hapticLevelFlow = mainViewModel.userStore.hapticLevel.collectAsStateWithLifecycle(initialValue = "Crisp")</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$val infiniteTransition = androidx.compose.animation.core.rememberInfiniteTransition(label = "update_logo_pulse")</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$val isOnboardingCompleteFlow = mainViewModel.userStore.isOnboardingComplete.collectAsStateWithLifecycle(initialValue = null)</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$val sIntent = Intent(context, com.balajitechlabs.quickdash.core.services.FloatingBubbleService::class.java)</ID>
+    <ID>MaxLineLength:QuickDashApp.kt$vibrator.vibrate(android.os.VibrationEffect.createPredefined(android.os.VibrationEffect.EFFECT_DOUBLE_CLICK))</ID>
+    <ID>MaxLineLength:QuickDashApplication.kt$/* * Copyright (c) 2026 ||BTL||™ (balajitechlabs) * License: PocketOps Custom Open Source Fork License * * Feature Module: app * File: QuickDashApplication.kt * Description: Application class initializing Hilt dependency injection, notification channels, and global crash reporting. * Developer: balajitechlabs */</ID>
+    <ID>MaxLineLength:QuickDashTipsSheet.kt$Text(tip.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:QuickDashTipsSheet.kt$Text(tip.title, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium)</ID>
+    <ID>MaxLineLength:QuickDashWelcomeScreen.kt$ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED</ID>
+    <ID>MaxLineLength:QuickDashWelcomeScreen.kt$cameraGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED</ID>
+    <ID>MaxLineLength:QuickDashWelcomeScreen.kt$contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 12.dp, vertical = 6.dp)</ID>
+    <ID>MaxLineLength:QuickDashWelcomeScreen.kt$micGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED</ID>
+    <ID>MaxLineLength:QuickDashWelcomeScreen.kt$mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)</ID>
+    <ID>MaxLineLength:QuickDashWelcomeScreen.kt$mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)</ID>
+    <ID>MaxLineLength:QuickDashWelcomeScreen.kt$openUrl(context, "https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api")</ID>
+    <ID>MaxLineLength:QuickDashWelcomeScreen.kt$val</ID>
+    <ID>MaxLineLength:QuickDashWelcomeScreen.kt$val launchIntent = context.packageManager.getLaunchIntentForPackage("moe.shizuku.privileged.api")</ID>
+    <ID>MaxLineLength:QuickDashWidget.kt$QuickDashWidget$modifier = GlanceModifier.clickable(actionStartActivity(Intent(context, MainActivity::class.java).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }))</ID>
+    <ID>MaxLineLength:QuickNotesScreen.kt$if</ID>
+    <ID>MaxLineLength:QuickNotesScreen.kt$onClick = { noteInput += if (noteInput.isEmpty() || noteInput.endsWith("\n")) snippet else "\n$snippet" }</ID>
+    <ID>MaxLineLength:QuickNotesScreen.kt$val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager</ID>
+    <ID>MaxLineLength:QuickNotesScreen.kt$withStyle</ID>
+    <ID>MaxLineLength:QuickPasswordScreen.kt$colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))</ID>
+    <ID>MaxLineLength:QuickPomodoroScreen.kt$val presets = listOf(Triple("25m Focus", 25, "FOCUS"), Triple("5m Break", 5, "BREAK"), Triple("15m Long", 15, "BREAK"))</ID>
+    <ID>MaxLineLength:QuickQrScannerScreen.kt$Toast.makeText(context, "No readable QR code or barcode found in image", Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:QuickQrScannerScreen.kt$val binaryBmp = com.google.zxing.BinaryBitmap(com.google.zxing.common.HybridBinarizer(source))</ID>
+    <ID>MaxLineLength:QuickQrScannerScreen.kt$val globalBmp = com.google.zxing.BinaryBitmap(com.google.zxing.common.GlobalHistogramBinarizer(source))</ID>
+    <ID>MaxLineLength:QuickQrScannerScreen.kt$val invertedBmp = com.google.zxing.BinaryBitmap(com.google.zxing.common.HybridBinarizer(source.invert()))</ID>
+    <ID>MaxLineLength:QuickRemindersScreen.kt$Icon(androidx.compose.material.icons.Icons.Filled.Alarm, contentDescription = "Set reminder", tint = Color.White)</ID>
+    <ID>MaxLineLength:QuickRemindersScreen.kt$Toast.makeText(context, "Reminder set for $selectedMinutes minutes!", Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:QuickRemindersScreen.kt$Toast.makeText(context, "⏰ Reminder set for $selectedMinutes minutes!", Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:QuickRemindersScreen.kt$alarmManager?.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)</ID>
+    <ID>MaxLineLength:QuickRemindersScreen.kt$android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE</ID>
+    <ID>MaxLineLength:QuickRemindersScreen.kt$if (isSelected) MaterialTheme.colorScheme.primary else Color(0xFF44474F).copy(alpha = 0.6f)</ID>
+    <ID>MaxLineLength:QuickRemindersScreen.kt$val</ID>
+    <ID>MaxLineLength:QuickRemindersScreen.kt$val alarmManager = context.getSystemService(android.content.Context.ALARM_SERVICE) as? android.app.AlarmManager</ID>
+    <ID>MaxLineLength:QuickSearchScreen.kt$else</ID>
+    <ID>MaxLineLength:QuickSearchScreen.kt$suggestionsScrollState.animateScrollTo((suggestionsScrollState.value + 150).coerceAtMost(suggestionsScrollState.maxValue))</ID>
+    <ID>MaxLineLength:QuickSearchScreen.kt$suggestionsScrollState.animateScrollTo((suggestionsScrollState.value - 150).coerceAtLeast(0))</ID>
+    <ID>MaxLineLength:QuickSearchScreen.kt$tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:QuickSearchScreen.kt$val customEnginesJson by mainViewModel.userStore.customSearchEngines.collectAsStateWithLifecycle(initialValue = "[]")</ID>
+    <ID>MaxLineLength:QuickSocialScreen.kt$.</ID>
+    <ID>MaxLineLength:QuickSocialScreen.kt$@Suppress("DEPRECATION") Icon(Icons.Filled.OpenInNew, contentDescription = null, modifier = Modifier.size(16.dp))</ID>
+    <ID>MaxLineLength:QuickSocialScreen.kt$Icon(Icons.Filled.Link, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.primary)</ID>
+    <ID>MaxLineLength:QuickSocialScreen.kt$Text("Bio", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)</ID>
+    <ID>MaxLineLength:QuickSocialScreen.kt$Text("Followers", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)</ID>
+    <ID>MaxLineLength:QuickSocialScreen.kt$Text("README.md Preview", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)</ID>
+    <ID>MaxLineLength:QuickSocialScreen.kt$Text(text = "${profile.followers} Followers • ${profile.following} Following", style = MaterialTheme.typography.bodySmall)</ID>
+    <ID>MaxLineLength:QuickSocialScreen.kt$Text(text = "@${profile.login}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)</ID>
+    <ID>MaxLineLength:QuickSocialScreen.kt$color = if (isSelected) brandColor else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.15f)</ID>
+    <ID>MaxLineLength:QuickSocialScreen.kt$colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))</ID>
+    <ID>MaxLineLength:QuickSocialScreen.kt$containerColor = if (isSelected) brandColor.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)</ID>
+    <ID>MaxLineLength:QuickSocialScreen.kt$val blog = if (!profile.blogUrl.startsWith("http")) "https://${profile.blogUrl}" else profile.blogUrl</ID>
+    <ID>MaxLineLength:QuickTimerScreen.kt$Text("Lap $lapIdx", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:QuickTimerScreen.kt$border = androidx.compose.foundation.BorderStroke(0.5.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f))</ID>
+    <ID>MaxLineLength:QuickTimerScreen.kt$contentColor = if (isRunning) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onPrimary</ID>
+    <ID>MaxLineLength:QuickTimerScreen.kt$imageVector = if (isRunning) Icons.Filled.Pause else if (finished) Icons.Filled.Refresh else Icons.Filled.PlayArrow</ID>
+    <ID>MaxLineLength:QuickTimerScreen.kt$private</ID>
+    <ID>MaxLineLength:QuickTimerScreen.kt$val durationText = if (entry.type == "Stopwatch") formatMs(entry.durationMs) else formatCountdown(entry.durationMs)</ID>
+    <ID>MaxLineLength:QuickTool.kt$ToolDefinition(QuickTool.CALCULATOR, "Quick Calculator", "One-handed calculation companion", R.drawable.ic_calculator, "Tools", Icons.Rounded.Calculate)</ID>
+    <ID>MaxLineLength:QuickTool.kt$ToolDefinition(QuickTool.CAPTURE, "Quick Capture", "Screen recorder &amp; floating annotator", R.drawable.ic_quickdash_tile, "Media", Icons.Rounded.Screenshot)</ID>
+    <ID>MaxLineLength:QuickTool.kt$ToolDefinition(QuickTool.CHAT, "Quick Chat", "Direct messaging on WhatsApp &amp; Telegram", R.drawable.ic_whatsapp, "Tools", Icons.AutoMirrored.Rounded.Chat)</ID>
+    <ID>MaxLineLength:QuickTool.kt$ToolDefinition(QuickTool.CLIPBOARD, "Smart Clipboard", "History manager with search &amp; auto-clear", R.drawable.ic_note, "Tools", Icons.Rounded.ContentPaste)</ID>
+    <ID>MaxLineLength:QuickTool.kt$ToolDefinition(QuickTool.CONTACT_QR, "Contact QR Card", "Generate sharable vCard QR for instant save", R.drawable.ic_person, "Tools", Icons.Rounded.ContactPage)</ID>
+    <ID>MaxLineLength:QuickTool.kt$ToolDefinition(QuickTool.CONVERTER, "Unit Converter", "Length, weight, currency &amp; temperature", R.drawable.ic_tools, "Tools", Icons.Rounded.SyncAlt)</ID>
+    <ID>MaxLineLength:QuickTool.kt$ToolDefinition(QuickTool.NOTES, "Quick Notes", "Floating scratchpad with instant export", R.drawable.ic_note, "Tools", Icons.Rounded.EditNote)</ID>
+    <ID>MaxLineLength:QuickTool.kt$ToolDefinition(QuickTool.PASSWORD, "Password Generator", "Cryptographically secure passphrase vault", R.drawable.ic_settings, "Tools", Icons.Rounded.Key)</ID>
+    <ID>MaxLineLength:QuickTool.kt$ToolDefinition(QuickTool.POMODORO, "Quick Pomodoro", "Focus interval timer with break cycles", R.drawable.ic_timer, "Tools", Icons.Rounded.HourglassBottom)</ID>
+    <ID>MaxLineLength:QuickTool.kt$ToolDefinition(QuickTool.QRSCANNER, "QR &amp; Barcode Scanner", "Instant camera &amp; image barcode reader", R.drawable.ic_qr_code_2, "Media", Icons.Rounded.QrCodeScanner)</ID>
+    <ID>MaxLineLength:QuickTool.kt$ToolDefinition(QuickTool.REMINDERS, "Quick Reminders", "Lightweight scheduled notifications", R.drawable.ic_timer, "Tools", Icons.Rounded.Alarm)</ID>
+    <ID>MaxLineLength:QuickTool.kt$ToolDefinition(QuickTool.TIMER, "Quick Timer", "Precise countdown &amp; stopwatch alarms", R.drawable.ic_timer, "Tools", Icons.Rounded.Timer)</ID>
+    <ID>MaxLineLength:QuickTool.kt$ToolDefinition(QuickTool.TRANSLATOR, "Quick Translate", "Real-time multilingual translation", R.drawable.ic_globe, "Tools", Icons.Rounded.Translate)</ID>
+    <ID>MaxLineLength:QuickTool.kt$ToolDefinition(QuickTool.UPI, if (usePaypal) "Quick PayPal" else "Quick Collect", "Instant payment QR codes &amp; collection", R.drawable.ic_upi_pay, "Finance", Icons.Rounded.QrCode)</ID>
+    <ID>MaxLineLength:QuickTool.kt$ToolDefinition(QuickTool.VOICEMEMOS, "Voice Memos", "High-fidelity floating audio recorder", R.drawable.ic_phone, "Media", Icons.Rounded.Mic)</ID>
+    <ID>MaxLineLength:QuickTool.kt$ToolDefinition(QuickTool.WIFI, "Wi-Fi Hub", "Speed diagnostics &amp; QR connection sharing", R.drawable.ic_shortcut_wifi, "Tools", Icons.Rounded.Wifi)</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp, color = Color.White)</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$Icon(Icons.AutoMirrored.Filled.VolumeUp, "Listen", tint = MaterialTheme.colorScheme.onTertiaryContainer)</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$Icon(Icons.Filled.ContentCopy, "Copy", tint = MaterialTheme.colorScheme.onTertiaryContainer)</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$IconButton</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$Intent(Intent.ACTION_VIEW, Uri.parse("https://translate.google.com/?sl=$src&amp;tl=$tgt&amp;text=$encoded"))</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$LanguageDropdown(selectedIndex = sourceLanguageIndex, onSelect = { sourceLanguageIndex = it }, label = "From", modifier = Modifier.weight(1f))</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$LanguageDropdown(selectedIndex = targetLanguageIndex, onSelect = { targetLanguageIndex = it }, label = "To", modifier = Modifier.weight(1f))</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$Row</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$Text("Paste from Clipboard", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Medium)</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$Text("→ ${LANGUAGES[targetLanguageIndex].first}", style = MaterialTheme.typography.labelMedium, color = if (hasError) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onTertiaryContainer.copy(0.75f))</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$Text("📜 Recent Translations", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$Text(text = item.originalText, style = MaterialTheme.typography.bodySmall, maxLines = 1, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$Text(text = item.translatedText, style = MaterialTheme.typography.bodySmall, maxLines = 2, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$Text(translatedResult, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onTertiaryContainer)</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$color = if (hasError) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.tertiaryContainer</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$private suspend</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$val hasError = translatedResult.startsWith("Translation service error") || translatedResult.startsWith("Connection failed")</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$val isError = res.startsWith("Translation service error") || res.startsWith("Connection failed")</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$val tmp = sourceLanguageIndex</ID>
+    <ID>MaxLineLength:QuickTranslatorScreen.kt$val urlStr = "https://translate.googleapis.com/translate_a/single?client=gtx&amp;sl=$srcLang&amp;tl=$to&amp;dt=t&amp;dj=1&amp;q=$encoded"</ID>
+    <ID>MaxLineLength:QuickVoiceMemosScreen.kt$border = if (isThisPlaying) androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary) else null</ID>
+    <ID>MaxLineLength:QuickVoiceMemosScreen.kt$color = if (isThisPlaying) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else Color(0xFF1E2024)</ID>
+    <ID>MaxLineLength:QuickVoiceMemosScreen.kt$if</ID>
+    <ID>MaxLineLength:QuickWebScreen.kt$&lt;no name provided&gt;$val</ID>
+    <ID>MaxLineLength:QuickWebScreen.kt$tint = if (canGoBack) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)</ID>
+    <ID>MaxLineLength:QuickWebScreen.kt$tint = if (canGoForward) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)</ID>
+    <ID>MaxLineLength:QuickWifiScreen.kt$Text("${formatBytes(rxSpeed)}/s", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:QuickWifiScreen.kt$Text("${formatBytes(txSpeed)}/s", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:QuickWifiScreen.kt$Text("Download Speed", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:QuickWifiScreen.kt$Text("Session Total", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:QuickWifiScreen.kt$Text("Upload Speed", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:QuickWifiScreen.kt$Text(formatBytes(totalSessionBytes), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)</ID>
+    <ID>MaxLineLength:QuickWifiScreen.kt$android.widget.Toast.makeText(context, "Please enter a Wi-Fi network name", android.widget.Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:QuickWifiScreen.kt$android.widget.Toast.makeText(context, "Server saved!", android.widget.Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:QuickWifiScreen.kt$border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.5f))</ID>
+    <ID>MaxLineLength:QuickWifiScreen.kt$bytes &gt;= 1024 * 1024 * 1024 -&gt; String.format(java.util.Locale.getDefault(), "%.2f GB", bytes.toDouble() / (1024 * 1024 * 1024))</ID>
+    <ID>MaxLineLength:QuickWifiScreen.kt$bytes &gt;= 1024 * 1024 -&gt; String.format(java.util.Locale.getDefault(), "%.2f MB", bytes.toDouble() / (1024 * 1024))</ID>
+    <ID>MaxLineLength:QuickWifiScreen.kt$color = if (hotspotMode) MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha=0.8f) else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:QuickWifiScreen.kt$encryptionScrollState.animateScrollTo((encryptionScrollState.value + 120).coerceAtMost(encryptionScrollState.maxValue))</ID>
+    <ID>MaxLineLength:QuickWifiScreen.kt$val color = if (pagerState.currentPage == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)</ID>
+    <ID>MaxLineLength:QuickWifiScreen.kt$val intent = android.content.Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS)</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("calc", "Calculator", R.drawable.ic_calculator, "com.balajitechlabs.quickdash.ACTION_QUICK_CALCULATOR")</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("capture", "Capture", R.drawable.ic_quickdash_tile, "com.balajitechlabs.quickdash.ACTION_QUICK_CAPTURE")</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("chat", "Quick Chat", R.drawable.ic_whatsapp, "com.balajitechlabs.quickdash.ACTION_QUICK_CHAT")</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("clipboard", "Clipboard", R.drawable.ic_note, "com.balajitechlabs.quickdash.ACTION_QUICK_CLIPBOARD")</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("contactqr", "Contact QR", R.drawable.ic_person, "com.balajitechlabs.quickdash.ACTION_QUICK_CONTACTQR")</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("converter", "Converter", R.drawable.ic_tools, "com.balajitechlabs.quickdash.ACTION_QUICK_CONVERTER")</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("notes", "Quick Notes", R.drawable.ic_note, "com.balajitechlabs.quickdash.ACTION_QUICK_NOTES")</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("password", "Password", R.drawable.ic_settings, "com.balajitechlabs.quickdash.ACTION_QUICK_PASSWORD")</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("pomodoro", "Pomodoro", R.drawable.ic_timer, "com.balajitechlabs.quickdash.ACTION_QUICK_POMODORO")</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("qr", "QR Scanner", R.drawable.ic_qr_code_2, "com.balajitechlabs.quickdash.ACTION_QUICK_QRSCANNER")</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("reminders", "Reminders", R.drawable.ic_timer, "com.balajitechlabs.quickdash.ACTION_QUICK_REMINDERS")</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("timer", "Timer", R.drawable.ic_timer, "com.balajitechlabs.quickdash.ACTION_QUICK_TIMER")</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("translate", "Translate", R.drawable.ic_globe, "com.balajitechlabs.quickdash.ACTION_QUICK_TRANSLATOR")</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("upi", "Quick Collect", R.drawable.ic_upi_pay, "com.balajitechlabs.quickdash.ACTION_QUICK_UPI")</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("voice", "Voice Memos", R.drawable.ic_phone, "com.balajitechlabs.quickdash.ACTION_QUICK_VOICEMEMOS")</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("web", "Search", R.drawable.ic_search, "com.balajitechlabs.quickdash.ACTION_QUICK_WEB")</ID>
+    <ID>MaxLineLength:RadialToolCatalog.kt$RadialToolCatalog$RadialToolInfo("wifi", "Wi-Fi Hub", R.drawable.ic_shortcut_wifi, "com.balajitechlabs.quickdash.ACTION_QUICK_WIFI")</ID>
+    <ID>MaxLineLength:ScreenRecorderService.kt$ScreenRecorderService$val stopPi = PendingIntent.getService(this, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)</ID>
+    <ID>MaxLineLength:ScreenRecorderService.kt$ScreenRecorderService$var actualRecordAudio = recordAudio &amp;&amp; androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) == android.content.pm.PackageManager.PERMISSION_GRANTED</ID>
+    <ID>MaxLineLength:SettingsRepository.kt$SettingsRepository$@Deprecated("Use UserStore directly instead. SettingsRepository is retained for backwards compatibility.", ReplaceWith("UserStore"))</ID>
+    <ID>MaxLineLength:SettingsRepository.kt$SettingsRepository$if (json.has("chat_default_code")) preferences[CHAT_DEFAULT_CODE_KEY] = json.getString("chat_default_code")</ID>
+    <ID>MaxLineLength:SettingsRepository.kt$SettingsRepository$if (json.has("chat_pause_history")) preferences[CHAT_PAUSE_HISTORY_KEY] = json.getBoolean("chat_pause_history")</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$"Backup Your Data" to "Use Data Management → Backup Data to export all settings, notes, and clipboard history as a JSON file before switching phones."</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$"Custom Seed Color" to "Use the seed color picker in Appearance to create a unique color theme applied across the entire app."</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$"GitHub Rate Limit" to "Generate a Personal Access Token on GitHub (Settings → Developer Settings → Tokens) and paste it in Advanced &amp; API Settings. Raises limit from 60 to 5,000 requests/hour."</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$"Manage Notifications" to "Swipe LEFT on any notification to dismiss it. Swipe RIGHT to pin it to the top of the feed for quick access."</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$"Play Protect" to "For sideloaded APKs, tap 'More details → Install anyway' on the Play Protect prompt. The Play Store version is auto-trusted."</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$"QR Scanner First Load" to "First QR scan may show a brief overlay — Google Play Services sets up the barcode engine once. Subsequent scans are instant."</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$"Quick Collect" to "Set your Default Target Payment App in Advanced &amp; API Settings to pre-select GPay, PhonePe, or Paytm for faster QR generation."</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$"Save Battery" to "Switch to AMOLED theme in Launch &amp; Windows for true-black backgrounds that save battery on OLED displays."</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$"Social Link Routing" to "Social media profile links open natively in their apps when installed. On emulators, they fallback to your browser automatically."</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$"Timer Persistence" to "Countdown timers use AlarmManager exact alarms — they continue even in deep Doze mode when the phone is idle."</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$"Your all-in-one floating dashboard for productivity, payments, clipboard, Wi-Fi analysis, and much more."</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Column</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Row</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Text("Developed by balajitechlabs", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f))</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Text("Downloading update: ${updateState.progress}%", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Text("Error checking updates", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Text("Existing Custom Engines:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Text("New Update Available\nVersion v${updateState.versionName.removePrefix("v")}", style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Text("QuickDash", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onPrimaryContainer)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Text("Status: Up to date ✅", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Text("Update ready to install", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = Color(0xFF4CAF50))</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Text(body, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Text(engine["name"] ?: "", fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Text(engine["url"] ?: "", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$Text(updateState.message, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$android.graphics.ImageDecoder.decodeBitmap(android.graphics.ImageDecoder.createSource(context.contentResolver, uri))</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$android.graphics.drawable.Icon.createWithResource(context, R.mipmap.ic_launcher_round)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$android.widget.Toast.makeText(context, "Backup Failed: ${result.exceptionOrNull()?.message}", android.widget.Toast.LENGTH_LONG).show()</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$android.widget.Toast.makeText(context, "Backup Successful! 💾", android.widget.Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$android.widget.Toast.makeText(context, "Could not open target app. Falling back to share chooser.", android.widget.Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$android.widget.Toast.makeText(context, "Data restored successfully", android.widget.Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$android.widget.Toast.makeText(context, "Pull down top notification shade, tap Edit to add QuickDash Tile", android.widget.Toast.LENGTH_LONG).show()</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$android.widget.Toast.makeText(context, "Restore failed: ${result.exceptionOrNull()?.message}", android.widget.Toast.LENGTH_LONG).show()</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$android.widget.Toast.makeText(context, "Thank you for your rating", android.widget.Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50), contentColor = Color.White)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f))</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker.sendBroadcastBotMessage(message)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker.sendMessage("&lt;b&gt;Feature Request&lt;/b&gt;\nIdea: $safeIdea")</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker.sendMessage(message)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$context.startService(Intent(context, com.balajitechlabs.quickdash.core.services.FloatingBubbleService::class.java))</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$context.stopService(Intent(context, com.balajitechlabs.quickdash.core.services.FloatingBubbleService::class.java))</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$expandedGroup = if (expandedGroup == "Floating Window &amp; Bubble") null else "Floating Window &amp; Bubble"</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$gson.fromJson&lt;List&lt;Map&lt;String, String&gt;&gt;&gt;(customSearchEnginesJson, type) as? List&lt;Map&lt;String, String&gt;&gt; ?: emptyList()</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$if</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$imageVector = if (i &lt;= selectedStars) Icons.Default.Star else androidx.compose.material.icons.Icons.Default.StarOutline</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$listOf("ANY" to "Any Payment App", "GPAY" to "Google Pay", "PHONEPE" to "PhonePe", "PAYTM" to "Paytm", "BHIM" to "BHIM")</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$text = "• Tap to open the menu, drag to reposition.\n• Double-tap the bubble to disable it completely."</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$text = "• UPI Pay\n• Quick Chat\n• Quick Search\n• Quick Notes\n• Calculator\n• Timer\n• Settings\n• Quick Web"</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$tint = if (i &lt;= selectedStars) Color(0xFFFFC107) else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$try { com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(context, manual = true) } catch (e: Exception) { Log.e(TAG, "Failed to check for updates", e) }</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$try { com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(context, manual = true) } catch (e: Exception) { Log.e(TAG, "Failed to retry update check", e) }</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$try { com.balajitechlabs.quickdash.core.utils.UpdateManager.installApk(context, updateState.fileName) } catch (e: Exception) { Log.e(TAG, "Failed to install APK", e) }</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$try { com.balajitechlabs.quickdash.core.utils.UpdateManager.startDownload(context, updateState.apkUrl, updateState.versionName) } catch (e: Exception) { Log.e(TAG, "Failed to start update download", e) }</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$val activeClipboardClearDelay by viewModel.userStore.clipboardClearDelay.collectAsStateWithLifecycle(initialValue = -1L)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$val activeDefaultPaymentApp by viewModel.userStore.defaultPaymentApp.collectAsStateWithLifecycle(initialValue = "ANY")</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$val b = android.graphics.Bitmap.createBitmap(view.width, view.height, android.graphics.Bitmap.Config.ARGB_8888)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$val bitmap = android.graphics.Bitmap.createBitmap(view.width, view.height, android.graphics.Bitmap.Config.ARGB_8888)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$val clipboardAutocleanInterval by viewModel.userStore.clipboardAutocleanInterval.collectAsStateWithLifecycle(initialValue = "OFF")</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$val customSearchEnginesJson by viewModel.userStore.customSearchEngines.collectAsStateWithLifecycle(initialValue = "[]")</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/IIXII-L192/PocketOps-app.git"))</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$val isTabLocked by viewModel.userStore.tabBiometricLock.collectAsStateWithLifecycle(initialValue = false)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$val manager = context.getSystemService(Context.STATUS_BAR_SERVICE) as android.app.StatusBarManager</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$val message = "&lt;b&gt;New App Rating&lt;/b&gt;\nStars: $selectedStars\nReview: ${if (reviewText.isBlank()) "None" else reviewText}\nDevice: ${Build.MODEL}"</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$val radialCustomTools by viewModel.userStore.radialCustomTools.collectAsStateWithLifecycle(initialValue = listOf("upi", "notes", "calc", "timer"))</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$val serviceIntent = Intent(context, com.balajitechlabs.quickdash.core.services.ShakeDetectorService::class.java)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$val showToolDescriptions by viewModel.userStore.showToolDescriptions.collectAsStateWithLifecycle(initialValue = true)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$val vCodeAbout = if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.P) packageInfo2.longVersionCode else @Suppress("DEPRECATION") packageInfo2.versionCode.toLong()</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$vibrator.vibrate(VibrationEffect.createOneShot(hapticDuration.toLong(), VibrationEffect.DEFAULT_AMPLITUDE))</ID>
+    <ID>MaxLineLength:SetupScreen.kt$text = "No accounts configured yet. Enter your $idTypeLabel below to begin collecting payments instantly."</ID>
+    <ID>MaxLineLength:SetupScreen.kt$val</ID>
+    <ID>MaxLineLength:ShakeDetectorService.kt$ShakeDetectorService$android.util.Log.e("ShakeDetectorService", "specialUse startForeground failed, falling back: ${se.message}")</ID>
+    <ID>MaxLineLength:ShakeDetectorService.kt$ShakeDetectorService$startForeground(102, notification, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)</ID>
+    <ID>MaxLineLength:ShapeStep.kt$border = BorderStroke(currentBorder.dp, MaterialTheme.colorScheme.primary.copy(alpha = if (isSelected) 0.6f else 0.2f))</ID>
+    <ID>MaxLineLength:ShapeStep.kt$color = MaterialTheme.colorScheme.primary.copy(alpha = if (isSelected) 0.15f else 0.06f)</ID>
+    <ID>MaxLineLength:ShareReceiverActivity.kt$ShareReceiverActivity$Toast.makeText(this@ShareReceiverActivity, "Copied to Clipboard", Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:ShowQrScreen.kt$&lt;no name provided&gt;$override</ID>
+    <ID>MaxLineLength:ShowQrScreen.kt$Box</ID>
+    <ID>MaxLineLength:ShowQrScreen.kt$emitter = nl.dionsegijn.konfetti.core.emitter.Emitter(duration = 100, java.util.concurrent.TimeUnit.MILLISECONDS).max(80)</ID>
+    <ID>MaxLineLength:ShowQrScreen.kt$emitter = nl.dionsegijn.konfetti.core.emitter.Emitter(duration = 1000, java.util.concurrent.TimeUnit.MILLISECONDS).max(100)</ID>
+    <ID>MaxLineLength:ShowQrScreen.kt$emitter = nl.dionsegijn.konfetti.core.emitter.Emitter(duration = 200, java.util.concurrent.TimeUnit.MILLISECONDS).max(100)</ID>
+    <ID>MaxLineLength:ShowQrScreen.kt$emitter = nl.dionsegijn.konfetti.core.emitter.Emitter(duration = 300, java.util.concurrent.TimeUnit.MILLISECONDS).max(100)</ID>
+    <ID>MaxLineLength:ShowQrScreen.kt$position = nl.dionsegijn.konfetti.core.Position.Relative(0.0, 0.0).between(nl.dionsegijn.konfetti.core.Position.Relative(1.0, 0.0))</ID>
+    <ID>MaxLineLength:ShowQrScreen.kt$size = listOf(nl.dionsegijn.konfetti.core.models.Size(56, 12f), nl.dionsegijn.konfetti.core.models.Size(72, 16f))</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$FavoriteCarouselItem(tool = it.tool, title = it.title, iconRes = it.iconRes, subtitle = it.category, imageVector = it.imageVector)</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$Icon(Icons.Rounded.ArrowDownward, contentDescription = "Move Down", tint = Color.White, modifier = Modifier.size(16.dp))</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$Icon(Icons.Rounded.ArrowUpward, contentDescription = "Move Up", tint = Color.White, modifier = Modifier.size(16.dp))</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$Icon(Icons.Rounded.Close, contentDescription = "Remove", tint = Color(0xFFFFB4AB), modifier = Modifier.size(16.dp))</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$android.widget.Toast.makeText(context, "Copied ${spotlightShortcutResult.result}", android.widget.Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$fromUnit in listOf("kg", "kilogram") &amp;&amp; toUnit in listOf("lbs", "lb", "pound", "pounds") -&gt; value * 2.20462</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$fromUnit in listOf("km", "kilometer", "kilometers") &amp;&amp; toUnit in listOf("mi", "mile", "miles") -&gt; value * 0.621371</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$fromUnit in listOf("lbs", "lb", "pound", "pounds") &amp;&amp; toUnit in listOf("kg", "kilogram") -&gt; value * 0.453592</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$fromUnit in listOf("mi", "mile", "miles") &amp;&amp; toUnit in listOf("km", "kilometer", "kilometers") -&gt; value * 1.60934</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$val</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$val formatted = if (converted % 1.0 == 0.0) converted.toLong().toString() else String.format(java.util.Locale.US, "%.2f", converted)</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$val orderList: List&lt;QuickTool&gt; = effectiveOrderString.split(",").mapNotNull { runCatching { QuickTool.valueOf(it) }.getOrNull() }</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$val url = "https://en.wikipedia.org/wiki/Special:Search?search=${Uri.encode(searchQuery.trim())}"</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$val url = "https://www.youtube.com/results?search_query=${Uri.encode(searchQuery.trim())}"</ID>
+    <ID>MaxLineLength:SpotlightLauncher.kt$workingList = listOf(QuickTool.UPI, QuickTool.CHAT, QuickTool.CLIPBOARD, QuickTool.NOTES, QuickTool.CAPTURE, QuickTool.WIFI, QuickTool.PASSWORD)</ID>
+    <ID>MaxLineLength:SystemLogsScreen.kt$android.widget.Toast.makeText(context, "Copied to clipboard", android.widget.Toast.LENGTH_SHORT).show()</ID>
+    <ID>MaxLineLength:SystemLogsScreen.kt$val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager</ID>
+    <ID>MaxLineLength:TelegramPollerWorker.kt$TelegramPollerWorker$"/ping" -&gt; TelegramTracker.sendMessage("🏓 Pong! QuickDash is online on ${Build.MODEL}")</ID>
+    <ID>MaxLineLength:TelegramPollerWorker.kt$TelegramPollerWorker$(context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager).getMemoryInfo(mi)</ID>
+    <ID>MaxLineLength:TelegramPollerWorker.kt$TelegramPollerWorker$Math.abs(System.currentTimeMillis() - ((it["timestamp"] as? Number)?.toLong() ?: 0L)) &lt; 600000L</ID>
+    <ID>MaxLineLength:TelegramPollerWorker.kt$TelegramPollerWorker$TelegramTracker.sendMessage("&lt;b&gt;Active Broadcast on ${Build.MODEL}&lt;/b&gt;\n$t\n$b")</ID>
+    <ID>MaxLineLength:TelegramPollerWorker.kt$TelegramPollerWorker$TelegramTracker.sendMessage("&lt;b&gt;App Stats&lt;/b&gt;\nOpens: $opens\nQRs: $qrs\nNotes: $notes")</ID>
+    <ID>MaxLineLength:TelegramPollerWorker.kt$TelegramPollerWorker$TelegramTracker.sendMessage("&lt;b&gt;QuickDash v$vn&lt;/b&gt; running on ${Build.MODEL} (Android ${Build.VERSION.RELEASE})")</ID>
+    <ID>MaxLineLength:TelegramPollerWorker.kt$TelegramPollerWorker$TelegramTracker.sendMessage("No active broadcast currently on ${Build.MODEL}.")</ID>
+    <ID>MaxLineLength:TelegramPollerWorker.kt$TelegramPollerWorker$TelegramTracker.sendMessage("Update cursor reset. Next poll will re-fetch recent messages.")</ID>
+    <ID>MaxLineLength:TelegramPollerWorker.kt$TelegramPollerWorker$broadcastMessage(userStore, token, message, text, hasPhoto, hasVideo, hasDocument)</ID>
+    <ID>MaxLineLength:TelegramPollerWorker.kt$TelegramPollerWorker$val appVer = try { context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "N/A" } catch (e: Exception) { "N/A" }</ID>
+    <ID>MaxLineLength:TelegramPollerWorker.kt$TelegramPollerWorker$val b = broadcastNotif.notification.extras.getString(NotificationCompat.EXTRA_TEXT)</ID>
+    <ID>MaxLineLength:TelegramPollerWorker.kt$TelegramPollerWorker$val list: MutableList&lt;Map&lt;String, Any&gt;&gt; = gson.fromJson(rawJson, listType) ?: mutableListOf()</ID>
+    <ID>MaxLineLength:TelegramPollerWorker.kt$TelegramPollerWorker$val listType = object : com.google.gson.reflect.TypeToken&lt;MutableList&lt;Map&lt;String, Any&gt;&gt;&gt;() {}.type</ID>
+    <ID>MaxLineLength:TelegramPollerWorker.kt$TelegramPollerWorker$val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager</ID>
+    <ID>MaxLineLength:TelegramPollerWorker.kt$TelegramPollerWorker$val t = broadcastNotif.notification.extras.getString(NotificationCompat.EXTRA_TITLE)</ID>
+    <ID>MaxLineLength:TelegramPollerWorker.kt$TelegramPollerWorker$val vn = try { context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "N/A" } catch (e: Exception) { "N/A" }</ID>
+    <ID>MaxLineLength:Theme.kt$val prefs by context.dataStore.data.collectAsStateWithLifecycle(initialValue = androidx.datastore.preferences.core.emptyPreferences())</ID>
+    <ID>MaxLineLength:ThemeStep.kt$Text("Q", fontSize = 8.sp, color = Color(0xFF1C1B1F), fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:ThemeStep.kt$Text("Q", fontSize = 8.sp, color = Color(0xFFE6E1E5), fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:UpdateManager.kt$UpdateState.UpToDate$// Backwards compatibility property so existing references to upToDate.versionName still resolve cleanly to current installed version</ID>
+    <ID>MaxLineLength:UserStore.kt$UserStore$if (json.has("chat_default_code")) preferences[CHAT_DEFAULT_CODE_KEY] = json.getString("chat_default_code")</ID>
+    <ID>MaxLineLength:UserStore.kt$UserStore$if (json.has("chat_pause_history")) preferences[CHAT_PAUSE_HISTORY_KEY] = json.getBoolean("chat_pause_history")</ID>
+    <ID>MaxLineLength:WelcomeOnboardingScreen.kt$Column</ID>
+    <ID>MaxLineLength:WelcomeOnboardingScreen.kt$ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED</ID>
+    <ID>MaxLineLength:WelcomeOnboardingScreen.kt$Icon(Icons.Rounded.CheckCircle, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))</ID>
+    <ID>MaxLineLength:WelcomeOnboardingScreen.kt$Icon(Icons.Rounded.CheckCircle, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(52.dp))</ID>
+    <ID>MaxLineLength:WelcomeOnboardingScreen.kt$Icon(icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))</ID>
+    <ID>MaxLineLength:WelcomeOnboardingScreen.kt$Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))</ID>
+    <ID>MaxLineLength:WelcomeOnboardingScreen.kt$Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:WelcomeOnboardingScreen.kt$hasCamera = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED</ID>
+    <ID>MaxLineLength:WelcomeOnboardingScreen.kt$hasMic = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED</ID>
+    <ID>MaxLineLength:WelcomeOnboardingScreen.kt$hasOverlay = if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.M) Settings.canDrawOverlays(context) else true</ID>
+    <ID>MaxLineLength:WelcomeOnboardingScreen.kt$mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)</ID>
+    <ID>MaxLineLength:WelcomeOnboardingScreen.kt$mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)</ID>
+    <ID>MaxLineLength:WelcomeOnboardingScreen.kt$supportingContent = { Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }</ID>
+    <ID>MaxLineLength:WelcomeOnboardingScreen.kt$tint = if (isGranted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:WelcomeOnboardingScreen.kt$val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { hasCamera = it }</ID>
+    <ID>MaxLineLength:WelcomeOnboardingScreen.kt$val notifLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { hasNotifications = it }</ID>
+    <ID>MaxLineLength:WelcomeStep.kt$description = "Long-press the bubble (350ms) to launch your favorite 4 shortcuts. Customize slots directly in Settings."</ID>
+    <ID>MaxLineLength:WelcomeStep.kt$description = "Toggle the floating bubble instantly from your Control Center shade or Material You home screen widget."</ID>
+    <ID>MaxLineLength:WelcomeStep.kt$description = "Zero telemetry, zero tracking. Translation, text extraction (OCR), and AES-256 encrypted backups run 100% on-device."</ID>
+    <ID>MaxLineLength:WelcomeStep.kt$text = "Your on-demand floating productivity suite. Turn it on with 1 tap from Control Center or Home Screen Widgets."</ID>
+    <ID>MaxLineLength:WhatsNewDialog.kt$"Architecture and Stability" to "Target SDK 37 (Android 16), Unified UserStore DataStore migration, and comprehensive test suite."</ID>
+    <ID>MaxLineLength:WhatsNewDialog.kt$"Encrypted Backup and Restore" to "Export and import settings &amp; notes with AES-256-GCM encryption and PBKDF2 passphrase protection."</ID>
+    <ID>MaxLineLength:WhatsNewDialog.kt$"Glance Material 3 Widgets" to "Responsive home screen widgets (1x1 Squircle, 2x1 Quick Bar, 2x2 Tool Hub) with dynamic tinting."</ID>
+    <ID>MaxLineLength:WhatsNewDialog.kt$"In-App Update Engine" to "Streamlined update checker, download progress indicator, and automatic package installer trigger."</ID>
+    <ID>MaxLineLength:WhatsNewDialog.kt$"Radial Quick-Wheel" to "Long-press or swipe on the floating bubble to instantly summon top 4 tools with spring physics."</ID>
+    <ID>MaxLineLength:WhatsNewDialog.kt$val maxH = (androidx.compose.ui.platform.LocalConfiguration.current.screenHeightDp * 0.4f).dp.coerceIn(200.dp, 400.dp)</ID>
+    <ID>MaxLineLength:WifiHistoryDialog.kt$Icon(Icons.Filled.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)</ID>
+    <ID>MaxLineLength:WifiHistoryDialog.kt$Text("$secureCount Secured Networks", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)</ID>
+    <ID>MaxLineLength:WifiHistoryDialog.kt$Text("${items.size - secureCount} Open Networks", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:WifiHistoryDialog.kt$Text("Most Popular Network", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:WifiHistoryDialog.kt$Text("Saved Networks &amp; Stats", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)</ID>
+    <ID>MaxLineLength:WifiHistoryDialog.kt$Text("Security Coverage", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:WifiHistoryDialog.kt$Text("Shared ${mostShared.shareCount} times", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:WifiHistoryDialog.kt$Text("Total Wi-Fi Generations", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:WifiHistoryDialog.kt$Text(mostShared.ssid, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)</ID>
+    <ID>MaxLineLength:WifiHistoryDialog.kt$subtitle = "Wi-Fi networks you share or configure in QuickDash will appear here automatically."</ID>
+    <ID>MaxLineLength:WifiTransferServer.kt$WifiTransferServer$val response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ${html.toByteArray().size}\r\n\r\n$html"</ID>
+    <ID>MayBeConst:ClipboardRepository.kt$ClipboardRepository.Companion$val CLIPBOARD_HISTORY_KEY = "clipboard_history"</ID>
+    <ID>MayBeConst:ClipboardRepository.kt$ClipboardRepository.Companion$val CLIPBOARD_PINNED_KEY = "clipboard_pinned"</ID>
+    <ID>MayBeConst:Dimens.kt$Dimens$val DrawerWidthFraction = 0.82f</ID>
+    <ID>MayBeConst:Dimens.kt$Dimens$val FloatingMaxWidthFraction = 0.85f</ID>
+    <ID>MayBeConst:Dimens.kt$Dimens$val FoldableBreakpointDp = 600</ID>
+    <ID>MayBeConst:Dimens.kt$Dimens$val LandscapeFloatingFraction = 0.70f</ID>
+    <ID>MayBeConst:Dimens.kt$Dimens$val TabletBreakpointDp = 840</ID>
+    <ID>NestedBlockDepth:DataMigrationManager.kt$DataMigrationManager$suspend fun migrateLegacyHistoryIfNeeded(): Boolean</ID>
+    <ID>NestedBlockDepth:QuickCalculatorScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun QuickCalculatorScreen(isFloating: Boolean = false)</ID>
+    <ID>NestedBlockDepth:QuickCaptureScreen.kt$private fun saveCanvasToGallery(context: Context, paths: List&lt;LinePath&gt;, bgColor: Color)</ID>
+    <ID>NestedBlockDepth:QuickCaptureScreen.kt$private fun saveCanvasToPdf(context: Context, paths: List&lt;LinePath&gt;, bgColor: Color)</ID>
+    <ID>NestedBlockDepth:ShakeDetectorService.kt$ShakeDetectorService$override fun onSensorChanged(event: SensorEvent?)</ID>
+    <ID>NestedBlockDepth:SpotlightLauncher.kt$private fun evaluateSpotlightQuery(query: String): SpotlightShortcutResult?</ID>
+    <ID>NestedBlockDepth:TelegramPollerWorker.kt$TelegramPollerWorker$override suspend fun doWork(): Result</ID>
+    <ID>NestedBlockDepth:TelegramPollerWorker.kt$TelegramPollerWorker$private fun getTelegramFileUrl(token: String, fileId: String): String?</ID>
+    <ID>NestedBlockDepth:TelegramPollerWorker.kt$TelegramPollerWorker$private suspend fun broadcastMessage( userStore: UserStore, token: String, message: JSONObject, text: String, hasPhoto: Boolean, hasVideo: Boolean, hasDocument: Boolean )</ID>
+    <ID>NestedBlockDepth:UpdateManager.kt$UpdateManager$fun deleteDownloadedApks(context: Context)</ID>
+    <ID>NestedBlockDepth:UpdateManager.kt$UpdateManager$fun installApk(context: Context, fileName: String)</ID>
+    <ID>NewLineAtEndOfFile:AppDatabase.kt$com.balajitechlabs.quickdash.core.data.database.AppDatabase.kt</ID>
+    <ID>NewLineAtEndOfFile:AppLogger.kt$com.balajitechlabs.quickdash.core.utils.AppLogger.kt</ID>
+    <ID>NewLineAtEndOfFile:BiometricHelper.kt$com.balajitechlabs.quickdash.core.utils.BiometricHelper.kt</ID>
+    <ID>NewLineAtEndOfFile:Color.kt$com.balajitechlabs.quickdash.core.ui.theme.Color.kt</ID>
+    <ID>NewLineAtEndOfFile:ContainerModifier.kt$com.balajitechlabs.quickdash.core.ui.theme.ContainerModifier.kt</ID>
+    <ID>NewLineAtEndOfFile:CustomComponents.kt$com.balajitechlabs.quickdash.core.ui.components.CustomComponents.kt</ID>
+    <ID>NewLineAtEndOfFile:EncryptedPrefsHelper.kt$com.balajitechlabs.quickdash.core.data.EncryptedPrefsHelper.kt</ID>
+    <ID>NewLineAtEndOfFile:EnterAmountScreen.kt$com.balajitechlabs.quickdash.features.qr.presentation.EnterAmountScreen.kt</ID>
+    <ID>NewLineAtEndOfFile:LogManager.kt$com.balajitechlabs.quickdash.core.utils.LogManager.kt</ID>
+    <ID>NewLineAtEndOfFile:Note.kt$com.balajitechlabs.quickdash.features.notes.domain.model.Note.kt</ID>
+    <ID>NewLineAtEndOfFile:NoteDao.kt$com.balajitechlabs.quickdash.core.data.database.NoteDao.kt</ID>
+    <ID>NewLineAtEndOfFile:NoteEntity.kt$com.balajitechlabs.quickdash.core.data.database.NoteEntity.kt</ID>
+    <ID>NewLineAtEndOfFile:PreferenceGroup.kt$com.balajitechlabs.quickdash.core.ui.components.PreferenceGroup.kt</ID>
+    <ID>NewLineAtEndOfFile:PreferenceItem.kt$com.balajitechlabs.quickdash.core.ui.components.PreferenceItem.kt</ID>
+    <ID>NewLineAtEndOfFile:QRCodeGenerator.kt$com.balajitechlabs.quickdash.core.utils.QRCodeGenerator.kt</ID>
+    <ID>NewLineAtEndOfFile:QuickCalculatorScreen.kt$com.balajitechlabs.quickdash.features.calculator.presentation.QuickCalculatorScreen.kt</ID>
+    <ID>NewLineAtEndOfFile:QuickTimerScreen.kt$com.balajitechlabs.quickdash.features.timer.presentation.QuickTimerScreen.kt</ID>
+    <ID>NewLineAtEndOfFile:SettingsRepository.kt$com.balajitechlabs.quickdash.core.data.SettingsRepository.kt</ID>
+    <ID>NewLineAtEndOfFile:ShakeDetector.kt$com.balajitechlabs.quickdash.core.utils.ShakeDetector.kt</ID>
+    <ID>NewLineAtEndOfFile:ShareUtils.kt$com.balajitechlabs.quickdash.core.utils.ShareUtils.kt</ID>
+    <ID>NewLineAtEndOfFile:Type.kt$com.balajitechlabs.quickdash.core.ui.theme.Type.kt</ID>
+    <ID>NewLineAtEndOfFile:UpdateManager.kt$com.balajitechlabs.quickdash.core.utils.UpdateManager.kt</ID>
+    <ID>NewLineAtEndOfFile:UserStore.kt$com.balajitechlabs.quickdash.core.data.UserStore.kt</ID>
+    <ID>NewLineAtEndOfFile:WhatsNewDialog.kt$com.balajitechlabs.quickdash.core.ui.components.WhatsNewDialog.kt</ID>
+    <ID>ReturnCount:AiTextCategorizer.kt$AiTextCategorizer$fun categorize(text: String): TextCategory</ID>
+    <ID>ReturnCount:ClipboardScreen.kt$fun isSensitive(text: String): Boolean</ID>
+    <ID>ReturnCount:DataMigrationManager.kt$DataMigrationManager$suspend fun migrateLegacyHistoryIfNeeded(): Boolean</ID>
+    <ID>ReturnCount:QuickCalculatorScreen.kt$Parser$private fun parseFactor(): Double</ID>
+    <ID>ReturnCount:QuickCalculatorScreen.kt$fun handleKey(key: CalcKey)</ID>
+    <ID>ReturnCount:QuickChatScreen.kt$fun getFlagEmoji(countryIso: String): String</ID>
+    <ID>ReturnCount:QuickDashApiClient.kt$QuickDashApiClient$private fun selectBestApkUrl(assets: org.json.JSONArray?, fallbackTag: String): String</ID>
+    <ID>ReturnCount:QuickWebScreen.kt$&lt;no name provided&gt;$override fun shouldOverrideUrlLoading( view: WebView?, request: android.webkit.WebResourceRequest? ): Boolean</ID>
+    <ID>ReturnCount:SemanticVersion.kt$SemanticVersion$override fun compareTo(other: SemanticVersion): Int</ID>
+    <ID>ReturnCount:SemanticVersion.kt$SemanticVersion.Companion$fun parse(versionInfo: String?): SemanticVersion</ID>
+    <ID>ReturnCount:SettingsRepository.kt$SettingsRepository$suspend fun importFromJson(jsonString: String): Boolean</ID>
+    <ID>ReturnCount:SpotlightLauncher.kt$private fun evaluateMathExpression(expr: String): String</ID>
+    <ID>ReturnCount:SpotlightLauncher.kt$private fun evaluateSpotlightQuery(query: String): SpotlightShortcutResult?</ID>
+    <ID>ReturnCount:TelegramPollerWorker.kt$TelegramPollerWorker$override suspend fun doWork(): Result</ID>
+    <ID>ReturnCount:UserStore.kt$UserStore$suspend fun importFromJson(jsonString: String): Boolean</ID>
+    <ID>SpreadOperator:PaymentSetupStep.kt$(*upiIds.toTypedArray())</ID>
+    <ID>SpreadOperator:SetupScreen.kt$(*upiIds.toTypedArray())</ID>
+    <ID>SwallowedException:AppLogger.kt$AppLogger$e: ClassNotFoundException</ID>
+    <ID>SwallowedException:AppLogger.kt$AppLogger$e: IllegalAccessException</ID>
+    <ID>SwallowedException:AppLogger.kt$AppLogger$e: NoSuchMethodException</ID>
+    <ID>SwallowedException:AppLogger.kt$AppLogger$e: java.lang.reflect.InvocationTargetException</ID>
+    <ID>SwallowedException:BackupManager.kt$BackupManager$e: Exception</ID>
+    <ID>SwallowedException:BackupRestoreDialog.kt$e: Exception</ID>
+    <ID>SwallowedException:BlogPostsScreen.kt$e: Exception</ID>
+    <ID>SwallowedException:BubbleCustomizerScreen.kt$e: Exception</ID>
+    <ID>SwallowedException:DataMigrationManager.kt$DataMigrationManager$e: Exception</ID>
+    <ID>SwallowedException:DiagnosticLogger.kt$DiagnosticLogger$e: Exception</ID>
+    <ID>SwallowedException:EnterAmountScreen.kt$e: Exception</ID>
+    <ID>SwallowedException:FloatingDialogActivity.kt$FloatingDialogActivity$e: Exception</ID>
+    <ID>SwallowedException:QrHistoryDialog.kt$e: Exception</ID>
+    <ID>SwallowedException:QuickChatScreen.kt$e: Exception</ID>
+    <ID>SwallowedException:QuickContactQrScreen.kt$e: Exception</ID>
+    <ID>SwallowedException:QuickDashApiClient.kt$QuickDashApiClient$e: Exception</ID>
+    <ID>SwallowedException:QuickDashApp.kt$e: Exception</ID>
+    <ID>SwallowedException:QuickDashNotificationListenerService.kt$QuickDashNotificationListenerService$e: Exception</ID>
+    <ID>SwallowedException:QuickQrScannerScreen.kt$e: Exception</ID>
+    <ID>SwallowedException:QuickRemindersScreen.kt$e: Exception</ID>
+    <ID>SwallowedException:QuickSearchScreen.kt$e: Exception</ID>
+    <ID>SwallowedException:QuickSocialScreen.kt$e: ActivityNotFoundException</ID>
+    <ID>SwallowedException:QuickSocialScreen.kt$e: Exception</ID>
+    <ID>SwallowedException:QuickVoiceMemosScreen.kt$e: Exception</ID>
+    <ID>SwallowedException:QuickWifiScreen.kt$e2: Exception</ID>
+    <ID>SwallowedException:QuickWifiScreen.kt$e: Exception</ID>
+    <ID>SwallowedException:ScreenRecorderService.kt$ScreenRecorderService$e: Exception</ID>
+    <ID>SwallowedException:SettingsRepository.kt$SettingsRepository$e: Exception</ID>
+    <ID>SwallowedException:SettingsScreen.kt$e: Exception</ID>
+    <ID>SwallowedException:SettingsScreen.kt$e: java.lang.Exception</ID>
+    <ID>SwallowedException:TelegramPollerWorker.kt$TelegramPollerWorker$e: Exception</ID>
+    <ID>SwallowedException:Theme.kt$e: Exception</ID>
+    <ID>SwallowedException:UpdateManager.kt$UpdateManager$e: Exception</ID>
+    <ID>SwallowedException:UserStore.kt$UserStore$e: Exception</ID>
+    <ID>SwallowedException:WifiHistoryDialog.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:BackupManager.kt$BackupManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:BackupRestoreDialog.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:BackupRestoreManager.kt$BackupRestoreManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:BlogPostsScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:BubbleCustomizerScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ClipboardScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ClipboardScreen.kt$ex: Exception</ID>
+    <ID>TooGenericExceptionCaught:CrashRecoveryHandler.kt$CrashRecoveryHandler$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:DataMigrationManager.kt$DataMigrationManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:DiagnosticLogger.kt$DiagnosticLogger$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:EncryptedPrefsHelper.kt$EncryptedPrefsHelper$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:EnterAmountScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:FloatingBubbleService.kt$FloatingBubbleService$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:FloatingDialogActivity.kt$FloatingDialogActivity$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:IntentUtils.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:LogManager.kt$LogManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:OfflineBackupManager.kt$OfflineBackupManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:PermissionsStep.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QrHistoryDialog.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QrScannerHelper.kt$QrScannerHelper$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickCaptureScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickChatScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickContactQrScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickDashApiClient.kt$QuickDashApiClient$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickDashApp.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickDashApplication.kt$QuickDashApplication$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickDashNotificationListenerService.kt$QuickDashNotificationListenerService$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickQrScannerScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickRemindersScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickSearchScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickSocialScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickTileService.kt$QuickTileService$e2: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickTileService.kt$QuickTileService$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickTimerScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickTimerScreen.kt$ex: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickTranslatorScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickVoiceMemosScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickWebScreen.kt$&lt;no name provided&gt;$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickWifiScreen.kt$e2: Exception</ID>
+    <ID>TooGenericExceptionCaught:QuickWifiScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ScreenRecorderService.kt$ScreenRecorderService$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:SecurityRepository.kt$SecurityRepository$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:SettingsRepository.kt$SettingsRepository$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:SettingsScreen.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ShakeDetectorService.kt$ShakeDetectorService$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ShakeDetectorService.kt$ShakeDetectorService$se: Exception</ID>
+    <ID>TooGenericExceptionCaught:ShareUtils.kt$ShareUtils$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:TelegramPollerWorker.kt$TelegramPollerWorker$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:Theme.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:TimerAlarmReceiver.kt$TimerAlarmReceiver$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:ToggleBubbleReceiver.kt$ToggleBubbleReceiver$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:UpdateDownloadWorker.kt$UpdateDownloadWorker$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:UpdateManager.kt$UpdateManager$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:UserStore.kt$UserStore$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:VoiceRecorderService.kt$VoiceRecorderService$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:WifiHistoryDialog.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:WifiTransferServer.kt$WifiTransferServer$e: Exception</ID>
+    <ID>TooGenericExceptionThrown:QuickCalculatorScreen.kt$Parser$throw RuntimeException("Unexpected: " + ch.toChar())</ID>
+    <ID>TooGenericExceptionThrown:QuickCalculatorScreen.kt$Parser$throw RuntimeException("Unknown function: $func")</ID>
+    <ID>UnusedParameter:ClipboardScreen.kt$onDismiss: () -&gt; Unit</ID>
+    <ID>UnusedParameter:CrashReporter.kt$CrashReporter$context: Context</ID>
+    <ID>UnusedParameter:CustomComponents.kt$points: Int = 4</ID>
+    <ID>UnusedParameter:CustomComponents.kt$rounding: Float = 0.15f</ID>
+    <ID>UnusedParameter:CustomComponents.kt$rounding: Float = 0.4f</ID>
+    <ID>UnusedParameter:FeedbackSender.kt$FeedbackSender$context: Context</ID>
+    <ID>UnusedParameter:OfflineBackupManager.kt$OfflineBackupManager$sourceFile: File</ID>
+    <ID>UnusedParameter:PlayStoreHelper.kt$PlayStoreHelper$activity: Activity</ID>
+    <ID>UnusedParameter:QRCodeGenerator.kt$QRCodeGenerator$useCircularDots: Boolean = false</ID>
+    <ID>UnusedParameter:QuickDashApp.kt$notificationImageUrl: String? = null</ID>
+    <ID>UnusedParameter:QuickDashApp.kt$notificationIsPoll: Boolean = false</ID>
+    <ID>UnusedParameter:QuickDashApp.kt$notificationMessage: String? = null</ID>
+    <ID>UnusedParameter:QuickDashApp.kt$notificationTitle: String? = null</ID>
+    <ID>UnusedParameter:QuickDashApp.kt$onGenerateWifiQr: (String) -&gt; Unit = {}</ID>
+    <ID>UnusedParameter:QuickDashApp.kt$onNavigateTo: (QuickDashUiState) -&gt; Unit = {}</ID>
+    <ID>UnusedParameter:QuickDashApp.kt$onOpenSettings: () -&gt; Unit = {}</ID>
+    <ID>UnusedParameter:QuickDashApp.kt$onTogglePaypal: (Boolean) -&gt; Unit = {}</ID>
+    <ID>UnusedParameter:QuickNotesScreen.kt$isFloating: Boolean = false</ID>
+    <ID>UnusedParameter:QuickNotesScreen.kt$onDismiss: () -&gt; Unit = {}</ID>
+    <ID>UnusedParameter:QuickTool.kt$cs: ColorScheme? = null</ID>
+    <ID>UnusedParameter:QuickVoiceMemosScreen.kt$isFloating: Boolean = false</ID>
+    <ID>UnusedParameter:QuickWebScreen.kt$onClose: () -&gt; Unit</ID>
+    <ID>UnusedParameter:RemoteConfigManager.kt$RemoteConfigManager$key: String</ID>
+    <ID>UnusedParameter:ScreenRecorderService.kt$ScreenRecorderService$height: Int</ID>
+    <ID>UnusedParameter:SettingsScreen.kt$dynamicColor: Boolean</ID>
+    <ID>UnusedParameter:SettingsScreen.kt$onBackToHome: () -&gt; Unit</ID>
+    <ID>UnusedParameter:SettingsScreen.kt$onChangeThemeMode: (String) -&gt; Unit</ID>
+    <ID>UnusedParameter:SettingsScreen.kt$onNavigateToSystemLogs: () -&gt; Unit = {}</ID>
+    <ID>UnusedParameter:SettingsScreen.kt$onToggleDynamicColor: (Boolean) -&gt; Unit</ID>
+    <ID>UnusedParameter:SettingsScreen.kt$onTriggerConfetti: (String) -&gt; Unit</ID>
+    <ID>UnusedParameter:SettingsScreen.kt$themeMode: String</ID>
+    <ID>UnusedParameter:ShowQrScreen.kt$onDismiss: () -&gt; Unit</ID>
+    <ID>UnusedParameter:SpotlightLauncher.kt$isFloating: Boolean</ID>
+    <ID>UnusedParameter:TelegramTracker.kt$TelegramTracker$bitmap: Bitmap</ID>
+    <ID>UnusedParameter:TelegramTracker.kt$TelegramTracker$caption: String</ID>
+    <ID>UnusedParameter:TelegramTracker.kt$TelegramTracker$message: String</ID>
+    <ID>UnusedParameter:Theme.kt$darkTheme: Boolean = isSystemInDarkTheme()</ID>
+    <ID>UnusedParameter:Theme.kt$themeMode: String = "SYSTEM"</ID>
+    <ID>UnusedParameter:WelcomeOnboardingScreen.kt$isLast: Boolean = false</ID>
+    <ID>UnusedParameter:WifiTransferServer.kt$WifiTransferServer$context: Context</ID>
+    <ID>UnusedPrivateMember:MainActivity.kt$MainActivity$private fun restoreBrightness()</ID>
+    <ID>UnusedPrivateMember:MainActivity.kt$MainActivity$private fun showBiometricPrompt()</ID>
+    <ID>UnusedPrivateMember:QuickDashApp.kt$@Composable private fun NavigationPillItem( label: String, icon: androidx.compose.ui.graphics.vector.ImageVector, selected: Boolean, badgeCount: Int = 0, onClick: () -&gt; Unit )</ID>
+    <ID>UnusedPrivateMember:Theme.kt$private fun generateColorScheme(seed: Color, isDark: Boolean): ColorScheme</ID>
+    <ID>UnusedPrivateProperty:BackupManager.kt$BackupManager$private val userStore = UserStore(context)</ID>
+    <ID>UnusedPrivateProperty:BubbleCustomizerScreen.kt$val context = LocalContext.current</ID>
+    <ID>UnusedPrivateProperty:BubbleCustomizerScreen.kt$val isSelected = glowColorHex.equals(hex, ignoreCase = true)</ID>
+    <ID>UnusedPrivateProperty:EnterAmountScreen.kt$val categories = listOf("Personal", "Business", "Dining", "Groceries", "Services", "Other")</ID>
+    <ID>UnusedPrivateProperty:EnterAmountScreen.kt$var noteInput by remember { mutableStateOf("") }</ID>
+    <ID>UnusedPrivateProperty:LivePreviewCard.kt$val variantColor = if (themeIsDark) Color(0xFFBBB5BF) else Color(0xFF49454E)</ID>
+    <ID>UnusedPrivateProperty:MainActivity.kt$MainActivity$private var isAuthRequired by mutableStateOf(false)</ID>
+    <ID>UnusedPrivateProperty:QuickChatScreen.kt$val finalNumber = when { phoneNumber.trim().startsWith("+") -&gt; { "+$digitsOnly" } digitsOnly.startsWith(defaultCode) &amp;&amp; digitsOnly.length &gt; 10 -&gt; { "+$digitsOnly" } else -&gt; { "+$defaultCode$digitsOnly" } }</ID>
+    <ID>UnusedPrivateProperty:QuickDashApp.kt$val activeNotificationCount = remember(rawPostsJson, hiddenJson) { try { val gson = com.google.gson.Gson() val postsType = object : com.google.gson.reflect.TypeToken&lt;List&lt;Map&lt;String, Any&gt;&gt;&gt;() {}.type val posts: List&lt;Map&lt;String, Any&gt;&gt; = gson.fromJson(rawPostsJson, postsType) ?: emptyList() val hiddenType = object : com.google.gson.reflect.TypeToken&lt;Set&lt;String&gt;&gt;() {}.type val hidden: Set&lt;String&gt; = gson.fromJson(hiddenJson, hiddenType) ?: emptySet() posts.count { post -&gt; val ts = (post["timestamp"] as? Number)?.toLong() ?: 0L val key = "${ts}_${post["title"]}" !hidden.contains(key) } } catch (_: Exception) { 0 } }</ID>
+    <ID>UnusedPrivateProperty:QuickDashApp.kt$val borderWidth = com.balajitechlabs.quickdash.core.ui.theme.LocalBorderWidth.current</ID>
+    <ID>UnusedPrivateProperty:QuickDashApp.kt$val cardShape = MaterialTheme.shapes.medium</ID>
+    <ID>UnusedPrivateProperty:QuickDashApp.kt$val dashboardGridState = rememberLazyGridState()</ID>
+    <ID>UnusedPrivateProperty:QuickDashApp.kt$val emojiDrawable = remember(emojiHeaderVal) { val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { textSize = 48f textAlign = android.graphics.Paint.Align.CENTER } val bounds = android.graphics.Rect() paint.getTextBounds(emojiHeaderVal, 0, emojiHeaderVal.length, bounds) val width = (bounds.width() + 10).coerceAtLeast(64) val height = (bounds.height() + 10).coerceAtLeast(64) val bitmap = android.graphics.Bitmap.createBitmap(width, height, android.graphics.Bitmap.Config.ARGB_8888) val canvas = android.graphics.Canvas(bitmap) val x = width / 2f val y = height / 2f - (paint.descent() + paint.ascent()) / 2f canvas.drawText(emojiHeaderVal, x, y, paint) android.graphics.drawable.BitmapDrawable(context.resources, bitmap) }</ID>
+    <ID>UnusedPrivateProperty:QuickDashApp.kt$val qrColorVal = MaterialTheme.colorScheme.primary.toArgb()</ID>
+    <ID>UnusedPrivateProperty:QuickDashApp.kt$val qrSecondaryColorVal = MaterialTheme.colorScheme.secondary.toArgb()</ID>
+    <ID>UnusedPrivateProperty:QuickDashApp.kt$val showShadow = com.balajitechlabs.quickdash.core.ui.theme.LocalShowShadow.current</ID>
+    <ID>UnusedPrivateProperty:QuickDashApp.kt$var backPressedTime by remember { mutableStateOf(0L) }</ID>
+    <ID>UnusedPrivateProperty:QuickDashApp.kt$var emojiConfettiKey by remember { mutableStateOf(0) }</ID>
+    <ID>UnusedPrivateProperty:QuickDashApplication.kt$QuickDashApplication$val analyticsEnabled = store.isAnalyticsEnabled()</ID>
+    <ID>UnusedPrivateProperty:QuickPasswordScreen.kt$i</ID>
+    <ID>UnusedPrivateProperty:QuickTimerScreen.kt$val angle = ((elapsed % 60_000L) / 60_000f) * 360f</ID>
+    <ID>UnusedPrivateProperty:QuickWifiScreen.kt$val wifiHistory = remember(wifiHistoryJson) { try { val arr = JsonParser.parseString(wifiHistoryJson).asJsonArray arr.map { el -&gt; val obj = el.asJsonObject WifiEntry( ssid = obj.get("ssid")?.asString ?: "", password = obj.get("password")?.asString ?: "", savedAt = obj.get("savedAt")?.asLong ?: 0L ) } } catch (e: Exception) { emptyList() } }</ID>
+    <ID>UnusedPrivateProperty:QuickWifiScreen.kt$var useGradient by remember { mutableStateOf(false) }</ID>
+    <ID>UnusedPrivateProperty:SecurityRepositoryTest.kt$SecurityRepositoryTest$private val cryptoManager = mockk&lt;CryptoManager&gt;(relaxed = true)</ID>
+    <ID>UnusedPrivateProperty:SettingsScreen.kt$val activeClipboardClearDelay by viewModel.userStore.clipboardClearDelay.collectAsStateWithLifecycle(initialValue = -1L)</ID>
+    <ID>UnusedPrivateProperty:SettingsScreen.kt$val activeGithubAccessToken by viewModel.userStore.githubAccessToken.collectAsStateWithLifecycle(initialValue = "")</ID>
+    <ID>UnusedPrivateProperty:SettingsScreen.kt$val activeSliderStyle = remember(sliderStyleStr) { try { SliderStyle.valueOf(sliderStyleStr) } catch(e: Exception) { SliderStyle.MaterialYou } }</ID>
+    <ID>UnusedPrivateProperty:SettingsScreen.kt$val backupLauncher = rememberLauncherForActivityResult( ActivityResultContracts.CreateDocument("application/json") ) { uri -&gt; if (uri != null) { coroutineScope.launch { val result = BackupRestoreManager.backupDataStore(context, uri) if (result.isSuccess) { android.widget.Toast.makeText(context, "Backup Successful! 💾", android.widget.Toast.LENGTH_SHORT).show() } else { android.widget.Toast.makeText(context, "Backup Failed: ${result.exceptionOrNull()?.message}", android.widget.Toast.LENGTH_LONG).show() } } } }</ID>
+    <ID>UnusedPrivateProperty:SettingsScreen.kt$val fontFamilyName by viewModel.userStore.fontFamilyKey.collectAsStateWithLifecycle(initialValue = "system")</ID>
+    <ID>UnusedPrivateProperty:SettingsScreen.kt$val seedColorHex by viewModel.userStore.seedColor.collectAsStateWithLifecycle(initialValue = "#1E88E5")</ID>
+    <ID>UnusedPrivateProperty:SettingsScreen.kt$val shapeStyleStr by viewModel.userStore.shapeStyle.collectAsStateWithLifecycle(initialValue = "Rounded")</ID>
+    <ID>UnusedPrivateProperty:SettingsScreen.kt$var localBorderWidth by remember(borderWidth) { mutableStateOf(borderWidth) }</ID>
+    <ID>UnusedPrivateProperty:SettingsScreen.kt$var localFontScale by remember(fontScale) { mutableStateOf(fontScale) }</ID>
+    <ID>UnusedPrivateProperty:SettingsScreen.kt$var localRadius by remember(cornerRadius) { mutableStateOf(cornerRadius) }</ID>
+    <ID>UnusedPrivateProperty:ShareReceiverActivity.kt$ShareReceiverActivity$val actions = AiTextCategorizer.getQuickActions(sharedText, category)</ID>
+    <ID>UnusedPrivateProperty:ShareUtils.kt$ShareUtils$val idTypeLabel = if (usePaypal) "PayPal ID" else "UPI ID"</ID>
+    <ID>UnusedPrivateProperty:SplashStep.kt$val scope = rememberCoroutineScope()</ID>
+    <ID>UnusedPrivateProperty:SpotlightLauncher.kt$val greeting = remember { when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) { in 6..11 -&gt; "Good morning" in 12..17 -&gt; "Good afternoon" in 18..21 -&gt; "Good evening" else -&gt; "Good night" } }</ID>
+    <ID>UnusedPrivateProperty:SpotlightLauncher.kt$var isEditMode by remember { mutableStateOf(false) }</ID>
+    <ID>UnusedPrivateProperty:Theme.kt$val seedColor = remember(seedColorHex) { try { Color(android.graphics.Color.parseColor(seedColorHex)) } catch (e: Exception) { Color(0xFF1E88E5) } }</ID>
+    <ID>UseRequire:BackupRestoreManager.kt$BackupCrypto$throw IllegalArgumentException("Cipher text too short")</ID>
+    <ID>VariableNaming:ShakeDetector.kt$ShakeDetector$private val SHAKE_COOLDOWN = 1500L // ms</ID>
+    <ID>VariableNaming:ShakeDetector.kt$ShakeDetector$private val SHAKE_THRESHOLD = 1.8f // m/s^2</ID>
+  </CurrentIssues>
+</SmellBaseline>

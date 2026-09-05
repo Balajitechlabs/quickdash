@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/pomodoro
+ * Feature Module: features/pomodoro/presentation
  * File: QuickPomodoroScreen.kt
- * Description: EssentialX-styled component for features/pomodoro supporting high performance productivity tools.
+ * Description: Pomodoro focus timer tool with interval tracking, ambient white noise, and break alerts.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.pomodoro.presentation

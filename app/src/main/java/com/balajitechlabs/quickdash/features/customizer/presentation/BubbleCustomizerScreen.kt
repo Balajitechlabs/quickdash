@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/customizer
+ * Feature Module: features/customizer/presentation
  * File: BubbleCustomizerScreen.kt
- * Description: EssentialX-styled component for features/customizer supporting high performance productivity tools.
+ * Description: Interactive preview screen for configuring floating bubble size, opacity, glow, and animations.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.customizer.presentation

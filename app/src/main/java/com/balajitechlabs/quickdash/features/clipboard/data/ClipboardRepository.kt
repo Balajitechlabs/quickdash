@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/clipboard
+ * Feature Module: features/clipboard/data
  * File: ClipboardRepository.kt
- * Description: EssentialX-styled component for features/clipboard supporting high performance productivity tools.
+ * Description: Repository managing clipboard history items, encryption, pins, and search filtering.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.clipboard.data

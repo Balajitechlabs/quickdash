@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/wifi
+ * Feature Module: features/wifi/presentation
  * File: WifiViewModel.kt
- * Description: EssentialX-styled component for features/wifi supporting high performance productivity tools.
+ * Description: ViewModel managing Wi-Fi credentials, QR formatting, and saved network histories.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.wifi.presentation

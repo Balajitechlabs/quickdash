@@ -23,6 +23,28 @@
         app:zxing_viewfinder_mask="#CC000000"
         app:zxing_possible_result_points="#81C784" />
 
+    <!-- Precision Reticle Framing Overlay -->
+    <FrameLayout
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_scanner_frame"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no" />
+
+        <!-- Dynamic Laser Sweep Line -->
+        <View
+            android:id="@+id/scanner_laser_line"
+            android:layout_width="230dp"
+            android:layout_height="3dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_scanner_laser" />
+    </FrameLayout>
+
     <!-- Top Floating Action Bar -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -69,6 +91,36 @@
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_weight="1" />
+
+        <!-- Gallery Import Button -->
+        <ImageButton
+            android:id="@+id/btn_scanner_gallery"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_scanner_circle"
+            android:src="@drawable/ic_gallery"
+            app:tint="#FFFFFF"
+            android:contentDescription="Scan from Gallery"
+            android:scaleType="centerInside" />
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="1dp" />
+
+        <!-- Zoom Toggle Button -->
+        <ImageButton
+            android:id="@+id/btn_scanner_zoom"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_scanner_circle"
+            android:src="@drawable/ic_zoom_in"
+            app:tint="#FFFFFF"
+            android:contentDescription="Toggle Zoom"
+            android:scaleType="centerInside" />
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="1dp" />
 
         <!-- Flash Toggle Circle -->
         <ImageButton

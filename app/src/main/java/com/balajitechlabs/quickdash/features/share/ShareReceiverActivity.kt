@@ -4,7 +4,7 @@
  *
  * Feature Module: features/share
  * File: ShareReceiverActivity.kt
- * Description: EssentialX-styled component for features/share supporting high performance productivity tools.
+ * Description: System share target activity categorizing incoming text and offering one-tap contextual actions.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.share
@@ -30,7 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.balajitechlabs.quickdash.core.ui.theme.QuickDashTheme
-import com.balajitechlabs.quickdash.core.utils.AiTextCategorizer
+import com.balajitechlabs.quickdash.core.utils.TextCategorizer
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -48,8 +48,8 @@ class ShareReceiverActivity : ComponentActivity() {
             return
         }
 
-        val category = AiTextCategorizer.categorize(sharedText)
-        val actions = AiTextCategorizer.getQuickActions(sharedText, category)
+        val category = TextCategorizer.categorize(sharedText)
+        val actions = TextCategorizer.getQuickActions(sharedText, category)
 
         setContent {
             QuickDashTheme {

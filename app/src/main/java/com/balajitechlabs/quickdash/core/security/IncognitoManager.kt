@@ -4,7 +4,7 @@
  *
  * Feature Module: core/security
  * File: IncognitoManager.kt
- * Description: EssentialX-styled component for core/security supporting high performance productivity tools.
+ * Description: Coordinates ephemeral sessions, disables clipboard persistence, and clears cache on activity dismissal.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.security

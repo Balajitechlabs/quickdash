@@ -4,7 +4,7 @@
  *
  * Feature Module: core/network
  * File: WifiTransferServer.kt
- * Description: EssentialX-styled component for core/network supporting high performance productivity tools.
+ * Description: Embedded local HTTP server facilitating direct peer-to-peer file and clipboard transfers over Wi-Fi.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.network
@@ -13,9 +13,10 @@ import android.content.Context
 import java.net.ServerSocket
 import java.net.Socket
 import kotlin.concurrent.thread
+import android.util.Log
 
 /**
- * 🌐 Multi-Device Wi-Fi Transfer Server (`WifiTransferServer.kt`).
+ *  Multi-Device Wi-Fi Transfer Server (`WifiTransferServer.kt`).
  * Runs a micro HTTP server allowing users to send notes and text to PC browsers over local Wi-Fi.
  */
 class WifiTransferServer(private val port: Int = 8080) {
@@ -35,7 +36,7 @@ class WifiTransferServer(private val port: Int = 8080) {
                     handleClient(client)
                 }
             } catch (e: Exception) {
-                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+                Log.e("QuickDash", "Error occurred: ${e.message}", e)
             }
         }
     }
@@ -61,7 +62,7 @@ class WifiTransferServer(private val port: Int = 8080) {
             output.flush()
             socket.close()
         } catch (e: Exception) {
-            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+            Log.e("QuickDash", "Error occurred: ${e.message}", e)
         }
     }
 
@@ -70,7 +71,7 @@ class WifiTransferServer(private val port: Int = 8080) {
         try {
             serverSocket?.close()
         } catch (e: Exception) {
-            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+            Log.e("QuickDash", "Error occurred: ${e.message}", e)
         }
     }
 }

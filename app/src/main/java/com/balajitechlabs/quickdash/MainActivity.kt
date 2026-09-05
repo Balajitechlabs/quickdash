@@ -2,12 +2,11 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: Core Application Entrypoint
+ * Feature Module: root
  * File: MainActivity.kt
- * Description: Main entrypoint for QuickDash hosting full screen dashboard with EssentialX theming.
+ * Description: Main application activity hosting the primary Compose entry point and Edge-to-Edge window configuration.
  * Developer: balajitechlabs
  */
-
 package com.balajitechlabs.quickdash
 
 import android.content.Intent

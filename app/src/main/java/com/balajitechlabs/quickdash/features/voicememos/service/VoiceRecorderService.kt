@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/voicememos
+ * Feature Module: features/voicememos/service
  * File: VoiceRecorderService.kt
- * Description: EssentialX-styled component for features/voicememos supporting high performance productivity tools.
+ * Description: Foreground service recording audio memos via MediaRecorder with low battery impact.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.voicememos.service
@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.StateFlow
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import android.util.Log
 
 class VoiceRecorderService : Service() {
 
@@ -110,7 +111,7 @@ class VoiceRecorderService : Service() {
                 }
             }
         } catch (e: Exception) {
-            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+            Log.e("QuickDash", "Error occurred: ${e.message}", e)
             stopRecording()
         }
     }
@@ -125,7 +126,7 @@ class VoiceRecorderService : Service() {
                 release()
             }
         } catch (e: Exception) {
-            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+            Log.e("QuickDash", "Error occurred: ${e.message}", e)
         } finally {
             mediaRecorder = null
             _isRecording.value = false

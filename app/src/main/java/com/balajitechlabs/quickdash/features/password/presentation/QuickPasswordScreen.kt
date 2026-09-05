@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/password
+ * Feature Module: features/password/presentation
  * File: QuickPasswordScreen.kt
- * Description: EssentialX-styled component for features/password supporting high performance productivity tools.
+ * Description: Cryptographically secure random password and passphrase generator with entropy scoring.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.password.presentation

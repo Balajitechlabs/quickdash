@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: core/ui
+ * Feature Module: core/ui/theme
  * File: Dimens.kt
- * Description: EssentialX-styled component for core/ui supporting high performance productivity tools.
+ * Description: Canonical layout dimension constants, padding scales, and elevation metrics.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.ui.theme
@@ -25,4 +25,28 @@ object Dimens {
     val CompactIconSizePhone = 38.dp
     val TabletBreakpointDp = 840
     val FoldableBreakpointDp = 600
+
+    // Design System Tokens
+    object Spacing {
+        val xs = 4.dp
+        val sm = 8.dp
+        val md = 12.dp
+        val lg = 16.dp
+        val xl = 24.dp
+        val xxl = 32.dp
+    }
+
+    object Radius {
+        val xs = 4.dp
+        val sm = 8.dp
+        val md = 16.dp
+        val lg = 24.dp
+        val pill = 999.dp
+    }
+
+    object Elevation {
+        val flat = 0.dp
+        val subtle = 2.dp
+        val floating = 8.dp
+    }
 }

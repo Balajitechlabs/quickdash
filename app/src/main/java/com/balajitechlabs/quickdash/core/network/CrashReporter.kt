@@ -4,7 +4,7 @@
  *
  * Feature Module: core/network
  * File: CrashReporter.kt
- * Description: EssentialX-styled component for core/network supporting high performance productivity tools.
+ * Description: Captures unhandled exceptions and safely transmits sanitized crash telemetry to the Telegram monitoring bot.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.network

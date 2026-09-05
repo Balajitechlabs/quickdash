@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: core/ui
+ * Feature Module: core/ui/components
  * File: QuickDashTipsSheet.kt
- * Description: EssentialX-style bottom sheet displaying productivity tips, gestures, and shortcuts.
+ * Description: Bottom sheet presenting productivity tips, gesture shortcuts, and feature discovery guides.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.ui.components

@@ -2,12 +2,11 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/qr
+ * Feature Module: features/qr/presentation
  * File: QrScanActivity.kt
- * Description: Universal ZXing camera scanner launcher activity
+ * Description: Activity hosting the camera viewfinder for rapid scanning of barcodes and QR codes.
  * Developer: balajitechlabs
  */
-
 package com.balajitechlabs.quickdash.features.qr.presentation
 
 import android.os.Bundle

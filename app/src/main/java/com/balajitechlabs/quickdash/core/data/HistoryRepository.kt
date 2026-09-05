@@ -4,7 +4,7 @@
  *
  * Feature Module: core/data
  * File: HistoryRepository.kt
- * Description: EssentialX-styled component for core/data supporting high performance productivity tools.
+ * Description: Repository for persisting and querying unified tool activity, searches, and clipboard history records.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.data

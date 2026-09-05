@@ -4,7 +4,7 @@
  *
  * Feature Module: core/utils
  * File: UpdateManager.kt
- * Description: EssentialX-styled component for core/utils supporting high performance productivity tools.
+ * Description: Coordinates GitHub release update queries, changelog retrieval, and installation workflows.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.utils
@@ -198,7 +198,8 @@ object UpdateManager {
     }
 
     fun startDownload(context: Context, urlStr: String, remoteVersionName: String, expectedSha256: String = "") {
-        val fileName = "QuickDash-v$remoteVersionName.apk"
+        val cleanVer = remoteVersionName.removePrefix("v")
+        val fileName = "QuickDash-v$cleanVer.apk"
         val destFile = getApkFile(context, fileName)
 
         if (destFile.exists()) destFile.delete()

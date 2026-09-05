@@ -4,7 +4,7 @@
  *
  * Feature Module: core/utils
  * File: ShareUtils.kt
- * Description: EssentialX-styled component for core/utils supporting high performance productivity tools.
+ * Description: Generates system share sheets for text, QR bitmaps, notes, and contact cards.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.utils
@@ -22,6 +22,7 @@ import androidx.core.graphics.toColorInt
 import com.balajitechlabs.quickdash.R
 import java.io.File
 import java.io.FileOutputStream
+import android.util.Log
 
 object ShareUtils {
 
@@ -154,7 +155,7 @@ object ShareUtils {
 
             return file
         } catch (e: Exception) {
-            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+            Log.e("QuickDash", "Error occurred: ${e.message}", e)
             return null
         }
     }

@@ -4,7 +4,7 @@
  *
  * Feature Module: core/network
  * File: QuickDashApiClient.kt
- * Description: EssentialX-styled component for core/network supporting high performance productivity tools.
+ * Description: OkHttp client wrapper executing authenticated REST requests, release checks, and download tasks.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.network
@@ -87,7 +87,8 @@ object QuickDashApiClient {
         if (armeabiUrl.isNotBlank()) return armeabiUrl
         if (anyApkUrl.isNotBlank()) return anyApkUrl
 
-        return "https://github.com/balajitechlabs/quickdash/releases/download/v$fallbackTag/app-universal-release.apk"
+        val cleanTag = fallbackTag.removePrefix("v")
+        return "https://github.com/balajitechlabs/quickdash/releases/download/v$cleanTag/app-universal-release.apk"
     }
 
     suspend fun checkForUpdates(currentVersionCode: Int, includePreRelease: Boolean = false): UpdateInfo = withContext(Dispatchers.IO) {

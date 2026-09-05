@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: core/ui
+ * Feature Module: core/ui/components
  * File: CategoryExpandableSection.kt
- * Description: EssentialX-styled component for core/ui supporting high performance productivity tools.
+ * Description: Collapsible accordion container grouping related tools or settings items with smooth height animation.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.ui.components

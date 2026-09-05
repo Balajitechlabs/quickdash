@@ -2,13 +2,11 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/qr
+ * Feature Module: features/qr/utils
  * File: QrScannerHelper.kt
- * Description: Universal QR & Barcode Scanner Helper powered by open-source ZXing Android Embedded.
- *              100% offline, zero Google Play Services dependency, zero reflection, 100% crash-free.
+ * Description: Helper managing camera permissions, ZXing scanner intent dispatch, and result extraction.
  * Developer: balajitechlabs
  */
-
 package com.balajitechlabs.quickdash.features.qr.utils
 
 import android.content.Context

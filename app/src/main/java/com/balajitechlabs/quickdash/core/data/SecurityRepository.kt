@@ -4,7 +4,7 @@
  *
  * Feature Module: core/data
  * File: SecurityRepository.kt
- * Description: EssentialX-styled component for core/data supporting high performance productivity tools.
+ * Description: Repository coordinating biometric authentication status, app lock state, and secure window mode.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.data
@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import android.util.Log
 
 val Context.securityDataStore: DataStore<Preferences> by preferencesDataStore(name = "secure_settings")
 
@@ -59,7 +60,7 @@ class SecurityRepository @Inject constructor(
         return try {
             cryptoManager.encrypt(value.toByteArray())
         } catch (e: Exception) {
-            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+            Log.e("QuickDash", "Error occurred: ${e.message}", e)
             ""
         }
     }
@@ -69,7 +70,7 @@ class SecurityRepository @Inject constructor(
             if (value.isBlank()) return ""
             String(cryptoManager.decrypt(value))
         } catch (e: Exception) {
-            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+            Log.e("QuickDash", "Error occurred: ${e.message}", e)
             ""
         }
     }

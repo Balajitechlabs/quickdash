@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/settings
+ * Feature Module: features/settings/presentation
  * File: SettingsViewModel.kt
- * Description: EssentialX-styled component for features/settings supporting high performance productivity tools.
+ * Description: ViewModel coordinating preferences, theme modes, backup triggers, and permission queries.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.settings.presentation

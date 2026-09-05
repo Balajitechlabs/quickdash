@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/onboarding
+ * Feature Module: features/onboarding/presentation/components
  * File: OnboardingScaffold.kt
- * Description: EssentialX-styled component for features/onboarding supporting high performance productivity tools.
+ * Description: Scaffold layout framing onboarding steps with consistent navigation headers and buttons.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.onboarding.presentation.components

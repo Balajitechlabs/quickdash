@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/voicememos
+ * Feature Module: features/voicememos/presentation
  * File: QuickVoiceMemosScreen.kt
- * Description: EssentialX-styled component for features/voicememos supporting high performance productivity tools.
+ * Description: Voice memo recorder tool with playback controls, waveforms, and file export.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.voicememos.presentation
@@ -127,7 +127,7 @@ fun QuickVoiceMemosScreen(isFloating: Boolean = false) {
             action = VoiceRecorderService.ACTION_STOP
         }
         context.startService(intent)
-        Toast.makeText(context, "Voice memo saved! 💾", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Voice memo saved! ", Toast.LENGTH_SHORT).show()
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(

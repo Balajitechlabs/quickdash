@@ -2,13 +2,16 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/clipboard
+ * Feature Module: features/clipboard/presentation
  * File: ClipboardViewModel.kt
- * Description: EssentialX-styled component for features/clipboard supporting high performance productivity tools.
+ * Description: ViewModel orchestrating clipboard item queries, pinning, manual deletion, and background sync.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.clipboard.presentation
 
+
+import com.google.gson.reflect.TypeToken
+import com.google.gson.Gson
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.balajitechlabs.quickdash.core.data.UserStore
@@ -38,8 +41,8 @@ class ClipboardViewModel @Inject constructor(
     fun addClipboardItem(text: String) {
         viewModelScope.launch {
             val currentJson = clipboardHistory.first()
-            val gson = com.google.gson.Gson()
-            val listType = object : com.google.gson.reflect.TypeToken<MutableList<String>>() {}.type
+            val gson = Gson()
+            val listType = object : TypeToken<MutableList<String>>() {}.type
             val list: MutableList<String> = try {
                 gson.fromJson(currentJson, listType) ?: mutableListOf()
             } catch (_: Exception) { mutableListOf() }
@@ -53,8 +56,8 @@ class ClipboardViewModel @Inject constructor(
     fun removeClipboardItem(text: String) {
         viewModelScope.launch {
             val currentJson = clipboardHistory.first()
-            val gson = com.google.gson.Gson()
-            val listType = object : com.google.gson.reflect.TypeToken<MutableList<String>>() {}.type
+            val gson = Gson()
+            val listType = object : TypeToken<MutableList<String>>() {}.type
             val list: MutableList<String> = try {
                 gson.fromJson(currentJson, listType) ?: mutableListOf()
             } catch (_: Exception) { mutableListOf() }

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: viewmodel
+ * File: MainViewModelTest.kt
+ * Description: Unit tests verifying MainViewModel tool dispatching, navigation, and state updates.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.viewmodel
 
 import com.balajitechlabs.quickdash.MainViewModel

@@ -4,7 +4,7 @@
  *
  * Feature Module: core/security
  * File: SecurityGuardManager.kt
- * Description: EssentialX-styled component for core/security supporting high performance productivity tools.
+ * Description: Enforces screen security flags, detects debuggers or tampered environments, and controls biometric gating.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.security

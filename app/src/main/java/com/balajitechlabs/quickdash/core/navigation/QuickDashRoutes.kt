@@ -4,7 +4,7 @@
  *
  * Feature Module: core/navigation
  * File: QuickDashRoutes.kt
- * Description: EssentialX-styled component for core/navigation supporting high performance productivity tools.
+ * Description: Defines route constants and navigation arguments for all application screens and modal destinations.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.navigation

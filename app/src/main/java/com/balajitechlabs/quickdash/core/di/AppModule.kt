@@ -4,7 +4,7 @@
  *
  * Feature Module: core/di
  * File: AppModule.kt
- * Description: EssentialX-styled component for core/di supporting high performance productivity tools.
+ * Description: Hilt dependency injection module binding application context, repositories, database, and client instances.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.di

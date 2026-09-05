@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: app
+ * Feature Module: root
  * File: MainViewModel.kt
- * Description: Central ViewModel orchestrating UI state, UserStore data collection, tool interactions, and update checks.
+ * Description: Primary ViewModel managing application state, active tools, navigation, and user preferences.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash
@@ -70,12 +70,6 @@ class MainViewModel @Inject constructor(
     fun setLastActiveDate(date: String) {
         viewModelScope.launch {
             userStore.setLastActiveDate(date)
-        }
-    }
-
-    fun saveFcmToken(token: String) {
-        viewModelScope.launch {
-            userStore.saveFcmToken(token)
         }
     }
 

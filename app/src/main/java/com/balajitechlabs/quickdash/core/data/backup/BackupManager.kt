@@ -2,13 +2,15 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: core/data
+ * Feature Module: core/data/backup
  * File: BackupManager.kt
- * Description: EssentialX-styled component for core/data supporting high performance productivity tools.
+ * Description: Handles encrypted full-data backup generation, JSON export, and atomic restoration with schema validation.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.data.backup
 
+
+import com.google.gson.Gson
 import android.content.Context
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -21,7 +23,6 @@ import com.balajitechlabs.quickdash.core.data.UserStore
 import com.balajitechlabs.quickdash.core.data.dataStore
 import com.balajitechlabs.quickdash.core.data.database.AppDatabase
 import com.balajitechlabs.quickdash.core.data.database.NoteEntity
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -73,7 +74,7 @@ enum class RestoreStrategy {
 }
 
 /**
- * 🔐 BackupManager (`BackupManager.kt`)
+ *  BackupManager (`BackupManager.kt`)
  * Handles full encrypted export and import of QuickDash DataStore preferences and Room notes
  * using military-grade AES-256-GCM encryption with PBKDF2 passphrase key derivation.
  */

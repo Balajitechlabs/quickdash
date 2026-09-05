@@ -4,7 +4,7 @@
  *
  * Feature Module: core/services
  * File: QuickTileService.kt
- * Description: EssentialX-styled component for core/services supporting high performance productivity tools.
+ * Description: Primary Quick Settings tile service toggling the floating bubble overlay across any active app.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.services
@@ -24,6 +24,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.util.Log
+
+import android.graphics.drawable.Icon
+import com.balajitechlabs.quickdash.R
 
 /**
  * Android Quick Settings Tile ("QuickDash Bubble").
@@ -37,6 +41,8 @@ class QuickTileService : TileService() {
     @Inject
     lateinit var userStore: UserStore
 
+    private var isBubbleActive = false
+
     override fun onStartListening() {
         super.onStartListening()
         updateTileState()
@@ -45,83 +51,91 @@ class QuickTileService : TileService() {
     override fun onClick() {
         super.onClick()
         val tile = qsTile ?: return
-        val context = applicationContext
 
-        CoroutineScope(Dispatchers.Main).launch {
-            if (!Settings.canDrawOverlays(context)) {
-                Toast.makeText(context, "Please grant Overlay Permission first", Toast.LENGTH_SHORT).show()
-                val intent = Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:${context.packageName}")
-                ).apply {
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    startActivityAndCollapse(android.app.PendingIntent.getActivity(
-                        context,
-                        0,
-                        intent,
-                        android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
-                    ))
-                } else {
-                    @Suppress("DEPRECATION")
-                    startActivityAndCollapse(intent)
-                }
-                return@launch
+        // 1. Check Overlay Permission synchronously
+        if (!Settings.canDrawOverlays(this)) {
+            Toast.makeText(this, "Please grant Overlay Permission first", Toast.LENGTH_SHORT).show()
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            ).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
-
-            val isEnabled = userStore.bubbleEnabled.first()
-            val newStatus = !isEnabled
-            userStore.setBubbleEnabled(newStatus)
-
-            val serviceIntent = Intent(context, FloatingBubbleService::class.java).apply {
-                setPackage(context.packageName)
-            }
-
-            if (newStatus) {
-                try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        context.startForegroundService(serviceIntent)
-                    } else {
-                        context.startService(serviceIntent)
-                    }
-                    Toast.makeText(context, "Quick Bubble enabled", Toast.LENGTH_SHORT).show()
-                } catch (e: Exception) {
-                    android.util.Log.w("QuickTileService", "Fallback startService", e)
-                    try {
-                        context.startService(serviceIntent)
-                    } catch (e2: Exception) {
-                        android.util.Log.e("QuickTileService", "Failed to start FloatingBubbleService", e2)
-                    }
-                }
-                tile.state = Tile.STATE_ACTIVE
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    tile.subtitle = "Active"
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                val pendingIntent = android.app.PendingIntent.getActivity(
+                    this, 0, intent,
+                    android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT
+                )
+                startActivityAndCollapse(pendingIntent)
             } else {
-                try {
-                    context.stopService(serviceIntent)
-                    Toast.makeText(context, "Quick Bubble: Disabled", Toast.LENGTH_SHORT).show()
-                } catch (e: Exception) {
-                    android.util.Log.e("QuickTileService", "Failed to stop FloatingBubbleService", e)
-                }
-                tile.state = Tile.STATE_INACTIVE
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    tile.subtitle = "Off"
-                }
+                @Suppress("DEPRECATION")
+                startActivityAndCollapse(intent)
             }
-            tile.updateTile()
+            return
+        }
+
+        // 2. Toggle state immediately and dispatch service synchronously within onClick()
+        val newStatus = !isBubbleActive
+        isBubbleActive = newStatus
+
+        val serviceIntent = Intent(this, FloatingBubbleService::class.java).apply {
+            setPackage(packageName)
+        }
+
+        if (newStatus) {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(serviceIntent)
+                } else {
+                    startService(serviceIntent)
+                }
+                Toast.makeText(this, "Quick Bubble enabled", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Log.e("QuickTileService", "Failed to start FloatingBubbleService", e)
+            }
+            tile.state = Tile.STATE_ACTIVE
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                tile.subtitle = "Active"
+            }
+        } else {
+            try {
+                stopService(serviceIntent)
+                Toast.makeText(this, "Quick Bubble: Disabled", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Log.e("QuickTileService", "Failed to stop FloatingBubbleService", e)
+            }
+            tile.state = Tile.STATE_INACTIVE
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                tile.subtitle = "Off"
+            }
+        }
+        tile.icon = Icon.createWithResource(this, R.drawable.ic_quickdash_tile)
+        tile.updateTile()
+
+        // 3. Persist state to UserStore DataStore asynchronously on IO
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                userStore.setBubbleEnabled(newStatus)
+            } catch (e: Exception) {
+                Log.e("QuickTileService", "Failed to save bubble state", e)
+            }
         }
     }
 
     private fun updateTileState() {
         val tile = qsTile ?: return
+        tile.icon = Icon.createWithResource(this, R.drawable.ic_quickdash_tile)
+        tile.label = "Quick Bubble"
 
         CoroutineScope(Dispatchers.Main).launch {
-            val isEnabled = userStore.bubbleEnabled.first()
-            tile.state = if (isEnabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
+            isBubbleActive = try {
+                userStore.bubbleEnabled.first()
+            } catch (_: Exception) {
+                false
+            }
+            tile.state = if (isBubbleActive) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                tile.subtitle = if (isEnabled) "Active" else "Off"
+                tile.subtitle = if (isBubbleActive) "Active" else "Off"
             }
             tile.updateTile()
         }

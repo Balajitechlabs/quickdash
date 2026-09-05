@@ -4,7 +4,7 @@
  *
  * Feature Module: core/data
  * File: RemoteConfigManager.kt
- * Description: Remote configuration stub — Firebase removed. Future: use own backend or GitHub-hosted JSON config.
+ * Description: Remote configuration interface providing fallback defaults and client feature flag evaluation.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.data

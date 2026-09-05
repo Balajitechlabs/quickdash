@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/customizer
+ * Feature Module: features/customizer/presentation
  * File: CustomizerViewModel.kt
- * Description: EssentialX-styled component for features/customizer supporting high performance productivity tools.
+ * Description: ViewModel managing bubble styling settings and persisting live adjustments to UserStore.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.customizer.presentation

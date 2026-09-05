@@ -2,23 +2,27 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/settings
+ * Feature Module: features/settings/presentation
  * File: CustomizeBubbleDialog.kt
- * Description: EssentialX-styled component for features/settings supporting high performance productivity tools.
+ * Description: Modal dialog providing quick controls for floating bubble styling and behavior.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.settings.presentation
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -37,6 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,10 +50,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.math.roundToInt
 import com.balajitechlabs.quickdash.R
 import com.balajitechlabs.quickdash.core.ui.components.RadialToolCatalog
 import com.balajitechlabs.quickdash.core.ui.components.RadialToolInfo
@@ -162,10 +172,72 @@ fun CustomizeBubbleDialog(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Tap any cardinal slot below to assign your favorite shortcut tool to the floating radial bubble.",
+                    text = "Tap any cardinal slot below to assign your shortcut tool to the floating radial bubble.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Live Draggable Bubble Preview on Mock Wallpaper
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(130.dp)
+                        .clip(RoundedCornerShape(20.dp)),
+                    color = Color(0xFF141416),
+                    border = BorderStroke(1.dp, Color(0xFF2A2B30))
+                ) {
+                    var bubbleOffsetX by remember { mutableFloatStateOf(0f) }
+                    var bubbleOffsetY by remember { mutableFloatStateOf(0f) }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                Brush.radialGradient(
+                                    colors = listOf(
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+                                        Color(0xFF0F0F12)
+                                    )
+                                )
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Drag bubble to test overlay physics",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color(0xFF8E9099),
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(top = 8.dp)
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .offset { IntOffset(bubbleOffsetX.roundToInt(), bubbleOffsetY.roundToInt()) }
+                                .size(50.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primary)
+                                .border(2.dp, Color.White.copy(alpha = 0.8f), CircleShape)
+                                .pointerInput(Unit) {
+                                    detectDragGestures { change, dragAmount ->
+                                        change.consume()
+                                        bubbleOffsetX = (bubbleOffsetX + dragAmount.x).coerceIn(-120f, 120f)
+                                        bubbleOffsetY = (bubbleOffsetY + dragAmount.y).coerceIn(-35f, 35f)
+                                    }
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_tools),
+                                contentDescription = "Floating Bubble Preview",
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 

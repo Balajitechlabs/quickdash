@@ -2,13 +2,17 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/search
+ * Feature Module: features/search/presentation
  * File: QuickSearchScreen.kt
- * Description: EssentialX-styled component for features/search supporting high performance productivity tools.
+ * Description: Universal web and device search screen querying multiple search engines with history.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.search.presentation
 
+
+import com.google.gson.reflect.TypeToken
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import android.content.Intent
 import android.net.Uri
 import com.balajitechlabs.quickdash.core.utils.safeStartActivity
@@ -38,8 +42,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.balajitechlabs.quickdash.core.data.UserStore
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
@@ -50,6 +52,8 @@ import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import android.util.Log
+import java.net.URLEncoder
 
 @Composable
 fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel, onDismiss: () -> Unit) {
@@ -101,7 +105,7 @@ fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
             kotlinx.coroutines.delay(200)
             withContext(Dispatchers.IO) {
                 try {
-                    val encodedQuery = java.net.URLEncoder.encode(trimmed, "UTF-8")
+                    val encodedQuery = URLEncoder.encode(trimmed, "UTF-8")
                     val urlString = "https://suggestqueries.google.com/complete/search?client=firefox&q=$encodedQuery"
                     val connection = java.net.URL(urlString).openConnection() as java.net.HttpURLConnection
                     connection.requestMethod = "GET"
@@ -109,7 +113,7 @@ fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
                     connection.readTimeout = 3000
                     val response = connection.inputStream.bufferedReader().use { it.readText() }
                     
-                    val jsonArray = com.google.gson.JsonParser.parseString(response).asJsonArray
+                    val jsonArray = JsonParser.parseString(response).asJsonArray
                     if (jsonArray.size() > 1) {
                         val suggestionList = jsonArray.get(1).asJsonArray
                         val list = mutableListOf<String>()
@@ -117,7 +121,7 @@ fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
                         querySuggestions = list
                     }
                 } catch (e: java.lang.Exception) {
-                    android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+                    Log.e("QuickDash", "Error occurred: ${e.message}", e)
                 }
             }
         } else {
@@ -131,7 +135,7 @@ fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
             mainViewModel.userStore.addSearchHistory(q)
         }
         try {
-            val encoded = java.net.URLEncoder.encode(q, "UTF-8")
+            val encoded = URLEncoder.encode(q, "UTF-8")
             val uri = Uri.parse(selectedEngine.second + encoded)
             val intent = Intent(Intent.ACTION_VIEW, uri)
             context.safeStartActivity(intent, "No browser found to open search link")

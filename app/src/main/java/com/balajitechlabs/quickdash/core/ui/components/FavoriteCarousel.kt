@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: core/ui
+ * Feature Module: core/ui/components
  * File: FavoriteCarousel.kt
- * Description: EssentialX-styled component for core/ui supporting high performance productivity tools.
+ * Description: Horizontally scrollable carousel displaying user-pinned favorite tools for rapid launching.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.ui.components

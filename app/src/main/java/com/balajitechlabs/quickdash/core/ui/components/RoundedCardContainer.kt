@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: core/ui
+ * Feature Module: core/ui/components
  * File: RoundedCardContainer.kt
- * Description: EssentialX-styled component for core/ui supporting high performance productivity tools.
+ * Description: Card container applying standard 24dp rounded corners, subtle borders, and surface colors to grouped content.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.ui.components

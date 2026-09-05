@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/reminders
+ * Feature Module: features/reminders/presentation
  * File: QuickRemindersScreen.kt
- * Description: EssentialX-styled component for features/reminders supporting high performance productivity tools.
+ * Description: Quick reminder tool scheduling system alarms and notifications with natural time presets.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.reminders.presentation
@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.sp
 import com.balajitechlabs.quickdash.core.ui.components.RoundedCardContainer
 
 /**
- * ⏰ Tool #24 — Quick Reminders & Focus Alarm (`QuickRemindersScreen.kt`).
+ *  Tool #24 — Quick Reminders & Focus Alarm (`QuickRemindersScreen.kt`).
  * 1-tap floating alarm and break reminder setter.
  */
 @Composable
@@ -67,7 +67,7 @@ fun QuickRemindersScreen() {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "⏰ Quick Reminders & Alarm",
+            text = " Quick Reminders & Alarm",
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
@@ -140,7 +140,7 @@ fun QuickRemindersScreen() {
                         try {
                             val alarmManager = context.getSystemService(android.content.Context.ALARM_SERVICE) as? android.app.AlarmManager
                             val intent = android.content.Intent(context, com.balajitechlabs.quickdash.features.timer.presentation.TimerAlarmReceiver::class.java).apply {
-                                putExtra("EXTRA_TITLE", "⏰ Reminder: $title")
+                                putExtra("EXTRA_TITLE", " Reminder: $title")
                                 putExtra("EXTRA_MESSAGE", title)
                             }
                             val pendingIntent = android.app.PendingIntent.getBroadcast(
@@ -155,7 +155,7 @@ fun QuickRemindersScreen() {
                             } else {
                                 alarmManager?.setExact(android.app.AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
                             }
-                            Toast.makeText(context, "⏰ Reminder set for $selectedMinutes minutes!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, " Reminder set for $selectedMinutes minutes!", Toast.LENGTH_SHORT).show()
                         } catch (e: Exception) {
                             Toast.makeText(context, "Reminder set for $selectedMinutes minutes!", Toast.LENGTH_SHORT).show()
                         }

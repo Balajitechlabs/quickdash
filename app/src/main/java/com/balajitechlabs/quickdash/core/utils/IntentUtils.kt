@@ -4,7 +4,7 @@
  *
  * Feature Module: core/utils
  * File: IntentUtils.kt
- * Description: EssentialX-styled component for core/utils supporting high performance productivity tools.
+ * Description: Helper extensions safely launching system intents, external browsers, and dialers.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.utils

@@ -36,10 +36,8 @@ jobs:
         run: |
           echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-      - name: Build Debug APKs (Standard & FOSS)
-        run: |
-          ./gradlew assembleDebug --parallel --build-cache --no-daemon
-          ./gradlew assembleDebug -Pfoss --parallel --build-cache --no-daemon
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --parallel --build-cache --no-daemon
         env:
           CI: true
 
@@ -117,10 +115,8 @@ jobs:
         run: |
           echo "sdk.dir=$ANDROID_HOME" > local.properties
 
-      - name: Run Unit Tests (Standard & FOSS)
-        run: |
-          ./gradlew testDebugUnitTest --parallel --build-cache --no-daemon
-          ./gradlew testDebugUnitTest -Pfoss --parallel --build-cache --no-daemon
+      - name: Run Unit Tests
+        run: ./gradlew testDebugUnitTest --parallel --build-cache --no-daemon
 
       - name: Upload Test Report
         if: always()

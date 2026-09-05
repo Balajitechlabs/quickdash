@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: core/ui
+ * Feature Module: core/ui/components
  * File: PreferenceItem.kt
- * Description: EssentialX-styled component for core/ui supporting high performance productivity tools.
+ * Description: Standardized settings row composable with icon, title, subtitle, and action control slots.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.ui.components

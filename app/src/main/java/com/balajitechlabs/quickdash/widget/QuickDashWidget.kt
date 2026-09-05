@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: app
+ * Feature Module: widget
  * File: QuickDashWidget.kt
- * Description: String,
+ * Description: Glance AppWidget providing home-screen shortcuts to favorite QuickDash tools.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.widget

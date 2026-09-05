@@ -4,7 +4,7 @@
  *
  * Feature Module: core/services
  * File: ShakeDetectorService.kt
- * Description: EssentialX-styled component for core/services supporting high performance productivity tools.
+ * Description: Background sensor service monitoring accelerometer events to trigger the floating overlay upon device shake.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.services
@@ -33,6 +33,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.math.sqrt
+import android.util.Log
 
 class ShakeDetectorService : Service(), SensorEventListener {
 
@@ -176,14 +177,14 @@ class ShakeDetectorService : Service(), SensorEventListener {
                 try {
                     startForeground(102, notification, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
                 } catch (se: Exception) {
-                    android.util.Log.e("ShakeDetectorService", "specialUse startForeground failed, falling back: ${se.message}")
+                    Log.e("ShakeDetectorService", "specialUse startForeground failed, falling back: ${se.message}")
                     startForeground(102, notification)
                 }
             } else {
                 startForeground(102, notification)
             }
         } catch (e: Exception) {
-            android.util.Log.e("ShakeDetectorService", "startForeground failed: ${e.message}", e)
+            Log.e("ShakeDetectorService", "startForeground failed: ${e.message}", e)
         }
     }
 

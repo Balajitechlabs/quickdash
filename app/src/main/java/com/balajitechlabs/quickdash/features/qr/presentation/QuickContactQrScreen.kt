@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/qr
+ * Feature Module: features/qr/presentation
  * File: QuickContactQrScreen.kt
- * Description: Instant vCard Contact QR generator for quick card exchange.
+ * Description: Tool generating vCard QR codes for sharing contact cards without cellular network exchange.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.qr.presentation

@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: core/ui
+ * Feature Module: core/ui/components
  * File: GlassmorphismBlur.kt
- * Description: EssentialX-styled component for core/ui supporting high performance productivity tools.
+ * Description: Provides dynamic real-time backdrop blur and translucent glassmorphism surfaces across Compose layouts.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.ui.components

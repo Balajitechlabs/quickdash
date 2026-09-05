@@ -4,7 +4,7 @@
  *
  * Feature Module: core/ui
  * File: QuickTool.kt
- * Description: EssentialX-styled component for core/ui supporting high performance productivity tools.
+ * Description: Enum representing all available QuickDash productivity tools, icons, titles, and routing metadata.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.ui

@@ -4,7 +4,7 @@
  *
  * Feature Module: core/data
  * File: CryptoManager.kt
- * Description: EssentialX-styled component for core/data supporting high performance productivity tools.
+ * Description: Manages AES-256-GCM Keystore encryption, unique IV generation, and tamper detection for sensitive data.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.data

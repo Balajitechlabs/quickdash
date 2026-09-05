@@ -1,48 +1,84 @@
-# QuickDash Official Release Changelog 📜
+# QuickDash Official Release Changelog
 
 All major updates, feature additions, bug fixes, and system improvements for **QuickDash** are documented in this file.
 
-## [5.2.3] - 2026-09-04 (Architecture Modernization, 100% Zero-Tracker & Update Overhaul) 🚀
+## [5.2.3] - 2026-09-05 (Architecture Modernization, AI Code Slop Purge & Zero-Tracker FOSS Release)
 
-### 🚀 ADDED & IMPROVED
-- **🔄 Semantic In-App Update Engine**: Complete overhaul modeled after EssentialX with semver parser (`SemanticVersion.kt`), channel isolation, intelligent preview build detection ("Ahead of latest public release"), ABI matching, and GitHub tag hygiene (no run numbers or `vv` prefix artifacts).
-- **🌿 100% True Zero-Tracker Pure FOSS Architecture**: Completely stripped Firebase Crashlytics, Firebase Messaging, Google ML Kit, Google MediaPipe, and Play Services Location dependencies from the APK. Binary size dropped by over 30MB.
-- **⚡ Background Service Hardening**: Fully resolved Android 14+ `ForegroundServiceDidNotStartInTimeException` with proper `specialUse` manifest declarations, service properties, and defensive fallbacks in `ShakeDetectorService`.
-- **🛡️ Sensitive Clipboard Privacy Shield**: Automatic masking for credentials, credit cards (with Luhn check), OTP tokens, and secrets with an interactive eye reveal toggle in `ClipboardScreen`.
-- **🎨 Essentials Floating Dock & Personal Brand Hub**: Modern spring-animated bottom dock with [Settings, Home, About], personal brand showcase for balajitechlabs with dynamic gateway reflection to `quickdash.balajitechlab.com`.
-- **🚀 Compose Lifecycle Leaks & Memory Trimming**: Migrated all UI state collection to `collectAsStateWithLifecycle()`, added `animateItem()` and lazy list keys, and wired `onTrimMemory` to clear Coil image caches.
-- **🏷️ Consistent Casing & Licensing Compliance**: Enforced lowercase `balajitechlabs` across all documentation, metadata, website feeds, and source headers; copyright attributed to `||BTL||™ (balajitechlabs)`.
+### Core Architecture and Codebase De-Bloating
+- Purged over 88,100 lines of accumulated AI-generated code slop, defensive wrappers, phantom UI variables, and duplicate test scaffolding across 769 files.
+- Decomposed the 3,000-line monolithic SettingsScreen into focused, single-responsibility preference components located in `features/settings/presentation/sections/` and `AppPermissionsPreferenceGroup.kt`.
+- Dismantled the 1,200-line WelcomeOnboardingScreen into clean step composables (`QuickDashWelcomeHeroStep`, `WelcomeOnboardingPermissionsStep`, `WelcomeOnboardingPreferencesStep`, `WelcomeOnboardingDoneStep`).
+- Modularized UserStore into dedicated domain delegates (`UserStoreBase`, `UserStorePayment`, `UserStoreTools`, `UserStoreUi`), isolating DataStore key mutations to prevent broad UI recompositions.
+- Eliminated silent empty catch blocks across FloatingDialogActivity and background services, replacing them with structured logging and proper error propagation.
+- Stripped hundreds of redundant robotic comments and flattened nested Compose layout containers.
+
+### True Zero-Tracker FOSS Migration
+- Completely removed Google Play Services, Firebase BOM 34.18.0, Firebase Crashlytics, Firebase Messaging, Play Integrity, and ML Kit from Gradle configurations.
+- Deleted legacy service classes: `QuickDashFirebaseMessagingService.kt`, `PlayIntegrityManager.kt`, `PlayStoreHelper.kt`, and `RemoteConfigManager.kt`.
+- Removed reflection blocks probing for Firebase classes at application launch in QuickDashApplication.
+- Verified 0 trackers and 0 analytic signatures on Exodus Privacy.
+- Reduced standalone ARM64 APK binary size from 38MB to 7.8MB (an approximate 75% reduction).
+
+### Android 14, 15, and 16 System Service and Tile Hardening
+- Synchronized foreground service startup inside `QuickTileService.onClick()` on the main thread, eliminating `ForegroundServiceStartNotAllowedException` caused by asynchronous DataStore delays exceeding Android's execution token window.
+- Replaced the launcher mipmap reference in AndroidManifest.xml with the monochrome vector asset `@drawable/ic_quickdash_tile`, ensuring the Quick Settings tile displays correctly across Pixel and custom OEM SystemUI panels.
+- Configured dynamic icon binding via `Icon.createWithResource()` inside `QuickTileService.kt` and `QrScannerTileService.kt`.
+
+### Spotlight Search and Camera Barcode Engine
+- Direct camera launch: Tapping the QR icon in the search bar now bypasses intermediate selection dialogs, invoking `QrScannerHelper.startScan()` immediately.
+- Custom ZXing scanner integration: Added custom viewfinder layout components (`CustomCaptureActivity.kt`, `activity_custom_qr_scanner.xml`, `bg_scanner_laser.xml`) with flashlight controls and offline gallery decoding.
+
+### Semantic In-App Update Engine
+- Clean SemVer tagging: Stripped CI run numbers from release tags (such as `v5.2.2-78`). Tags now use strict SemVer formatting (`v5.2.3`), restoring automatic update recognition in Obtainium, F-Droid, and IzzyOnDroid.
+- Built internal `SemanticVersion.kt` comparison parser to evaluate major, minor, and patch numbers as integers, preventing alphanumeric string comparison errors.
+- Built `AppUpdateBottomSheet.kt` and `DownloadingProgressDialog.kt` for in-app APK downloads with SHA-256 checksum verification against `update.json`.
+
+### Compose Performance and Memory Safety
+- Migrated all UI state collection from `collectAsState()` to `collectAsStateWithLifecycle()`, stopping flow collection when the activity is stopped or obscured to conserve battery and memory.
+- Added explicit keys (`key = { it.id }`) and `Modifier.animateItem()` to LazyColumn items in ClipboardScreen and QuickNotesScreen to improve list recomposition efficiency.
+- Added `Modifier.imePadding()` to search, converter, and input screens to prevent soft keyboards from obscuring active input fields.
+- Offloaded all JSON parsing (Gson) and database operations in FloatingDialogActivity to `Dispatchers.IO`.
+
+### Native Telegram Telemetry and Push Announcements
+- Global uncaught crash handler in QuickDashApplication transmits device hardware details (`Build.MODEL`, manufacturer, Android version) and stack traces to a private Telegram administrative chat.
+- WorkManager background task (`TelegramPollerWorker`) periodically checks administrative channels for announcements and posts local Android heads-up notifications without Google Cloud Messaging.
+- Secured tokens via `local.properties` and GitHub repository secrets, compiling them into BuildConfig and providing empty default fallbacks for external forks.
+
+### Security, Build System, and Licensing
+- Added Sensitive Clipboard Privacy Shield with regex detection for credentials, auth tokens, OTPs, and credit card numbers (validated via Luhn algorithm) with an interactive eye reveal toggle.
+- Upgraded build toolchain: `compileSdk = 37`, `targetSdk = 37`, `versionName = "5.2.3"`, and incremented `versionCode = 525` to ensure clean ingestion on Google Play Console.
+- Standardized author formatting to lowercase `balajitechlabs` and copyright to `||BTL||™ (balajitechlabs)`.
 
 ---
 
-## [5.2.2] - 2026-08-15 (Zero-Tracker FOSS Edition & Privacy Hardening Release) 🌿
+## [5.2.2] - 2026-08-15 (Zero-Tracker FOSS Edition & Privacy Hardening Release)
 
-### 🚀 ADDED & IMPROVED
-- **🌿 100% Zero-Tracker FOSS Build**: Dedicated FOSS release target for F-Droid and IzzyOnDroid with zero Firebase analytics, zero Crashlytics, and zero ML Kit proprietary trackers (verified 0 trackers on Exodus Privacy).
-- **🛡️ Split Architecture**: Clean separation between standard Google Play builds (`src/standard`) and pure FOSS builds (`src/foss`).
-- **📷 Dynamic Proxy QR Scanner**: Tracker-free QR code scanner leveraging safe reflection and ZXing fallback.
-- **🎯 4-Tool Customizable Radial Wheel**: Rapid 350ms long-press bubble tool selection.
-- **📱 1-Tap Control Center Tile & Glance Widgets**: Material You dynamic home screen widgets and 1-tap quick settings tile.
-- **🔐 AES-256-GCM Encrypted Backup & Restore**: Robust PBKDF2 local backup protection.
-
----
-
-## [5.2.1] - 2026-08-14 (Backup & Stability Release) ⚡
-
-### 🚀 ADDED & IMPROVED
-- **🎨 Customizable Radial Bubble Wheel**: Users can now select and customize their top 4 favorite shortcut tools for the floating bubble wheel directly in Settings (`CustomizeBubbleDialog.kt` & `RadialToolCatalog.kt`).
-- **📱 1-Tap Home Screen Widget Bubble Toggle**: Instant on/off floating bubble toggling directly from Glance Material You widgets (`ToggleBubbleReceiver.kt`).
-- **⚡ 120Hz Animation Optimizations**: Offloaded radial bubble scale and alpha physics springs to GPU RenderThread via `Modifier.graphicsLayer` for zero-jank 120Hz rendering on Android 15 & 16.
-- **📱 Glance Material You Dynamic Theming**: Integrated `androidx.glance:glance-material3:1.1.1` dynamic wallpaper palette theming across 1x1 Compact, 2x1 Quick Bar, and 2x2 Tool Hub widgets.
-- **🔐 Encrypted Backup & Restore**: AES-256-GCM encrypted `.qdbackup` file export/import with PBKDF2 (100,000 iterations) passphrase key derivation, Room database notes serialization, and DataStore preferences restore.
-- **🛡️ 37 CodeQL Static Analysis Security Hardening**: Addressed all CodeQL static analysis alerts including restricted WebView file/content access, explicit PendingIntents (`setPackage`), log injection sanitization, strong biometrics (`BIOMETRIC_STRONG`), absolute binary paths, and cloud backup protection.
-- **🤖 GitHub Repository & CI Automation**: Added CodeRabbit configuration (`.coderabbit.yaml`), automated PR welcome contributor bot (`pr-welcome.yml`), Dependabot version grouping, and upgraded Gradle wrapper to 9.5 and `setup-java@v5`.
+### ADDED & IMPROVED
+- ** 100% Zero-Tracker FOSS Build**: Dedicated FOSS release target for F-Droid and IzzyOnDroid with zero Firebase analytics, zero Crashlytics, and zero ML Kit proprietary trackers (verified 0 trackers on Exodus Privacy).
+- ** ️ Split Architecture**: Clean separation between standard Google Play builds (`src/standard`) and pure FOSS builds (`src/foss`).
+- ** Dynamic Proxy QR Scanner**: Tracker-free QR code scanner leveraging safe reflection and ZXing fallback.
+- ** 4-Tool Customizable Radial Wheel**: Rapid 350ms long-press bubble tool selection.
+- ** 1-Tap Control Center Tile & Glance Widgets**: Material You dynamic home screen widgets and 1-tap quick settings tile.
+- ** AES-256-GCM Encrypted Backup & Restore**: Robust PBKDF2 local backup protection.
 
 ---
 
-## [5.2.0] - 2026-08-14 (Unified DataStore & Architecture Release) 🚀
+## [5.2.1] - 2026-08-14 (Backup & Stability Release)
 
-### 🚀 ADDED & IMPROVED
+### ADDED & IMPROVED
+- ** Customizable Radial Bubble Wheel**: Users can now select and customize their top 4 favorite shortcut tools for the floating bubble wheel directly in Settings (`CustomizeBubbleDialog.kt` & `RadialToolCatalog.kt`).
+- ** 1-Tap Home Screen Widget Bubble Toggle**: Instant on/off floating bubble toggling directly from Glance Material You widgets (`ToggleBubbleReceiver.kt`).
+- ** 120Hz Animation Optimizations**: Offloaded radial bubble scale and alpha physics springs to GPU RenderThread via `Modifier.graphicsLayer` for zero-jank 120Hz rendering on Android 15 & 16.
+- ** Glance Material You Dynamic Theming**: Integrated `androidx.glance:glance-material3:1.1.1` dynamic wallpaper palette theming across 1x1 Compact, 2x1 Quick Bar, and 2x2 Tool Hub widgets.
+- ** Encrypted Backup & Restore**: AES-256-GCM encrypted `.qdbackup` file export/import with PBKDF2 (100,000 iterations) passphrase key derivation, Room database notes serialization, and DataStore preferences restore.
+- ** ️ 37 CodeQL Static Analysis Security Hardening**: Addressed all CodeQL static analysis alerts including restricted WebView file/content access, explicit PendingIntents (`setPackage`), log injection sanitization, strong biometrics (`BIOMETRIC_STRONG`), absolute binary paths, and cloud backup protection.
+- ** GitHub Repository & CI Automation**: Added CodeRabbit configuration (`.coderabbit.yaml`), automated PR welcome contributor bot (`pr-welcome.yml`), Dependabot version grouping, and upgraded Gradle wrapper to 9.5 and `setup-java@v5`.
+
+---
+
+## [5.2.0] - 2026-08-14 (Unified DataStore & Architecture Release)
+
+### ADDED & IMPROVED
 - **Unified DataStore Architecture**: Migrated all 9 ViewModels, UI Composables, background Services (`QuickTileService`), and Workers (`TelegramPollerWorker`) to `@Singleton UserStore`.
 - **Target SDK 36**: Upgraded target SDK to 36 for full Android 15/16 device compatibility.
 - **Enhanced Security & Incognito**: Implemented `applyWindowSecurity(window)` for system-wide `FLAG_SECURE` toggles and added `DEVICE_CREDENTIAL` (PIN/Pattern/Password) fallback unlock support.
@@ -51,9 +87,9 @@ All major updates, feature additions, bug fixes, and system improvements for **Q
 
 ---
 
-## [5.1.3] - 2026-07-31 (Stability & Service Robustness Release) ⚡
+## [5.1.3] - 2026-07-31 (Stability & Service Robustness Release)
 
-### 🐛 FIXED (What We Fixed)
+### FIXED (What We Fixed)
 - **Quick Settings Tile Crash**: Resolved `ForegroundServiceStartNotAllowedException` on Android 12+ / 14+ / 16 when toggling QuickDash Hub floating bubble from notification shade.
 - **Service Foreground Promotion**: Wrapped `FloatingBubbleService` `startForeground()` in try-catch to prevent process crashes on restricted background starts.
 - **OWASP Dependency Check Action**: Resolved Docker container `JAVA_HOME` override error in `.github/workflows/dependency-scan.yml`.
@@ -61,9 +97,9 @@ All major updates, feature additions, bug fixes, and system improvements for **Q
 
 ---
 
-## [5.1.2] - 2026-07-31 (Code Quality & Security Release) 🔒
+## [5.1.2] - 2026-07-31 (Code Quality & Security Release)
 
-### 🐛 FIXED (What We Fixed)
+### FIXED (What We Fixed)
 - **27 Crash-Prone Catch Blocks**: Replaced all empty `catch (_: Exception) {}` and `e.printStackTrace()` blocks with proper `Log.e()` error logging across 10 files.
 - **Telegram First-Install Notification**: Fixed missing `incrementAppOpens()` call that prevented install notifications. Added device info (manufacturer, model, Android version, API level, app version) to notification message.
 - **Website Stats Bar Regression**: Fixed field names in `stats.json` to match Worker API response (`downloads`, `tools`, `active_users`).
@@ -71,11 +107,11 @@ All major updates, feature additions, bug fixes, and system improvements for **Q
 - **Website Blog/Docs/Changelog Double Fetch**: Eliminated 404 round-trip by fetching `.json` directly.
 - **CSS Slide-Up Animation**: Aligned `slideUp` animation with actual dialog height to prevent visual clipping.
 
-### 🔒 SECURITY (What We Hardened)
+### SECURITY (What We Hardened)
 - **Keystore Passwords Removed from Disk**: Moved signing credentials from `keystore.properties` (plaintext) to `local.properties` + CI environment variables.
 - **Worker CORS Restricted**: API responses now set `access-control-allow-origin` to `quickdash.balajitechlab.com` only.
 
-### ✅ ADDED (What We Added)
+### ADDED (What We Added)
 - **19 Automated Unit Tests**: ViewModel, Repository, and Room DAO tests covering MainViewModel, SettingsViewModel, ClipboardViewModel, QrViewModel, QuickTimerViewModel, HistoryRepository, SecurityRepository, and Room database migrations.
 - **7 Worker API Tests**: Rate limiter (3 req/window + 429), CORS headers, OPTIONS preflight, 404 handling, stats endpoint, feedback submission.
 - **Type-Safe Navigation Routes**: Sealed `QuickDashRoute` interface with 12 `@Serializable` routes and `QuickDashNavHost` composable scaffold.
@@ -83,7 +119,7 @@ All major updates, feature additions, bug fixes, and system improvements for **Q
 - **Website Accessibility**: Added `SkipLink`, focus management on route change, `aria-live="polite"` regions, and `role="status"` on dynamic content.
 - **Community Files**: Created `ISSUE_TEMPLATE` (bug + feature), `PULL_REQUEST_TEMPLATE`, `CODEOWNERS`, and `FUNDING.yml`.
 
-### 🔄 UPDATED (What We Updated)
+### UPDATED (What We Updated)
 - **Version Bump**: `5.1.1` → **`5.1.2`** (513 → **514**).
 - **ProGuard Rules**: Fixed `UpdateManager**` → `UpdateManager*`, removed stale `-optimizationpasses 5`, consolidated `-dontwarn` rules.
 - **Service Worker**: Updated precache to include SPA routes, removed `announcement.json`.
@@ -92,21 +128,21 @@ All major updates, feature additions, bug fixes, and system improvements for **Q
 
 ---
 
-## [5.1.1] - 2026-07-26 (Android 16 & Google Play Release) 🛡️
+## [5.1.1] - 2026-07-26 (Android 16 & Google Play Release) ️
 
-### 🐛 FIXED (What We Fixed)
+### FIXED (What We Fixed)
 - **16 KB Page Alignment Crash Warning**: Fixed Google Play Console 16 KB memory page size alignment warning by adding `packaging { jniLibs { useLegacyPackaging = false } }` for native JNI `.so` libraries.
 - **Glance & Protobuf SDK Warnings**: Fixed Play Console critical notes on `glance-appwidget-proto` and `glance-appwidget-external-protobuf` by upgrading `androidx.glance:glance-appwidget` from `1.1.0` to `1.1.1`.
 - **AAPT Manifest Attribute Spelling**: Fixed AAPT resource compilation failure by updating XML attribute spelling to `android:resizeableActivity="true"`.
 - **Mobile Website Horizontal Overflow**: Fixed right-side empty space on mobile screens by adding `max-width: 100vw`, `overflow-x: hidden !important` on `html`/`body`, and constraining `.device-glow` and `.mesh-orb-1` bounds.
 - **Mobile Countdown Timer Visibility**: Fixed hidden deadline timer on mobile devices by removing `display: none` on `.s-timer` and applying a compact responsive unit layout.
 
-### 🔄 UPDATED (What We Updated)
+### UPDATED (What We Updated)
 - **Target SDK 36 (Android 16)**: Updated target SDK from `35` to **`36`** (Android 16 API Level 36) and compile SDK to **`37`**.
 - **Version Number Bump**: Updated version name to **`5.1.1`** and version code to **`511`** across `build.gradle.kts`, `README.md`, `index.html`, and `privacy.html`.
 - **Technical Architecture Documentation**: Updated prerequisites and architecture specifications in `README.md` to reflect Android 16 target, 16 KB page size alignment, and Play Core APIs.
 
-### ⚡ ADDED (What We Added)
+### ADDED (What We Added)
 - **Google Play In-App Updates API**: Added `com.google.android.play:app-update-ktx:2.1.0` and integrated `checkForPlayAppUpdate()` in `MainActivity.kt` for 1-tap in-app update prompts.
 - **Google Play In-App Reviews API**: Added `com.google.android.play:review-ktx:2.0.2` and integrated `requestPlayInAppReview()` in `MainActivity.kt` for native 5-star rating sheets.
 - **Android 15/16 Predictive Back Animations**: Added `android:enableOnBackInvokedCallback="true"` in `AndroidManifest.xml` for back-swipe gesture navigation.
@@ -120,20 +156,20 @@ All major updates, feature additions, bug fixes, and system improvements for **Q
 
 ---
 
-## [5.0.0] - 2026-07-24 (Major Version Release) 🚀
+## [5.0.0] - 2026-07-24 (Major Version Release)
 
-### 🚀 Major Highlights
+### Major Highlights
 - **Inbuilt QR Scanner Quick Settings Tile**: Added `QrScannerTileService` allowing users to scan payment QR codes directly from the Android Quick Settings notification shade.
 - **Scan QR Code Tile Setup Action**: Added a direct setup button under Settings → Launch & Display for requesting tile addition on Android 13+.
 - **Pure Icon Launcher Cards**: Replaced text and emoji labels in Quick Social Access and Quick Chat with minimalist native vector icons (`ic_instagram`, `ic_facebook`, `ic_twitter`, `ic_linkedin`, `ic_github`, `ic_whatsapp`, `ic_telegram`, `ic_signal`, `ic_sms`).
 - **Stylized Custom QR Code Generation**: Defaulted circular dots and gradient color palettes for all generated payment QR codes in Quick Collect.
-- **Floating Window Screenshot Action**: Added a dedicated camera button (`📷`) in the floating window top header to dynamically capture high-res screenshots of ONLY the floating container card.
+- **Floating Window Screenshot Action**: Added a dedicated camera button (``) in the floating window top header to dynamically capture high-res screenshots of ONLY the floating container card.
 - **Modal Calculator History Window**: Replaced inline calculation dropdown with a clean `AlertDialog` pop-up window featuring single-tap expression reuse.
 - **Annotator Canvas Upgrades**: White canvas background by default, background color picker (White, Light Grey, Soft Yellow, Black, Dark Slate), and direct **Save as PDF** export.
 - **Simplified Quick Translator**: Removed AI Assistant sections for a clean, instant, dedicated translation tool with manual paste control and official Google Translate app icon.
 - **Advanced v5.0.0 Setup Screen**: Redesigned onboarding flow with step-by-step guidance for notifications, floating window overlays, and Quick Settings tile configuration.
 
-### 🎨 UI & Layout Enhancements
+### UI & Layout Enhancements
 - Reordered Dashboard tool grid hierarchy (Quick Collect, Quick Chat, Quick Social, Quick Translator, Smart Clipboard, Quick Notes).
 - Defaulted currency converter amount to `0` and currency pair from `INR (₹)` to `USD ($)`.
 - Restrained payment description note input to a compact single-line field.

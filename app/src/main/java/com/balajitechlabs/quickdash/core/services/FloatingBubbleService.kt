@@ -4,7 +4,7 @@
  *
  * Feature Module: core/services
  * File: FloatingBubbleService.kt
- * Description: EssentialX-styled component for core/services supporting high performance productivity tools.
+ * Description: Foreground service rendering the draggable floating bubble overlay window and handling touch gestures.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.services
@@ -45,6 +45,7 @@ import com.balajitechlabs.quickdash.features.dashboard.presentation.FloatingDial
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+import android.util.Log
 
 class MySavedStateRegistryOwner : SavedStateRegistryOwner, ViewModelStoreOwner {
     private val lifecycleRegistry = LifecycleRegistry(this)
@@ -193,7 +194,7 @@ class FloatingBubbleService : Service() {
                         }.take(6)
                     }
                 }
-            } catch (e: Exception) { android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e) }
+            } catch (e: Exception) { Log.e("QuickDash", "Error occurred: ${e.message}", e) }
         }
 
         // ── Snap-to-edge ───────────────────────────────────────────────

@@ -4,7 +4,7 @@
  *
  * Feature Module: core/utils
  * File: QRCodeGenerator.kt
- * Description: EssentialX-styled component for core/utils supporting high performance productivity tools.
+ * Description: Generates high-resolution monochrome and color QR code bitmaps using ZXing.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.utils

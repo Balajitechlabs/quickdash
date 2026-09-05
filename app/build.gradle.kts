@@ -7,6 +7,14 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.protobuf)
+    alias(libs.plugins.detekt)
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom(files("$rootDir/detekt.yml"))
+    baseline = file("$rootDir/detekt-baseline.xml")
 }
 
 hilt {
@@ -30,7 +38,7 @@ android {
         applicationId = "com.balajitechlabs.quickdash"
         minSdk = 26
         targetSdk = 37
-        versionCode = 524
+        versionCode = 525
         versionName = "5.2.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -70,14 +78,14 @@ android {
         }
     }
 
+    val storePass = System.getenv("KEYSTORE_PASSWORD") ?: localProperties.getProperty("KEYSTORE_PASSWORD")
+    val alias = System.getenv("KEY_ALIAS") ?: localProperties.getProperty("KEY_ALIAS")
+    val keyPass = System.getenv("KEY_PASSWORD") ?: localProperties.getProperty("KEY_PASSWORD")
+    val storeFilePath = System.getenv("KEYSTORE_PATH") ?: localProperties.getProperty("KEYSTORE_PATH", "quickdash.jks")
+    val hasKeystore = !storePass.isNullOrEmpty() && !alias.isNullOrEmpty() && !keyPass.isNullOrEmpty() && rootProject.file(storeFilePath).exists()
+
     signingConfigs {
         create("release") {
-            val storePass = System.getenv("KEYSTORE_PASSWORD") ?: localProperties.getProperty("KEYSTORE_PASSWORD")
-            val alias = System.getenv("KEY_ALIAS") ?: localProperties.getProperty("KEY_ALIAS")
-            val keyPass = System.getenv("KEY_PASSWORD") ?: localProperties.getProperty("KEY_PASSWORD")
-            val storeFilePath = System.getenv("KEYSTORE_PATH") ?: localProperties.getProperty("KEYSTORE_PATH", "quickdash.jks")
-
-            val hasKeystore = !storePass.isNullOrEmpty() && !alias.isNullOrEmpty() && !keyPass.isNullOrEmpty() && rootProject.file(storeFilePath).exists()
             if (hasKeystore) {
                 storeFile = rootProject.file(storeFilePath)
                 storePassword = storePass
@@ -92,7 +100,7 @@ android {
     }
 
     lint {
-        abortOnError = false
+        abortOnError = true
         checkReleaseBuilds = false
     }
 
@@ -115,12 +123,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            val storePass = System.getenv("KEYSTORE_PASSWORD") ?: localProperties.getProperty("KEYSTORE_PASSWORD")
-            val alias = System.getenv("KEY_ALIAS") ?: localProperties.getProperty("KEY_ALIAS")
-            val keyPass = System.getenv("KEY_PASSWORD") ?: localProperties.getProperty("KEY_PASSWORD")
-            val storeFilePath = System.getenv("KEYSTORE_PATH") ?: localProperties.getProperty("KEYSTORE_PATH", "quickdash.jks")
-            val hasKeystore = !storePass.isNullOrEmpty() && !alias.isNullOrEmpty() && !keyPass.isNullOrEmpty() && rootProject.file(storeFilePath).exists()
-
             signingConfig = if (hasKeystore) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
             ndk {
                 debugSymbolLevel = "FULL"
@@ -173,7 +175,7 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation("androidx.fragment:fragment-ktx:1.9.0")
+    implementation(libs.androidx.fragment.ktx)
     implementation(libs.zxing)
     implementation(libs.zxing.android.embedded)
     implementation(libs.androidx.datastore.preferences)
@@ -190,7 +192,7 @@ dependencies {
 
     // Security & Biometric
     implementation(libs.androidx.biometric)
-    implementation("androidx.security:security-crypto:1.1.0")
+    implementation(libs.androidx.security.crypto)
 
     // Utilities & Parsing
     implementation(libs.gson)
@@ -212,7 +214,7 @@ dependencies {
     // Jetpack Glance App Widget & Google Fonts
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
-    implementation("androidx.compose.ui:ui-text-google-fonts:1.6.0")
+    implementation(libs.androidx.ui.text.google.fonts)
 
     // Coil Image & GIF Loading
     implementation(libs.coil.compose)
@@ -223,14 +225,12 @@ dependencies {
     implementation(libs.shizuku.provider)
     implementation(libs.hiddenapibypass)
 
-
-
     testImplementation(libs.junit)
-    testImplementation("app.cash.turbine:turbine:1.2.0")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
-    testImplementation("io.mockk:mockk:1.13.13")
-    testImplementation("com.google.truth:truth:1.4.5")
-    androidTestImplementation("com.google.truth:truth:1.4.5")
+    testImplementation(libs.turbine)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.truth)
+    androidTestImplementation(libs.truth)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -240,18 +240,6 @@ dependencies {
 }
 
 kotlin {
-    compilerOptions {
-        freeCompilerArgs.add("-Xmetadata-version=2.1.0")
-    }
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    compilerOptions {
-        freeCompilerArgs.add("-Xmetadata-version=2.1.0")
-    }
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile>().configureEach {
     compilerOptions {
         freeCompilerArgs.add("-Xmetadata-version=2.1.0")
     }

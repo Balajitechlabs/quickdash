@@ -4,7 +4,7 @@
  *
  * Feature Module: core/utils
  * File: ShakeDetector.kt
- * Description: EssentialX-styled component for core/utils supporting high performance productivity tools.
+ * Description: SensorEventListener detecting acceleration spikes and calculating shake gestures with debouncing.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.utils

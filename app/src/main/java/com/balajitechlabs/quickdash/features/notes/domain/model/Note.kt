@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/notes
+ * Feature Module: features/notes/domain/model
  * File: Note.kt
- * Description: EssentialX-styled component for features/notes supporting high performance productivity tools.
+ * Description: Domain model representing a user note with timestamp, pin state, and content.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.notes.domain.model

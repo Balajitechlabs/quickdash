@@ -4,10 +4,9 @@
  *
  * Feature Module: core/utils
  * File: SemanticVersion.kt
- * Description: Semantic versioning parser, comparator, and formatter for in-app updates.
+ * Description: Parses semantic version strings and provides comparison methods for update checks.
  * Developer: balajitechlabs
  */
-
 package com.balajitechlabs.quickdash.core.utils
 
 /**

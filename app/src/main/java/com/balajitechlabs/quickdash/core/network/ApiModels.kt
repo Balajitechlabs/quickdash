@@ -4,7 +4,7 @@
  *
  * Feature Module: core/network
  * File: ApiModels.kt
- * Description: EssentialX-styled component for core/network supporting high performance productivity tools.
+ * Description: Data transfer objects and response models for GitHub releases, updates, and telemetry.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.network

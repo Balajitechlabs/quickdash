@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: core/ui
+ * Feature Module: core/ui/components
  * File: AccentWheelDialog.kt
- * Description: EssentialX-styled component for core/ui supporting high performance productivity tools.
+ * Description: Color picker dialog allowing granular selection of custom theme accent hues and seed colors.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.ui.components

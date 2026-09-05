@@ -4,7 +4,7 @@
  *
  * Feature Module: core/utils
  * File: DialogLauncher.kt
- * Description: EssentialX-styled component for core/utils supporting high performance productivity tools.
+ * Description: Intent launcher starting the floating dialog activity as a distinct document window.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.utils

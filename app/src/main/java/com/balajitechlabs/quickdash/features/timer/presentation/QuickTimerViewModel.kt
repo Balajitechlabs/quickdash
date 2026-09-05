@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/timer
+ * Feature Module: features/timer/presentation
  * File: QuickTimerViewModel.kt
- * Description: EssentialX-styled component for features/timer supporting high performance productivity tools.
+ * Description: ViewModel managing countdown timer state, active intervals, and alarm schedules.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.timer.presentation

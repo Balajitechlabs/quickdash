@@ -2,13 +2,11 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: Settings - Dynamic App Permissions Management
+ * Feature Module: features/settings/presentation
  * File: AppPermissionsPreferenceGroup.kt
- * Description: Dynamic settings group for real-time permission status monitoring,
- *              permission request launchers, and monochrome dark icons.
+ * Description: Settings section displaying permission statuses and direct system settings links.
  * Developer: balajitechlabs
  */
-
 package com.balajitechlabs.quickdash.features.settings.presentation
 
 import android.Manifest
@@ -221,7 +219,7 @@ fun AppPermissionsPreferenceGroup(
     }
 
     PreferenceGroup(
-        title = if (missingPermissions.isEmpty()) "App Permissions (All Granted ✓)" else "App Permissions (${missingPermissions.size} Pending)",
+        title = if (missingPermissions.isEmpty()) "App Permissions (All Granted )" else "App Permissions (${missingPermissions.size} Pending)",
         expanded = expanded,
         onHeaderClick = onHeaderClick
     ) {

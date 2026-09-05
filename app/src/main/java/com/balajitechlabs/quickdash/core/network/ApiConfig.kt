@@ -4,7 +4,7 @@
  *
  * Feature Module: core/network
  * File: ApiConfig.kt
- * Description: EssentialX-styled component for core/network supporting high performance productivity tools.
+ * Description: Network configuration constants, API endpoints, user-agent declarations, and timeout parameters.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.network

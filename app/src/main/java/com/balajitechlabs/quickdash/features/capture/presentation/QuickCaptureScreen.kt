@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/capture
+ * Feature Module: features/capture/presentation
  * File: QuickCaptureScreen.kt
- * Description: EssentialX-styled component for features/capture supporting high performance productivity tools.
+ * Description: Screen recording and screenshot capture controls with resolution and audio settings.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.capture.presentation
@@ -12,66 +12,57 @@ package com.balajitechlabs.quickdash.features.capture.presentation
 import android.Manifest
 import android.app.Activity
 import android.content.BroadcastReceiver
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Paint
 import android.media.projection.MediaProjectionManager
 import android.os.Build
-import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.automirrored.filled.Undo
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.balajitechlabs.quickdash.features.capture.presentation.components.AnnotatorCanvasSection
+import com.balajitechlabs.quickdash.features.capture.presentation.components.ScreenRecorderSection
+import com.balajitechlabs.quickdash.features.capture.presentation.dialogs.ScreenRecorderPermissionDialog
 import com.balajitechlabs.quickdash.features.capture.service.ScreenRecorderService
 import kotlinx.coroutines.delay
-import java.io.OutputStream
-import java.util.Locale
 
 enum class CaptureTab { RECORDER, ANNOTATOR }
-
-data class LinePath(val path: List<Offset>, val color: Color, val strokeWidth: Float)
 
 @Composable
 fun QuickCaptureScreen(isFloating: Boolean = false) {
     val context = LocalContext.current
     var selectedTab by remember { mutableStateOf(CaptureTab.RECORDER) }
 
-    // --- Screen Recorder State ---
     var isRecording by remember { mutableStateOf(false) }
     var isPaused by remember { mutableStateOf(false) }
     var recordAudio by remember { mutableStateOf(true) }
@@ -80,7 +71,6 @@ fun QuickCaptureScreen(isFloating: Boolean = false) {
     var showPermissionDialog by remember { mutableStateOf(false) }
     var pendingStartAfterPermission by remember { mutableStateOf(false) }
 
-    // --- Mic Permission Launcher ---
     val micPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -92,7 +82,6 @@ fun QuickCaptureScreen(isFloating: Boolean = false) {
         }
     }
 
-    // --- MediaProjection Launcher (screen capture consent) ---
     val projectionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -117,7 +106,6 @@ fun QuickCaptureScreen(isFloating: Boolean = false) {
         }
     }
 
-    // Listen for stop broadcast from notification button
     DisposableEffect(Unit) {
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(ctx: Context, intent: Intent) {
@@ -145,7 +133,6 @@ fun QuickCaptureScreen(isFloating: Boolean = false) {
         onDispose { context.unregisterReceiver(receiver) }
     }
 
-    // Launch MediaProjection consent after permissions are granted
     LaunchedEffect(pendingStartAfterPermission) {
         if (pendingStartAfterPermission) {
             pendingStartAfterPermission = false
@@ -154,7 +141,6 @@ fun QuickCaptureScreen(isFloating: Boolean = false) {
         }
     }
 
-    // Live recording timer
     LaunchedEffect(isRecording, isPaused) {
         if (isRecording && !isPaused) {
             while (true) {
@@ -164,20 +150,12 @@ fun QuickCaptureScreen(isFloating: Boolean = false) {
         }
     }
 
-    // --- Annotator State ---
-    val paths = remember { mutableStateListOf<LinePath>() }
-    var currentPath by remember { mutableStateOf<List<Offset>>(emptyList()) }
-    var selectedColor by remember { mutableStateOf(Color(0xFFFF3B30)) }
-    var strokeWidth by remember { mutableFloatStateOf(8f) }
-    var isEraser by remember { mutableStateOf(false) }
-
     Column(
         modifier = Modifier
             .then(if (isFloating) Modifier.fillMaxWidth().wrapContentHeight() else Modifier.fillMaxSize())
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-        // Tab Row
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
                 onClick = { selectedTab = CaptureTab.RECORDER },
@@ -186,7 +164,9 @@ fun QuickCaptureScreen(isFloating: Boolean = false) {
                     contentColor = if (selectedTab == CaptureTab.RECORDER) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 modifier = Modifier.weight(1f)
-            ) { Text("🎥 Screen Recorder", fontWeight = FontWeight.Bold) }
+            ) {
+                Text("Screen Recorder", fontWeight = FontWeight.Bold)
+            }
 
             Button(
                 onClick = { selectedTab = CaptureTab.ANNOTATOR },
@@ -195,632 +175,78 @@ fun QuickCaptureScreen(isFloating: Boolean = false) {
                     contentColor = if (selectedTab == CaptureTab.ANNOTATOR) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 modifier = Modifier.weight(1f)
-            ) { Text("🎨 Annotator", fontWeight = FontWeight.Bold) }
+            ) {
+                Text("Annotator", fontWeight = FontWeight.Bold)
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Crossfade(targetState = selectedTab, label = "CaptureTabTransition") { currentTab ->
             if (currentTab == CaptureTab.RECORDER) {
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // ──────────────── Android 17-style floating capsule recorder ────────────────
-            Surface(
-                color = Color(0xFF1C1C1E),
-                shape = RoundedCornerShape(28.dp),
-                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.12f)),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Pulsing REC indicator pill (dynamic island style)
-                    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-                    val pulseScale by infiniteTransition.animateFloat(
-                        initialValue = 0.8f, targetValue = 1.2f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(700, easing = FastOutSlowInEasing),
-                            repeatMode = RepeatMode.Reverse
-                        ),
-                        label = "pulseScale"
-                    )
-                    val pulseAlpha by infiniteTransition.animateFloat(
-                        initialValue = 0.5f, targetValue = 1.0f,
-                        animationSpec = infiniteRepeatable(
-                            animation = tween(700, easing = FastOutSlowInEasing),
-                            repeatMode = RepeatMode.Reverse
-                        ),
-                        label = "pulseAlpha"
-                    )
-
-                    // Status Pill (Android 17 Dynamic Island style)
-                    Row(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(50))
-                            .background(
-                                when {
-                                    isRecording && !isPaused -> Color(0xFFFF3B30).copy(alpha = 0.25f)
-                                    isPaused -> Color(0xFFFF9500).copy(alpha = 0.25f)
-                                    else -> Color(0xFF2C2C2E)
-                                }
-                            )
-                            .border(
-                                1.dp,
-                                when {
-                                    isRecording && !isPaused -> Color(0xFFFF3B30).copy(alpha = 0.6f)
-                                    isPaused -> Color(0xFFFF9500).copy(alpha = 0.6f)
-                                    else -> Color.White.copy(alpha = 0.1f)
-                                },
-                                RoundedCornerShape(50)
-                            )
-                            .padding(horizontal = 18.dp, vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        // Pulsing dot
-                        Box(
-                            modifier = Modifier
-                                .size(10.dp)
-                                .scale(if (isRecording && !isPaused) pulseScale else 1f)
-                                .clip(CircleShape)
-                                .background(
-                                    when {
-                                        isRecording && !isPaused -> Color(0xFFFF3B30).copy(alpha = pulseAlpha)
-                                        isPaused -> Color(0xFFFF9500)
-                                        else -> Color(0xFF48484A)
-                                    }
-                                )
-                        )
-
-                        // Timer / Status text
-                        val minutes = elapsedSeconds / 60
-                        val seconds = elapsedSeconds % 60
-                        Text(
-                            text = when {
-                                isRecording && !isPaused -> "REC  ${String.format(Locale.US, "%02d:%02d", minutes, seconds)}"
-                                isPaused -> "PAUSED  ${String.format(Locale.US, "%02d:%02d", minutes, seconds)}"
-                                else -> "READY"
-                            },
-                            color = when {
-                                isRecording && !isPaused -> Color.White
-                                isPaused -> Color(0xFFFF9500)
-                                else -> Color(0xFF8E8E93)
-                            },
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp,
-                            letterSpacing = 1.5.sp
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Controls Pill (Floating capsule)
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(0.85f)
-                            .clip(RoundedCornerShape(50.dp))
-                            .background(Color(0xFF2C2C2E))
-                            .padding(horizontal = 20.dp, vertical = 14.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Mic Toggle
-                        IconButton(
-                            onClick = { recordAudio = !recordAudio },
-                            modifier = Modifier
-                                .size(46.dp)
-                                .clip(CircleShape)
-                                .background(if (recordAudio) MaterialTheme.colorScheme.primaryContainer.copy(0.9f) else Color(0xFF3A3A3C))
-                        ) {
-                            Icon(
-                                if (recordAudio) Icons.Filled.Mic else Icons.Filled.MicOff,
-                                "Toggle Mic",
-                                tint = if (recordAudio) MaterialTheme.colorScheme.onPrimaryContainer else Color(0xFF636366)
-                            )
-                        }
-
-                        // Main Record / Stop Button
-                        IconButton(
-                            onClick = {
-                                if (isRecording) {
-                                    // Stop recording
-                                    val stopIntent = Intent(context, ScreenRecorderService::class.java).apply {
-                                        action = ScreenRecorderService.ACTION_STOP
-                                    }
-                                    context.startService(stopIntent)
-                                    isRecording = false
-                                    isPaused = false
-                                    elapsedSeconds = 0
-                                } else {
-                                    // Check permissions then launch MediaProjection
-                                    showPermissionDialog = true
-                                }
-                            },
-                            modifier = Modifier
-                                .size(64.dp)
-                                .clip(CircleShape)
-                                .background(
-                                    Brush.radialGradient(
-                                        colors = if (isRecording)
-                                            listOf(Color(0xFFFF453A), Color(0xFFBF0000))
-                                        else
-                                            listOf(Color(0xFF34C759), Color(0xFF248A3D))
-                                    )
-                                )
-                        ) {
-                            Icon(
-                                if (isRecording) Icons.Filled.Stop else Icons.Filled.FiberManualRecord,
-                                if (isRecording) "Stop Recording" else "Start Recording",
-                                tint = Color.White,
-                                modifier = Modifier.size(30.dp)
-                            )
-                        }
-
-                        // Pause / Resume Button
-                        IconButton(
-                            onClick = {
-                                if (isRecording) {
-                                    isPaused = !isPaused
-                                    // Note: MediaRecorder pause/resume requires API 24+
-                                    Toast.makeText(
-                                        context,
-                                        if (isPaused) "Paused (timer frozen)" else "Resumed",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            },
-                            enabled = isRecording,
-                            modifier = Modifier
-                                .size(46.dp)
-                                .clip(CircleShape)
-                                .background(if (isPaused) Color(0xFFFF9500).copy(0.3f) else if (isRecording) Color(0xFF3A3A3C) else Color.Transparent)
-                        ) {
-                            Icon(
-                                if (isPaused) Icons.Filled.PlayArrow else Icons.Filled.Pause,
-                                "Pause/Resume",
-                                tint = when {
-                                    !isRecording -> Color(0xFF636366)
-                                    isPaused -> Color(0xFFFF9500)
-                                    else -> Color.White
-                                }
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    // Quality Selection (Dedicated Row with full-width chips)
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            "Recording Resolution",
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFFC5C6D0)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            listOf("720p HD", "1080p FHD", "4K Ultra").forEach { res ->
-                                FilterChip(
-                                    selected = qualityRes == res,
-                                    onClick = { if (!isRecording) qualityRes = res },
-                                    enabled = !isRecording,
-                                    label = {
-                                        Box(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                res,
-                                                fontSize = 11.sp,
-                                                fontWeight = if (qualityRes == res) FontWeight.Bold else FontWeight.Medium,
-                                                color = if (qualityRes == res) Color.White else Color(0xFF8E8E93),
-                                                maxLines = 1
-                                            )
-                                        }
-                                    },
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = FilterChipDefaults.filterChipColors(
-                                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                        containerColor = Color(0xFF2C2C2E)
-                                    ),
-                                    modifier = Modifier.weight(1f)
-                                )
+                Spacer(modifier = Modifier.height(12.dp))
+                ScreenRecorderSection(
+                    isRecording = isRecording,
+                    isPaused = isPaused,
+                    recordAudio = recordAudio,
+                    qualityRes = qualityRes,
+                    elapsedSeconds = elapsedSeconds,
+                    onToggleAudio = { recordAudio = !recordAudio },
+                    onToggleRecord = {
+                        if (isRecording) {
+                            val stopIntent = Intent(context, ScreenRecorderService::class.java).apply {
+                                action = ScreenRecorderService.ACTION_STOP
                             }
+                            context.startService(stopIntent)
+                            isRecording = false
+                            isPaused = false
+                            elapsedSeconds = 0
+                        } else {
+                            showPermissionDialog = true
                         }
-                    }
-
-                    if (isRecording) {
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            "📹 Screen is being recorded · $qualityRes",
-                            color = Color(0xFF8E8E93), fontSize = 11.sp, letterSpacing = 0.5.sp
-                        )
-                        Text(
-                            "Tap ⏹ to stop. Saved to Movies/QuickDash",
-                            color = Color(0xFF636366), fontSize = 10.sp
-                        )
-                    }
-                }
-            }
-        } else {
-            // ──────────────── Annotator / Doodle Canvas ────────────────
-            Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(0.5f)),
-                shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(12.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "Doodle & Canvas",
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFFC5C6D0)
-                        )
-                        Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
-                            // Eraser
-                            IconButton(
-                                onClick = { isEraser = !isEraser },
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .background(if (isEraser) MaterialTheme.colorScheme.tertiaryContainer else Color.Transparent)
-                            ) {
-                                Icon(Icons.Filled.Edit, "Eraser", tint = if (isEraser) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                            // Undo
-                            IconButton(onClick = { if (paths.isNotEmpty()) paths.removeAt(paths.lastIndex) }) {
-                                @Suppress("DEPRECATION") Icon(Icons.Filled.Undo, "Undo")
-                            }
-                            // Clear Canvas
-                            TextButton(
-                                onClick = { paths.clear() },
-                                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                            ) {
-                                Icon(Icons.Filled.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
-                                Spacer(Modifier.width(4.dp))
-                                Text("Clear", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                            }
+                    },
+                    onTogglePause = {
+                        if (isRecording) {
+                            isPaused = !isPaused
+                            Toast.makeText(
+                                context,
+                                if (isPaused) "Paused (timer frozen)" else "Resumed",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Color palette
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        listOf(
-                            Color(0xFFFF3B30), Color(0xFFFF9500), Color(0xFFFFCC00),
-                            Color(0xFF34C759), Color(0xFF007AFF), Color(0xFFAF52DE),
-                            Color.White, Color.Black
-                        ).forEach { color ->
-                            Box(
-                                modifier = Modifier
-                                    .size(if (selectedColor == color && !isEraser) 28.dp else 24.dp)
-                                    .clip(CircleShape)
-                                    .background(color)
-                                    .border(
-                                        width = if (selectedColor == color && !isEraser) 2.5.dp else 1.dp,
-                                        color = if (selectedColor == color && !isEraser) MaterialTheme.colorScheme.primary else Color.Gray.copy(0.5f),
-                                        shape = CircleShape
-                                    )
-                                    .clickable { selectedColor = color; isEraser = false }
-                            )
-                        }
-                    }
-
-                    // Stroke width slider
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                        Text("Stroke", style = MaterialTheme.typography.labelSmall, modifier = Modifier.width(42.dp))
-                        Slider(
-                            value = strokeWidth,
-                            onValueChange = { strokeWidth = it },
-                            valueRange = 3f..30f,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    // Canvas Background Color Picker
-                    var canvasBgColor by remember { mutableStateOf(Color.White) }
-                    val bgColors = listOf(Color.White, Color(0xFFF5F5F7), Color(0xFFFFFDE7), Color(0xFF121212), Color(0xFF1E293B))
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp)
-                    ) {
-                        Text("Canvas Bg:", style = MaterialTheme.typography.labelSmall)
-                        bgColors.forEach { color ->
-                            val isSelected = canvasBgColor == color
-                            Box(
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .clip(CircleShape)
-                                    .background(color)
-                                    .border(
-                                        width = if (isSelected) 2.dp else 1.dp,
-                                        color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray.copy(alpha = 0.4f),
-                                        shape = CircleShape
-                                    )
-                                    .clickable { canvasBgColor = color }
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    // Drawing Canvas
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(280.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(canvasBgColor)
-                            .border(1.dp, MaterialTheme.colorScheme.outline.copy(0.3f), RoundedCornerShape(12.dp))
-                            .pointerInput(canvasBgColor) {
-                                detectDragGestures(
-                                    onDragStart = { offset -> currentPath = listOf(offset) },
-                                    onDrag = { change, _ -> currentPath = currentPath + change.position },
-                                    onDragEnd = {
-                                        if (currentPath.size >= 2) {
-                                            val drawColor = if (isEraser) canvasBgColor else selectedColor
-                                            val drawWidth = if (isEraser) strokeWidth * 3f else strokeWidth
-                                            paths.add(LinePath(currentPath, drawColor, drawWidth))
-                                        }
-                                        currentPath = emptyList()
-                                    }
-                                )
-                            }
-                    ) {
-                        Canvas(modifier = Modifier.fillMaxSize()) {
-                            paths.forEach { lp -> drawLinePath(lp.path, lp.color, lp.strokeWidth) }
-                            if (currentPath.size >= 2) {
-                                val drawColor = if (isEraser) canvasBgColor else selectedColor
-                                val drawWidth = if (isEraser) strokeWidth * 3f else strokeWidth
-                                drawLinePath(currentPath, drawColor, drawWidth)
-                            }
-                        }
-
-                        if (paths.isEmpty() && currentPath.isEmpty()) {
-                            Text(
-                                "Draw here…",
-                                color = if (canvasBgColor == Color.White || canvasBgColor == Color(0xFFF5F5F7) || canvasBgColor == Color(0xFFFFFDE7)) Color(0xFF888888) else Color(0xFFAAAAAA),
-                                modifier = Modifier.align(Alignment.Center),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Button(
-                            onClick = {
-                                if (paths.isEmpty()) Toast.makeText(context, "Canvas is empty! Draw something first.", Toast.LENGTH_SHORT).show()
-                                else saveCanvasToGallery(context, paths, canvasBgColor)
-                            },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(Icons.Filled.Save, null, modifier = Modifier.size(16.dp))
-                            Spacer(Modifier.width(4.dp))
-                            Text("Save Image", fontSize = 12.sp)
-                        }
-
-                        OutlinedButton(
-                            onClick = {
-                                if (paths.isEmpty()) Toast.makeText(context, "Canvas is empty! Draw something first.", Toast.LENGTH_SHORT).show()
-                                else saveCanvasToPdf(context, paths, canvasBgColor)
-                            },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(Icons.Filled.PictureAsPdf, null, modifier = Modifier.size(16.dp))
-                            Spacer(Modifier.width(4.dp))
-                            Text("Save as PDF", fontSize = 12.sp)
-                        }
-                    }
-                }
+                    },
+                    onSelectQuality = { qualityRes = it }
+                )
+            } else {
+                AnnotatorCanvasSection(context = context)
             }
         }
         Spacer(modifier = Modifier.height(120.dp))
     }
-    }
 
-    // ──── Permission + Projection Dialog ────
     if (showPermissionDialog) {
-        AlertDialog(
-            onDismissRequest = { showPermissionDialog = false },
-            title = { Text("Start Screen Recording?") },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("QuickDash will:")
-                    Text("• Capture everything on your screen")
-                    if (recordAudio) Text("• Record audio from your microphone")
-                    Text("• Save the recording to Movies/QuickDash in your gallery")
-                    Spacer(Modifier.height(4.dp))
-                    Text("Android will ask for screen capture permission on the next step.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            },
-            confirmButton = {
-                Button(onClick = {
-                    showPermissionDialog = false
-                    // Check and request mic permission first if needed
-                    if (recordAudio) {
-                        val hasMic = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-                        if (hasMic) {
-                            // Directly launch MediaProjection consent
-                            val pm = context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-                            projectionLauncher.launch(pm.createScreenCaptureIntent())
-                        } else {
-                            val perms = mutableListOf(Manifest.permission.RECORD_AUDIO)
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                perms.add(Manifest.permission.POST_NOTIFICATIONS)
-                            }
-                            micPermissionLauncher.launch(perms.toTypedArray())
-                        }
-                    } else {
-                        // No mic needed — go directly to screen capture
+        ScreenRecorderPermissionDialog(
+            recordAudio = recordAudio,
+            onConfirm = {
+                showPermissionDialog = false
+                if (recordAudio) {
+                    val hasMic = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+                    if (hasMic) {
                         val pm = context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
                         projectionLauncher.launch(pm.createScreenCaptureIntent())
+                    } else {
+                        val perms = mutableListOf(Manifest.permission.RECORD_AUDIO)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            perms.add(Manifest.permission.POST_NOTIFICATIONS)
+                        }
+                        micPermissionLauncher.launch(perms.toTypedArray())
                     }
-                }) { Text("Continue") }
+                } else {
+                    val pm = context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+                    projectionLauncher.launch(pm.createScreenCaptureIntent())
+                }
             },
-            dismissButton = {
-                TextButton(onClick = { showPermissionDialog = false }) { Text("Cancel") }
-            }
+            onDismissRequest = { showPermissionDialog = false }
         )
-    }
-}
-
-private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawLinePath(
-    points: List<Offset>, color: Color, strokeWidth: Float
-) {
-    if (points.size < 2) return
-    val path = Path().apply {
-        moveTo(points.first().x, points.first().y)
-        for (i in 1 until points.size) {
-            val prev = points[i - 1]
-            val curr = points[i]
-            // Use quadratic bezier for smoother strokes
-            val midX = (prev.x + curr.x) / 2f
-            val midY = (prev.y + curr.y) / 2f
-            quadraticTo(prev.x, prev.y, midX, midY)
-        }
-        lineTo(points.last().x, points.last().y)
-    }
-    drawPath(path = path, color = color, style = Stroke(width = strokeWidth, cap = StrokeCap.Round, join = StrokeJoin.Round))
-}
-
-private fun saveCanvasToGallery(context: Context, paths: List<LinePath>, bgColor: Color) {
-    try {
-        val width = 1200; val height = 900
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val canvas = android.graphics.Canvas(bitmap)
-        canvas.drawColor(bgColor.toArgb())
-
-        val paint = Paint().apply {
-            isAntiAlias = true
-            style = Paint.Style.STROKE
-            strokeCap = Paint.Cap.ROUND
-            strokeJoin = Paint.Join.ROUND
-        }
-
-        for (lp in paths) {
-            paint.color = lp.color.toArgb()
-            paint.strokeWidth = lp.strokeWidth * 2.5f
-            val pts = lp.path
-            if (pts.size >= 2) {
-                val androidPath = android.graphics.Path()
-                androidPath.moveTo(pts[0].x, pts[0].y)
-                for (i in 1 until pts.size) {
-                    val prev = pts[i - 1]
-                    val curr = pts[i]
-                    val midX = (prev.x + curr.x) / 2f
-                    val midY = (prev.y + curr.y) / 2f
-                    androidPath.quadTo(prev.x, prev.y, midX, midY)
-                }
-                androidPath.lineTo(pts.last().x, pts.last().y)
-                canvas.drawPath(androidPath, paint)
-            }
-        }
-
-        val filename = "QuickDash_Annotate_${System.currentTimeMillis()}.png"
-        val cv = ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME, filename)
-            put(MediaStore.Images.Media.MIME_TYPE, "image/png")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/QuickDash")
-            }
-        }
-        val uri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv)
-        uri?.let {
-            context.contentResolver.openOutputStream(it)?.use { s: OutputStream ->
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, s)
-            }
-            Toast.makeText(context, "✅ Saved: Pictures/QuickDash/$filename", Toast.LENGTH_LONG).show()
-        }
-    } catch (e: Exception) {
-        Toast.makeText(context, "Save failed: ${e.message}", Toast.LENGTH_SHORT).show()
-    }
-}
-
-private fun saveCanvasToPdf(context: Context, paths: List<LinePath>, bgColor: Color) {
-    try {
-        val width = 1080
-        val height = 1440
-        val pdfDocument = android.graphics.pdf.PdfDocument()
-        val pageInfo = android.graphics.pdf.PdfDocument.PageInfo.Builder(width, height, 1).create()
-        val page = pdfDocument.startPage(pageInfo)
-        val canvas = page.canvas
-
-        canvas.drawColor(bgColor.toArgb())
-
-        val paint = Paint().apply {
-            isAntiAlias = true
-            style = Paint.Style.STROKE
-            strokeCap = Paint.Cap.ROUND
-            strokeJoin = Paint.Join.ROUND
-        }
-
-        for (lp in paths) {
-            paint.color = lp.color.toArgb()
-            paint.strokeWidth = lp.strokeWidth * 3f
-            val pts = lp.path
-            if (pts.size >= 2) {
-                val androidPath = android.graphics.Path()
-                androidPath.moveTo(pts[0].x, pts[0].y)
-                for (i in 1 until pts.size) {
-                    val prev = pts[i - 1]
-                    val curr = pts[i]
-                    val midX = (prev.x + curr.x) / 2f
-                    val midY = (prev.y + curr.y) / 2f
-                    androidPath.quadTo(prev.x, prev.y, midX, midY)
-                }
-                androidPath.lineTo(pts.last().x, pts.last().y)
-                canvas.drawPath(androidPath, paint)
-            }
-        }
-
-        pdfDocument.finishPage(page)
-
-        val filename = "QuickDash_Annotate_${System.currentTimeMillis()}.pdf"
-        val cv = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
-            put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                put(MediaStore.MediaColumns.RELATIVE_PATH, "Download/QuickDash")
-            }
-        }
-        val targetUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.Downloads.EXTERNAL_CONTENT_URI
-        } else {
-            MediaStore.Files.getContentUri("external")
-        }
-        val uri = context.contentResolver.insert(targetUri, cv)
-        uri?.let {
-            context.contentResolver.openOutputStream(it)?.use { s: OutputStream ->
-                pdfDocument.writeTo(s)
-            }
-            Toast.makeText(context, "✅ Saved PDF: Download/QuickDash/$filename", Toast.LENGTH_LONG).show()
-        }
-        pdfDocument.close()
-    } catch (e: Exception) {
-        Toast.makeText(context, "PDF export failed: ${e.message}", Toast.LENGTH_SHORT).show()
     }
 }

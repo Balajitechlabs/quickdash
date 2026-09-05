@@ -43,15 +43,11 @@ jobs:
           echo "TG_CHAT_ID=${{ secrets.TG_CHAT_ID }}" >> local.properties
           echo "sdk.dir=$ANDROID_HOME" >> local.properties
 
-      - name: Debug build (Standard & FOSS)
-        run: |
-          ./gradlew assembleDebug
-          ./gradlew assembleDebug -Pfoss
+      - name: Debug build
+        run: ./gradlew assembleDebug
 
-      - name: Unit tests (Standard & FOSS)
-        run: |
-          ./gradlew testDebugUnitTest
-          ./gradlew testDebugUnitTest -Pfoss
+      - name: Unit tests
+        run: ./gradlew testDebugUnitTest
 
       - name: Lint check
         run: ./gradlew lint

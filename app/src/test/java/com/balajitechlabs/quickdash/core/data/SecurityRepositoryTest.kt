@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/data
+ * File: SecurityRepositoryTest.kt
+ * Description: Unit tests verifying security settings persistence and biometric lock logic.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.data
 
 import com.google.common.truth.Truth.assertThat

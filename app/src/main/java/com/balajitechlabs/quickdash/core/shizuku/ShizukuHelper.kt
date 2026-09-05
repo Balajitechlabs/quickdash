@@ -4,7 +4,7 @@
  *
  * Feature Module: core/shizuku
  * File: ShizukuHelper.kt
- * Description: EssentialX-styled component for core/shizuku supporting high performance productivity tools.
+ * Description: Bridges privileged system APIs via Shizuku without requiring root permissions.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.shizuku

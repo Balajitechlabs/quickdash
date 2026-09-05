@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: core/ui
+ * Feature Module: core/ui/components
  * File: PreferenceGroup.kt
- * Description: EssentialX-styled component for core/ui supporting high performance productivity tools.
+ * Description: Grouped settings container rendering section titles and rounded surface containment for preferences.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.ui.components

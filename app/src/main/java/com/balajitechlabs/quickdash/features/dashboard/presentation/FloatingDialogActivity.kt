@@ -4,11 +4,14 @@
  *
  * Feature Module: features/dashboard/presentation
  * File: FloatingDialogActivity.kt
- * Description: Floating dialog activity hosting Quick Collect, QR Scanner, Notes, and Calculator overlays.
+ * Description: Overlay dialog activity hosting floating productivity tools, quick search, and gestures.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.dashboard.presentation
 
+
+import com.google.gson.reflect.TypeToken
+import com.google.gson.Gson
 import com.balajitechlabs.quickdash.core.utils.AppLogger
 import android.content.ClipboardManager
 import android.content.Context
@@ -40,8 +43,6 @@ import androidx.biometric.BiometricPrompt
 import com.balajitechlabs.quickdash.core.data.UserStore
 import com.balajitechlabs.quickdash.core.ui.QuickDashApp
 import com.balajitechlabs.quickdash.core.ui.theme.QuickDashTheme
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
@@ -50,6 +51,8 @@ import java.util.Locale
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.activity.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import android.util.Log
+import android.widget.Toast
 
 @AndroidEntryPoint
 class FloatingDialogActivity : FragmentActivity() {
@@ -258,7 +261,7 @@ class FloatingDialogActivity : FragmentActivity() {
         super.onResume()
         // Share any pending crash log now that the window & task are fully ready.
         try {
-            val pendingCrash = com.balajitechlabs.quickdash.core.utils.DiagnosticLogger.getPendingCrashLogFile(this)
+            val pendingCrash = AppLogger.getPendingCrashLogFile(this)
             if (pendingCrash != null) {
                 shareLogFile(pendingCrash)
             }
@@ -315,7 +318,7 @@ class FloatingDialogActivity : FragmentActivity() {
                                 list.add(0, text)
                                 mainViewModel.userStore.saveClipboardHistory(gson.toJson(list.take(20)))
                                 withContext(Dispatchers.Main) {
-                                    android.widget.Toast.makeText(this@FloatingDialogActivity, "Saved to QuickDash Clipboard", android.widget.Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@FloatingDialogActivity, "Saved to QuickDash Clipboard", Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
@@ -375,10 +378,10 @@ class FloatingDialogActivity : FragmentActivity() {
                 contentResolver.openOutputStream(it)?.use { s ->
                     bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, s)
                 }
-                android.widget.Toast.makeText(this, "Floating window screenshot saved", android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Floating window screenshot saved", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
-            android.widget.Toast.makeText(this, "Screenshot failed: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Screenshot failed: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -392,7 +395,7 @@ class FloatingDialogActivity : FragmentActivity() {
                     startService(serviceIntent)
                 }
             } catch (e: Exception) {
-                android.util.Log.e("QuickDash", "Error: ${e.message}", e)
+                Log.e("QuickDash", "Error: ${e.message}", e)
             }
         }
         finish()

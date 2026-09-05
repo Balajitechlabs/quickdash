@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: viewmodel
+ * File: SettingsViewModelTest.kt
+ * Description: Unit tests verifying SettingsViewModel preference updates and update check dispatching.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.viewmodel
 
 import com.balajitechlabs.quickdash.core.data.UserStore

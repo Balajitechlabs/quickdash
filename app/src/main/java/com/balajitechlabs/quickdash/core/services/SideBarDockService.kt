@@ -4,7 +4,7 @@
  *
  * Feature Module: core/services
  * File: SideBarDockService.kt
- * Description: EssentialX-styled component for core/services supporting high performance productivity tools.
+ * Description: Edge-screen docked sidebar service providing slide-out access to favorite productivity shortcuts.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.services

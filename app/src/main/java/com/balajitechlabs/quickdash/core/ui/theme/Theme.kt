@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: core/ui
+ * Feature Module: core/ui/theme
  * File: Theme.kt
- * Description: EssentialX-styled component for core/ui supporting high performance productivity tools.
+ * Description: Central Material 3 theme composable applying dynamic color, pitch-black AMOLED mode, and typography.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.ui.theme

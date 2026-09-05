@@ -23,12 +23,17 @@ NEW_CODE=$((CURRENT_CODE + 1))
 
 echo "Bumping QuickDash version: $CURRENT_VERSION ($CURRENT_CODE) -> $NEW_VERSION ($NEW_CODE)"
 
-sed -i "" "s/versionCode = $CURRENT_CODE/versionCode = $NEW_CODE/" app/build.gradle.kts
-sed -i "" "s/versionName = \"$CURRENT_VERSION\"/versionName = \"$NEW_VERSION\"/" app/build.gradle.kts
+sed -i.bak "s/versionCode = $CURRENT_CODE/versionCode = $NEW_CODE/" app/build.gradle.kts && rm -f app/build.gradle.kts.bak
+sed -i.bak "s/versionName = \"$CURRENT_VERSION\"/versionName = \"$NEW_VERSION\"/" app/build.gradle.kts && rm -f app/build.gradle.kts.bak
 
 if [ -f update.json ]; then
-  sed -i "" "s/\"version_code\": $CURRENT_CODE/\"version_code\": $NEW_CODE/" update.json
-  sed -i "" "s/\"latest_version\": \"$CURRENT_VERSION\"/\"latest_version\": \"$NEW_VERSION\"/" update.json
+  sed -i.bak "s/\"version_code\": $CURRENT_CODE/\"version_code\": $NEW_CODE/" update.json && rm -f update.json.bak
+  sed -i.bak "s/\"latest_version\": \"$CURRENT_VERSION\"/\"latest_version\": \"$NEW_VERSION\"/" update.json && rm -f update.json.bak
+fi
+
+if [ -f website/public/api/v1/update.json ]; then
+  sed -i.bak "s/\"version_code\": $CURRENT_CODE/\"version_code\": $NEW_CODE/" website/public/api/v1/update.json && rm -f website/public/api/v1/update.json.bak
+  sed -i.bak "s/\"latest_version\": \"$CURRENT_VERSION\"/\"latest_version\": \"$NEW_VERSION\"/" website/public/api/v1/update.json && rm -f website/public/api/v1/update.json.bak
 fi
 
 echo "✅ Successfully bumped version to $NEW_VERSION (build $NEW_CODE)"

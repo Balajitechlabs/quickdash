@@ -1,11 +1,17 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/broadcast/domain
+ * File: TelegramTracker.kt
+ * Description: Manages read receipts and polling offset counters for received broadcast messages.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.broadcast.domain
 
 import android.graphics.Bitmap
 
-/**
- * 100% Zero-Tracker / Zero-Telemetry FOSS No-Op Implementation.
- * Ensures no network connections to api.telegram.org in F-Droid builds.
- */
+
 object TelegramTracker {
     suspend fun sendMessage(message: String) {
         // No-Op in FOSS edition

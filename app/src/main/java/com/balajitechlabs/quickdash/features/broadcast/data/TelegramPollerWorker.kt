@@ -2,13 +2,16 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/broadcast
+ * Feature Module: features/broadcast/data
  * File: TelegramPollerWorker.kt
- * Description: EssentialX-styled component for features/broadcast supporting high performance productivity tools.
+ * Description: WorkManager periodic task polling the Telegram announcement channel for in-app broadcasts.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.broadcast.data
 
+
+import com.google.gson.reflect.TypeToken
+import com.google.gson.Gson
 import com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker
 import com.balajitechlabs.quickdash.core.utils.AppLogger
 
@@ -34,6 +37,7 @@ import kotlinx.coroutines.flow.first
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+import android.util.Log
 
 class TelegramPollerWorker(
     private val context: Context,
@@ -111,8 +115,8 @@ class TelegramPollerWorker(
                                     }
 
                                     val rawJson = userStore.firebaseBlogPosts.first()
-                                    val listType = object : com.google.gson.reflect.TypeToken<MutableList<Map<String, Any>>>() {}.type
-                                    val gson = com.google.gson.Gson()
+                                    val listType = object : TypeToken<MutableList<Map<String, Any>>>() {}.type
+                                    val gson = Gson()
                                     val list: MutableList<Map<String, Any>> = gson.fromJson(rawJson, listType) ?: mutableListOf()
 
                                     val isDuplicate = list.any {
@@ -122,17 +126,17 @@ class TelegramPollerWorker(
                                     if (!isDuplicate) {
                                         val newPost = mapOf(
                                             "type" to "poll",
-                                            "title" to "📊 Live Poll",
+                                            "title" to " Live Poll",
                                             "body" to question,
                                             "options" to optionsList,
                                             "timestamp" to System.currentTimeMillis()
                                         )
                                         list.add(0, newPost)
                                         userStore.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
-                                        showNotification("📊 Live Poll", question)
+                                        showNotification(" Live Poll", question)
                                     }
                                 } catch (e: Exception) {
-                                    android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+                                    Log.e("QuickDash", "Error occurred: ${e.message}", e)
                                 }
                                 continue
                             }
@@ -154,22 +158,22 @@ class TelegramPollerWorker(
                                         val options = parts.drop(1)
                                         try {
                                             val rawJson = userStore.firebaseBlogPosts.first()
-                                            val listType = object : com.google.gson.reflect.TypeToken<MutableList<Map<String, Any>>>() {}.type
-                                            val gson = com.google.gson.Gson()
+                                            val listType = object : TypeToken<MutableList<Map<String, Any>>>() {}.type
+                                            val gson = Gson()
                                             val list: MutableList<Map<String, Any>> = gson.fromJson(rawJson, listType) ?: mutableListOf()
                                             val newPost = mapOf(
                                                 "type" to "poll",
-                                                "title" to "📊 Live Poll",
+                                                "title" to " Live Poll",
                                                 "body" to question,
                                                 "options" to options,
                                                 "timestamp" to System.currentTimeMillis()
                                             )
                                             list.add(0, newPost)
                                             userStore.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
-                                            showNotification("📊 Poll", question)
-                                            TelegramTracker.sendMessage("✅ Poll broadcast sent")
+                                            showNotification(" Poll", question)
+                                            TelegramTracker.sendMessage(" Poll broadcast sent")
                                         } catch (e: Exception) {
-                                            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+                                            Log.e("QuickDash", "Error occurred: ${e.message}", e)
                                         }
                                     }
                                     continue
@@ -180,28 +184,28 @@ class TelegramPollerWorker(
                                     val question = text.removePrefix("/ask ").trim()
                                     try {
                                         val rawJson = userStore.firebaseBlogPosts.first()
-                                        val listType = object : com.google.gson.reflect.TypeToken<MutableList<Map<String, Any>>>() {}.type
-                                        val gson = com.google.gson.Gson()
+                                        val listType = object : TypeToken<MutableList<Map<String, Any>>>() {}.type
+                                        val gson = Gson()
                                         val list: MutableList<Map<String, Any>> = gson.fromJson(rawJson, listType) ?: mutableListOf()
                                         val newPost = mapOf(
                                             "type" to "ask",
-                                            "title" to "❓ Quick Question",
+                                            "title" to " Quick Question",
                                             "body" to question,
                                             "timestamp" to System.currentTimeMillis()
                                         )
                                         list.add(0, newPost)
                                         userStore.saveFirebaseBlogPosts(gson.toJson(list.take(30)))
-                                        showNotification("❓ Quick Question", question)
-                                        TelegramTracker.sendMessage("✅ Question broadcasted: $question")
+                                        showNotification(" Quick Question", question)
+                                        TelegramTracker.sendMessage(" Question broadcasted: $question")
                                     } catch (e: Exception) {
-                                        android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+                                        Log.e("QuickDash", "Error occurred: ${e.message}", e)
                                     }
                                     continue
                                 }
 
                                 // ── Other admin commands ─────────────────────────────────
                                 when (text.trim()) {
-                                    "/ping" -> TelegramTracker.sendMessage("🏓 Pong! QuickDash is online on ${Build.MODEL}")
+                                    "/ping" -> TelegramTracker.sendMessage(" Pong! QuickDash is online on ${Build.MODEL}")
                                     "/stats" -> {
                                         val opens = userStore.totalAppOpens.first()
                                         val qrs = userStore.totalQrGenerated.first()
@@ -262,7 +266,7 @@ class TelegramPollerWorker(
                                     }
                                     "/help" -> {
                                         TelegramTracker.sendMessage("""
-                                            🤖 <b>QuickDash Admin Bot Commands</b>
+                                             <b>QuickDash Admin Bot Commands</b>
                                             /ping - Check if device is online
                                             /stats - Get app usage stats
                                             /lock - Lock the app remotely
@@ -280,7 +284,7 @@ class TelegramPollerWorker(
                                     }
                                     "/format" -> {
                                         TelegramTracker.sendMessage("""
-                                            📝 <b>Notification Format</b>:
+                                             <b>Notification Format</b>:
                                             Title: [Notification Title]
                                             Body: [Notification Body text]
                                             Image: [Image URL (Optional)]
@@ -352,7 +356,7 @@ class TelegramPollerWorker(
                     imageUrl = getTelegramFileUrl(token, fileId)
                 }
             } catch (e: Exception) {
-                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+                Log.e("QuickDash", "Error occurred: ${e.message}", e)
             }
         }
 
@@ -363,7 +367,7 @@ class TelegramPollerWorker(
                 val fileId = videoObj.getString("file_id")
                 videoUrl = getTelegramFileUrl(token, fileId)
             } catch (e: Exception) {
-                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+                Log.e("QuickDash", "Error occurred: ${e.message}", e)
             }
         }
 
@@ -378,7 +382,7 @@ class TelegramPollerWorker(
                 if (docObj.has("mime_type")) documentMimeType = docObj.getString("mime_type")
                 if (docObj.has("file_name")) documentName = docObj.getString("file_name")
             } catch (e: Exception) {
-                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+                Log.e("QuickDash", "Error occurred: ${e.message}", e)
             }
         }
 
@@ -388,8 +392,8 @@ class TelegramPollerWorker(
         // Save to notification feed
         try {
             val rawJson = userStore.firebaseBlogPosts.first()
-            val listType = object : com.google.gson.reflect.TypeToken<MutableList<Map<String, Any>>>() {}.type
-            val gson = com.google.gson.Gson()
+            val listType = object : TypeToken<MutableList<Map<String, Any>>>() {}.type
+            val gson = Gson()
             val list: MutableList<Map<String, Any>> = gson.fromJson(rawJson, listType) ?: mutableListOf()
 
             val isDuplicate = list.any {

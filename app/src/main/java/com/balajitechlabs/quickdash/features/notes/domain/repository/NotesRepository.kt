@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/notes
+ * Feature Module: features/notes/domain/repository
  * File: NotesRepository.kt
- * Description: EssentialX-styled component for features/notes supporting high performance productivity tools.
+ * Description: Repository interface defining reactive CRUD operations for notes.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.notes.domain.repository

@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/timer
+ * Feature Module: features/timer/presentation
  * File: TimerAlarmReceiver.kt
- * Description: EssentialX-styled component for features/timer supporting high performance productivity tools.
+ * Description: BroadcastReceiver handling timer expiration alarms and posting system notifications.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.timer.presentation
@@ -19,6 +19,7 @@ import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.balajitechlabs.quickdash.MainActivity
+import android.util.Log
 
 class TimerAlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -74,7 +75,7 @@ class TimerAlarmReceiver : BroadcastReceiver() {
             val ringtone = RingtoneManager.getRingtone(context, alarmUri)
             ringtone?.play()
         } catch (e: Exception) {
-            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+            Log.e("QuickDash", "Error occurred: ${e.message}", e)
         }
     }
 }

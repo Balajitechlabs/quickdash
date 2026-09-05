@@ -1,7 +1,17 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/data/backup
+ * File: BackupManagerTest.kt
+ * Description: Unit tests for encrypted backup export, JSON formatting, and atomic restoration.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.data.backup
 
-import com.google.common.truth.Truth.assertThat
+
 import com.google.gson.Gson
+import com.google.common.truth.Truth.assertThat
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.io.ByteArrayInputStream

@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/onboarding
+ * Feature Module: features/onboarding/presentation/steps
  * File: CompletionStep.kt
- * Description: EssentialX-styled component for features/onboarding supporting high performance productivity tools.
+ * Description: Final onboarding step confirming configuration and transitioning into the main dashboard.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.onboarding.presentation.steps

@@ -4,7 +4,7 @@
  *
  * Feature Module: core/data
  * File: EncryptedPrefsHelper.kt
- * Description: EssentialX-styled component for core/data supporting high performance productivity tools.
+ * Description: Provides an encrypted SharedPreferences wrapper for hardware-backed storage of sensitive key-value pairs.
  * Developer: balajitechlabs
  */
 @file:Suppress("DEPRECATION")
@@ -20,6 +20,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
+import android.util.Log
 
 @Suppress("DEPRECATION")
 object EncryptedPrefsHelper {
@@ -40,7 +41,7 @@ object EncryptedPrefsHelper {
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
         } catch (e: Exception) {
-            android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+            Log.e("QuickDash", "Error occurred: ${e.message}", e)
             // Fallback to normal shared preferences if keystore is corrupted or unavailable
             prefs = context.getSharedPreferences("secure_prefs_fallback", Context.MODE_PRIVATE)
         }

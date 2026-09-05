@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: features/qr
+ * Feature Module: features/qr/presentation
  * File: ShowQrScreen.kt
- * Description: EssentialX-styled component for features/qr supporting high performance productivity tools.
+ * Description: High-contrast full-brightness display screen presenting generated QR codes for scanning.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.qr.presentation
@@ -59,7 +59,6 @@ import com.balajitechlabs.quickdash.core.utils.ShareUtils
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.zIndex
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import android.content.Context
 import android.os.Vibrator

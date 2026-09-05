@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: viewmodel
+ * File: QrViewModelTest.kt
+ * Description: Unit tests for QrViewModel UPI generation and scan result processing.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.viewmodel
 
 import com.balajitechlabs.quickdash.core.data.UserStore

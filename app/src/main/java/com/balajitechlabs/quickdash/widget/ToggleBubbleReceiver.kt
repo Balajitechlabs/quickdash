@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: app
+ * Feature Module: widget
  * File: ToggleBubbleReceiver.kt
- * Description: EssentialX-styled component for app supporting high performance productivity tools.
+ * Description: BroadcastReceiver handling widget taps to toggle the floating bubble service.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.widget
@@ -21,6 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import android.util.Log
 
 /**
  * BroadcastReceiver (`ToggleBubbleReceiver.kt`)
@@ -59,7 +60,7 @@ class ToggleBubbleReceiver : BroadcastReceiver() {
                     Toast.makeText(context, "Quick Bubble: Disabled", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                android.util.Log.e("QuickDash", "Error occurred: ${e.message}", e)
+                Log.e("QuickDash", "Error occurred: ${e.message}", e)
             } finally {
                 pendingResult.finish()
             }

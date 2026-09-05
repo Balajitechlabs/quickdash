@@ -2,9 +2,9 @@
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
  * License: PocketOps Custom Open Source Fork License
  *
- * Feature Module: core/data
+ * Feature Module: core/data/database
  * File: NoteDao.kt
- * Description: EssentialX-styled component for core/data supporting high performance productivity tools.
+ * Description: Data access object providing Room database operations for creating, updating, and querying user notes.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.data.database
