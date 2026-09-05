@@ -1,5 +1,19 @@
 [
   {
+    "version": "5.2.3",
+    "date": "2026-09-05",
+    "notes": "Architecture Modernization, 100% Zero-Tracker & In-App Update Overhaul",
+    "highlights": [
+      "Quick Settings Tile fix with monochrome vector icon and Android 14+ synchronous launch.",
+      "Spotlight Search instant camera QR scanner launch without intermediate menus.",
+      "Purged 88,000+ lines of AI-generated boilerplate, synthetic wrappers, and dead code.",
+      "True Zero-Tracker Pure FOSS Architecture: completely purged Firebase Crashlytics, Messaging, ML Kit, and MediaPipe.",
+      "Semantic in-app update engine with semver parsing, ABI matching, and clean SemVer tagging.",
+      "Sensitive Clipboard Privacy Shield with automatic masking and interactive reveal toggle.",
+      "Essentials Floating Navigation Dock with dedicated About and personal brand showcase hub."
+    ]
+  },
+  {
     "version": "5.2.2",
     "date": "2026-08-15",
     "notes": "Zero-Tracker FOSS Edition & Privacy Architecture Release",

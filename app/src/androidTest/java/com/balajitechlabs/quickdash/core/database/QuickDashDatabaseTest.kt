@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/database
+ * File: QuickDashDatabaseTest.kt
+ * Description: Instrumentation tests verifying Room database operations and schema integrity on device.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.database
 
 import androidx.room.Room

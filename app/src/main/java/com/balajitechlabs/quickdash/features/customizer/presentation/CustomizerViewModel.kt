@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/customizer/presentation
+ * File: CustomizerViewModel.kt
+ * Description: ViewModel managing bubble styling settings and persisting live adjustments to UserStore.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.customizer.presentation
 
 import androidx.lifecycle.ViewModel

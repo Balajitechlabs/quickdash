@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/clipboard/data
+ * File: ClipboardRepository.kt
+ * Description: Repository managing clipboard history items, encryption, pins, and search filtering.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.clipboard.data
 
 import android.content.Context

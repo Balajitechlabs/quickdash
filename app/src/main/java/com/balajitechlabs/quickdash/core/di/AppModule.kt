@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/di
+ * File: AppModule.kt
+ * Description: Hilt dependency injection module binding application context, repositories, database, and client instances.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.di
 
 import android.content.Context

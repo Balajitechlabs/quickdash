@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/notes/data
+ * File: NotesRepositoryImpl.kt
+ * Description: Implementation of NotesRepository querying Room database for user note persistence.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.notes.data
 
 import com.balajitechlabs.quickdash.core.data.database.NoteDao

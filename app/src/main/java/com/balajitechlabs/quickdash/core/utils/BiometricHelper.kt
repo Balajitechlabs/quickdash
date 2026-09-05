@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/utils
+ * File: BiometricHelper.kt
+ * Description: Helper wrapping BiometricPrompt to authenticate users via fingerprint or face recognition.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.utils
 
 import android.content.Context

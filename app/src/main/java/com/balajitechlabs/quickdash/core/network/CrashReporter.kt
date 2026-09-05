@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/network
+ * File: CrashReporter.kt
+ * Description: Captures unhandled exceptions and safely transmits sanitized crash telemetry to the Telegram monitoring bot.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.network
 
 import android.content.Context

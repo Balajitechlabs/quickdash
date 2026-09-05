@@ -5,7 +5,7 @@ import { trackEvent } from '../utils/analytics'
 
 function DownloadCard({ icon, title, desc, github, playStore, href: customHref, label, wide }) {
   const href = customHref || (github
-    ? 'https://github.com/Balajitechlabs/quickdash/releases/latest'
+    ? 'https://github.com/balajitechlabs/quickdash/releases/latest'
     : 'https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash')
   const btnLabel = label || (github ? 'DOWNLOAD' : 'PLAY STORE')
   const imgSrc = github ? '/assets/github.svg' : '/assets/play_store.svg'
@@ -34,7 +34,7 @@ function FeedbackForm() {
     const message = form.elements['message'].value
     trackEvent('feedback_submit', 'github_issues')
     const body = `**Feedback from ${name}**\n\n${message}`
-    const url = `https://github.com/Balajitechlabs/quickdash/issues/new?title=Feedback: ${encodeURIComponent(name)}&body=${encodeURIComponent(body)}&labels=feedback`
+    const url = `https://github.com/balajitechlabs/quickdash/issues/new?title=Feedback: ${encodeURIComponent(name)}&body=${encodeURIComponent(body)}&labels=feedback`
     window.open(url, '_blank', 'noopener')
     setSent(true)
   }, [])
@@ -46,7 +46,7 @@ function FeedbackForm() {
         <div className="card" style={{ textAlign: 'center', padding: 32 }}>
           <p style={{ fontFamily: 'var(--pixel-font)', fontSize: 14, color: 'var(--md-primary)', marginBottom: 8 }}>✓ THANK YOU</p>
           <p style={{ color: 'var(--md-on-surface-variant)', fontSize: 14, marginBottom: 16 }}>GitHub Issues opened in a new tab. Submit it there to reach us!</p>
-          <a href="https://github.com/Balajitechlabs/quickdash/issues/new" target="_blank" rel="noopener noreferrer" className="btn btn-sm" onClick={() => trackEvent('feedback_submit', 'github_issues_direct')}>Open Issues Directly</a>
+          <a href="https://github.com/balajitechlabs/quickdash/issues/new" target="_blank" rel="noopener noreferrer" className="btn btn-sm" onClick={() => trackEvent('feedback_submit', 'github_issues_direct')}>Open Issues Directly</a>
         </div>
       </FadeInSection>
     )
@@ -76,7 +76,7 @@ function FeedbackForm() {
           </button>
         </form>
         <p style={{ fontSize: 11, color: 'var(--md-on-surface-variant)', textAlign: 'center' }}>
-          Prefer Telegram? <a href="https://t.me/BalajiTechLabs" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--md-primary)' }} onClick={() => trackEvent('contact_click', 'telegram')}>Message us here</a>
+          Prefer Telegram? <a href="https://t.me/balajitechlabs" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--md-primary)' }} onClick={() => trackEvent('contact_click', 'telegram')}>Message us here</a>
         </p>
       </div>
     </FadeInSection>
@@ -90,7 +90,7 @@ export default function CtaSection() {
         <h2 id="download-title" className="section-title">Download</h2>
         <div className="grid-2">
           <DownloadCard icon="📦" title="Universal APK" desc="Compatible with all Android 7.0+ devices." github />
-          <DownloadCard icon="🌿" title="FOSS Edition" desc="100% Zero-Tracker APK for F-Droid & privacy enthusiasts." github href="https://github.com/Balajitechlabs/quickdash/releases/latest/download/app-foss-release.apk" label="DOWNLOAD FOSS" />
+          <DownloadCard icon="🌿" title="FOSS Edition" desc="100% Zero-Tracker APK for F-Droid & privacy enthusiasts." github href="https://github.com/balajitechlabs/quickdash/releases/latest/download/app-foss-release.apk" label="DOWNLOAD FOSS" />
           <DownloadCard icon="⚙️" title="ARM64 APK" desc="Optimized for ARM64 devices. Smaller APK size." github label="DOWNLOAD ARM64" />
           <DownloadCard icon="▶️" title="Play Store Beta" desc="Join the Google Play Beta program." playStore />
         </div>
@@ -105,10 +105,10 @@ export default function CtaSection() {
             Found a bug? Have a feature request? Need help using QuickDash?
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <a href="https://github.com/Balajitechlabs/quickdash/issues/new" target="_blank" rel="noopener noreferrer" className="btn btn-sm" onClick={() => trackEvent('contact_click', 'github_issues')}>
+            <a href="https://github.com/balajitechlabs/quickdash/issues/new" target="_blank" rel="noopener noreferrer" className="btn btn-sm" onClick={() => trackEvent('contact_click', 'github_issues')}>
               🐛 GitHub Issues
             </a>
-            <a href="https://t.me/BalajiTechLabs" target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline" onClick={() => trackEvent('contact_click', 'telegram')}>
+            <a href="https://t.me/balajitechlabs" target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline" onClick={() => trackEvent('contact_click', 'telegram')}>
               💬 Telegram
             </a>
             <a href="mailto:quickdash@balajitechlab.com" className="btn btn-sm btn-outline" onClick={() => trackEvent('contact_click', 'email')}>

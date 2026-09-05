@@ -1,9 +1,26 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/ui/components
+ * File: AppUpdateDialog.kt
+ * Description: Modal dialog informing users of new GitHub releases with changelogs and direct download triggers.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.ui.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,14 +33,21 @@ import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.SystemUpdate
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.CloudDownload
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,7 +80,8 @@ fun AppUpdateDialog(
                 .wrapContentHeight()
                 .padding(horizontal = 8.dp),
             shape = RoundedCornerShape(28.dp),
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            color = Color(0xFF1E2024),
+            border = BorderStroke(1.dp, Color(0xFF44474F).copy(alpha = 0.6f)),
             tonalElevation = 6.dp
         ) {
             Column(
@@ -116,7 +141,7 @@ fun AppUpdateDialog(
                                     )
                                 }
                                 Text(
-                                    text = "You're Up to Date! 🎉",
+                                    text = "You're Up to Date",
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface
@@ -174,7 +199,7 @@ fun AppUpdateDialog(
                                     )
                                 }
                                 Text(
-                                    text = "Update Available! 🚀",
+                                    text = "Update Available",
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface
@@ -184,7 +209,7 @@ fun AppUpdateDialog(
                                     color = MaterialTheme.colorScheme.secondaryContainer
                                 ) {
                                     Text(
-                                        text = "Version v${targetState.versionName}",
+                                        text = "Version v${targetState.versionName.removePrefix("v")}",
                                         style = MaterialTheme.typography.labelLarge,
                                         fontWeight = FontWeight.SemiBold,
                                         color = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -269,7 +294,7 @@ fun AppUpdateDialog(
                                     )
                                 }
                                 Text(
-                                    text = "Downloading v${targetState.versionName}",
+                                    text = "Downloading v${targetState.versionName.removePrefix("v")}",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface
@@ -317,13 +342,13 @@ fun AppUpdateDialog(
                                     )
                                 }
                                 Text(
-                                    text = "Download Complete! 🎉",
+                                    text = "Download Complete",
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = "QuickDash v${targetState.versionName} is ready. Tap below to launch the Android installer.",
+                                    text = "QuickDash v${targetState.versionName.removePrefix("v")} is ready. Tap below to launch the Android installer.",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     textAlign = TextAlign.Center
@@ -343,7 +368,7 @@ fun AppUpdateDialog(
                                 ) {
                                     Icon(Icons.Default.SystemUpdate, contentDescription = null, modifier = Modifier.size(18.dp))
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    Text("Install Update Now 📦", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                                    Text("Install Update Now", fontWeight = FontWeight.Bold, fontSize = 15.sp)
                                 }
                             }
                         }
@@ -456,7 +481,6 @@ fun AppUpdateDialog(
                                     ) {
                                         Text("Check Now")
                                     }
-                                }
                             }
                         }
                     }
@@ -464,4 +488,5 @@ fun AppUpdateDialog(
             }
         }
     }
+}
 }

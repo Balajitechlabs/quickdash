@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/onboarding/presentation/steps
+ * File: FontStep.kt
+ * Description: Onboarding step allowing users to select their preferred system typography scale.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.onboarding.presentation.steps
 
 import androidx.compose.animation.core.animateFloatAsState

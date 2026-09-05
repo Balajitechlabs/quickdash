@@ -1,5 +1,17 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/qr/presentation
+ * File: QrHistoryDialog.kt
+ * Description: Dialog displaying previously scanned and generated QR codes with search and export.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.qr.presentation
 
+
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -22,8 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.gson.Gson
-import com.google.gson.JsonParser
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -73,7 +83,7 @@ fun QrHistoryDialog(
     var selectedPeriod by remember { mutableStateOf("All") }
 
     val filteredItems = remember(items, selectedPeriod) {
-        val now = java.lang.System.currentTimeMillis()
+        val now = System.currentTimeMillis()
         when (selectedPeriod) {
             "Today" -> {
                 val cal = java.util.Calendar.getInstance()

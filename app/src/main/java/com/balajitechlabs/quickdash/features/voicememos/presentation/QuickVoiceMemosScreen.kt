@@ -1,31 +1,45 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/voicememos/presentation
+ * File: QuickVoiceMemosScreen.kt
+ * Description: Voice memo recorder tool with playback controls, waveforms, and file export.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.voicememos.presentation
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
-import android.media.MediaRecorder
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -33,48 +47,44 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import com.balajitechlabs.quickdash.core.ui.components.RoundedCardContainer
-import kotlinx.coroutines.delay
-import android.util.Log
+import com.balajitechlabs.quickdash.features.voicememos.service.VoiceRecorderService
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-
-private const val TAG = "QuickVoiceMemosScreen"
+import java.util.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 data class VoiceMemoItem(val file: File, val name: String, val formattedDate: String, val sizeKb: Long)
 
-/**
- * 🎙️ Tool #18 — Quick Voice Memos Recorder (`QuickVoiceMemosScreen.kt`).
- * Production-ready floating audio voice recorder with real MediaRecorder & MediaPlayer.
- */
 @Composable
 fun QuickVoiceMemosScreen(isFloating: Boolean = false) {
     val context = LocalContext.current
-    var isRecording by remember { mutableStateOf(false) }
-    var elapsedSeconds by remember { mutableIntStateOf(0) }
-    var activeRecorder by remember { mutableStateOf<MediaRecorder?>(null) }
-    var currentOutputFile by remember { mutableStateOf<File?>(null) }
-    
+
+    val isRecording by VoiceRecorderService.isRecording.collectAsStateWithLifecycle()
+    val elapsedSeconds by VoiceRecorderService.recordingDurationSeconds.collectAsStateWithLifecycle()
+    val lastSavedFile by VoiceRecorderService.lastSavedFile.collectAsStateWithLifecycle()
+
     // Playback state
     var playingFile by remember { mutableStateOf<File?>(null) }
+    var isPlaying by remember { mutableStateOf(false) }
     var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
-    
+
     // List of saved memos
     var savedMemos by remember { mutableStateOf<List<VoiceMemoItem>>(emptyList()) }
 
-    fun getVoiceDir(): File {
-        val dir = File(context.filesDir, "VoiceMemos")
-        if (!dir.exists()) dir.mkdirs()
-        return dir
-    }
-
     fun loadSavedMemos() {
-        val dir = getVoiceDir()
-        val files = dir.listFiles { _, name -> name.endsWith(".m4a") }?.sortedByDescending { it.lastModified() } ?: emptyList()
+        val dirs = listOfNotNull(
+            File(context.filesDir, "VoiceMemos"),
+            context.getExternalFilesDir(null)?.let { File(it, "VoiceMemos") }
+        )
+        val allFiles = dirs.flatMap { d ->
+            if (d.exists()) d.listFiles { _, name -> name.endsWith(".m4a") }?.toList() ?: emptyList()
+            else emptyList()
+        }.sortedByDescending { it.lastModified() }
+
         val dateFormat = SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault())
-        savedMemos = files.map { f ->
+        savedMemos = allFiles.map { f ->
             VoiceMemoItem(
                 file = f,
                 name = f.nameWithoutExtension,
@@ -88,258 +98,295 @@ fun QuickVoiceMemosScreen(isFloating: Boolean = false) {
         loadSavedMemos()
     }
 
-    // Live recording timer
-    LaunchedEffect(isRecording) {
-        if (isRecording) {
-            elapsedSeconds = 0
-            while (isRecording) {
-                delay(1000)
-                elapsedSeconds++
-            }
-        }
-    }
-
-    fun stopAudioRecording() {
-        try {
-            activeRecorder?.apply {
-                stop()
-                release()
-            }
-            activeRecorder = null
-            isRecording = false
-            Toast.makeText(context, "Voice memo saved! 💾", Toast.LENGTH_SHORT).show()
+    LaunchedEffect(lastSavedFile) {
+        if (lastSavedFile != null) {
             loadSavedMemos()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            isRecording = false
         }
     }
 
-    fun startAudioRecording() {
-        try {
-            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val file = File(getVoiceDir(), "Memo_$timeStamp.m4a")
-            currentOutputFile = file
-
-            val recorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                MediaRecorder(context)
-            } else {
-                @Suppress("DEPRECATION")
-                MediaRecorder()
-            }.apply {
-                setAudioSource(MediaRecorder.AudioSource.MIC)
-                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-                setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-                setOutputFile(file.absolutePath)
-                prepare()
-                start()
-            }
-            activeRecorder = recorder
-            isRecording = true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(context, "Failed to start recording: ${e.message}", Toast.LENGTH_LONG).show()
-            isRecording = false
+    DisposableEffect(Unit) {
+        onDispose {
+            mediaPlayer?.release()
+            mediaPlayer = null
         }
+    }
+
+    fun startService() {
+        val intent = Intent(context, VoiceRecorderService::class.java).apply {
+            action = VoiceRecorderService.ACTION_START
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent)
+        } else {
+            context.startService(intent)
+        }
+    }
+
+    fun stopService() {
+        val intent = Intent(context, VoiceRecorderService::class.java).apply {
+            action = VoiceRecorderService.ACTION_STOP
+        }
+        context.startService(intent)
+        Toast.makeText(context, "Voice memo saved! ", Toast.LENGTH_SHORT).show()
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
-        if (granted) {
-            startAudioRecording()
-        } else {
-            Toast.makeText(context, "Microphone permission required to record audio", Toast.LENGTH_SHORT).show()
-        }
+        if (granted) startService()
+        else Toast.makeText(context, "Microphone permission required to record audio", Toast.LENGTH_SHORT).show()
     }
 
-    fun togglePlayMemo(item: VoiceMemoItem) {
-        if (playingFile == item.file) {
-            mediaPlayer?.stop()
-            mediaPlayer?.release()
-            mediaPlayer = null
-            playingFile = null
-        } else {
-            mediaPlayer?.release()
-            try {
-                val mp = MediaPlayer().apply {
-                    setDataSource(item.file.absolutePath)
-                    prepare()
-                    start()
-                    setOnCompletionListener {
-                        playingFile = null
-                        mediaPlayer = null
-                    }
-                }
-                mediaPlayer = mp
-                playingFile = item.file
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(context, "Failed to play audio", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    fun deleteMemo(item: VoiceMemoItem) {
-        if (playingFile == item.file) {
-            mediaPlayer?.stop()
-            mediaPlayer?.release()
-            mediaPlayer = null
-            playingFile = null
-        }
-        item.file.delete()
-        loadSavedMemos()
-        Toast.makeText(context, "Voice memo deleted", Toast.LENGTH_SHORT).show()
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            try {
-                activeRecorder?.stop()
-                activeRecorder?.release()
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to stop voice recorder on dispose", e)
-            }
-            mediaPlayer?.release()
-        }
-    }
-
-    val minutes = elapsedSeconds / 60
-    val seconds = elapsedSeconds % 60
-    val formattedTimer = String.format(Locale.US, "%02d:%02d", minutes, seconds)
+    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+    val pulseScale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.12f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(700, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulseScale"
+    )
 
     Column(
         modifier = Modifier
-            .then(if (isFloating) Modifier.fillMaxWidth().wrapContentHeight() else Modifier.fillMaxSize())
-            .animateContentSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+            .fillMaxSize()
+            .background(Color.Black)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "🎙️ Quick Voice Memos",
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            text = "Voice Memos",
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+            color = Color.White,
             textAlign = TextAlign.Center
         )
 
-        Box(
-            modifier = Modifier
-                .size(80.dp)
-                .clip(CircleShape)
-                .background(
-                    if (isRecording) MaterialTheme.colorScheme.errorContainer
-                    else MaterialTheme.colorScheme.primaryContainer
-                ),
-            contentAlignment = Alignment.Center
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Recording Studio Pod
+        RoundedCardContainer(
+            containerColor = Color(0xFF1E2024),
+            cornerRadius = 24.dp,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Icon(
-                imageVector = if (isRecording) Icons.Filled.Stop else Icons.Filled.Mic,
-                contentDescription = null,
-                tint = if (isRecording) MaterialTheme.colorScheme.onErrorContainer
-                else MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.size(40.dp)
-            )
-        }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                val mins = elapsedSeconds / 60
+                val secs = elapsedSeconds % 60
+                val timerText = String.format("%02d:%02d", mins, secs)
 
-        Text(
-            text = if (isRecording) "Recording... $formattedTimer" else "Tap below to start recording",
-            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-            color = if (isRecording) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
-        )
+                Text(
+                    text = if (isRecording) "RECORDING IN BACKGROUND" else "TAP TO RECORD",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = if (isRecording) MaterialTheme.colorScheme.error else Color.Gray,
+                    letterSpacing = 1.sp
+                )
 
-        Button(
-            onClick = {
-                if (isRecording) {
-                    stopAudioRecording()
-                } else {
-                    val hasMicPerm = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-                    if (hasMicPerm) {
-                        startAudioRecording()
-                    } else {
-                        permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = timerText,
+                    style = MaterialTheme.typography.displayMedium.copy(
+                        fontWeight = FontWeight.Black,
+                        color = if (isRecording) MaterialTheme.colorScheme.primary else Color.White
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Big Floating Action Button with Pulse
+                Surface(
+                    shape = CircleShape,
+                    color = if (isRecording) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .size(76.dp)
+                        .scale(if (isRecording) pulseScale else 1f)
+                        .clickable {
+                            if (isRecording) {
+                                stopService()
+                            } else {
+                                if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                                    startService()
+                                } else {
+                                    permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                                }
+                            }
+                        }
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = if (isRecording) Icons.Filled.Stop else Icons.Filled.Mic,
+                            contentDescription = if (isRecording) "Stop" else "Record",
+                            tint = Color.White,
+                            modifier = Modifier.size(36.dp)
+                        )
                     }
                 }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            shape = RoundedCornerShape(24.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (isRecording) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-            )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Saved Memos Section
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = if (isRecording) "STOP RECORDING ($formattedTimer)" else "START RECORDING 🎙️",
-                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.ExtraBold)
+                text = "Saved Recordings (${savedMemos.size})",
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = Color.White
             )
         }
 
-        RoundedCardContainer {
-            Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Saved Voice Notes (${savedMemos.size})",
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
-                    )
-                }
+        Spacer(modifier = Modifier.height(10.dp))
 
-                if (savedMemos.isEmpty()) {
-                    Text(
-                        text = "No saved voice notes yet",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                } else {
-                    savedMemos.forEach { item ->
-                        val isPlaying = playingFile == item.file
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = if (isPlaying) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f) else MaterialTheme.colorScheme.surfaceVariant
-                            )
+        if (savedMemos.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No voice memos yet.\nYour recorded memos will appear here.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(bottom = 120.dp)
+            ) {
+                items(savedMemos, key = { it.file.absolutePath }) { memo ->
+                    val isThisPlaying = playingFile?.absolutePath == memo.file.absolutePath && isPlaying
+
+                    Surface(
+                        shape = RoundedCornerShape(18.dp),
+                        color = if (isThisPlaying) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else Color(0xFF1E2024),
+                        border = if (isThisPlaying) androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary) else null,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(14.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
+                            // Play/Pause button
+                            Surface(
+                                shape = CircleShape,
+                                color = if (isThisPlaying) MaterialTheme.colorScheme.primary else Color(0xFF2A2B30),
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                    .size(44.dp)
+                                    .clickable {
+                                        if (isThisPlaying) {
+                                            mediaPlayer?.pause()
+                                            isPlaying = false
+                                        } else {
+                                            mediaPlayer?.release()
+                                            mediaPlayer = MediaPlayer().apply {
+                                                setDataSource(memo.file.absolutePath)
+                                                prepare()
+                                                start()
+                                                setOnCompletionListener {
+                                                    isPlaying = false
+                                                    playingFile = null
+                                                }
+                                            }
+                                            playingFile = memo.file
+                                            isPlaying = true
+                                        }
+                                    }
                             ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = item.name,
-                                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                        maxLines = 1
-                                    )
-                                    Text(
-                                        text = "${item.formattedDate} · ${item.sizeKb} KB",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = if (isThisPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                                        contentDescription = "Play",
+                                        tint = if (isThisPlaying) Color.Black else Color.White,
+                                        modifier = Modifier.size(24.dp)
                                     )
                                 }
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    IconButton(onClick = { togglePlayMemo(item) }, modifier = Modifier.size(36.dp)) {
-                                        Icon(
-                                            imageVector = if (isPlaying) Icons.Filled.Stop else Icons.Filled.PlayArrow,
-                                            contentDescription = "Play/Stop",
-                                            tint = MaterialTheme.colorScheme.primary
+                            }
+
+                            Spacer(modifier = Modifier.width(12.dp))
+
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = memo.name,
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                    color = Color.White,
+                                    maxLines = 1
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = "${memo.formattedDate} • ${memo.sizeKb} KB",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color.Gray
+                                )
+                            }
+
+                            // Share Action
+                            IconButton(
+                                onClick = {
+                                    try {
+                                        val uri = FileProvider.getUriForFile(
+                                            context,
+                                            "${context.packageName}.provider",
+                                            memo.file
                                         )
+                                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                            type = "audio/m4a"
+                                            putExtra(Intent.EXTRA_STREAM, uri)
+                                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                        }
+                                        context.startActivity(Intent.createChooser(shareIntent, "Share Voice Memo"))
+                                    } catch (e: Exception) {
+                                        Toast.makeText(context, "Cannot share file", Toast.LENGTH_SHORT).show()
                                     }
-                                    IconButton(onClick = { deleteMemo(item) }, modifier = Modifier.size(36.dp)) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Delete,
-                                            contentDescription = "Delete",
-                                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f)
-                                        )
+                                },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Share,
+                                    contentDescription = "Share",
+                                    tint = Color.White.copy(alpha = 0.7f),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(4.dp))
+
+                            // Delete Action
+                            IconButton(
+                                onClick = {
+                                    if (playingFile?.absolutePath == memo.file.absolutePath) {
+                                        mediaPlayer?.release()
+                                        mediaPlayer = null
+                                        playingFile = null
+                                        isPlaying = false
                                     }
-                                }
+                                    memo.file.delete()
+                                    loadSavedMemos()
+                                    Toast.makeText(context, "Memo deleted", Toast.LENGTH_SHORT).show()
+                                },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Delete,
+                                    contentDescription = "Delete",
+                                    tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f),
+                                    modifier = Modifier.size(18.dp)
+                                )
                             }
                         }
                     }

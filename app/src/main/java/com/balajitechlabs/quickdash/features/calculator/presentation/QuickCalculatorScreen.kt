@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/calculator/presentation
+ * File: QuickCalculatorScreen.kt
+ * Description: Floating scientific and standard calculator tool with history logging and gesture deletion.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.calculator.presentation
 
 import androidx.compose.animation.*
@@ -15,8 +24,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalContext
+import com.balajitechlabs.quickdash.core.ui.playClickVibration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -139,7 +148,7 @@ private class Parser(private val str: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuickCalculatorScreen(isFloating: Boolean = false) {
-    val haptic = LocalHapticFeedback.current
+    val context = LocalContext.current
     var display by remember { mutableStateOf("0") }
     var expression by remember { mutableStateOf("") }
     var history by remember { mutableStateOf(listOf<String>()) }
@@ -148,7 +157,7 @@ fun QuickCalculatorScreen(isFloating: Boolean = false) {
     var isScientific by remember { mutableStateOf(false) }
 
     fun handleKey(key: CalcKey) {
-        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+        playClickVibration(context, true, 16L)
         when (key) {
             CalcKey.Clear -> { display = "0"; expression = ""; justEvaluated = false }
             CalcKey.Backspace -> {
@@ -496,7 +505,7 @@ private fun CalcButton(
 ) {
     val label = when (key) {
         CalcKey.Clear -> "C"
-        CalcKey.Backspace -> "⌫"
+        CalcKey.Backspace -> ""
         CalcKey.Dot -> "."
         CalcKey.ToggleSign -> "+/-"
         CalcKey.Percent -> "%"

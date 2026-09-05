@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/utils
+ * File: UpdateManager.kt
+ * Description: Coordinates GitHub release update queries, changelog retrieval, and installation workflows.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.utils
 
 import android.content.Context
@@ -27,10 +36,20 @@ import java.security.MessageDigest
 sealed interface UpdateState {
     object Idle : UpdateState
     object Checking : UpdateState
-    object UpToDate : UpdateState
+    data class UpToDate(
+        val currentVersion: String = com.balajitechlabs.quickdash.BuildConfig.VERSION_NAME,
+        val latestVersion: String = com.balajitechlabs.quickdash.BuildConfig.VERSION_NAME,
+        val changelog: String = "",
+        val isManual: Boolean = false,
+        val isAheadOfLatest: Boolean = false
+    ) : UpdateState {
+        // Backwards compatibility property so existing references to upToDate.versionName still resolve cleanly to current installed version
+        val versionName: String get() = currentVersion
+    }
     data class Error(val message: String) : UpdateState
     data class UpdateAvailable(
         val versionName: String,
+        val currentVersion: String = com.balajitechlabs.quickdash.BuildConfig.VERSION_NAME,
         val apkUrl: String,
         val versionCode: Int,
         val changelog: String = "",
@@ -45,7 +64,13 @@ private const val TAG = "UpdateManager"
 
 object UpdateManager {
     var updateState by mutableStateOf<UpdateState>(UpdateState.Idle)
-        private set
+        internal set
+
+    var showUpdateSheet by mutableStateOf(false)
+
+    fun dismissInstall() {
+        updateState = UpdateState.Idle
+    }
 
     var hasLocalApk by mutableStateOf(false)
         private set
@@ -109,7 +134,7 @@ object UpdateManager {
         updateState = UpdateState.Idle
     }
 
-    fun checkForUpdates(context: Context, manual: Boolean = false) {
+    fun checkForUpdates(context: Context, manual: Boolean = false, includePreRelease: Boolean = false) {
         val now = System.currentTimeMillis()
         if (!manual && now - lastCheckTime < 5000) return
         lastCheckTime = now
@@ -126,11 +151,21 @@ object UpdateManager {
                     packageInfo.versionCode
                 }
 
-                val apiInfo = QuickDashApiClient.checkForUpdates(currentVersionCode)
+                val currentVersionName = try {
+                    packageInfo.versionName ?: com.balajitechlabs.quickdash.BuildConfig.VERSION_NAME
+                } catch (_: Exception) { com.balajitechlabs.quickdash.BuildConfig.VERSION_NAME }
+
+                val apiInfo = QuickDashApiClient.checkForUpdates(currentVersionCode, includePreRelease)
+
+                val currentSemVer = com.balajitechlabs.quickdash.core.utils.SemanticVersion.parse(currentVersionName)
+                val latestSemVer = com.balajitechlabs.quickdash.core.utils.SemanticVersion.parse(apiInfo.latestVersion)
+                val isAhead = currentSemVer > latestSemVer
+
                 withContext(Dispatchers.Main) {
                     if (apiInfo.hasUpdate) {
                         updateState = UpdateState.UpdateAvailable(
                             versionName = apiInfo.latestVersion,
+                            currentVersion = currentVersionName,
                             apkUrl = apiInfo.apkUrl,
                             versionCode = apiInfo.versionCode,
                             changelog = apiInfo.changelog,
@@ -138,11 +173,18 @@ object UpdateManager {
                             isCritical = apiInfo.isCritical
                         )
                     } else {
-                        updateState = if (manual) UpdateState.UpToDate else UpdateState.Idle
-                        hasLocalApk = hasDownloadedApk(context)
-                        if (manual) {
-                            Toast.makeText(context, "QuickDash is on the latest version! ✅", Toast.LENGTH_SHORT).show()
+                        updateState = if (manual) {
+                            UpdateState.UpToDate(
+                                currentVersion = currentVersionName,
+                                latestVersion = apiInfo.latestVersion,
+                                changelog = apiInfo.changelog,
+                                isManual = true,
+                                isAheadOfLatest = isAhead
+                            )
+                        } else {
+                            UpdateState.Idle
                         }
+                        hasLocalApk = hasDownloadedApk(context)
                     }
                 }
             } catch (e: Exception) {
@@ -156,7 +198,8 @@ object UpdateManager {
     }
 
     fun startDownload(context: Context, urlStr: String, remoteVersionName: String, expectedSha256: String = "") {
-        val fileName = "QuickDash-v$remoteVersionName.apk"
+        val cleanVer = remoteVersionName.removePrefix("v")
+        val fileName = "QuickDash-v$cleanVer.apk"
         val destFile = getApkFile(context, fileName)
 
         if (destFile.exists()) destFile.delete()
@@ -260,7 +303,7 @@ object UpdateManager {
                 if (!context.packageManager.canRequestPackageInstalls()) {
                     showToast(
                         context,
-                        "Please enable 'Install unknown apps' permission to install QuickDash updates 📦",
+                        "Enable 'Install unknown apps' permission to install QuickDash updates",
                         Toast.LENGTH_LONG
                     )
                     val settingsIntent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {

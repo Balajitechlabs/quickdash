@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/ui/theme
+ * File: ContainerModifier.kt
+ * Description: Modifier extensions applying elevated card containment, glassmorphism, and borders cleanly.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.ui.theme
 
 import androidx.compose.foundation.background

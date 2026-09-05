@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/onboarding/presentation/components
+ * File: LivePreviewCard.kt
+ * Description: Interactive preview container demonstrating real-time UI customization changes during onboarding.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.onboarding.presentation.components
 
 import androidx.compose.animation.animateContentSize

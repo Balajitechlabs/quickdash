@@ -33,16 +33,16 @@ export default function UpdateBanner() {
           🎉 LATEST RELEASE AVAILABLE
         </p>
         <p style={{ fontSize: 14, color: 'var(--md-on-surface-variant)', marginBottom: 16 }}>
-          QuickDash v{latest.version} is now available (Build #{latest.version_code || 523})
+          QuickDash v{latest.version ? latest.version.replace(/^v/, '') : '5.2.3'} is now available (Build #{latest.version_code || 524})
         </p>
         <a
-          href={latest.apk_url || 'https://github.com/Balajitechlabs/quickdash/releases/latest'}
+          href={latest.apk_url || 'https://github.com/balajitechlabs/quickdash/releases/latest'}
           className="btn btn-sm"
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => trackEvent('update_banner_click', latest.version)}
         >
-          DOWNLOAD v{latest.version} APK
+          DOWNLOAD v{latest.version ? latest.version.replace(/^v/, '') : '5.2.3'} APK
         </a>
       </div>
     </FadeInSection>

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: ui
+ * File: DashboardScreenTest.kt
+ * Description: Compose UI tests verifying dashboard layout rendering, tool clicks, and state handling.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.ui
 
 import androidx.compose.material3.Text

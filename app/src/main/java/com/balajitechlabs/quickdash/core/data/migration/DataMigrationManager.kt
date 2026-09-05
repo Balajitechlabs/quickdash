@@ -1,5 +1,17 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/data/migration
+ * File: DataMigrationManager.kt
+ * Description: Manages legacy preference migrations, schema version increments, and automated data upgrades.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.data.migration
 
+
+import com.google.gson.reflect.TypeToken
+import com.google.gson.Gson
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
@@ -12,8 +24,6 @@ import org.json.JSONArray
 import javax.inject.Inject
 import javax.inject.Singleton
 import android.util.Log
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 @Singleton
 class DataMigrationManager @Inject constructor(
@@ -41,14 +51,14 @@ class DataMigrationManager @Inject constructor(
             // Migrate Search History
             val searchHistoryJson = preferences[SEARCH_HISTORY_KEY]
             if (!searchHistoryJson.isNullOrBlank() && searchHistoryJson != "[]") {
-                val list = try {
+                val list: List<String> = try {
                     Gson().fromJson<List<String>>(
                         searchHistoryJson,
                         object : TypeToken<List<String>>() {}.type
-                    )
+                    ) ?: emptyList()
                 } catch (e: Exception) { emptyList() }
                 
-                list.reversed().forEach { query ->
+                for (query in list.reversed()) {
                     historyRepository.addSearchHistory(query)
                 }
             }

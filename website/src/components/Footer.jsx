@@ -19,13 +19,13 @@ export default function Footer() {
           <Link to="/changelog" style={{ fontFamily: 'var(--body-font)', fontSize: 13, color: 'var(--md-on-surface-variant)' }}>
             Changelog
           </Link>
-          <a href="https://github.com/Balajitechlabs/quickdash" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--body-font)', fontSize: 13, color: 'var(--md-on-surface-variant)' }}>
+          <a href="https://github.com/balajitechlabs/quickdash" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--body-font)', fontSize: 13, color: 'var(--md-on-surface-variant)' }}>
             GitHub
           </a>
-          <a href="https://github.com/Balajitechlabs/quickdash/issues" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--body-font)', fontSize: 13, color: 'var(--md-on-surface-variant)' }}>
+          <a href="https://github.com/balajitechlabs/quickdash/issues" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--body-font)', fontSize: 13, color: 'var(--md-on-surface-variant)' }}>
             Issues
           </a>
-          <a href="https://github.com/Balajitechlabs/quickdash/discussions" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--body-font)', fontSize: 13, color: 'var(--md-on-surface-variant)' }}>
+          <a href="https://github.com/balajitechlabs/quickdash/discussions" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--body-font)', fontSize: 13, color: 'var(--md-on-surface-variant)' }}>
             Discussions
           </a>
           <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--body-font)', fontSize: 13, color: 'var(--md-on-surface-variant)' }}>
@@ -33,7 +33,7 @@ export default function Footer() {
           </a>
         </nav>
         <p style={{ fontFamily: 'var(--pixel-font)', fontSize: 8, color: 'var(--md-on-surface-variant)', lineHeight: 2 }}>
-          &copy; {year} BalajiTechLabs &mdash; FREE TO USE &amp; OPEN SOURCE<br />
+          &copy; {year} ||BTL||™ (balajitechlabs) &mdash; FREE TO USE &amp; OPEN SOURCE<br />
           Fork of IIXII™ property by Aakarsh (L192) &mdash; <a href="https://github.com/IIXII-L192/PocketOps-app" target="_blank" rel="noopener noreferrer" style={{color:'var(--md-primary)'}}>Original</a><br />
           NOT AFFILIATED WITH GOOGLE LLC. ANDROID IS A TRADEMARK OF GOOGLE LLC.
         </p>

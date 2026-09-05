@@ -1,6 +1,0 @@
-Release Notes - QuickDash v4.4.1
-
-* removeLast() NoSuchMethodError Crash Fixed: Replaced Java 21 removeLast() calls in the navigation stack and logger with standard, backward-compatible removeAt(list.lastIndex) calls to support all Android devices.
-* Timer Exact-Alarm Security Exception Fixed: Integrated runtime canScheduleExactAlarms() checks and caught all SecurityException triggers on Android 13/14+. Timer alarms now fall back gracefully to inexact alarms instead of causing a crash when exact alarm permissions are denied.
-* Quick Web WebView Layout Fixed: Resolved rendering issues by removing manual MATCH_PARENT layout parameters, and enabled cookie, mixed-content, and URL redirect handling.
-* In-App Auto-Updates: Added prominent update notifications, download progress dialogs, and installer triggers directly inside the app.

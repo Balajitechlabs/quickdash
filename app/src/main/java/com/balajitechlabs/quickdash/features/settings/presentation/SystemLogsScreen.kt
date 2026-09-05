@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/settings/presentation
+ * File: SystemLogsScreen.kt
+ * Description: Diagnostic log viewer screen displaying application logs and crash recovery traces.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.settings.presentation
 
 import androidx.compose.foundation.background
@@ -16,8 +25,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.balajitechlabs.quickdash.core.utils.LogManager
+import com.balajitechlabs.quickdash.core.utils.AppLogger
 import kotlinx.coroutines.delay
+import android.widget.Toast
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,7 +37,7 @@ fun SystemLogsScreen(onDismiss: () -> Unit) {
     val context = androidx.compose.ui.platform.LocalContext.current
 
     fun refreshLogs() {
-        logsText = LogManager.readLogs()
+        logsText = AppLogger.readLogs()
     }
 
     LaunchedEffect(Unit) {
@@ -59,7 +69,7 @@ fun SystemLogsScreen(onDismiss: () -> Unit) {
                         val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                         val clip = android.content.ClipData.newPlainText("System Logs", logsText)
                         clipboard.setPrimaryClip(clip)
-                        android.widget.Toast.makeText(context, "Copied to clipboard", android.widget.Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
                     }) {
                         Text("Copy", style = MaterialTheme.typography.labelMedium)
                     }
@@ -78,7 +88,7 @@ fun SystemLogsScreen(onDismiss: () -> Unit) {
                         Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
                     }
                     IconButton(onClick = {
-                        LogManager.clearLogs()
+                        AppLogger.clearLogs()
                         refreshLogs()
                     }) {
                         Icon(Icons.Filled.Delete, contentDescription = "Clear")

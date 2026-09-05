@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/quicktile
+ * File: QrScannerTileService.kt
+ * Description: Quick Settings tile service launching the QuickDash QR scanner instantly from the notification shade.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.quicktile
 
 import android.annotation.SuppressLint
@@ -7,6 +16,9 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import com.balajitechlabs.quickdash.MainActivity
+
+import android.graphics.drawable.Icon
+import com.balajitechlabs.quickdash.R
 
 class QrScannerTileService : TileService() {
     @Suppress("DEPRECATION")
@@ -36,13 +48,13 @@ class QrScannerTileService : TileService() {
     override fun onStartListening() {
         super.onStartListening()
 
-        qsTile.apply {
-            state = Tile.STATE_INACTIVE
-            label = "Scan QR Code"
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                subtitle = "Inbuilt QR Scanner"
-            }
-            updateTile()
+        val tile = qsTile ?: return
+        tile.icon = Icon.createWithResource(this, R.drawable.ic_qr_code_2)
+        tile.state = Tile.STATE_INACTIVE
+        tile.label = "Scan QR Code"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            tile.subtitle = "Inbuilt QR Scanner"
         }
+        tile.updateTile()
     }
 }

@@ -95,7 +95,7 @@ async function handleStats(env: Env): Promise<Response> {
     }
 
     const [releasesRes, toolsRes] = await Promise.allSettled([
-      fetch('https://api.github.com/repos/Balajitechlabs/quickdash/releases?per_page=100', {
+      fetch('https://api.github.com/repos/balajitechlabs/quickdash/releases?per_page=100', {
         headers: { 'User-Agent': 'QuickDash-Worker', 'Accept': 'application/vnd.github.v3+json' }
       }),
       fetch('https://quickdash.balajitechlab.com/api/v1/tools.json')

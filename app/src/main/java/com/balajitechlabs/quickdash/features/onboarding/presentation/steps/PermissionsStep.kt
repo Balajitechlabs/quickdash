@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/onboarding/presentation/steps
+ * File: PermissionsStep.kt
+ * Description: Onboarding step requesting overlay, accessibility, and storage permissions.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.onboarding.presentation.steps
 
 import android.Manifest
@@ -23,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.balajitechlabs.quickdash.features.onboarding.presentation.components.OnboardingScaffold
 import com.balajitechlabs.quickdash.features.onboarding.presentation.components.PermissionExplanationCard
+import android.util.Log
 
 @Composable
 fun PermissionsStep(
@@ -94,7 +104,7 @@ fun PermissionsStep(
                         context.startActivity(intent)
                         overlayGranted = Settings.canDrawOverlays(context)
                     } catch (e: Exception) {
-                        e.printStackTrace()
+                        Log.e("QuickDash", "Error occurred: ${e.message}", e)
                     }
                 }
             }

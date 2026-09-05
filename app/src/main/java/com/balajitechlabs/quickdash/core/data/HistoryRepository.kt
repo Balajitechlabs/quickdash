@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/data
+ * File: HistoryRepository.kt
+ * Description: Repository for persisting and querying unified tool activity, searches, and clipboard history records.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.data
 
 import android.content.Context

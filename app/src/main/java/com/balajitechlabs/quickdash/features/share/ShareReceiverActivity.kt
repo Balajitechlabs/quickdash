@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/share
+ * File: ShareReceiverActivity.kt
+ * Description: System share target activity categorizing incoming text and offering one-tap contextual actions.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.share
 
 import android.content.ClipData
@@ -21,7 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.balajitechlabs.quickdash.core.ui.theme.QuickDashTheme
-import com.balajitechlabs.quickdash.core.utils.AiTextCategorizer
+import com.balajitechlabs.quickdash.core.utils.TextCategorizer
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,8 +48,8 @@ class ShareReceiverActivity : ComponentActivity() {
             return
         }
 
-        val category = AiTextCategorizer.categorize(sharedText)
-        val actions = AiTextCategorizer.getQuickActions(sharedText, category)
+        val category = TextCategorizer.categorize(sharedText)
+        val actions = TextCategorizer.getQuickActions(sharedText, category)
 
         setContent {
             QuickDashTheme {
@@ -70,7 +79,7 @@ class ShareReceiverActivity : ComponentActivity() {
                             Spacer(modifier = Modifier.height(8.dp))
 
                             Text(
-                                text = category.emoji + " " + category.displayName,
+                                text = category.displayName,
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.primary
                             )

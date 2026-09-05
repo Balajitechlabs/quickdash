@@ -1,16 +1,15 @@
 Categories:
   - System
-  - Utilities
 License: Custom
-AuthorName: BalajiTechLabs
+AuthorName: balajitechlabs
 WebSite: https://quickdash.balajitechlab.com
-SourceCode: https://github.com/Balajitechlabs/quickdash
-IssueTracker: https://github.com/Balajitechlabs/quickdash/issues
-Changelog: https://github.com/Balajitechlabs/quickdash/blob/master/CHANGELOG.md
+SourceCode: https://github.com/balajitechlabs/quickdash
+IssueTracker: https://github.com/balajitechlabs/quickdash/issues
+Changelog: https://github.com/balajitechlabs/quickdash/blob/master/CHANGELOG.md
 
 RepoType: git
-Repo: https://github.com/Balajitechlabs/quickdash.git
-Binaries: https://github.com/Balajitechlabs/quickdash/releases/download/v%v/app-foss-release.apk
+Repo: https://github.com/balajitechlabs/quickdash.git
+Binaries: https://github.com/balajitechlabs/quickdash/releases/download/v%v/app-foss-release.apk
 
 Builds:
   - versionName: 5.2.2
@@ -22,9 +21,18 @@ Builds:
     gradleflags:
       - -Pfoss
 
+  - versionName: 5.2.3
+    versionCode: 524
+    commit: v5.2.3
+    subdir: app
+    gradle:
+      - yes
+    gradleflags:
+      - -Pfoss
+
 AllowedAPKSigningKeys: d03bface4952ded235505c588c3a9245ad0ff0188873b86db026fef424dd6405
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 5.2.2
-CurrentVersionCode: 523
+CurrentVersion: 5.2.3
+CurrentVersionCode: 524

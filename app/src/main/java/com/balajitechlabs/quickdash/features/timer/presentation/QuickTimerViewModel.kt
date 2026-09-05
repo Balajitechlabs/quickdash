@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/timer/presentation
+ * File: QuickTimerViewModel.kt
+ * Description: ViewModel managing countdown timer state, active intervals, and alarm schedules.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.timer.presentation
 
 import androidx.lifecycle.ViewModel

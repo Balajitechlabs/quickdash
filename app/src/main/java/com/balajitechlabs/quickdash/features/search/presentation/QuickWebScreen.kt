@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/search/presentation
+ * File: QuickWebScreen.kt
+ * Description: Embedded lightweight web viewer displaying search results and web tools inside the overlay.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.search.presentation
 
 import android.annotation.SuppressLint

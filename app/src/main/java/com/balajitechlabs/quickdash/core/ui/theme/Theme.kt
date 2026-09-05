@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/ui/theme
+ * File: Theme.kt
+ * Description: Central Material 3 theme composable applying dynamic color, pitch-black AMOLED mode, and typography.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.ui.theme
 
 import android.os.Build
@@ -31,6 +40,7 @@ import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.font.FontFamily
 import com.balajitechlabs.quickdash.R
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 
 val LocalBorderWidth = staticCompositionLocalOf { 1f }
@@ -46,6 +56,36 @@ private fun Color.rotateHue(degrees: Float): Color {
     hsv[0] = (hsv[0] + degrees + 360f) % 360f
     return Color(android.graphics.Color.HSVToColor(hsv))
 }
+
+val EssentialXDarkColorScheme: ColorScheme = darkColorScheme(
+    primary = Color(0xFFB0C6FF),
+    onPrimary = Color(0xFF192F60),
+    primaryContainer = Color(0xFF2F4578),
+    onPrimaryContainer = Color(0xFFD6E3FF),
+    secondary = Color(0xFFC5C6D0),
+    onSecondary = Color(0xFF2E3036),
+    secondaryContainer = Color(0xFF38393F),
+    onSecondaryContainer = Color(0xFFE2E2E6),
+    tertiary = Color(0xFFB39DDB),
+    onTertiary = Color(0xFF381E72),
+    tertiaryContainer = Color(0xFF4F378B),
+    onTertiaryContainer = Color(0xFFEADDFF),
+    background = Color(0xFF000000),
+    onBackground = Color(0xFFFFFFFF),
+    surface = Color(0xFF000000),
+    onSurface = Color(0xFFFFFFFF),
+    surfaceVariant = Color(0xFF28292E),
+    onSurfaceVariant = Color(0xFFC5C6D0),
+    surfaceContainerLowest = Color(0xFF000000),
+    surfaceContainerLow = Color(0xFF1E1E22),
+    surfaceContainer = Color(0xFF2C2D33),
+    surfaceContainerHigh = Color(0xFF38393F),
+    surfaceContainerHighest = Color(0xFF45464F),
+    surfaceBright = Color(0xFF38393F),
+    outline = Color(0xFF44474F),
+    outlineVariant = Color(0xFF38393F),
+    scrim = Color(0xFF000000)
+)
 
 private fun generateColorScheme(seed: Color, isDark: Boolean): ColorScheme {
     val primary = seed
@@ -83,14 +123,14 @@ private fun generateColorScheme(seed: Color, isDark: Boolean): ColorScheme {
             surfaceContainerHigh = Color(0xFF222222),
             surfaceContainerHighest = Color(0xFF2D2D2D),
             outline = Color(0xFF4D4550),
-            outlineVariant = Color(0xFF3A3A3A),
+            outlineVariant = Color(0xFF28282E),
             scrim = Color(0xFF000000)
         )
     } else {
         lightColorScheme(
             primary = primary,
             onPrimary = onPrimary,
-            primaryContainer = primary.copy(alpha = 0.12f),
+            primaryContainer = primary.copy(alpha = 0.14f),
             onPrimaryContainer = primary,
             secondary = secondary,
             onSecondary = if (isLightColor(secondary)) Color.Black else Color.White,
@@ -100,19 +140,20 @@ private fun generateColorScheme(seed: Color, isDark: Boolean): ColorScheme {
             onTertiary = if (isLightColor(tertiary)) Color.Black else Color.White,
             tertiaryContainer = tertiary.copy(alpha = 0.12f),
             onTertiaryContainer = tertiary,
-            background = Color(0xFFFFFBFE),
-            onBackground = Color(0xFF1C1B1F),
-            surface = Color(0xFFFFFBFE),
-            onSurface = Color(0xFF1C1B1F),
-            surfaceVariant = Color(0xFFECE5EE),
-            onSurfaceVariant = Color(0xFF49454E),
+            background = Color(0xFFFFFFFF),
+            onBackground = Color(0xFF1F1F1F),
+            surface = Color(0xFFFFFFFF),
+            onSurface = Color(0xFF1F1F1F),
+            surfaceVariant = Color(0xFFF1F3F4),
+            onSurfaceVariant = Color(0xFF5F6368),
             surfaceContainerLowest = Color(0xFFFFFFFF),
-            surfaceContainerLow = Color(0xFFF7F2FA),
-            surfaceContainer = Color(0xFFF1EBF6),
-            surfaceContainerHigh = Color(0xFFEBE5F0),
-            surfaceContainerHighest = Color(0xFFE5E0EB),
-            outline = Color(0xFF7A757F),
-            outlineVariant = Color(0xFFCBC4CF),
+            surfaceContainerLow = Color(0xFFF8F9FA),
+            surfaceContainer = Color(0xFFF1F3F4),
+            surfaceContainerHigh = Color(0xFFE8EAED),
+            surfaceContainerHighest = Color(0xFFE0E2E5),
+            surfaceBright = Color(0xFFFFFFFF),
+            outline = Color(0xFFDADCE0),
+            outlineVariant = Color(0xFFE8EAED),
             scrim = Color(0xFF000000)
         )
     }
@@ -126,24 +167,17 @@ private fun isLightColor(color: Color): Boolean {
 fun ColorScheme.toAmoled(): ColorScheme = copy(
     background = Color.Black,
     surface = Color.Black,
-    surfaceVariant = Color.Black,
+    surfaceBright = Color(0xFF141414),
+    surfaceVariant = Color(0xFF121214),
     surfaceContainer = Color.Black,
     surfaceContainerLow = Color.Black,
-    surfaceContainerHigh = Color.Black,
-    surfaceContainerHighest = Color.Black,
+    surfaceContainerHigh = Color(0xFF121214),
+    surfaceContainerHighest = Color(0xFF18181C),
     surfaceContainerLowest = Color.Black,
     onSurface = Color.White,
     onBackground = Color.White,
-    primary = Color(0xFF4FC3F7),
-    onPrimary = Color.Black,
-    primaryContainer = Color(0xFF003E6B),
-    onPrimaryContainer = Color(0xFFB3E5FC),
-    secondary = Color(0xFF80CBC4),
-    onSecondary = Color.Black,
-    secondaryContainer = Color(0xFF005048),
-    onSecondaryContainer = Color(0xFFB2DFDB),
     outline = Color(0xFF444444),
-    outlineVariant = Color(0xFF333333),
+    outlineVariant = Color(0xFF242428),
     scrim = Color.Black
 )
 
@@ -173,14 +207,14 @@ fun getGoogleFontFamily(name: String): FontFamily {
 fun QuickDashTheme(
     themeMode: String = "SYSTEM",
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false,
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
     // Use context.dataStore directly (it's the app-wide singleton via the `by preferencesDataStore`
     // delegate) rather than creating a new UserStore instance here. Multiple UserStore instances
     // wrapping the same DataStore file cause IllegalStateException crashes in release builds.
-    val prefs by context.dataStore.data.collectAsState(initial = androidx.datastore.preferences.core.emptyPreferences())
+    val prefs by context.dataStore.data.collectAsStateWithLifecycle(initialValue = androidx.datastore.preferences.core.emptyPreferences())
 
     val seedColorHex = prefs[stringPreferencesKey("seed_color")] ?: "#1E88E5"
     val shapeStyle = prefs[stringPreferencesKey("shape_style")] ?: "Rounded"
@@ -212,22 +246,22 @@ fun QuickDashTheme(
         }
     }
 
-    val isDark = when (themeMode) {
-        "LIGHT" -> false
-        "DARK" -> true
-        "AMOLED" -> true
-        else -> darkTheme
-    }
-
-    var colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            if (isDark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+    val colorScheme = remember(dynamicColor) {
+        if (dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            try {
+                val dyn = dynamicDarkColorScheme(context)
+                EssentialXDarkColorScheme.copy(
+                    primary = dyn.primary,
+                    onPrimary = dyn.onPrimary,
+                    primaryContainer = dyn.primaryContainer,
+                    onPrimaryContainer = dyn.onPrimaryContainer
+                )
+            } catch (_: Exception) {
+                EssentialXDarkColorScheme
+            }
+        } else {
+            EssentialXDarkColorScheme
         }
-        else -> generateColorScheme(seedColor, isDark)
-    }
-
-    if (themeMode == "AMOLED") {
-        colorScheme = colorScheme.toAmoled()
     }
 
     val customShape = getCustomShape(shapeStyle, cornerRadius)

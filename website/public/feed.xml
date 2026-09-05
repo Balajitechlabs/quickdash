@@ -10,29 +10,29 @@
     <item>
       <title>QuickDash v5.2.2 Released</title>
       <description>100% Zero-Tracker FOSS Edition, Radial Bubble Wheel, Glance Widgets, Encrypted Backup &amp; Restore with AES-256-GCM, and privacy hardening.</description>
-      <link>https://github.com/Balajitechlabs/quickdash/releases/latest</link>
-      <guid>https://github.com/Balajitechlabs/quickdash/releases/tag/v5.2.2</guid>
+      <link>https://github.com/balajitechlabs/quickdash/releases/latest</link>
+      <guid>https://github.com/balajitechlabs/quickdash/releases/tag/v5.2.2</guid>
       <pubDate>Sat, 15 Aug 2026 00:00:00 +0000</pubDate>
     </item>
     <item>
       <title>QuickDash v5.1.2 Released</title>
       <description>Security improvements, catch block hardening, type-safe navigation, comprehensive testing, version bump to 5.1.2.</description>
-      <link>https://github.com/Balajitechlabs/quickdash/releases</link>
-      <guid>https://github.com/Balajitechlabs/quickdash/releases/tag/v5.1.2</guid>
+      <link>https://github.com/balajitechlabs/quickdash/releases</link>
+      <guid>https://github.com/balajitechlabs/quickdash/releases/tag/v5.1.2</guid>
       <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
     </item>
     <item>
       <title>QuickDash v5.1.1 Released</title>
       <description>Android 16 (API 36) target, 16KB page alignment, bug fixes and performance improvements.</description>
-      <link>https://github.com/Balajitechlabs/quickdash/releases</link>
-      <guid>https://github.com/Balajitechlabs/quickdash/releases/tag/v5.1.1</guid>
+      <link>https://github.com/balajitechlabs/quickdash/releases</link>
+      <guid>https://github.com/balajitechlabs/quickdash/releases/tag/v5.1.1</guid>
       <pubDate>Mon, 15 Jul 2026 00:00:00 +0000</pubDate>
     </item>
     <item>
       <title>QuickDash is Now Open Source</title>
       <description>QuickDash has been released as open source under the PocketOps Custom Open Source Fork License. Source code available on GitHub.</description>
-      <link>https://github.com/Balajitechlabs/quickdash</link>
-      <guid>https://github.com/Balajitechlabs/quickdash</guid>
+      <link>https://github.com/balajitechlabs/quickdash</link>
+      <guid>https://github.com/balajitechlabs/quickdash</guid>
       <pubDate>Wed, 01 Jul 2026 00:00:00 +0000</pubDate>
     </item>
   </channel>

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/onboarding/presentation/components
+ * File: FeatureHighlightCard.kt
+ * Description: Visual presentation card showcasing individual tool features during onboarding.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.onboarding.presentation.components
 
 import androidx.compose.animation.*

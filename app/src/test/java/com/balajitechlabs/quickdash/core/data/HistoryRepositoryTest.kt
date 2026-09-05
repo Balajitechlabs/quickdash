@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/data
+ * File: HistoryRepositoryTest.kt
+ * Description: Unit tests for history repository querying, persistence, and clear operations.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.data
 
 import com.google.common.truth.Truth.assertThat
@@ -57,6 +66,26 @@ class HistoryRepositoryTest {
     fun `saveQrHistoryItem persists QR data`() = runTest {
         historyRepository.saveQrHistoryItem("100", "test", "user@upi", "GPay", "General")
         coVerify { historyRepository.saveQrHistoryItem("100", "test", "user@upi", "GPay", "General") }
+    }
+
+    @Test
+    fun `default HistoryPreferences has empty histories`() {
+        val defaultPrefs = HistoryPreferences.getDefaultInstance()
+        assertThat(defaultPrefs.searchHistoryList).isEmpty()
+        assertThat(defaultPrefs.notificationHistory).isEmpty()
+    }
+
+    @Test
+    fun `adding search item builds correct list ordering`() {
+        val builder = HistoryPreferences.newBuilder()
+        val list = mutableListOf("query1", "query2")
+        list.remove("query1")
+        list.add(0, "query1")
+
+        builder.clearSearchHistory().addAllSearchHistory(list)
+        val result = builder.build()
+
+        assertThat(result.searchHistoryList).containsExactly("query1", "query2").inOrder()
     }
 
     private fun emptyPrefs() = HistoryPreferences.getDefaultInstance()

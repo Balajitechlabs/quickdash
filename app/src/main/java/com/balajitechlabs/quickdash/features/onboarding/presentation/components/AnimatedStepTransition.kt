@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/onboarding/presentation/components
+ * File: AnimatedStepTransition.kt
+ * Description: Composable wrapper applying slide and fade animations between onboarding steps.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.onboarding.presentation.components
 
 import androidx.compose.animation.*

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: widget
+ * File: QuickDashWidget.kt
+ * Description: Glance AppWidget providing home-screen shortcuts to favorite QuickDash tools.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.widget
 
 import android.content.Context
@@ -42,7 +51,7 @@ import com.balajitechlabs.quickdash.R
 import com.balajitechlabs.quickdash.features.dashboard.presentation.FloatingDialogActivity
 
 /**
- * ⚡ QuickDash Glance Home Screen Widgets (`QuickDashWidget.kt`).
+ * QuickDash Glance Home Screen Widgets (`QuickDashWidget.kt`).
  * Supports:
  * - 1-Tap Floating Bubble On/Off Toggle from home screen
  * - Material You dynamic theming & dark/light mode
@@ -175,7 +184,7 @@ class QuickDashWidget : GlanceAppWidget() {
                 }
                 Spacer(modifier = GlanceModifier.width(8.dp))
                 Text(
-                    text = "QuickDash ⚡",
+                    text = "QuickDash",
                     style = TextStyle(
                         color = GlanceTheme.colors.onSurface,
                         fontSize = 14.sp,

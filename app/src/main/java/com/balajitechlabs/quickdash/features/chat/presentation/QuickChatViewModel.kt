@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/chat/presentation
+ * File: QuickChatViewModel.kt
+ * Description: ViewModel managing country code selections, recent phone numbers, and chat message history.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.chat.presentation
 
 import androidx.lifecycle.ViewModel

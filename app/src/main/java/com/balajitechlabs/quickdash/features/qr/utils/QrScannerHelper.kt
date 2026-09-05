@@ -1,93 +1,74 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/qr/utils
+ * File: QrScannerHelper.kt
+ * Description: Helper managing camera permissions, ZXing scanner intent dispatch, and result extraction.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.qr.utils
 
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
+import com.balajitechlabs.quickdash.features.qr.presentation.QrScanActivity
+import com.journeyapps.barcodescanner.ScanOptions
 
 /**
- * 📷 Safe QR Scanner Helper (`QrScannerHelper.kt`)
- * Invokes Google Code Scanner via pure runtime reflection if present,
- * or gracefully falls back to system scanner / ZXing with ZERO compile-time Google ML Kit dependencies.
+ * Universal QR & Barcode Scanner Helper (`QrScannerHelper.kt`).
+ * Powered by open-source ZXing Android Embedded.
+ * Detects all 1D barcodes (EAN-13, EAN-8, UPC, Code 128, etc.) and 2D codes (QR, Aztec, Data Matrix, PDF417).
  */
 object QrScannerHelper {
+
+    private var scanCallback: ((String) -> Unit)? = null
+    private var errorCallback: ((String) -> Unit)? = null
+
+    fun defaultOptions(prompt: String = "Point camera at a QR code or barcode"): ScanOptions {
+        return ScanOptions().apply {
+            setPrompt(prompt)
+            setBeepEnabled(true)
+            setOrientationLocked(true)
+            setBarcodeImageEnabled(false)
+            setDesiredBarcodeFormats(ScanOptions.ALL_CODE_TYPES)
+            setCaptureActivity(com.balajitechlabs.quickdash.features.qr.presentation.CustomCaptureActivity::class.java)
+        }
+    }
 
     fun startScan(
         context: Context,
         onResult: (String) -> Unit,
         onError: (String) -> Unit = {}
     ) {
+        scanCallback = onResult
+        errorCallback = onError
+
         try {
-            val scannerClass = Class.forName("com.google.mlkit.vision.codescanner.GmsBarcodeScanning")
-            val getClientMethod = scannerClass.getMethod("getClient", Context::class.java)
-            val scannerInstance = getClientMethod.invoke(null, context)
-
-            val barcodeScannerClass = Class.forName("com.google.mlkit.vision.codescanner.GmsBarcodeScanner")
-            val startScanMethod = barcodeScannerClass.getMethod("startScan")
-            val taskInstance = startScanMethod.invoke(scannerInstance) ?: run {
-                onError("Scanner task initialization failed")
-                return
+            val intent = Intent(context, QrScanActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
-
-            // Reflectively attach addOnSuccessListener
-            val taskClass = Class.forName("com.google.android.gms.tasks.Task")
-            val successListenerClass = Class.forName("com.google.android.gms.tasks.OnSuccessListener")
-            val proxyHandler = java.lang.reflect.InvocationHandler { _, method, args ->
-                if (method.name == "onSuccess" && args != null && args.isNotEmpty()) {
-                    try {
-                        val barcode = args[0]
-                        val getRawValueMethod = barcode.javaClass.getMethod("getRawValue")
-                        val rawValue = getRawValueMethod.invoke(barcode) as? String
-                        if (!rawValue.isNullOrBlank()) {
-                            onResult(rawValue)
-                        } else {
-                            onError("No barcode data found")
-                        }
-                    } catch (e: Exception) {
-                        onError("Failed to read barcode: ${e.message}")
-                    }
-                }
-                null
-            }
-
-            val proxyListener = java.lang.reflect.Proxy.newProxyInstance(
-                successListenerClass.classLoader,
-                arrayOf(successListenerClass),
-                proxyHandler
-            )
-
-            val addSuccessMethod = taskClass.getMethod("addOnSuccessListener", successListenerClass)
-            addSuccessMethod.invoke(taskInstance, proxyListener)
-
-            // Reflectively attach addOnFailureListener
-            val failureListenerClass = Class.forName("com.google.android.gms.tasks.OnFailureListener")
-            val failureProxyHandler = java.lang.reflect.InvocationHandler { _, method, args ->
-                if (method.name == "onFailure" && args != null && args.isNotEmpty()) {
-                    val ex = args[0] as? Exception
-                    onError("Scanner failed: ${ex?.localizedMessage ?: ex?.message ?: "Unknown error"}")
-                }
-                null
-            }
-
-            val failureProxyListener = java.lang.reflect.Proxy.newProxyInstance(
-                failureListenerClass.classLoader,
-                arrayOf(failureListenerClass),
-                failureProxyHandler
-            )
-
-            val addFailureMethod = taskClass.getMethod("addOnFailureListener", failureListenerClass)
-            addFailureMethod.invoke(taskInstance, failureProxyListener)
-
-        } catch (_: Throwable) {
-            // FOSS Mode: Launch system scanner intent
-            try {
-                val intent = Intent("com.google.zxing.client.android.SCAN").apply {
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-                context.startActivity(intent)
-            } catch (e: Exception) {
-                Toast.makeText(context, "Please install a QR Scanner app or ZXing Barcode Scanner.", Toast.LENGTH_LONG).show()
-                onError("Scanner component not available on this device")
-            }
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            onError("Unable to launch camera scanner: ${e.message}")
         }
+    }
+
+    fun onScanResult(result: String?) {
+        if (!result.isNullOrBlank()) {
+            scanCallback?.invoke(result)
+        } else {
+            errorCallback?.invoke("Scanning cancelled")
+        }
+        clearCallbacks()
+    }
+
+    fun onScanError(error: String) {
+        errorCallback?.invoke(error)
+        clearCallbacks()
+    }
+
+    private fun clearCallbacks() {
+        scanCallback = null
+        errorCallback = null
     }
 }

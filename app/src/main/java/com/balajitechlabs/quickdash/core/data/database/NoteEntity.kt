@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/data/database
+ * File: NoteEntity.kt
+ * Description: Room entity representing an individual user note with timestamp, title, and body content.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.data.database
 
 import androidx.room.Entity

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/data
+ * File: HistorySerializer.kt
+ * Description: JSON serialization and deserialization helpers for polymorphic history and event records.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.data
 
 import androidx.datastore.core.Serializer

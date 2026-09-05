@@ -1,5 +1,17 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/ui
+ * File: QuickDashApp.kt
+ * Description: Root composable scaffold managing the bottom navigation, floating toolbar, theme container, and screen transitions.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.ui
 
+
+import com.google.gson.reflect.TypeToken
+import com.google.gson.Gson
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -9,6 +21,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -20,6 +33,12 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.foundation.layout.offset
+import androidx.compose.runtime.mutableFloatStateOf
+import kotlin.math.roundToInt
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +46,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,11 +59,32 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.rounded.Lightbulb
+import androidx.compose.material.icons.rounded.QrCodeScanner
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.CloudDownload
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import com.balajitechlabs.quickdash.core.ui.components.AppUpdateBottomSheet
+import com.balajitechlabs.quickdash.core.ui.components.DownloadingProgressDialog
+import com.balajitechlabs.quickdash.core.ui.components.ReadyToInstallDialog
+import com.balajitechlabs.quickdash.BuildConfig
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.asComposeRenderEffect
+import android.graphics.RenderEffect
+import android.graphics.Shader
+import android.os.Build
 import androidx.compose.ui.zIndex
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -74,6 +115,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.key
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
+import com.balajitechlabs.quickdash.features.dashboard.presentation.SpotlightLauncher
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -100,7 +142,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
 import com.balajitechlabs.quickdash.R
 import com.balajitechlabs.quickdash.core.data.UserStore
-import com.balajitechlabs.quickdash.features.dashboard.presentation.DashboardScreen
+import com.balajitechlabs.quickdash.core.ui.QuickTool
 import com.balajitechlabs.quickdash.features.settings.presentation.BlogPostsScreen
 import com.balajitechlabs.quickdash.features.qr.presentation.EnterAmountScreen
 import com.balajitechlabs.quickdash.features.chat.presentation.QuickChatScreen
@@ -112,7 +154,6 @@ import com.balajitechlabs.quickdash.features.wifi.presentation.QuickWifiScreen
 import com.balajitechlabs.quickdash.features.converter.presentation.QuickConverterScreen
 import com.balajitechlabs.quickdash.features.translator.presentation.QuickTranslatorScreen
 import com.balajitechlabs.quickdash.features.capture.presentation.QuickCaptureScreen
-import com.balajitechlabs.quickdash.features.dashboard.presentation.QuickTool
 import com.balajitechlabs.quickdash.features.settings.presentation.SystemLogsScreen
 import com.balajitechlabs.quickdash.features.qr.presentation.SetupScreen
 import com.balajitechlabs.quickdash.features.qr.presentation.ShowQrScreen
@@ -122,55 +163,16 @@ import com.balajitechlabs.quickdash.features.settings.presentation.SettingsScree
 import com.balajitechlabs.quickdash.core.utils.QRCodeGenerator
 import com.balajitechlabs.quickdash.core.utils.UpdateManager
 import com.balajitechlabs.quickdash.core.utils.UpdateState
-import com.balajitechlabs.quickdash.core.ui.components.WhatsNewDialog
-import com.balajitechlabs.quickdash.core.ui.components.AppUpdateDialog
-import com.balajitechlabs.quickdash.features.eyedropper.presentation.QuickColorEyedropperScreen
 import com.balajitechlabs.quickdash.features.pomodoro.presentation.QuickPomodoroScreen
 import com.balajitechlabs.quickdash.features.password.presentation.QuickPasswordScreen
-import com.balajitechlabs.quickdash.features.discount.presentation.QuickDiscountScreen
-import com.balajitechlabs.quickdash.features.exchange.presentation.QuickExchangeScreen
 import com.balajitechlabs.quickdash.features.voicememos.presentation.QuickVoiceMemosScreen
 import com.balajitechlabs.quickdash.features.reminders.presentation.QuickRemindersScreen
 import com.balajitechlabs.quickdash.features.qr.presentation.QuickQrScannerScreen
+import com.balajitechlabs.quickdash.features.onboarding.presentation.WelcomeOnboardingScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import android.widget.Toast
 
 private const val TAG = "QuickDashApp"
-
-sealed interface QuickDashUiState {
-    data object Onboarding : QuickDashUiState
-    data object Dashboard : QuickDashUiState
-    data class Setup(val isManaging: Boolean) : QuickDashUiState
-    data class EnterAmount(val upiIds: List<String>, val defaultUpiId: String) : QuickDashUiState
-    data class ShowQr(
-        val amount: String, val qrBitmap: android.graphics.Bitmap, val upiId: String, val payeeName: String, val payUrl: String
-    ) : QuickDashUiState
-
-    data object WhatsApp : QuickDashUiState // Represents Chat in PRD
-    data object Instagram : QuickDashUiState // Represents Insta in PRD
-    data object Settings : QuickDashUiState
-    data object SystemLogs : QuickDashUiState
-    data object Notes : QuickDashUiState
-    data object Search : QuickDashUiState
-    data object Web : QuickDashUiState
-    data object Wifi : QuickDashUiState
-    data object Hotspot : QuickDashUiState
-    data object ApiPanel : QuickDashUiState
-    data object Clipboard : QuickDashUiState
-    data object Calculator : QuickDashUiState
-    data object Timer : QuickDashUiState
-    data object Converter : QuickDashUiState
-    data object Translator : QuickDashUiState
-    data object Capture : QuickDashUiState
-    data object FirebaseSetup : QuickDashUiState
-    data object BlogPosts : QuickDashUiState
-    data object Eyedropper : QuickDashUiState
-    data object Pomodoro : QuickDashUiState
-    data object Password : QuickDashUiState
-    data object Discount : QuickDashUiState
-    data object Exchange : QuickDashUiState
-    data object VoiceMemos : QuickDashUiState
-    data object Reminders : QuickDashUiState
-    data object QrScanner : QuickDashUiState
-}
 
 @Composable
 fun QuickDashApp(
@@ -187,36 +189,54 @@ fun QuickDashApp(
     onChangeThemeMode: (String) -> Unit = {},
     onQrShown: () -> Unit = {},
     onRestoreBrightness: () -> Unit = {},
-    onDismiss: () -> Unit = {},
-    onConvertToFullScreen: (() -> Unit)? = null
+    onDismiss: () -> Unit = {}
 ) {
-    val savedUpiIds by mainViewModel.userStore.upiIds.collectAsState(initial = emptyList())
-    val savedPaypalIds by mainViewModel.userStore.paypalIds.collectAsState(initial = emptyList())
-    val usePaypal by mainViewModel.userStore.usePaypal.collectAsState(initial = false)
-    val defaultPaymentApp by mainViewModel.userStore.defaultPaymentApp.collectAsState(initial = "ANY")
-    val qrHistoryJson by mainViewModel.userStore.qrHistory.collectAsState(initial = "[]")
+    val savedUpiIds by mainViewModel.userStore.upiIds.collectAsStateWithLifecycle(initialValue = emptyList())
+    val savedPaypalIds by mainViewModel.userStore.paypalIds.collectAsStateWithLifecycle(initialValue = emptyList())
+    val usePaypal by mainViewModel.userStore.usePaypal.collectAsStateWithLifecycle(initialValue = false)
+    val defaultPaymentApp by mainViewModel.userStore.defaultPaymentApp.collectAsStateWithLifecycle(initialValue = "ANY")
+    val qrHistoryJson by mainViewModel.userStore.qrHistory.collectAsStateWithLifecycle(initialValue = "[]")
     
     // Choose active IDs based on mode
     val activeIds = if (usePaypal) savedPaypalIds else savedUpiIds
     
-    val savedDefaultUpiId by mainViewModel.userStore.defaultUpiId.collectAsState(initial = null)
-    val savedDefaultPaypalId by mainViewModel.userStore.defaultPaypalId.collectAsState(initial = null)
+    val savedDefaultUpiId by mainViewModel.userStore.defaultUpiId.collectAsStateWithLifecycle(initialValue = null)
+    val savedDefaultPaypalId by mainViewModel.userStore.defaultPaypalId.collectAsStateWithLifecycle(initialValue = null)
     val activeDefaultId = if (usePaypal) savedDefaultPaypalId ?: savedPaypalIds.firstOrNull() ?: "" else savedDefaultUpiId ?: savedUpiIds.firstOrNull() ?: ""
 
-    val savedPayeeName by mainViewModel.userStore.payeeName.collectAsState(initial = null)
-    val recentAmounts by mainViewModel.userStore.recentAmounts.collectAsState(initial = emptyList())
-    val showUpiId by mainViewModel.userStore.showUpiId.collectAsState(initial = true)
+    val savedPayeeName by mainViewModel.userStore.payeeName.collectAsStateWithLifecycle(initialValue = null)
+    val recentAmounts by mainViewModel.userStore.recentAmounts.collectAsStateWithLifecycle(initialValue = emptyList())
+    val showUpiId by mainViewModel.userStore.showUpiId.collectAsStateWithLifecycle(initialValue = true)
     
-    val bubbleEnabled by mainViewModel.userStore.bubbleEnabled.collectAsState(initial = true)
-    val emojiHeaderVal by mainViewModel.userStore.emojiHeader.collectAsState(initial = "🚀")
+    val bubbleEnabled by mainViewModel.userStore.bubbleEnabled.collectAsStateWithLifecycle(initialValue = true)
+    val emojiHeaderVal by mainViewModel.userStore.emojiHeader.collectAsStateWithLifecycle(initialValue = "")
 
     val scope = rememberCoroutineScope()
     val qrColorVal = MaterialTheme.colorScheme.primary.toArgb()
     val qrSecondaryColorVal = MaterialTheme.colorScheme.secondary.toArgb()
     val appContext = LocalContext.current
     
-    val navigationStack = remember { mutableStateListOf<QuickDashUiState>(QuickDashUiState.Dashboard) }
-    val uiState = navigationStack.lastOrNull() ?: QuickDashUiState.Dashboard
+    val isOnboardingCompleteFlow = mainViewModel.userStore.isOnboardingComplete.collectAsStateWithLifecycle(initialValue = null)
+    val isOnboardingComplete = isOnboardingCompleteFlow.value
+    
+    val navigationStack = remember { mutableStateListOf<QuickDashUiState>() }
+    
+    LaunchedEffect(isOnboardingComplete) {
+        if (isOnboardingComplete == false) {
+            navigationStack.clear()
+            navigationStack.add(QuickDashUiState.Onboarding)
+        } else if (isOnboardingComplete == true) {
+            if (navigationStack.isEmpty() || navigationStack.contains(QuickDashUiState.Onboarding)) {
+                navigationStack.clear()
+                navigationStack.add(QuickDashUiState.Dashboard)
+            }
+        }
+    }
+    val uiState = when {
+        isOnboardingComplete == false -> QuickDashUiState.Onboarding
+        navigationStack.isNotEmpty() -> navigationStack.last()
+        else -> QuickDashUiState.Dashboard
+    }
 
     var showNotificationPopup by remember { mutableStateOf(false) }
     var showSettingsPopupHoisted by remember { mutableStateOf(false) }
@@ -229,13 +249,7 @@ fun QuickDashApp(
         } else if (navigationStack.size > 1) {
             navigationStack.removeAt(navigationStack.lastIndex)
         } else {
-            val currentTime = System.currentTimeMillis()
-            if (currentTime - backPressedTime < 2000) {
-                (appContext as? android.app.Activity)?.finishAndRemoveTask()
-            } else {
-                backPressedTime = currentTime
-                android.widget.Toast.makeText(appContext, "Press back again to exit", android.widget.Toast.LENGTH_SHORT).show()
-            }
+            onDismiss()
         }
     }
     
@@ -248,37 +262,70 @@ fun QuickDashApp(
             com.balajitechlabs.quickdash.features.qr.utils.QrScannerHelper.startScan(
                 context = appContext,
                 onResult = { raw ->
-                    var rawValue = raw.trim().replace(Regex("[\\p{Cc}\\p{Cf}]"), "")
-                    if (rawValue.startsWith("upi://") || rawValue.startsWith("gpay://") || rawValue.startsWith("phonepe://") || rawValue.startsWith("paytmmp://") || rawValue.startsWith("bhim://")) {
-                        try {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue)).apply {
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            }
-                            appContext.startActivity(intent)
-                        } catch (e: Exception) {
+                    val rawValue = raw.trim().replace(Regex("[\\p{Cc}\\p{Cf}]"), "")
+                    val lower = rawValue.lowercase()
+
+                    when {
+                        // 1. Wi-Fi QR Code Routing
+                        rawValue.startsWith("WIFI:", ignoreCase = true) -> {
+                            val ssid = Regex("S:([^;]+)").find(rawValue)?.groupValues?.get(1) ?: "Network"
+                            val pass = Regex("P:([^;]+)").find(rawValue)?.groupValues?.get(1) ?: ""
                             val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                            cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned UPI", rawValue))
-                            android.widget.Toast.makeText(appContext, "Failed to launch payment app. Copied link.", android.widget.Toast.LENGTH_LONG).show()
+                            cm.setPrimaryClip(android.content.ClipData.newPlainText("Wi-Fi Password", pass))
+                            Toast.makeText(appContext, "Wi-Fi: $ssid (Password copied)", Toast.LENGTH_LONG).show()
+                            navigationStack.add(QuickDashUiState.Wifi)
                         }
-                    } else if (rawValue.startsWith("http://") || rawValue.startsWith("https://")) {
-                        try {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue)).apply {
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+                        // 2. Direct Chat QR Routing (WhatsApp / Telegram)
+                        lower.contains("wa.me/") || lower.contains("whatsapp://send") || lower.contains("api.whatsapp.com/") || lower.contains("t.me/") -> {
+                            var phone = Regex("[?&]phone=([+0-9]+)").find(rawValue)?.groupValues?.get(1)
+                            if (phone == null) {
+                                phone = Regex("wa\\.me/([+0-9]+)").find(rawValue)?.groupValues?.get(1)
                             }
-                            appContext.startActivity(intent)
-                        } catch (e: Exception) {
                             val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                            cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned Link", rawValue))
-                            android.widget.Toast.makeText(appContext, "Scanned: $rawValue (Copied)", android.widget.Toast.LENGTH_LONG).show()
+                            cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned Contact", phone ?: rawValue))
+                            Toast.makeText(appContext, "Chat Contact Loaded", Toast.LENGTH_SHORT).show()
+                            navigationStack.add(QuickDashUiState.WhatsApp)
                         }
-                    } else {
-                        val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                        cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned QR", rawValue))
-                        android.widget.Toast.makeText(appContext, "Scanned: $rawValue (Copied)", android.widget.Toast.LENGTH_LONG).show()
+
+                        // 3. Payment / UPI QR Routing
+                        rawValue.startsWith("upi://") || rawValue.startsWith("gpay://") || rawValue.startsWith("phonepe://") || rawValue.startsWith("paytmmp://") || rawValue.startsWith("bhim://") -> {
+                            try {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue)).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                appContext.startActivity(intent)
+                            } catch (e: Exception) {
+                                val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                                cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned UPI", rawValue))
+                                Toast.makeText(appContext, "Failed to launch payment app. Copied UPI link.", Toast.LENGTH_LONG).show()
+                            }
+                        }
+
+                        // 4. Web URLs
+                        rawValue.startsWith("http://") || rawValue.startsWith("https://") -> {
+                            try {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue)).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                appContext.startActivity(intent)
+                            } catch (e: Exception) {
+                                val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                                cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned Link", rawValue))
+                                Toast.makeText(appContext, "Scanned: $rawValue (Copied)", Toast.LENGTH_LONG).show()
+                            }
+                        }
+
+                        // 5. Plain Text / Clipboard fallback
+                        else -> {
+                            val cm = appContext.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                            cm.setPrimaryClip(android.content.ClipData.newPlainText("Scanned Content", rawValue))
+                            Toast.makeText(appContext, "Saved to QuickDash Clipboard", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 },
                 onError = { err ->
-                    android.widget.Toast.makeText(appContext, err, android.widget.Toast.LENGTH_SHORT).show()
+                    Toast.makeText(appContext, err, Toast.LENGTH_SHORT).show()
                 }
             )
         }
@@ -290,12 +337,33 @@ fun QuickDashApp(
         }
     }
 
+    val onNavigateToTab: (Int) -> Unit = { index ->
+        while (navigationStack.size > 1) {
+            navigationStack.removeAt(navigationStack.lastIndex)
+        }
+        when (index) {
+            0 -> navigationStack.add(QuickDashUiState.Settings)
+            1 -> { /* Root is Dashboard */ }
+            2 -> navigationStack.add(QuickDashUiState.About)
+        }
+    }
+
 
 
     // showNotificationPopup is passed in as a parameter
 
-    LaunchedEffect(processedShortcut) {
+    LaunchedEffect(processedShortcut, isOnboardingComplete) {
         val action = processedShortcut ?: return@LaunchedEffect
+        if (action == Intent.ACTION_MAIN || action == "android.intent.action.MAIN") {
+            processedShortcut = null
+            return@LaunchedEffect
+        }
+        // Wait for onboarding state to be resolved from DataStore before processing
+        if (isOnboardingComplete == null) return@LaunchedEffect
+        if (isOnboardingComplete != true) {
+            processedShortcut = null
+            return@LaunchedEffect
+        }
         navigationStack.clear()
         navigationStack.add(QuickDashUiState.Dashboard)
         val targetState = when (action) {
@@ -321,16 +389,25 @@ fun QuickDashApp(
                     QuickDashUiState.Setup(isManaging = false)
                 }
             }
-            "com.balajitechlabs.quickdash.ACTION_QUICK_CHAT" -> QuickDashUiState.WhatsApp
-            "com.balajitechlabs.quickdash.ACTION_QUICK_INSTA" -> QuickDashUiState.Instagram
-            "com.balajitechlabs.quickdash.ACTION_QUICK_NOTES" -> QuickDashUiState.Notes
-            "com.balajitechlabs.quickdash.ACTION_QUICK_SEARCH" -> QuickDashUiState.Search
-            "com.balajitechlabs.quickdash.ACTION_QUICK_WEB" -> QuickDashUiState.Web
-            "com.balajitechlabs.quickdash.ACTION_QUICK_SETTINGS" -> QuickDashUiState.Settings
+            "com.balajitechlabs.quickdash.ACTION_QUICK_CHAT"       -> QuickDashUiState.WhatsApp
+            "com.balajitechlabs.quickdash.ACTION_QUICK_INSTA"      -> QuickDashUiState.Instagram
+            "com.balajitechlabs.quickdash.ACTION_QUICK_NOTES"      -> QuickDashUiState.Notes
+            "com.balajitechlabs.quickdash.ACTION_QUICK_SEARCH",
+            "com.balajitechlabs.quickdash.ACTION_QUICK_WEB"        -> QuickDashUiState.Web
+            "com.balajitechlabs.quickdash.ACTION_QUICK_SETTINGS"   -> QuickDashUiState.Settings
             "com.balajitechlabs.quickdash.ACTION_QUICK_CALCULATOR" -> QuickDashUiState.Calculator
-            "com.balajitechlabs.quickdash.ACTION_QUICK_TIMER" -> QuickDashUiState.Timer
-            "com.balajitechlabs.quickdash.ACTION_QUICK_CLIPBOARD" -> QuickDashUiState.Clipboard
-            "com.balajitechlabs.quickdash.ACTION_QUICK_WIFI" -> QuickDashUiState.Wifi
+            "com.balajitechlabs.quickdash.ACTION_QUICK_TIMER"      -> QuickDashUiState.Timer
+            "com.balajitechlabs.quickdash.ACTION_QUICK_POMODORO"   -> QuickDashUiState.Pomodoro
+            "com.balajitechlabs.quickdash.ACTION_QUICK_CLIPBOARD"  -> QuickDashUiState.Clipboard
+            "com.balajitechlabs.quickdash.ACTION_QUICK_WIFI"       -> QuickDashUiState.Wifi
+            "com.balajitechlabs.quickdash.ACTION_QUICK_CAPTURE"    -> QuickDashUiState.Capture
+            "com.balajitechlabs.quickdash.ACTION_QUICK_PASSWORD"   -> QuickDashUiState.Password
+            "com.balajitechlabs.quickdash.ACTION_QUICK_QRSCANNER"  -> QuickDashUiState.QrScanner
+            "com.balajitechlabs.quickdash.ACTION_QUICK_VOICEMEMOS" -> QuickDashUiState.VoiceMemos
+            "com.balajitechlabs.quickdash.ACTION_QUICK_CONVERTER"  -> QuickDashUiState.Converter
+            "com.balajitechlabs.quickdash.ACTION_QUICK_TRANSLATOR" -> QuickDashUiState.Translator
+            "com.balajitechlabs.quickdash.ACTION_QUICK_REMINDERS"  -> QuickDashUiState.Reminders
+            "com.balajitechlabs.quickdash.ACTION_QUICK_CONTACTQR"  -> QuickDashUiState.ContactQr
             else -> QuickDashUiState.Dashboard
         }
         if (targetState != QuickDashUiState.Dashboard) {
@@ -352,7 +429,7 @@ fun QuickDashApp(
         showUpiId = showUpiId,
         themeMode = themeMode,
         dynamicColor = dynamicColor,
-        hapticEnabled = mainViewModel.userStore.hapticEnabled.collectAsState(initial = true).value,
+        hapticEnabled = mainViewModel.userStore.hapticEnabled.collectAsStateWithLifecycle(initialValue = true).value,
         onToggleDynamicColor = onToggleDynamicColor,
         onChangeThemeMode = onChangeThemeMode,
         payeeName = savedPayeeName,
@@ -411,16 +488,16 @@ fun QuickDashApp(
             scope.launch {
                 mainViewModel.userStore.saveQrHistoryItem(amount, note, selectedId, targetApp.name, category)
                 val bitmap = withContext(Dispatchers.Default) {
-                    val useEmoji = mainViewModel.userStore.qrUseEmojiOverlay.first()
                     QRCodeGenerator.generateQRCode(
                         context = appContext,
                         text = payURL,
-                        width = 1024,
-                        height = 1024,
-                        qrColor = qrColorVal,
-                        centerEmoji = if (useEmoji) emojiHeaderVal else null,
-                        qrGradientColors = if (useGradient) Pair(qrColorVal, qrSecondaryColorVal) else null,
-                        useCircularDots = useCircularDots
+                        width = 512,
+                        height = 512,
+                        qrColor = android.graphics.Color.BLACK,
+                        centerEmoji = null,
+                        qrGradientColors = null,
+                        useCircularDots = false,
+                        addBrandingFooter = true
                     )
                 }
                 navigateTo(
@@ -447,7 +524,7 @@ fun QuickDashApp(
                     if (activeIds.isEmpty()) QuickDashUiState.Setup(isManaging = false)
                     else QuickDashUiState.EnterAmount(activeIds, activeDefaultId.ifEmpty { activeIds.first() })
                 }
-                QuickTool.WHATSAPP -> QuickDashUiState.WhatsApp
+                QuickTool.CHAT, QuickTool.WHATSAPP -> QuickDashUiState.WhatsApp
                 QuickTool.INSTAGRAM -> QuickDashUiState.Instagram
                 QuickTool.NOTES -> QuickDashUiState.Notes
                 QuickTool.SEARCH -> QuickDashUiState.Search
@@ -458,14 +535,12 @@ fun QuickDashApp(
                 QuickTool.CONVERTER -> QuickDashUiState.Converter
                 QuickTool.TRANSLATOR -> QuickDashUiState.Translator
                 QuickTool.CAPTURE -> QuickDashUiState.Capture
-                QuickTool.EYEDROPPER -> QuickDashUiState.Eyedropper
                 QuickTool.POMODORO -> QuickDashUiState.Pomodoro
                 QuickTool.PASSWORD -> QuickDashUiState.Password
-                QuickTool.DISCOUNT -> QuickDashUiState.Discount
-                QuickTool.EXCHANGE -> QuickDashUiState.Exchange
                 QuickTool.VOICEMEMOS -> QuickDashUiState.VoiceMemos
                 QuickTool.REMINDERS -> QuickDashUiState.Reminders
                 QuickTool.QRSCANNER -> QuickDashUiState.QrScanner
+                QuickTool.CONTACT_QR -> QuickDashUiState.ContactQr
             }
             navigateTo(targetState)
         },
@@ -486,8 +561,9 @@ fun QuickDashApp(
         },
         onOnboardingComplete = {
             scope.launch {
-                mainViewModel.userStore.setOnboardingComplete()
-                navigationStack.removeAt(navigationStack.lastIndex)
+                val store = mainViewModel.userStore
+                store.setOnboardingComplete()
+                navigationStack.clear()
                 navigationStack.add(QuickDashUiState.Dashboard)
             }
         },
@@ -497,1247 +573,11 @@ fun QuickDashApp(
                 mainViewModel.userStore.setBubbleEnabled(enabled)
             }
         },
-        onConvertToFullScreen = onConvertToFullScreen,
         onNavigateToSystemLogs = { navigateTo(QuickDashUiState.SystemLogs) },
+        onNavigateTo = { navigateTo(it) },
+        onNavigateToTab = onNavigateToTab,
         showNotificationPopup = showNotificationPopup,
-        onToggleNotificationPopup = { showNotificationPopup = it }
+        onNavigateToBubbleCustomizer = { navigateTo(QuickDashUiState.BubbleCustomizer) }
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
-@Composable
-fun QuickDashContent(
-    mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
-    uiState: QuickDashUiState,
-    usePaypal: Boolean = false,
-    onTogglePaypal: (Boolean) -> Unit = {},
-    isFloating: Boolean = false,
-    recentAmounts: List<String> = emptyList(),
-    upiIds: List<String> = emptyList(),
-    defaultUpiId: String? = null,
-    payeeName: String? = null,
-    showUpiId: Boolean = true,
-    themeMode: String = "SYSTEM",
-    dynamicColor: Boolean = false,
-    hapticEnabled: Boolean = true,
-    onChangeThemeMode: (String) -> Unit = {},
-    onToggleDynamicColor: (Boolean) -> Unit = {},
-    showChatSettings: Boolean = false,
-    onToggleChatSettings: (Boolean) -> Unit = {},
-    selectingCountry: Boolean = false,
-    onToggleSelectingCountry: (Boolean) -> Unit = {},
-    defaultPaymentApp: String = "ANY",
-    qrHistoryJson: String = "[]",
-    onClearQrHistory: () -> Unit = {},
-    onScanQr: () -> Unit = {},
-    onSaveUpiIds: (List<String>, String, String) -> Unit,
-    onGenerateQr: (String, String, String, PaymentTargetApp, String, Boolean, Boolean) -> Unit,
-    onManageUpiIds: () -> Unit,
-    onBackToHome: () -> Unit,
-    onOpenSettings: () -> Unit = {},
-    onToolSelected: (QuickTool) -> Unit = {},
-    onQrShown: () -> Unit = {},
-    onRestoreBrightness: () -> Unit = {},
-    onDismiss: () -> Unit = {},
-    onGenerateWifiQr: (String) -> Unit = {},
-    onOnboardingComplete: () -> Unit = {},
-    bubbleEnabled: Boolean = true,
-    onToggleBubble: (Boolean) -> Unit = {},
-    onConvertToFullScreen: (() -> Unit)? = null,
-    onNavigateToSystemLogs: () -> Unit = {},
-    showNotificationPopup: Boolean = false,
-    onToggleNotificationPopup: (Boolean) -> Unit = {}
-) {
-
-
-    var showSettingsPopup by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-
-    val updateState = UpdateManager.updateState
-    val showUpdateDialog = remember(updateState) { mutableStateOf(true) }
-
-    var showWhatsNewOnLaunch by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        val lastSeen = mainViewModel.userStore.lastSeenVersion.first()
-        val currentVersion = try {
-            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            packageInfo.versionName ?: "5.2.1"
-        } catch (e: Exception) {
-            Log.e("QuickDashApp", "Failed to retrieve version from PackageManager", e)
-            "5.2.1"
-        }
-        if (lastSeen != currentVersion) {
-            showWhatsNewOnLaunch = true
-        }
-
-        // Clipboard auto-clean interval execution check
-        val interval = mainViewModel.userStore.clipboardAutocleanInterval.first()
-        val customDelay = mainViewModel.userStore.clipboardClearDelay.first()
-        val lastClean = mainViewModel.userStore.lastClipboardCleanTime.first()
-        val now = System.currentTimeMillis()
-        var shouldClean = false
-        
-        if (interval != "OFF") {
-            val intervalMs = when (interval) {
-                "1H" -> 3600000L
-                "12H" -> 43200000L
-                "1D" -> 86400000L
-                else -> 0L
-            }
-            if (intervalMs > 0 && now - lastClean >= intervalMs) {
-                shouldClean = true
-            }
-        }
-        if (customDelay > 0 && now - lastClean >= customDelay) {
-            shouldClean = true
-        }
-        if (shouldClean) {
-            mainViewModel.userStore.saveClipboardHistory("[]")
-            mainViewModel.userStore.saveLastClipboardCleanTime(now)
-        }
-    }
-    val emojiHeaderVal by mainViewModel.userStore.emojiHeader.collectAsState(initial = "🚀")
-    val qrUseEmojiOverlay by mainViewModel.userStore.qrUseEmojiOverlay.collectAsState(initial = false)
-    val confettiEnabled by mainViewModel.userStore.confettiEnabled.collectAsState(initial = true)
-    var triggerEmojiConfetti by remember { mutableStateOf(false) }
-    var emojiConfettiKey by remember { mutableStateOf(0) }
-    var settingsConfettiType by remember { mutableStateOf<String?>(null) }
-    var settingsConfettiKey by remember { mutableStateOf(0) }
-    var showFullScreenPrompt by remember { mutableStateOf(false) }
-
-    val rawPostsJson by mainViewModel.userStore.firebaseBlogPosts.collectAsState(initial = "[]")
-    val hiddenJson by mainViewModel.userStore.hiddenNotifications.collectAsState(initial = "[]")
-    val activeNotificationCount = remember(rawPostsJson, hiddenJson) {
-        try {
-            val gson = com.google.gson.Gson()
-            val postsType = object : com.google.gson.reflect.TypeToken<List<Map<String, Any>>>() {}.type
-            val posts: List<Map<String, Any>> = gson.fromJson(rawPostsJson, postsType) ?: emptyList()
-            val hiddenType = object : com.google.gson.reflect.TypeToken<Set<String>>() {}.type
-            val hidden: Set<String> = gson.fromJson(hiddenJson, hiddenType) ?: emptySet()
-            posts.count { post ->
-                val ts = (post["timestamp"] as? Number)?.toLong() ?: 0L
-                val key = "${ts}_${post["title"]}"
-                !hidden.contains(key)
-            }
-        } catch (_: Exception) { 0 }
-    }
-
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            val borderWidth = com.balajitechlabs.quickdash.core.ui.theme.LocalBorderWidth.current
-            val showShadow = com.balajitechlabs.quickdash.core.ui.theme.LocalShowShadow.current
-            val cardShape = MaterialTheme.shapes.medium
-
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                Box(
-                    modifier = if (isFloating) Modifier.fillMaxWidth().wrapContentHeight().animateContentSize(animationSpec = androidx.compose.animation.core.spring(stiffness = androidx.compose.animation.core.Spring.StiffnessHigh, dampingRatio = androidx.compose.animation.core.Spring.DampingRatioNoBouncy)) else Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                Surface(
-                    modifier = if (isFloating) {
-                        Modifier
-                            .padding(horizontal = 16.dp, vertical = 16.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .animateContentSize(animationSpec = androidx.compose.animation.core.spring(dampingRatio = 0.85f, stiffness = 400f))
-                            .then(if (showShadow) Modifier.shadow(8.dp, cardShape) else Modifier)
-                    } else {
-                        Modifier.fillMaxSize()
-                    },
-            tonalElevation = 6.dp,
-            shadowElevation = if (showShadow) 8.dp else 0.dp,
-            shape = if (isFloating) cardShape else RoundedCornerShape(0.dp),
-            border = if (isFloating) BorderStroke(borderWidth.dp, MaterialTheme.colorScheme.outlineVariant) else null,
-            color = MaterialTheme.colorScheme.surface,
-        ) {
-            Column(
-                modifier = Modifier
-                    .then(if (!isFloating) Modifier.statusBarsPadding().navigationBarsPadding() else Modifier)
-                    .padding(
-                        start = if (isFloating) 12.dp else 24.dp,
-                        end = if (isFloating) 12.dp else 24.dp,
-                        top = if (isFloating) 8.dp else 12.dp,
-                        bottom = if (isFloating) 8.dp else 16.dp
-                    )
-                    .fillMaxWidth()
-                    .then(if (isFloating) Modifier.wrapContentHeight() else Modifier),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
-            ) {
-                // ── Top Bar (M3 TopAppBar style) ──────────────────
-                Box(
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Box(
-                        modifier = Modifier.align(Alignment.CenterStart).wrapContentWidth(),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        if (uiState != QuickDashUiState.Dashboard) {
-                            FilledTonalIconButton(
-                                onClick = {
-                                    playClickVibration(context, hapticEnabled)
-                                    onBackToHome()
-                                },
-                                modifier = Modifier.size(40.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_arrow_back),
-                                    contentDescription = "Back",
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            }
-                        } else {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                IconButton(
-                                    onClick = {
-                                        playClickVibration(context, hapticEnabled)
-                                        onToggleNotificationPopup(true)
-                                    },
-                                    modifier = Modifier.size(36.dp)
-                                ) {
-                                    BadgedBox(
-                                        badge = {
-                                            if (activeNotificationCount > 0) {
-                                                Badge {
-                                                    Text(activeNotificationCount.toString())
-                                                }
-                                            }
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Notifications,
-                                            contentDescription = "Notifications",
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            modifier = Modifier.size(22.dp)
-                                        )
-                                    }
-                                }
-                                UpdateTag(
-                                    onShowUpdateDialog = { showUpdateDialog.value = true }
-                                )
-                            }
-                        }
-                    }
-
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 52.dp)
-                            .then(
-                                if (uiState == QuickDashUiState.Dashboard) {
-                                    Modifier.combinedClickable(
-                                        onClick = {},
-                                        onLongClick = {
-                                            playClickVibration(context, hapticEnabled)
-                                            val newBubbleState = !bubbleEnabled
-                                            if (newBubbleState && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(context)) {
-                                                android.widget.Toast.makeText(
-                                                    context,
-                                                    "Please enable 'Display over other apps' to use floating bubble 🚀",
-                                                    android.widget.Toast.LENGTH_SHORT
-                                                ).show()
-                                                try {
-                                                    val intent = Intent(
-                                                        android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                                        Uri.parse("package:${context.packageName}")
-                                                    ).apply {
-                                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                                    }
-                                                    context.startActivity(intent)
-                                                } catch (e: Exception) {
-                                                    Log.e("QuickDashApp", "Failed to open overlay settings", e)
-                                                }
-                                            } else {
-                                                onToggleBubble(newBubbleState)
-                                                val toastMsg = if (newBubbleState) "Floating Bubble Enabled 🚀" else "Floating Bubble Disabled 🛑"
-                                                android.widget.Toast.makeText(context, toastMsg, android.widget.Toast.LENGTH_SHORT).show()
-                                            }
-                                        }
-                                    )
-                                } else Modifier
-                            )
-                    ) {
-                        Text(
-                            text = when (uiState) {
-                                QuickDashUiState.Onboarding -> "Welcome to QuickDash"
-                                QuickDashUiState.WhatsApp -> if (selectingCountry) "Select Country" else if (showChatSettings) "Chat Settings" else "Quick Chat"
-                                QuickDashUiState.Instagram -> "Quick Social Access"
-                                QuickDashUiState.Settings -> "Settings"
-                                QuickDashUiState.SystemLogs -> "System Logs"
-                                QuickDashUiState.Notes -> "Quick Notes"
-                                QuickDashUiState.Search -> "Quick Search"
-                                QuickDashUiState.Wifi -> "Quick Wi-Fi"
-                                QuickDashUiState.Clipboard -> "Clipboard"
-                                QuickDashUiState.Calculator -> "Calculator"
-                                QuickDashUiState.Timer -> "Timer"
-                                QuickDashUiState.Converter -> "Quick Converter"
-                                QuickDashUiState.Translator -> "Quick Translator"
-                                QuickDashUiState.Capture -> "Quick Capture"
-                                QuickDashUiState.Eyedropper -> "Quick Eyedropper"
-                                QuickDashUiState.Pomodoro -> "Quick Pomodoro"
-                                QuickDashUiState.Password -> "Quick Password"
-                                QuickDashUiState.Discount -> "Quick Discount"
-                                QuickDashUiState.Exchange -> "Quick Exchange"
-                                QuickDashUiState.VoiceMemos -> "Quick Voice Memos"
-                                QuickDashUiState.Reminders -> "Quick Reminders"
-                                QuickDashUiState.QrScanner -> "Quick QR Scanner"
-                                is QuickDashUiState.Setup,
-                                is QuickDashUiState.EnterAmount,
-                                is QuickDashUiState.ShowQr -> "Quick Collect"
-                                else -> "QuickDash"
-                            },
-                            style = if (isFloating) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            textAlign = TextAlign.Center,
-                            maxLines = 1,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                        )
-                        if (uiState == QuickDashUiState.Dashboard) {
-                            Text(
-                                text = emojiHeaderVal,
-                                style = if (isFloating) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleLarge,
-                                modifier = Modifier
-                                    .clickable {
-                                        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as? android.media.AudioManager
-                                        audioManager?.playSoundEffect(android.media.AudioManager.FX_KEY_CLICK, 0.3f)
-                                        val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                                            (context.getSystemService(android.os.VibratorManager::class.java))?.defaultVibrator
-                                        } else {
-                                            @Suppress("DEPRECATION")
-                                            context.getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
-                                        }
-                                        if (vibrator != null && vibrator.hasVibrator()) {
-                                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                                                vibrator.vibrate(android.os.VibrationEffect.createPredefined(android.os.VibrationEffect.EFFECT_CLICK))
-                                            } else {
-                                                @Suppress("DEPRECATION")
-                                                vibrator.vibrate(20L)
-                                            }
-                                        }
-                                        triggerEmojiConfetti = true
-                                        emojiConfettiKey++
-                                    }
-                                    .padding(start = 8.dp)
-                            )
-                        }
-                    }
-
-                    Box(
-                        modifier = Modifier.align(Alignment.CenterEnd).wrapContentWidth(),
-                        contentAlignment = Alignment.CenterEnd
-                    ) {
-                        if (uiState == QuickDashUiState.Dashboard) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                if (isFloating && onConvertToFullScreen != null) {
-                                    IconButton(
-                                        onClick = {
-                                            playClickVibration(context, hapticEnabled)
-                                            val intent = Intent("com.balajitechlabs.quickdash.CAPTURE_WINDOW").setPackage(context.packageName)
-                                            context.sendBroadcast(intent)
-                                        },
-                                        modifier = Modifier.size(36.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.CameraAlt,
-                                            contentDescription = "Capture Floating Window Screenshot",
-                                            tint = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    IconButton(
-                                        onClick = {
-                                            playClickVibration(context, hapticEnabled)
-                                            showFullScreenPrompt = true
-                                        },
-                                        modifier = Modifier.size(36.dp)
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.ic_arrow_up_update),
-                                            contentDescription = "Convert to Full Screen",
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                }
-                                FilledTonalIconButton(
-                                    onClick = {
-                                        playClickVibration(context, hapticEnabled)
-                                        showSettingsPopup = true
-                                    },
-                                    modifier = Modifier.size(40.dp)
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_settings),
-                                        contentDescription = "Settings",
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                }
-                            }
-                        } else if (uiState == QuickDashUiState.WhatsApp && !showChatSettings) {
-                            FilledTonalIconButton(
-                                onClick = {
-                                    playClickVibration(context, hapticEnabled)
-                                    onToggleChatSettings(true)
-                                },
-                                modifier = Modifier.size(40.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_tools),
-                                    contentDescription = "Chat Settings",
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            }
-                        } else if (uiState is QuickDashUiState.Setup || uiState is QuickDashUiState.EnterAmount || uiState is QuickDashUiState.ShowQr) {
-                            PaymentModeSwitcherButton(
-                                usePaypal = usePaypal,
-                                onTogglePaypal = onTogglePaypal
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                val dashboardGridState = rememberLazyGridState()
-                val dashboardListState = rememberLazyListState()
-
-                // ── Animated Screen Content ──────────────────────
-                AnimatedContent(
-                    targetState = uiState,
-                    transitionSpec = {
-                        val isReturningToDashboard = targetState == QuickDashUiState.Dashboard
-                        if (isReturningToDashboard) {
-                            (slideInHorizontally(animationSpec = androidx.compose.animation.core.spring(dampingRatio = 0.85f, stiffness = 400f)) { -it / 3 } +
-                                    fadeIn(animationSpec = androidx.compose.animation.core.spring(stiffness = 400f)))
-                                .togetherWith(
-                                    slideOutHorizontally(animationSpec = androidx.compose.animation.core.spring(dampingRatio = 0.85f, stiffness = 400f)) { it } +
-                                            fadeOut(animationSpec = androidx.compose.animation.core.spring(stiffness = 400f))
-                                )
-                        } else {
-                            (slideInHorizontally(animationSpec = androidx.compose.animation.core.spring(dampingRatio = 0.85f, stiffness = 400f)) { it } +
-                                    fadeIn(animationSpec = androidx.compose.animation.core.spring(stiffness = 400f)))
-                                .togetherWith(
-                                    slideOutHorizontally(animationSpec = androidx.compose.animation.core.spring(dampingRatio = 0.85f, stiffness = 400f)) { -it / 3 } +
-                                            fadeOut(animationSpec = androidx.compose.animation.core.spring(stiffness = 400f))
-                                )
-                        }
-                    },
-                    contentAlignment = Alignment.Center,
-                    label = "screenTransition",
-                    modifier = Modifier.fillMaxWidth()
-                ) { state ->
-                    when (state) {
-
-                        QuickDashUiState.Dashboard ->
-                            DashboardScreen(
-                                hapticEnabled = hapticEnabled,
-                                isFloating = isFloating,
-                                mainViewModel = mainViewModel,
-                                gridState = dashboardGridState,
-                                listState = dashboardListState,
-                                onToolSelected = onToolSelected
-                            )
-                        is QuickDashUiState.Setup ->
-                            SetupScreen(
-                                upiIds = upiIds,
-                                defaultUpiId = defaultUpiId,
-                                payeeName = payeeName,
-                                onSaveUpiIds = onSaveUpiIds
-                            )
-                        is QuickDashUiState.EnterAmount ->
-                            EnterAmountScreen(
-                                usePaypal = usePaypal,
-                                recentAmounts = recentAmounts,
-                                upiIds = state.upiIds,
-                                defaultUpiId = state.defaultUpiId,
-                                defaultPaymentApp = defaultPaymentApp,
-                                isFloating = isFloating,
-                                qrHistoryJson = qrHistoryJson,
-                                onClearQrHistory = onClearQrHistory,
-                                onScanQr = onScanQr,
-                                onGenerateQr = onGenerateQr,
-                                onManageUpiIds = onManageUpiIds
-                            )
-                        is QuickDashUiState.ShowQr -> {
-                            val confettiType by mainViewModel.userStore.confettiType.collectAsState(initial = "Default")
-                            val hapticLevel by mainViewModel.userStore.hapticLevel.collectAsState(initial = "Crisp")
-                            ShowQrScreen(
-                                amount = state.amount,
-                                qrBitmap = state.qrBitmap,
-                                upiId = state.upiId,
-                                payeeName = state.payeeName,
-                                showUpiId = showUpiId,
-                                payUrl = state.payUrl,
-                                confettiType = confettiType,
-                                hapticLevel = hapticLevel,
-                                isFloating = isFloating,
-                                onQrShown = onQrShown,
-                                onRestoreBrightness = onRestoreBrightness,
-                                onDismiss = onDismiss
-                            )
-                        }
-                        QuickDashUiState.WhatsApp ->
-                            QuickChatScreen(
-                                showSettings = showChatSettings,
-                                onToggleSettings = onToggleChatSettings,
-                                selectingCountry = selectingCountry,
-                                onToggleSelectingCountry = onToggleSelectingCountry,
-                                onDismiss = onDismiss
-                            )
-                        QuickDashUiState.Instagram ->
-                            QuickSocialScreen(
-                                mainViewModel = mainViewModel,
-                                onDismiss = onDismiss
-                            )
-                        QuickDashUiState.Settings ->
-                            SettingsScreen(
-                                themeMode = themeMode,
-                                dynamicColor = dynamicColor,
-                                bubbleEnabled = bubbleEnabled,
-                                onChangeThemeMode = onChangeThemeMode,
-                                onToggleDynamicColor = onToggleDynamicColor,
-                                onToggleBubble = onToggleBubble,
-                                onTriggerConfetti = {
-                                    settingsConfettiType = it
-                                    settingsConfettiKey++
-                                },
-                                onBackToHome = onBackToHome,
-                                onNavigateToSystemLogs = onNavigateToSystemLogs,
-                                onManageUpiIds = onManageUpiIds
-                            )
-                        QuickDashUiState.SystemLogs ->
-                            SystemLogsScreen(onDismiss = onBackToHome)
-                        QuickDashUiState.Notes ->
-                            QuickNotesScreen(mainViewModel = mainViewModel, isFloating = isFloating, onDismiss = onBackToHome)
-                        QuickDashUiState.Search -> {
-                            QuickSearchScreen(mainViewModel = mainViewModel, onDismiss = onBackToHome)
-                        }
-                        QuickDashUiState.Web -> {
-                            QuickWebScreen(onClose = onBackToHome)
-                        }
-                        QuickDashUiState.Wifi -> {
-                            QuickWifiScreen(
-                                isFloating = isFloating,
-                                onDismiss = onBackToHome
-                            )
-                        }
-                        QuickDashUiState.Clipboard ->
-                            com.balajitechlabs.quickdash.features.clipboard.presentation.ClipboardScreen(
-                                isFloating = isFloating,
-                                onTriggerConfetti = {
-                                    settingsConfettiType = "Default"
-                                    settingsConfettiKey++
-                                },
-                                onDismiss = onBackToHome
-                            )
-                        QuickDashUiState.Calculator ->
-                            com.balajitechlabs.quickdash.features.calculator.presentation.QuickCalculatorScreen(
-                                isFloating = isFloating
-                            )
-                        QuickDashUiState.Timer ->
-                            com.balajitechlabs.quickdash.features.timer.presentation.QuickTimerScreen(
-                                isFloating = isFloating
-                            )
-                        QuickDashUiState.Converter -> QuickConverterScreen()
-                        QuickDashUiState.Translator -> QuickTranslatorScreen()
-                        QuickDashUiState.Capture -> QuickCaptureScreen(isFloating = isFloating)
-                        QuickDashUiState.Eyedropper -> QuickColorEyedropperScreen(isFloating = isFloating)
-                        QuickDashUiState.Pomodoro -> QuickPomodoroScreen(isFloating = isFloating)
-                        QuickDashUiState.Password -> QuickPasswordScreen(isFloating = isFloating)
-                        QuickDashUiState.Discount -> QuickDiscountScreen(isFloating = isFloating)
-                        QuickDashUiState.Exchange -> QuickExchangeScreen(isFloating = isFloating)
-                        QuickDashUiState.VoiceMemos -> QuickVoiceMemosScreen(isFloating = isFloating)
-                        QuickDashUiState.Reminders -> QuickRemindersScreen()
-                        QuickDashUiState.QrScanner -> QuickQrScannerScreen()
-                        else -> {
-                            // Phase 4+ screens placeholders
-                        }
-                    }
-                }
-
-                if (!isFloating && uiState == QuickDashUiState.Dashboard) {
-                    val appContext = LocalContext.current
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(
-                        onClick = {
-                            playClickVibration(appContext, hapticEnabled)
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://razorpay.me/@balajitechlabs"))
-                            appContext.startActivity(intent)
-                        },
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                    ) {
-                        Text("Support Me", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-                    }
-                    
-                    Text(
-                        text = "balajitechlabs",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
-                }
-            }
-        }
-
-        // ─── Settings Popup Dialog ────────────────────────────────────────
-        if (showSettingsPopup) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.5f))
-                    .clickable(
-                        interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
-                        indication = null
-                    ) { showSettingsPopup = false },
-                contentAlignment = Alignment.Center
-            ) {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth(0.94f)
-                        .fillMaxHeight(0.90f)
-                        .clickable(
-                            interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
-                            indication = null
-                        ) { /* consume clicks inside */ },
-                    shape = RoundedCornerShape(24.dp),
-                    color = MaterialTheme.colorScheme.surface,
-                    tonalElevation = 8.dp
-                ) {
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        // Popup Header
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 20.dp, vertical = 14.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Settings",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Surface(
-                                shape = CircleShape,
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .clickable { showSettingsPopup = false }
-                            ) {
-                                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                                    Text(
-                                        text = "✕",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
-                        androidx.compose.material3.HorizontalDivider(
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                        )
-                        // Settings content
-                        Box(modifier = Modifier.weight(1f)) {
-                            com.balajitechlabs.quickdash.features.settings.presentation.SettingsScreen(
-                                themeMode = themeMode,
-                                dynamicColor = dynamicColor,
-                                bubbleEnabled = bubbleEnabled,
-                                onChangeThemeMode = onChangeThemeMode,
-                                onToggleDynamicColor = onToggleDynamicColor,
-                                onToggleBubble = onToggleBubble,
-                                onTriggerConfetti = {
-                                    settingsConfettiType = it
-                                    settingsConfettiKey++
-                                },
-                                onBackToHome = { showSettingsPopup = false },
-                                onNavigateToSystemLogs = {
-                                    showSettingsPopup = false
-                                    onNavigateToSystemLogs()
-                                },
-                                onManageUpiIds = {
-                                    showSettingsPopup = false
-                                    onManageUpiIds()
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-        }
-        if (showNotificationPopup) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.5f))
-                    .clickable(
-                        interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
-                        indication = null
-                    ) { onToggleNotificationPopup(false) },
-                contentAlignment = Alignment.Center
-            ) {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth(0.92f)
-                        .fillMaxHeight(0.82f)
-                        .clickable(
-                            interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
-                            indication = null
-                        ) { /* consume clicks inside popup */ },
-                    shape = RoundedCornerShape(24.dp),
-                    color = MaterialTheme.colorScheme.surface,
-                    tonalElevation = 8.dp
-                ) {
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        // Header
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 20.dp, vertical = 14.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Notifications",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Surface(
-                                shape = CircleShape,
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .clickable { onToggleNotificationPopup(false) }
-                            ) {
-                                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                                    Text(
-                                        text = "✕",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
-                        androidx.compose.material3.HorizontalDivider(
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                        )
-                        // Notifications list
-                        Box(modifier = Modifier.weight(1f)) {
-                            BlogPostsScreen()
-                        }
-                    }
-                }
-            }
-        }
-
-
-        if (triggerEmojiConfetti && confettiEnabled) {
-            val context = LocalContext.current
-            val emojiDrawable = remember(emojiHeaderVal) {
-                val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
-                    textSize = 48f
-                    textAlign = android.graphics.Paint.Align.CENTER
-                }
-                val bounds = android.graphics.Rect()
-                paint.getTextBounds(emojiHeaderVal, 0, emojiHeaderVal.length, bounds)
-                val width = (bounds.width() + 10).coerceAtLeast(64)
-                val height = (bounds.height() + 10).coerceAtLeast(64)
-                val bitmap = android.graphics.Bitmap.createBitmap(width, height, android.graphics.Bitmap.Config.ARGB_8888)
-                val canvas = android.graphics.Canvas(bitmap)
-                val x = width / 2f
-                val y = height / 2f - (paint.descent() + paint.ascent()) / 2f
-                canvas.drawText(emojiHeaderVal, x, y, paint)
-                android.graphics.drawable.BitmapDrawable(context.resources, bitmap)
-            }
-            
-            val party = nl.dionsegijn.konfetti.core.Party(
-                speed = 10f,
-                maxSpeed = 30f,
-                damping = 0.9f,
-                angle = 0,
-                spread = 360,
-                colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def, 0x00bcd4, 0x4caf50),
-                shapes = listOf(nl.dionsegijn.konfetti.core.models.Shape.DrawableShape(emojiDrawable, tint = false)),
-                emitter = nl.dionsegijn.konfetti.core.emitter.Emitter(duration = 500, java.util.concurrent.TimeUnit.MILLISECONDS).max(50),
-                position = nl.dionsegijn.konfetti.core.Position.Relative(0.5, 0.3)
-            )
-            
-            nl.dionsegijn.konfetti.compose.KonfettiView(
-                modifier = Modifier.fillMaxSize().zIndex(200f),
-                parties = listOf(party),
-                updateListener = object : nl.dionsegijn.konfetti.compose.OnParticleSystemUpdateListener {
-                    override fun onParticleSystemEnded(system: nl.dionsegijn.konfetti.core.PartySystem, activeSystems: Int) {
-                        if (activeSystems == 0) {
-                            triggerEmojiConfetti = false
-                        }
-                    }
-                }
-            )
-        }
-
-        if (settingsConfettiType != null && confettiEnabled) {
-            key(settingsConfettiKey) {
-                val type = settingsConfettiType
-                val partyList = when (type) {
-                    "Right" -> listOf(
-                        nl.dionsegijn.konfetti.core.Party(
-                            speed = 25f,
-                            maxSpeed = 45f,
-                            damping = 0.9f,
-                            angle = 180,
-                            spread = 60,
-                            colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def, 0x00bcd4, 0x4caf50),
-                            size = listOf(nl.dionsegijn.konfetti.core.models.Size(32, 6f), nl.dionsegijn.konfetti.core.models.Size(42, 8f)),
-                            emitter = nl.dionsegijn.konfetti.core.emitter.Emitter(duration = 300, java.util.concurrent.TimeUnit.MILLISECONDS).max(100),
-                            position = nl.dionsegijn.konfetti.core.Position.Relative(1.0, 0.5)
-                        )
-                    )
-                    "Corner" -> listOf(
-                        nl.dionsegijn.konfetti.core.Party(
-                            speed = 25f,
-                            maxSpeed = 40f,
-                            damping = 0.9f,
-                            angle = -45,
-                            spread = 40,
-                            colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def, 0x00bcd4, 0x4caf50),
-                            size = listOf(nl.dionsegijn.konfetti.core.models.Size(32, 6f), nl.dionsegijn.konfetti.core.models.Size(42, 8f)),
-                            emitter = nl.dionsegijn.konfetti.core.emitter.Emitter(duration = 100, java.util.concurrent.TimeUnit.MILLISECONDS).max(80),
-                            position = nl.dionsegijn.konfetti.core.Position.Relative(0.0, 0.8)
-                        ),
-                        nl.dionsegijn.konfetti.core.Party(
-                            speed = 25f,
-                            maxSpeed = 40f,
-                            damping = 0.9f,
-                            angle = -135,
-                            spread = 40,
-                            colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def, 0x00bcd4, 0x4caf50),
-                            size = listOf(nl.dionsegijn.konfetti.core.models.Size(32, 6f), nl.dionsegijn.konfetti.core.models.Size(42, 8f)),
-                            emitter = nl.dionsegijn.konfetti.core.emitter.Emitter(duration = 100, java.util.concurrent.TimeUnit.MILLISECONDS).max(80),
-                            position = nl.dionsegijn.konfetti.core.Position.Relative(1.0, 0.8)
-                        )
-                    )
-                    "Export" -> listOf(
-                        nl.dionsegijn.konfetti.core.Party(
-                            speed = 5f,
-                            maxSpeed = 25f,
-                            damping = 0.9f,
-                            angle = 90,
-                            spread = 80,
-                            colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def, 0x00bcd4, 0x4caf50),
-                            size = listOf(nl.dionsegijn.konfetti.core.models.Size(32, 6f), nl.dionsegijn.konfetti.core.models.Size(42, 8f)),
-                            emitter = nl.dionsegijn.konfetti.core.emitter.Emitter(duration = 1000, java.util.concurrent.TimeUnit.MILLISECONDS).max(100),
-                            position = nl.dionsegijn.konfetti.core.Position.Relative(0.0, 0.0).between(nl.dionsegijn.konfetti.core.Position.Relative(1.0, 0.0))
-                        )
-                    )
-                    else -> listOf(
-                        nl.dionsegijn.konfetti.core.Party(
-                            speed = 0f,
-                            maxSpeed = 30f,
-                            damping = 0.9f,
-                            angle = 0,
-                            spread = 360,
-                            colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def, 0x00bcd4, 0x4caf50),
-                            size = listOf(nl.dionsegijn.konfetti.core.models.Size(32, 6f), nl.dionsegijn.konfetti.core.models.Size(42, 8f)),
-                            emitter = nl.dionsegijn.konfetti.core.emitter.Emitter(duration = 200, java.util.concurrent.TimeUnit.MILLISECONDS).max(100),
-                            position = nl.dionsegijn.konfetti.core.Position.Relative(0.5, 0.5)
-                        )
-                    )
-                }
-
-        nl.dionsegijn.konfetti.compose.KonfettiView(
-            modifier = Modifier.fillMaxSize().zIndex(300f),
-            parties = partyList,
-            updateListener = object : nl.dionsegijn.konfetti.compose.OnParticleSystemUpdateListener {
-                override fun onParticleSystemEnded(system: nl.dionsegijn.konfetti.core.PartySystem, activeSystems: Int) {
-                    if (activeSystems == 0) {
-                        settingsConfettiType = null
-                    }
-                }
-            }
-        )
-    }
-    if (showWhatsNewOnLaunch) {
-        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val versionName = packageInfo.versionName ?: "5.2.1"
-        
-        LaunchedEffect(Unit) {
-            settingsConfettiType = "Corner"
-            settingsConfettiKey++
-        }
-
-        WhatsNewDialog(
-            versionName = versionName,
-            onDismiss = {
-                showWhatsNewOnLaunch = false
-                scope.launch {
-                    mainViewModel.userStore.saveLastSeenVersion(versionName)
-                }
-            }
-        )
-    }
-
-    if ((updateState is UpdateState.UpdateAvailable && showUpdateDialog.value) || 
-        (updateState is UpdateState.Error && showUpdateDialog.value) ||
-        updateState is UpdateState.Downloading || 
-        updateState is UpdateState.ReadyToInstall) {
-        AppUpdateDialog(
-            onDismiss = {
-                showUpdateDialog.value = false
-            }
-        )
-    }
-    if (showFullScreenPrompt) {
-        AlertDialog(
-            onDismissRequest = { showFullScreenPrompt = false },
-            title = { Text("Display Options", fontWeight = FontWeight.Bold) },
-            text = { Text("Would you like to expand QuickDash to full screen or continue in the floating dialog window?") },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        playClickVibration(context, hapticEnabled)
-                        showFullScreenPrompt = false
-                        onConvertToFullScreen?.invoke()
-                    }
-                ) {
-                    Text("Convert to full screen")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        playClickVibration(context, hapticEnabled)
-                        showFullScreenPrompt = false
-                    }
-                ) {
-                    Text("Stay in floating dialog")
-                }
-            }
-        )
-    }
-}
-
-        } // Surface
-    } // Box (inner)
-} // CompositionLocalProvider (inner)
-} // Box (outer)
-} // CompositionLocalProvider (outer)
-@Composable
-
-
-fun UpdateTag(onShowUpdateDialog: () -> Unit = {}) {
-    val context = LocalContext.current
-    val currentVersionName = remember {
-        try {
-            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-            "v${packageInfo.versionName}"
-        } catch (e: Exception) {
-            "v5.2.1"
-        }
-    }
-
-    val state = UpdateManager.updateState
-    val hasLocalApk = UpdateManager.hasLocalApk
-
-    when (state) {
-        UpdateState.Idle,
-        UpdateState.UpToDate -> {
-            if (hasLocalApk) {
-                Surface(
-                    color = MaterialTheme.colorScheme.errorContainer,
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .clip(RoundedCornerShape(12.dp))
-                        .clickable {
-                            UpdateManager.deleteDownloadedApks(context)
-                        }
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
-                    ) {
-                        Text(
-                            text = "APK",
-                            color = MaterialTheme.colorScheme.onErrorContainer,
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Icon(
-                            painter = painterResource(R.drawable.ic_delete),
-                            contentDescription = "Delete APKs",
-                            tint = MaterialTheme.colorScheme.onErrorContainer,
-                            modifier = Modifier.size(12.dp)
-                        )
-                    }
-                }
-            } else {
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .clip(RoundedCornerShape(12.dp))
-                        .clickable {
-                            UpdateManager.checkForUpdates(context, manual = true)
-                        }
-                ) {
-                    Text(
-                        text = currentVersionName,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-        }
-        UpdateState.Checking -> {
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.wrapContentSize()
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(12.dp),
-                        strokeWidth = 1.5.dp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "Checking…",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
-        }
-        is UpdateState.Error -> {
-            Surface(
-                color = MaterialTheme.colorScheme.errorContainer,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .wrapContentSize()
-                    .clip(RoundedCornerShape(12.dp))
-                    .clickable {
-                        UpdateManager.checkForUpdates(context, manual = true)
-                    }
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
-                ) {
-                    Text(
-                        text = "Retry ↺",
-                        color = MaterialTheme.colorScheme.onErrorContainer,
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-        }
-        is UpdateState.UpdateAvailable -> {
-            Surface(
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .wrapContentSize()
-                    .clip(RoundedCornerShape(12.dp))
-                    .clickable {
-                        onShowUpdateDialog()
-                    }
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
-                ) {
-                    Text(
-                        text = "v${state.versionName}",
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Icon(
-                        painter = painterResource(R.drawable.ic_cloud_download),
-                        contentDescription = "Update Available",
-                        tint = MaterialTheme.colorScheme.surfaceVariant,
-                        modifier = Modifier.size(12.dp)
-                    )
-                }
-            }
-        }
-        is UpdateState.Downloading -> {
-            Surface(
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.wrapContentSize()
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
-                ) {
-                    Text(
-                        text = "v${state.versionName}",
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    CircularProgressIndicator(
-                        progress = { state.progress / 100f },
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                        strokeWidth = 2.dp,
-                        modifier = Modifier.size(12.dp)
-                    )
-                }
-            }
-        }
-        is UpdateState.ReadyToInstall -> {
-            Surface(
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .wrapContentSize()
-                    .clip(RoundedCornerShape(12.dp))
-                    .clickable {
-                        UpdateManager.installApk(context, state.fileName)
-                    }
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
-                ) {
-                    Text(
-                        text = "v${state.versionName}",
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Icon(
-                        painter = painterResource(R.drawable.ic_check_circle_fill),
-                        contentDescription = "Install Update",
-                        tint = MaterialTheme.colorScheme.surfaceVariant,
-                        modifier = Modifier.size(12.dp)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun PaymentModeSwitcherButton(
-    usePaypal: Boolean,
-    onTogglePaypal: (Boolean) -> Unit
-) {
-    val context = LocalContext.current
-    val userStore = remember { UserStore(context) }
-    val hapticEnabled by userStore.hapticEnabled.collectAsState(initial = true)
-
-    Surface(
-        color = MaterialTheme.colorScheme.primary,
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp),
-        modifier = Modifier
-            .size(width = 44.dp, height = 32.dp)
-            .clip(androidx.compose.foundation.shape.RoundedCornerShape(10.dp))
-            .clickable {
-                playClickVibration(context, hapticEnabled)
-                onTogglePaypal(!usePaypal)
-            }
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.padding(horizontal = 4.dp)
-        ) {
-            AnimatedContent(
-                targetState = usePaypal,
-                transitionSpec = {
-                    fadeIn(animationSpec = spring(stiffness = Spring.StiffnessMediumLow)) togetherWith
-                            fadeOut(animationSpec = spring(stiffness = Spring.StiffnessMediumLow))
-                },
-                label = "paymentModeTransition"
-            ) { activePaypal ->
-                Icon(
-                    painter = painterResource(if (activePaypal) R.drawable.ic_paypal else R.drawable.ic_upi_pay),
-                    contentDescription = "Switch Payment Mode",
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(16.dp)
-                )
-            }
-        }
-    }
-}
-
-fun playClickVibration(context: Context, hapticEnabled: Boolean) {
-    if (!hapticEnabled) return
-    try {
-        val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            (context.getSystemService(android.os.VibratorManager::class.java))?.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            context.getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
-        }
-        if (vibrator != null && vibrator.hasVibrator()) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                vibrator.vibrate(android.os.VibrationEffect.createPredefined(android.os.VibrationEffect.EFFECT_CLICK))
-            } else {
-                @Suppress("DEPRECATION")
-                vibrator.vibrate(15L)
-            }
-        }
-    } catch (e: Exception) {
-        Log.e(TAG, "Failed to play click vibration", e)
-    }
-}
-
-fun playExplosionVibration(context: Context, hapticEnabled: Boolean) {
-    if (!hapticEnabled) return
-    try {
-        val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            (context.getSystemService(android.os.VibratorManager::class.java))?.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            context.getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
-        }
-        if (vibrator != null && vibrator.hasVibrator()) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                vibrator.vibrate(android.os.VibrationEffect.createPredefined(android.os.VibrationEffect.EFFECT_DOUBLE_CLICK))
-            } else {
-                @Suppress("DEPRECATION")
-                vibrator.vibrate(longArrayOf(0, 15, 80, 20), -1)
-            }
-        }
-    } catch (e: Exception) {
-        Log.e(TAG, "Failed to play explosion vibration", e)
-    }
-}

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/navigation
+ * File: QuickDashNavHost.kt
+ * Description: Composable navigation graph coordinating transitions between dashboard tools, settings, and full-screen screens.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.navigation
 
 import androidx.compose.runtime.Composable

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/ui/theme
+ * File: Type.kt
+ * Description: Material 3 typography definitions utilizing Google Sans Flex for hierarchy, labels, and headlines.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.ui.theme
 
 import androidx.compose.material3.Typography

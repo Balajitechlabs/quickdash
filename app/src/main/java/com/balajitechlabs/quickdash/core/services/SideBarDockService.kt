@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/services
+ * File: SideBarDockService.kt
+ * Description: Edge-screen docked sidebar service providing slide-out access to favorite productivity shortcuts.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.services
 
 import android.app.Service
@@ -5,7 +14,7 @@ import android.content.Intent
 import android.os.IBinder
 
 /**
- * ⚡ Side Bar Mini-Dock Service (`SideBarDockService.kt`).
+ * Side Bar Mini-Dock Service (`SideBarDockService.kt`).
  * Renders an edge-swiping side panel for 1-swipe tool launching over any screen.
  */
 class SideBarDockService : Service() {

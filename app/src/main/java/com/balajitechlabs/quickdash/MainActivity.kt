@@ -1,409 +1,133 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: root
+ * File: MainActivity.kt
+ * Description: Main application activity hosting the primary Compose entry point and Edge-to-Edge window configuration.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash
 
-import com.balajitechlabs.quickdash.features.dashboard.presentation.FloatingDialogActivity
-import com.balajitechlabs.quickdash.core.utils.AppLogger
-
-import android.content.ClipboardManager
-import android.content.Context
-import android.os.Bundle
-import android.provider.Settings
 import android.content.Intent
-import android.content.IntentFilter
-import android.content.BroadcastReceiver
-import android.net.Uri
 import android.os.Build
+import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.biometric.BiometricPrompt
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
-import androidx.biometric.BiometricPrompt
-import androidx.core.content.ContextCompat
-import com.balajitechlabs.quickdash.core.data.UserStore
 import com.balajitechlabs.quickdash.core.services.FloatingBubbleService
-import com.balajitechlabs.quickdash.core.ui.QuickDashApp
 import com.balajitechlabs.quickdash.core.ui.theme.QuickDashTheme
-import com.balajitechlabs.quickdash.features.broadcast.domain.TelegramTracker
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.balajitechlabs.quickdash.features.dashboard.presentation.FloatingDialogActivity
+import com.balajitechlabs.quickdash.features.onboarding.presentation.QuickDashWelcomeScreen
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.WorkManager
-import com.balajitechlabs.quickdash.features.broadcast.data.TelegramPollerWorker
-import java.util.concurrent.TimeUnit
-import com.balajitechlabs.quickdash.features.onboarding.presentation.WelcomeOnboardingScreen
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import dagger.hilt.android.AndroidEntryPoint
-import androidx.activity.viewModels
-import com.balajitechlabs.quickdash.MainViewModel
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
+
     private val mainViewModel: MainViewModel by viewModels()
-
-    private var isAuthenticated by mutableStateOf(false)
+    private var isAuthenticated by mutableStateOf(true)
     private var isAuthRequired by mutableStateOf(false)
+    private var currentAction by mutableStateOf<String?>(null)
 
-    private val closeAppReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == "com.balajitechlabs.quickdash.CLOSE_APP") {
-                finishAndRemoveTask()
-            }
-        }
-    }
+    private var originalBrightness: Float = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
-        // Apply saved locale — do NOT use runBlocking on the main thread here.
-        // DataStore IO on the main thread causes an ANR / deadlock in release builds.
-        // We launch async and accept that the first frame may use the system locale;
-        // this is invisible to the user since the Activity hasn't rendered yet.
+        currentAction = intent?.getStringExtra("launch_section") ?: intent?.action
+
+        // If user is already onboarded, forward to floating dialog launcher
         lifecycleScope.launch {
-            try {
-                val langCode = mainViewModel.appLanguage.first()
-                if (langCode.isNotBlank()) {
-                    val locale = Locale.forLanguageTag(langCode)
-                    Locale.setDefault(locale)
-                    val config = resources.configuration
-                    config.setLocale(locale)
-                    @Suppress("DEPRECATION")
-                    resources.updateConfiguration(config, resources.displayMetrics)
-                }
-            } catch (_: Exception) { /* keep system locale */ }
-        }
-
-        val shortcutAction = intent?.action
-        
-        val searchShortcut = androidx.core.content.pm.ShortcutInfoCompat.Builder(this, "shortcut_search")
-            .setShortLabel("Search")
-            .setIcon(androidx.core.graphics.drawable.IconCompat.createWithResource(this, R.drawable.ic_search))
-            .setIntent(Intent(this, MainActivity::class.java).apply {
-                action = "com.balajitechlabs.quickdash.ACTION_QUICK_SEARCH"
-            })
-            .build()
-        
-        val notesShortcut = androidx.core.content.pm.ShortcutInfoCompat.Builder(this, "shortcut_notes")
-            .setShortLabel("New Note")
-            .setIcon(androidx.core.graphics.drawable.IconCompat.createWithResource(this, R.drawable.ic_note))
-            .setIntent(Intent(this, MainActivity::class.java).apply {
-                action = "com.balajitechlabs.quickdash.ACTION_QUICK_NOTES"
-            })
-            .build()
-            
-        val wifiShortcut = androidx.core.content.pm.ShortcutInfoCompat.Builder(this, "shortcut_wifi")
-            .setShortLabel("Wi-Fi Share")
-            .setIcon(androidx.core.graphics.drawable.IconCompat.createWithResource(this, R.drawable.ic_shortcut_wifi))
-            .setIntent(Intent(this, MainActivity::class.java).apply {
-                action = "com.balajitechlabs.quickdash.ACTION_SHOW_QR"
-            })
-            .build()
-
-        val calcShortcut = androidx.core.content.pm.ShortcutInfoCompat.Builder(this, "shortcut_calculator")
-            .setShortLabel("Calculator")
-            .setIcon(androidx.core.graphics.drawable.IconCompat.createWithResource(this, R.drawable.ic_calculator))
-            .setIntent(Intent(this, MainActivity::class.java).apply {
-                action = "com.balajitechlabs.quickdash.ACTION_QUICK_CALCULATOR"
-            })
-            .build()
-
-        val timerShortcut = androidx.core.content.pm.ShortcutInfoCompat.Builder(this, "shortcut_timer")
-            .setShortLabel("Timer")
-            .setIcon(androidx.core.graphics.drawable.IconCompat.createWithResource(this, R.drawable.ic_timer))
-            .setIntent(Intent(this, MainActivity::class.java).apply {
-                action = "com.balajitechlabs.quickdash.ACTION_QUICK_TIMER"
-            })
-            .build()
-
-        androidx.core.content.pm.ShortcutManagerCompat.addDynamicShortcuts(this, listOf(searchShortcut, notesShortcut, wifiShortcut, calcShortcut, timerShortcut))
-        
-        // Google Play Store APIs: In-App Updates & In-App Reviews (throttled)
-        checkForPlayAppUpdate()
-        lifecycleScope.launch {
-            val opens = mainViewModel.userStore.totalAppOpens.first()
-            // Only show review dialog: after 10+ opens AND every 20 opens (avoids Google suppression)
-            if (opens >= 10L && opens % 20L == 0L) {
-                requestPlayInAppReview()
-            }
-        }
-        
-        // Enqueue the Telegram Poller to check for broadcasts every 15 minutes
-        val pollerRequest = PeriodicWorkRequestBuilder<TelegramPollerWorker>(15, TimeUnit.MINUTES).build()
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "telegram_poller",
-            ExistingPeriodicWorkPolicy.KEEP,
-            pollerRequest
-        )
-        
-        // Also trigger it IMMEDIATELY once on app launch so you don't have to wait 15 mins for replies
-        val oneTimeRequest = androidx.work.OneTimeWorkRequestBuilder<TelegramPollerWorker>().build()
-        WorkManager.getInstance(this).enqueueUniqueWork(
-            "telegram_poller_immediate",
-            androidx.work.ExistingWorkPolicy.REPLACE,
-            oneTimeRequest
-        )
-
-        val filter = IntentFilter("com.balajitechlabs.quickdash.CLOSE_APP")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(closeAppReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
-        } else {
-            @Suppress("UnspecifiedRegisterReceiverFlag")
-            registerReceiver(closeAppReceiver, filter)
-        }
-
-        lifecycleScope.launch {
-            mainViewModel.secureMode.collect { secure ->
-                if (secure) {
-                    window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
-                } else {
-                    window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
-                }
-            }
-        }
-
-        lifecycleScope.launch {
-            val onboarded = mainViewModel.isOnboardingComplete.first()
-            val style = mainViewModel.launchStyle.first()
-            val isShortcut = intent?.action != null && intent.action != Intent.ACTION_MAIN
-
-            if (onboarded && style == "FLOATING_DIALOG" && !isShortcut) {
+            val isOnboardingComplete = mainViewModel.userStore.isOnboardingComplete.first()
+            if (isOnboardingComplete) {
                 val dialogIntent = Intent(this@MainActivity, FloatingDialogActivity::class.java).apply {
+                    action = currentAction
+                    intent?.extras?.let { putExtras(it) }
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 }
                 startActivity(dialogIntent)
                 finish()
                 return@launch
             }
-
-            val locked = mainViewModel.isAppLocked.first()
-            if (locked) {
-                isAuthRequired = true
-                showBiometricPrompt()
-            } else {
-                isAuthenticated = true
-            }
-            
-            // Analytics Ping — increment first so count reflects this session
-            mainViewModel.userStore.incrementAppOpens()
-            val hasReported = mainViewModel.userStore.hasReportedInstall.first()
-            if (!hasReported) {
-                val manufacturer = Build.MANUFACTURER
-                val model = Build.MODEL
-                val sdk = Build.VERSION.SDK_INT
-                val androidVersion = Build.VERSION.RELEASE
-                val appVersion = BuildConfig.VERSION_NAME
-                val versionCode = BuildConfig.VERSION_CODE
-                val buildType = BuildConfig.BUILD_TYPE
-                val count = mainViewModel.userStore.totalAppOpens.first()
-
-                val message = buildString {
-                    appendLine("📲 <b>QuickDash Install</b> 📲")
-                    appendLine("<b>Device:</b> $manufacturer $model")
-                    appendLine("<b>Android:</b> $androidVersion (API $sdk)")
-                    appendLine("<b>Version:</b> v$appVersion ($versionCode, $buildType)")
-                    appendLine("<b>App Opens:</b> #$count")
-                }
-                TelegramTracker.sendMessage(message.trimEnd())
-                mainViewModel.userStore.setHasReportedInstall()
-            }
-
-            // Clean up legacy/default demo profiles if present
-            val currentPayee = mainViewModel.userStore.payeeName.first()
-            if (currentPayee == "BalajiTechLabs") {
-                mainViewModel.userStore.savePayeeName("")
-            }
-            val currentIds = mainViewModel.userStore.upiIds.first()
-            if (currentIds == listOf("9344456571@kotakbank") || currentIds.contains("9344456571@kotakbank")) {
-                mainViewModel.userStore.saveUpiIds(emptyList())
-                mainViewModel.userStore.saveDefaultUpiId("")
-            }
-
-            val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-            val lastActive = mainViewModel.userStore.lastActiveDate.first()
-            
-            if (lastActive != today) {
-                val manufacturer = Build.MANUFACTURER
-                val model = Build.MODEL
-                val appVersion = BuildConfig.VERSION_NAME
-                val count = mainViewModel.userStore.totalAppOpens.first()
-                val dauMessage = buildString {
-                    appendLine("📊 <b>DAU Ping: User Active Today</b>")
-                    appendLine("<b>Device:</b> $manufacturer $model")
-                    appendLine("<b>Version:</b> $appVersion")
-                    appendLine("<b>App Opens:</b> $count")
-                }
-                TelegramTracker.sendMessage(dauMessage.trimEnd())
-                mainViewModel.userStore.setLastActiveDate(today)
-            }
-
-            // Secure Mode — handled by the dedicated lifecycleScope.launch block above (line 158)
-            // Removed duplicate collector that caused race condition with FLAG_SECURE
         }
 
-        // Fetch and register FCM Diagnostics (Standard release only)
-        try {
-            val fmClass = Class.forName("com.google.firebase.messaging.FirebaseMessaging")
-            val getInstanceMethod = fmClass.getMethod("getInstance")
-            val fmInstance = getInstanceMethod.invoke(null)
-            val getTokenMethod = fmClass.getMethod("getToken")
-            val taskInstance = getTokenMethod.invoke(fmInstance)
-            if (taskInstance != null) {
-                val completeListenerClass = Class.forName("com.google.android.gms.tasks.OnCompleteListener")
-                val proxyHandler = java.lang.reflect.InvocationHandler { _, method, args ->
-                    if (method.name == "onComplete" && args != null && args.isNotEmpty()) {
-                        try {
-                            val task = args[0]
-                            val isSuccess = task?.javaClass?.getMethod("isSuccessful")?.invoke(task) as? Boolean ?: false
-                            if (isSuccess) {
-                                val token = task?.javaClass?.getMethod("getResult")?.invoke(task) as? String ?: ""
-                                if (token.isNotBlank()) {
-                                    lifecycleScope.launch {
-                                        mainViewModel.userStore.saveFcmToken(token)
-                                    }
-                                }
-                            }
-                        } catch (_: Exception) { }
-                    }
-                    null
-                }
-                val proxy = java.lang.reflect.Proxy.newProxyInstance(
-                    completeListenerClass.classLoader,
-                    arrayOf(completeListenerClass),
-                    proxyHandler
-                )
-                val addOnCompleteMethod = taskInstance.javaClass.getMethod("addOnCompleteListener", completeListenerClass)
-                addOnCompleteMethod.invoke(taskInstance, proxy)
-            }
-        } catch (_: Throwable) {
-            // Firebase Messaging not present in FOSS build
-        }
-
-
+        // Standard, full-screen Welcome Setup Screen for fresh installs and cleared app data
         setContent {
-            val isMigrationComplete by mainViewModel.isMigrationComplete.collectAsState(initial = false)
-            if (!isMigrationComplete) {
-                QuickDashTheme {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
-                return@setContent
-            }
-
-            val themeMode by mainViewModel.themeMode.collectAsState(initial = "SYSTEM")
-            val dynamicColor by mainViewModel.dynamicColor.collectAsState(initial = false)
+            val themeMode by mainViewModel.userStore.themeMode.collectAsStateWithLifecycle(initialValue = "SYSTEM")
+            val dynamicColor by mainViewModel.userStore.dynamicColor.collectAsStateWithLifecycle(initialValue = false)
             val isDarkTheme = when (themeMode) {
                 "LIGHT" -> false
                 "DARK", "AMOLED" -> true
                 else -> isSystemInDarkTheme()
             }
+            val isOnboardingComplete by mainViewModel.userStore.isOnboardingComplete.collectAsStateWithLifecycle(initialValue = null)
 
-            val shortcutAction = intent?.action
-            val notificationTitle = intent?.getStringExtra("title")
-            val notificationMessage = intent?.getStringExtra("message")
-            val notificationImageUrl = intent?.getStringExtra("imageUrl")
-            val notificationIsPoll = intent?.getBooleanExtra("isPoll", false) ?: false
-
-            androidx.compose.animation.Crossfade(
-                targetState = themeMode,
-                animationSpec = androidx.compose.animation.core.tween(400)
-            ) { currentThemeMode ->
-                QuickDashTheme(themeMode = currentThemeMode, darkTheme = isDarkTheme, dynamicColor = dynamicColor) {
-                val lastSeenVersion by mainViewModel.lastSeenVersion.collectAsState(initial = "")
-
-                androidx.compose.runtime.LaunchedEffect(lastSeenVersion) {
-                    if (lastSeenVersion != BuildConfig.VERSION_NAME) {
-                        mainViewModel.saveLastSeenVersion(BuildConfig.VERSION_NAME)
-                    }
-                }
-
-                val isOnboardingComplete by mainViewModel.isOnboardingComplete.collectAsState(initial = true)
-
-                if (!isOnboardingComplete) {
-                    WelcomeOnboardingScreen(
-                        onFinishOnboarding = {
-                            lifecycleScope.launch {
-                                mainViewModel.setOnboardingComplete()
-                                val style = mainViewModel.launchStyle.first()
-                                if (style == "FLOATING_DIALOG") {
-                                    val dialogIntent = Intent(this@MainActivity, com.balajitechlabs.quickdash.features.dashboard.presentation.FloatingDialogActivity::class.java).apply {
+            QuickDashTheme(themeMode = themeMode, darkTheme = isDarkTheme, dynamicColor = dynamicColor) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color.Black
+                ) {
+                    if (isOnboardingComplete == false) {
+                        QuickDashWelcomeScreen(
+                            onFinishOnboarding = {
+                                lifecycleScope.launch {
+                                    mainViewModel.userStore.setOnboardingComplete()
+                                    // Start floating bubble companion if enabled
+                                    val bubbleEnabled = mainViewModel.userStore.bubbleEnabled.first()
+                                    if (bubbleEnabled) {
+                                        try {
+                                            val serviceIntent = Intent(this@MainActivity, FloatingBubbleService::class.java)
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                startForegroundService(serviceIntent)
+                                            } else {
+                                                startService(serviceIntent)
+                                            }
+                                        } catch (_: Exception) { }
+                                    }
+                                    // Launch into the app
+                                    val dialogIntent = Intent(this@MainActivity, FloatingDialogActivity::class.java).apply {
+                                        action = currentAction
                                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
                                     }
                                     startActivity(dialogIntent)
                                     finish()
                                 }
-                            }
-                        }
-                    )
-                } else if (isAuthenticated) {
-                    QuickDashApp(
-                        mainViewModel = mainViewModel,
-                        shortcutAction = shortcutAction,
-                        notificationTitle = notificationTitle,
-                        notificationMessage = notificationMessage,
-                        notificationImageUrl = notificationImageUrl,
-                        notificationIsPoll = notificationIsPoll,
-                        themeMode = themeMode,
-                        dynamicColor = dynamicColor,
-                        onToggleDynamicColor = { enabled ->
-                            lifecycleScope.launch {
-                                mainViewModel.saveDynamicColor(enabled)
-                            }
-                        },
-                        onChangeThemeMode = { nextMode ->
-                            lifecycleScope.launch {
-                                mainViewModel.saveThemeMode(nextMode)
-                            }
-                        },
-                        onQrShown = { maxBrightness() },
-                        onRestoreBrightness = { restoreBrightness() },
-                    )
+                            },
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .statusBarsPadding()
+                                .navigationBarsPadding()
+                        )
+                    }
                 }
             }
         }
     }
 
-    // Overlay / Bubble Service logic
-        lifecycleScope.launch {
-            mainViewModel.bubbleEnabled.collect { enabled ->
-                try {
-                    if (enabled) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            if (Settings.canDrawOverlays(this@MainActivity)) {
-                                startService(Intent(this@MainActivity, FloatingBubbleService::class.java))
-                            }
-                        } else {
-                            startService(Intent(this@MainActivity, FloatingBubbleService::class.java))
-                        }
-                    } else {
-                        stopService(Intent(this@MainActivity, FloatingBubbleService::class.java))
-                    }
-                } catch (e: Exception) {
-                    com.balajitechlabs.quickdash.core.utils.AppLogger.e("MainActivity", "Failed to start/stop FloatingBubbleService", e)
-                }
-            }
-        }
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        currentAction = intent.getStringExtra("launch_section") ?: intent.action
     }
 
     private fun showBiometricPrompt() {
@@ -417,116 +141,34 @@ class MainActivity : FragmentActivity() {
 
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                     super.onAuthenticationError(errorCode, errString)
-                    // Close the app on any terminal biometric error so the user
-                    // is never left staring at a blank screen with no way out.
-                    when (errorCode) {
-                        BiometricPrompt.ERROR_NEGATIVE_BUTTON,    // User tapped "Cancel"
-                        BiometricPrompt.ERROR_USER_CANCELED,       // User dismissed
-                        BiometricPrompt.ERROR_LOCKOUT,             // Too many attempts
-                        BiometricPrompt.ERROR_LOCKOUT_PERMANENT,   // Permanently locked
-                        BiometricPrompt.ERROR_NO_BIOMETRICS,       // No fingerprints enrolled
-                        BiometricPrompt.ERROR_HW_NOT_PRESENT,      // No biometric hardware
-                        BiometricPrompt.ERROR_HW_UNAVAILABLE -> {  // Hardware unavailable
-                            finish()
-                        }
-                        // For other transient errors (e.g. sensor dirty), do nothing — the
-                        // prompt stays visible and the user can try again.
-                    }
+                    finish()
                 }
             })
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle("QuickDash Locked")
-            .setSubtitle("Authenticate to access your dashboard")
+            .setSubtitle("Authenticate to access your QuickDash")
             .setNegativeButtonText("Cancel")
             .build()
 
         biometricPrompt.authenticate(promptInfo)
     }
 
-    private val clipboardListener = ClipboardManager.OnPrimaryClipChangedListener {
-        saveClipboardData()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        com.balajitechlabs.quickdash.core.utils.UpdateManager.checkForUpdates(this)
-        
-        try {
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            clipboard.addPrimaryClipChangedListener(clipboardListener)
-            saveClipboardData()
-        } catch (e: Exception) {
-            AppLogger.e("MainActivity", "Failed to add primary clip changed listener", e)
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        try {
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            clipboard.removePrimaryClipChangedListener(clipboardListener)
-        } catch (e: Exception) {
-            AppLogger.e("MainActivity", "Failed to remove primary clip listener", e)
-        }
-    }
-    
-    override fun onDestroy() {
-        super.onDestroy()
-        try {
-            unregisterReceiver(closeAppReceiver)
-        } catch (e: Exception) {
-            AppLogger.e("MainActivity", "Failed to unregister closeAppReceiver", e)
-        }
-    }
-
-    private fun saveClipboardData() {
-        try {
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            if (clipboard.hasPrimaryClip()) {
-                val text = clipboard.primaryClip?.getItemAt(0)?.text?.toString()
-                if (!text.isNullOrBlank()) {
-                    lifecycleScope.launch {
-                        val historyJson = mainViewModel.clipboardHistory.first()
-                        val gson = Gson()
-                        val listType = object : TypeToken<List<String>>() {}.type
-                        val list: MutableList<String> = try {
-                            gson.fromJson(historyJson, listType) ?: mutableListOf()
-                        } catch (e: Exception) {
-                            mutableListOf()
-                        }
-                        
-                        if (!list.contains(text)) {
-                            list.add(0, text)
-                            mainViewModel.saveClipboardHistory(gson.toJson(list.take(20)))
-                            android.widget.Toast.makeText(this@MainActivity, "Saved to QuickDash Clipboard", android.widget.Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            AppLogger.e("MainActivity", "Clipboard read error or worker flow launch failure", e)
-        }
-    }
-
     private fun maxBrightness() {
-        val layoutParams = window.attributes
-        layoutParams.screenBrightness = 1.0f
-        window.attributes = layoutParams
+        lifecycleScope.launch {
+            val maxBrightEnabled = mainViewModel.userStore.maxBrightness.first()
+            if (maxBrightEnabled) {
+                val lp = window.attributes
+                originalBrightness = lp.screenBrightness
+                lp.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL
+                window.attributes = lp
+            }
+        }
     }
 
     private fun restoreBrightness() {
-        val layoutParams = window.attributes
-        layoutParams.screenBrightness =
-            android.view.WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
-        window.attributes = layoutParams
-    }
-
-    private fun checkForPlayAppUpdate() {
-        com.balajitechlabs.quickdash.core.utils.PlayStoreHelper.checkForAppUpdate(this)
-    }
-
-    private fun requestPlayInAppReview() {
-        com.balajitechlabs.quickdash.core.utils.PlayStoreHelper.requestInAppReview(this)
+        val lp = window.attributes
+        lp.screenBrightness = originalBrightness
+        window.attributes = lp
     }
 }

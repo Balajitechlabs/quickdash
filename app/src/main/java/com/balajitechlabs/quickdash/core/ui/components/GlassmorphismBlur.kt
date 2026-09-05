@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/ui/components
+ * File: GlassmorphismBlur.kt
+ * Description: Provides dynamic real-time backdrop blur and translucent glassmorphism surfaces across Compose layouts.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.ui.components
 
 import android.graphics.RenderEffect
@@ -10,7 +19,7 @@ import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
 
 /**
- * ✨ Glassmorphism Hardware Blur Shader (`GlassmorphismBlur.kt`).
+ * Glassmorphism Hardware Blur Shader (`GlassmorphismBlur.kt`).
  * Applies real-time RenderEffect hardware blur on Android 12+ (API 31+) with fallback for legacy devices.
  */
 fun Modifier.glassmorphicBlur(

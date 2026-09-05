@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/qr/presentation
+ * File: ShowQrScreen.kt
+ * Description: High-contrast full-brightness display screen presenting generated QR codes for scanning.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.qr.presentation
 
 import android.graphics.Bitmap
@@ -18,9 +27,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.DisposableEffect
@@ -47,7 +59,6 @@ import com.balajitechlabs.quickdash.core.utils.ShareUtils
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.zIndex
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import android.content.Context
 import android.os.Vibrator
@@ -112,6 +123,7 @@ fun ShowQrScreen(
         confettiTriggerKey++
     }
     var zoomScale by remember { mutableStateOf(1f) }
+    @Suppress("DEPRECATION")
     val transformState = rememberTransformableState { zoomChange, _, _ ->
         zoomScale = (zoomScale * zoomChange).coerceIn(0.5f, 3.5f)
     }
@@ -139,7 +151,7 @@ fun ShowQrScreen(
         Text(
             "Show this code to receive payment",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = Color(0xFFC5C6D0),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
@@ -154,20 +166,27 @@ fun ShowQrScreen(
                 .transformable(state = transformState),
             contentAlignment = Alignment.Center
         ) {
-            Box(
+            Surface(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                    .padding(16.dp)
+                    .clip(RoundedCornerShape(24.dp)),
+                color = Color(0xFF38393F),
+                border = BorderStroke(1.dp, Color(0xFF44474F).copy(alpha = 0.6f))
             ) {
-                Image(
-                    bitmap = qrBitmap.asImageBitmap(),
-                    contentDescription = "Payment QR Code",
+                Box(
                     modifier = Modifier
-                        .size(if (isFloating) 180.dp else 220.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    filterQuality = FilterQuality.None
-                )
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Color.White)
+                        .padding(8.dp)
+                ) {
+                    Image(
+                        bitmap = qrBitmap.asImageBitmap(),
+                        contentDescription = "Payment QR Code",
+                        modifier = Modifier
+                            .size(if (isFloating) 180.dp else 220.dp),
+                        filterQuality = FilterQuality.None
+                    )
+                }
             }
         }
 
@@ -177,7 +196,7 @@ fun ShowQrScreen(
                 text = "$currencyPrefix$amount",
                 style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = Color.White,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -186,7 +205,7 @@ fun ShowQrScreen(
                 text = "Scan to Pay",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = Color.White,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -197,8 +216,8 @@ fun ShowQrScreen(
             Text(
                 text = "$idTypeLabel: $upiId",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
-                modifier = Modifier.padding(top = 8.dp)
+                color = Color(0xFFC5C6D0),
+                modifier = Modifier.padding(top = 4.dp)
             )
         }
 
@@ -214,7 +233,12 @@ fun ShowQrScreen(
                         showConfetti = true
                         confettiTriggerKey++
                     },
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(22.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF38393F),
+                        contentColor = Color.White
+                    ),
+                    border = BorderStroke(1.dp, Color(0xFF44474F)),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
@@ -222,13 +246,15 @@ fun ShowQrScreen(
                     Icon(
                         painter = painterResource(R.drawable.ic_share),
                         contentDescription = null,
+                        tint = Color.White,
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.size(8.dp))
                     Text(
                         "Share QR Code Image",
                         style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
                     )
                 }
 
@@ -239,26 +265,34 @@ fun ShowQrScreen(
                         showConfetti = true
                         confettiTriggerKey++
                     },
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(22.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color.White
+                    ),
+                    border = BorderStroke(1.dp, Color(0xFF44474F)),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+                        .height(50.dp)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_share),
                         contentDescription = null,
+                        tint = Color.White,
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.size(8.dp))
                     Text(
                         "Share Payment Link",
                         style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
                     )
                 }
             }
         }
+
+        // Bottom clearance for floating Back pill
+        Spacer(modifier = Modifier.height(120.dp))
     }
 
     if (showConfetti) {

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/ui/components
+ * File: WhatsNewDialog.kt
+ * Description: Dialog displaying release highlights and feature changelogs following an application update.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.ui.components
 
 import androidx.compose.animation.animateColorAsState
@@ -62,11 +71,11 @@ fun WhatsNewDialog(
     )
 
     val items = listOf(
-        "🎯 Radial Quick-Wheel" to "350ms long-press or swipe on the floating bubble to instantly summon top 4 tools with spring physics.",
-        "📱 Glance Material 3 Widgets" to "Responsive home screen widgets (1x1 Squircle, 2x1 Quick Bar, 2x2 Tool Hub) with dynamic tinting.",
-        "🔐 Encrypted Backup & Restore" to "Export and import settings & notes with AES-256-GCM encryption and PBKDF2 passphrase protection.",
-        "📦 In-App Update Engine" to "Streamlined update checker, download progress indicator, and automatic package installer trigger.",
-        "⚡ Architecture & Stability" to "Target SDK 36 (Android 16), Unified UserStore DataStore migration, and comprehensive test suite."
+        "Radial Quick-Wheel" to "Long-press or swipe on the floating bubble to instantly summon top 4 tools with spring physics.",
+        "Glance Material 3 Widgets" to "Responsive home screen widgets (1x1 Squircle, 2x1 Quick Bar, 2x2 Tool Hub) with dynamic tinting.",
+        "Encrypted Backup and Restore" to "Export and import settings & notes with AES-256-GCM encryption and PBKDF2 passphrase protection.",
+        "In-App Update Engine" to "Streamlined update checker, download progress indicator, and automatic package installer trigger.",
+        "Architecture and Stability" to "Target SDK 37 (Android 16), Unified UserStore DataStore migration, and comprehensive test suite."
     )
 
     AlertDialog(

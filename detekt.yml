@@ -1,0 +1,30 @@
+build:
+  maxIssues: 0
+  excludeCorrectable: false
+
+naming:
+  FunctionNaming:
+    active: true
+    functionPattern: '^[a-zA-Z][a-zA-Z0-9]*$'
+    excludeClassPattern: '$^'
+  TopLevelPropertyNaming:
+    active: true
+    constantPattern: '^[A-Z][A-Z0-9_]*$'
+    propertyPattern: '^[a-zA-Z][a-zA-Z0-9]*$'
+
+style:
+  WildcardImport:
+    active: false
+  MagicNumber:
+    active: false
+  UnusedPrivateMember:
+    active: true
+    allowedNames: '(_|ignored|expected)'
+
+complexity:
+  LongParameterList:
+    active: false
+  TooManyFunctions:
+    active: false
+  LargeClass:
+    active: false

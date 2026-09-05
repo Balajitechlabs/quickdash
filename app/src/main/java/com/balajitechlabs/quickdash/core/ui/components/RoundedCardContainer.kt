@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/ui/components
+ * File: RoundedCardContainer.kt
+ * Description: Card container applying standard 24dp rounded corners, subtle borders, and surface colors to grouped content.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.ui.components
 
 import androidx.compose.foundation.background
@@ -21,7 +30,7 @@ fun RoundedCardContainer(
     modifier: Modifier = Modifier,
     spacing: Dp = 2.dp,
     cornerRadius: Dp = 24.dp,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+    containerColor: Color = Color.Transparent,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Column(

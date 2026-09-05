@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/navigation
+ * File: QuickDashRoutes.kt
+ * Description: Defines route constants and navigation arguments for all application screens and modal destinations.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.navigation
 
 import kotlinx.serialization.Serializable

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/qr/presentation
+ * File: QrViewModel.kt
+ * Description: ViewModel managing UPI QR generation, scan result parsing, and scan history persistence.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.qr.presentation
 
 import androidx.lifecycle.ViewModel

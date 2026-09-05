@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/network
+ * File: FeedbackSender.kt
+ * Description: Dispatches user feedback, diagnostics, and issue reports to the developer support channel.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.network
 
 import android.content.Context

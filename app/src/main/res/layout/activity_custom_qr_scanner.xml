@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+  License: PocketOps Custom Open Source Fork License
+  Custom EssentialX-styled Barcode & QR Camera Scanner Layout
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <!-- Camera Preview & Viewfinder -->
+    <com.journeyapps.barcodescanner.DecoratedBarcodeView
+        android:id="@+id/zxing_barcode_scanner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:zxing_framing_rect_width="260dp"
+        app:zxing_framing_rect_height="260dp"
+        app:zxing_preview_scaling_strategy="centerCrop"
+        app:zxing_use_texture_view="false"
+        app:zxing_viewfinder_laser="#B0C6FF"
+        app:zxing_viewfinder_mask="#CC000000"
+        app:zxing_possible_result_points="#81C784" />
+
+    <!-- Precision Reticle Framing Overlay -->
+    <FrameLayout
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_scanner_frame"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no" />
+
+        <!-- Dynamic Laser Sweep Line -->
+        <View
+            android:id="@+id/scanner_laser_line"
+            android:layout_width="230dp"
+            android:layout_height="3dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_scanner_laser" />
+    </FrameLayout>
+
+    <!-- Top Floating Action Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="48dp"
+        android:paddingBottom="12dp">
+
+        <!-- Back Button Pill -->
+        <LinearLayout
+            android:id="@+id/btn_scanner_back"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_scanner_pill"
+            android:paddingStart="14dp"
+            android:paddingEnd="18dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="#FFFFFF"
+                android:contentDescription="Back" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Back"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!-- Gallery Import Button -->
+        <ImageButton
+            android:id="@+id/btn_scanner_gallery"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_scanner_circle"
+            android:src="@drawable/ic_gallery"
+            app:tint="#FFFFFF"
+            android:contentDescription="Scan from Gallery"
+            android:scaleType="centerInside" />
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="1dp" />
+
+        <!-- Zoom Toggle Button -->
+        <ImageButton
+            android:id="@+id/btn_scanner_zoom"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_scanner_circle"
+            android:src="@drawable/ic_zoom_in"
+            app:tint="#FFFFFF"
+            android:contentDescription="Toggle Zoom"
+            android:scaleType="centerInside" />
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="1dp" />
+
+        <!-- Flash Toggle Circle -->
+        <ImageButton
+            android:id="@+id/btn_scanner_flash"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_scanner_circle"
+            android:src="@drawable/ic_flash_off"
+            app:tint="#FFFFFF"
+            android:contentDescription="Toggle Flashlight"
+            android:scaleType="centerInside" />
+
+    </LinearLayout>
+
+    <!-- Bottom Guidance Pod -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="64dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_scanner_card"
+            android:padding="20dp"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Align QR or Barcode"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Position code within the frame to scan automatically"
+                android:textColor="#C5C6D0"
+                android:textSize="13sp"
+                android:textAlignment="center" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

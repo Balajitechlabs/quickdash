@@ -70,7 +70,7 @@ export default function Navbar() {
           </Link>
         ))}
         <a
-          href="https://github.com/Balajitechlabs/quickdash/issues"
+          href="https://github.com/balajitechlabs/quickdash/issues"
           target="_blank"
           rel="noopener noreferrer"
           className="btn btn-sm btn-outline"

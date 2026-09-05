@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/utils
+ * File: ShakeDetector.kt
+ * Description: SensorEventListener detecting acceleration spikes and calculating shake gestures with debouncing.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.utils
 
 import android.hardware.Sensor

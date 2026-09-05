@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/onboarding/presentation/steps
+ * File: PaymentSetupStep.kt
+ * Description: Onboarding step configuring the user's primary UPI ID and default payment app.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.onboarding.presentation.steps
 
 import androidx.compose.foundation.layout.*

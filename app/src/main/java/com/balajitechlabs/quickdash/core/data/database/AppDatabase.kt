@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/data/database
+ * File: AppDatabase.kt
+ * Description: Room database definition maintaining tables and DAOs for local offline persistence.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.data.database
 
 import android.content.Context

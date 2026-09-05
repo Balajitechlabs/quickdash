@@ -5,6 +5,7 @@ on:
     branches: [main, master]
     paths-ignore:
       - README.md
+      - update.json
       - 'fastlane/**'
       - 'metadata/**'
       - 'website/**'
@@ -28,13 +29,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: 17
 
       - name: Setup Gradle cache
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Decode keystore
         run: |
@@ -45,16 +46,6 @@ jobs:
           fi
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-
-      - name: Decode google-services.json
-        run: |
-          if [ -n "$GOOGLE_SERVICES_JSON_BASE64" ]; then
-            echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 -d > app/google-services.json
-          else
-            echo "Skipping — no google-services.json provided"
-          fi
-        env:
-          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
 
       - name: Create local.properties
         run: |
@@ -85,23 +76,19 @@ jobs:
           # 2. Build Google Play App Bundle (.aab)
           eval ./gradlew bundleRelease --parallel --build-cache "$SIGNING_FLAGS"
 
-          # 3. Stage standard artifacts
+          # 3. Stage release artifacts
           mkdir -p release_artifacts
           cp app/build/outputs/apk/release/*.apk release_artifacts/ 2>/dev/null || true
           cp app/build/outputs/bundle/release/app-release.aab release_artifacts/ 2>/dev/null || true
 
-          # 4. Build 100% Zero-Tracker FOSS Release APK (for F-Droid & IzzyOnDroid)
-          eval ./gradlew assembleRelease -Pfoss --parallel --build-cache "$SIGNING_FLAGS"
-          if [ -f app/build/outputs/apk/release/app-universal-release.apk ]; then
-            cp app/build/outputs/apk/release/app-universal-release.apk release_artifacts/app-foss-release.apk
-          elif [ -f app/build/outputs/apk/release/app-release.apk ]; then
-            cp app/build/outputs/apk/release/app-release.apk release_artifacts/app-foss-release.apk
-          else
-            echo "ERROR: FOSS APK not found - neither app-universal-release.apk nor app-release.apk exists"
-            exit 1
+          # 4. Stage 100% Zero-Tracker FOSS Release APK (pure zero-tracker universal build)
+          if [ -f release_artifacts/app-universal-release.apk ]; then
+            cp release_artifacts/app-universal-release.apk release_artifacts/app-foss-release.apk
+          elif [ -f release_artifacts/app-release.apk ]; then
+            cp release_artifacts/app-release.apk release_artifacts/app-foss-release.apk
           fi
 
-          # 4. Generate SHA-256 Checksums for all release artifacts
+          # 5. Generate SHA-256 Checksums for all release artifacts
           cd release_artifacts
           sha256sum * > checksums.txt
           cd ..
@@ -139,14 +126,16 @@ jobs:
               '.apk_sha256 = $sha | .apk_size_bytes = $size' \
               website/public/api/v1/update.json > website/public/api/v1/update.json.tmp
             mv website/public/api/v1/update.json.tmp website/public/api/v1/update.json
+            cp website/public/api/v1/update.json update.json
           fi
 
       - name: Create GitHub Release
         id: create_release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
-          tag_name: v${{ steps.version.outputs.version_name }}-${{ github.run_number }}
+          tag_name: v${{ steps.version.outputs.version_name }}
           name: QuickDash v${{ steps.version.outputs.version_name }}
+          make_latest: true
           body: |
             ## QuickDash v${{ steps.version.outputs.version_name }}
 
@@ -168,13 +157,13 @@ jobs:
 
       - name: Commit updated update.json
         run: |
-          NEW_TAG="v${{ steps.version.outputs.version_name }}-${{ github.run_number }}"
+          NEW_TAG="v${{ steps.version.outputs.version_name }}"
           RELEASES_URL="https://github.com/${{ github.repository }}/releases/latest"
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add README.md website/public/api/v1/update.json
+          git add README.md update.json website/public/api/v1/update.json
           git commit -m "chore: bump release tag and checksum to ${NEW_TAG}" || echo "Nothing to commit"
-          git pull --rebase origin master || true
-          git push
+          git pull --rebase origin ${{ github.ref_name }} || true
+          git push origin HEAD:${{ github.ref_name }}

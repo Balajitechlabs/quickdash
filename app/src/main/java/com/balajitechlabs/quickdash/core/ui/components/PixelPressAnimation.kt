@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/ui/components
+ * File: PixelPressAnimation.kt
+ * Description: Compose modifier adding tactile spring-based scale feedback on touch down and release.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.ui.components
 
 import androidx.compose.animation.core.Spring

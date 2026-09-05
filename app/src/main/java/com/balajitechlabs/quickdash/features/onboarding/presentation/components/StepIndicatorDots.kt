@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/onboarding/presentation/components
+ * File: StepIndicatorDots.kt
+ * Description: Animated dot indicator displaying current progress through the onboarding sequence.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.onboarding.presentation.components
 
 import androidx.compose.animation.core.animateDpAsState

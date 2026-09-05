@@ -1,0 +1,6 @@
+• Quick Settings Tile fix: Monochrome vector icon and Android 14+ synchronous launch.
+• Spotlight Search: Direct 1-tap camera QR scanner launch.
+• AI Code Purge: Removed 88k+ lines of synthetic slop and obsolete dependencies.
+• 100% Zero-Tracker: Decoupled from Firebase and Google Play Services.
+• Compose Performance: Added lifecycle-aware state collection and LazyColumn keys.
+• Sensitive Clipboard: Automatic privacy masking with eye reveal toggle.

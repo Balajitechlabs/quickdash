@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: core/data
+ * File: SecurityRepository.kt
+ * Description: Repository coordinating biometric authentication status, app lock state, and secure window mode.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.core.data
 
 import android.content.Context
@@ -11,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import android.util.Log
 
 val Context.securityDataStore: DataStore<Preferences> by preferencesDataStore(name = "secure_settings")
 
@@ -50,7 +60,7 @@ class SecurityRepository @Inject constructor(
         return try {
             cryptoManager.encrypt(value.toByteArray())
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("QuickDash", "Error occurred: ${e.message}", e)
             ""
         }
     }
@@ -60,7 +70,7 @@ class SecurityRepository @Inject constructor(
             if (value.isBlank()) return ""
             String(cryptoManager.decrypt(value))
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("QuickDash", "Error occurred: ${e.message}", e)
             ""
         }
     }

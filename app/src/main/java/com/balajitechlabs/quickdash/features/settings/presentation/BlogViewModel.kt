@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/settings/presentation
+ * File: BlogViewModel.kt
+ * Description: ViewModel fetching and caching announcements and developer blog entries.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.settings.presentation
 
 import androidx.lifecycle.ViewModel

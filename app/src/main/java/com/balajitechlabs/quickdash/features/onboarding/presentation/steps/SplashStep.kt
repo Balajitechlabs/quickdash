@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/onboarding/presentation/steps
+ * File: SplashStep.kt
+ * Description: Initial visual presentation step animating the QuickDash brand icon.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.onboarding.presentation.steps
 
 import androidx.compose.animation.core.*

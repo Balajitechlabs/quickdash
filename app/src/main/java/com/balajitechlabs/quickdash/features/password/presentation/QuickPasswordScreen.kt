@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/password/presentation
+ * File: QuickPasswordScreen.kt
+ * Description: Cryptographically secure random password and passphrase generator with entropy scoring.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.password.presentation
 
 import android.content.ClipData
@@ -31,6 +40,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,6 +50,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -101,7 +112,7 @@ fun QuickPasswordScreen(isFloating: Boolean = false) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText(label, text)
         clipboard.setPrimaryClip(clip)
-        Toast.makeText(context, "Copied $label to Clipboard! 🔒", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Copied $label to clipboard", Toast.LENGTH_SHORT).show()
     }
 
     Column(
@@ -192,7 +203,15 @@ fun QuickPasswordScreen(isFloating: Boolean = false) {
                         onCheckedChange = {
                             includeNumbers = it
                             generatePassword()
-                        }
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary,
+                            checkedBorderColor = Color.Transparent,
+                            uncheckedThumbColor = Color.White,
+                            uncheckedTrackColor = Color(0xFF2A2B30),
+                            uncheckedBorderColor = Color(0xFF44474F)
+                        )
                     )
                 }
 
@@ -207,7 +226,15 @@ fun QuickPasswordScreen(isFloating: Boolean = false) {
                         onCheckedChange = {
                             includeSymbols = it
                             generatePassword()
-                        }
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary,
+                            checkedBorderColor = Color.Transparent,
+                            uncheckedThumbColor = Color.White,
+                            uncheckedTrackColor = Color(0xFF2A2B30),
+                            uncheckedBorderColor = Color(0xFF44474F)
+                        )
                     )
                 }
             }
@@ -252,5 +279,6 @@ fun QuickPasswordScreen(isFloating: Boolean = false) {
                 }
             }
         }
+        Spacer(modifier = Modifier.height(120.dp))
     }
 }

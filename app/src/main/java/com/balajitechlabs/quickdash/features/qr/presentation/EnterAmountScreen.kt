@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/qr/presentation
+ * File: EnterAmountScreen.kt
+ * Description: Fast amount entry screen generating dynamic UPI QR codes for merchant collection.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.qr.presentation
 
 import androidx.compose.foundation.BorderStroke
@@ -27,9 +36,15 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.QrCodeScanner
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.QrCode
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
@@ -49,9 +64,6 @@ import com.balajitechlabs.quickdash.R
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.Color
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 
@@ -108,7 +120,8 @@ fun EnterAmountScreen(
     Column(
         modifier = Modifier
             .then(if (isFloating) Modifier.fillMaxWidth().wrapContentHeight() else Modifier.fillMaxSize())
-            .padding(16.dp)
+            .background(Color(0xFF000000))
+            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 20.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -122,21 +135,21 @@ fun EnterAmountScreen(
                 text = "Generate Payment QR",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = Color.White
             )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 IconButton(onClick = onScanQr) {
                     Icon(
-                        imageVector = Icons.Filled.QrCodeScanner,
+                        imageVector = Icons.Rounded.QrCodeScanner,
                         contentDescription = "Scan QR",
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = Color.White
                     )
                 }
                 IconButton(onClick = { showHistoryDialog = true }) {
                     Icon(
-                        imageVector = Icons.Filled.History,
+                        imageVector = Icons.Rounded.History,
                         contentDescription = "Payment History",
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = Color.White
                     )
                 }
             }
@@ -145,18 +158,18 @@ fun EnterAmountScreen(
         // SECTION 1: ACCOUNT SELECTION / DISPLAY
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)
+                containerColor = Color(0xFF38393F)
             ),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.15f))
+            border = BorderStroke(1.dp, Color(0xFF44474F).copy(alpha = 0.5f))
         ) {
             Column(modifier = Modifier.padding(14.dp)) {
                 Text(
                     text = "Receiving Account",
                     style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -222,7 +235,7 @@ fun EnterAmountScreen(
                         Icon(
                             painter = painterResource(idIcon),
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            tint = Color.White,
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(10.dp))
@@ -230,21 +243,21 @@ fun EnterAmountScreen(
                             text = selectedUpiId,
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = Color.White
                         )
                     }
                 }
             }
         }
 
-        // SECTION 2: INPUT FIELDS (AMOUNT & NOTE) CARD
+        // SECTION 2: INPUT FIELDS (AMOUNT) CARD
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
+                containerColor = Color(0xFF38393F)
             ),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.15f))
+            border = BorderStroke(1.dp, Color(0xFF44474F).copy(alpha = 0.5f))
         ) {
             Column(
                 modifier = Modifier.padding(14.dp),
@@ -253,8 +266,8 @@ fun EnterAmountScreen(
                 Text(
                     text = "Payment details",
                     style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
 
                 // Amount input
@@ -266,16 +279,26 @@ fun EnterAmountScreen(
                                 amountInput = newValue
                             }
                         },
-                        label = { Text("Amount (Optional)") },
+                        label = { Text("Amount (Optional)", color = Color(0xFFC5C6D0)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        shape = RoundedCornerShape(12.dp),
-                        leadingIcon = { Text(currencySymbol, modifier = Modifier.padding(start = 12.dp)) },
+                        shape = RoundedCornerShape(16.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color(0xFF44474F),
+                            unfocusedBorderColor = Color(0xFF44474F).copy(alpha = 0.6f),
+                            focusedContainerColor = Color(0xFF1E2024),
+                            unfocusedContainerColor = Color(0xFF1E2024),
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            cursorColor = Color.White
+                        ),
+                        leadingIcon = { Text(currencySymbol, color = Color.White, modifier = Modifier.padding(start = 12.dp)) },
                         trailingIcon = {
                             if (amountInput.isNotEmpty()) {
                                 IconButton(onClick = { amountInput = "" }) {
                                     Icon(
                                         painter = painterResource(R.drawable.ic_close),
-                                        contentDescription = "Clear"
+                                        contentDescription = "Clear",
+                                        tint = Color(0xFFC5C6D0)
                                     )
                                 }
                             }
@@ -316,55 +339,27 @@ fun EnterAmountScreen(
                             SuggestionChip(
                                 onClick = { 
                                     amountInput = amount
-                                    onGenerateQr(amount, noteInput, selectedUpiId, selectedTargetApp, selectedCategory, useCircularDots, useGradient)
+                                    onGenerateQr(amount, "", selectedUpiId, selectedTargetApp, selectedCategory, useCircularDots, useGradient)
                                 },
                                 label = {
                                     Text(
                                         text = "$currencySymbol$amount",
                                         style = MaterialTheme.typography.labelMedium,
-                                        fontWeight = FontWeight.Medium
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.White
                                     )
                                 },
                                 colors = SuggestionChipDefaults.suggestionChipColors(
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                    labelColor = MaterialTheme.colorScheme.onSecondaryContainer
+                                    containerColor = Color(0xFF1E2024),
+                                    labelColor = Color.White
                                 ),
-                                shape = RoundedCornerShape(10.dp)
+                                shape = RoundedCornerShape(12.dp)
                             )
                         }
                     }
                 }
-
-                // Note input
-                OutlinedTextField(
-                    value = noteInput,
-                    onValueChange = { noteInput = it },
-                    label = { Text("Note / Description (Optional)") },
-                    shape = RoundedCornerShape(12.dp),
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_note),
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    },
-                    trailingIcon = {
-                        if (noteInput.isNotEmpty()) {
-                            IconButton(onClick = { noteInput = "" }) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_close),
-                                    contentDescription = "Clear"
-                                )
-                            }
-                        }
-                    },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
             }
         }
-
-
 
         Spacer(modifier = Modifier.height(4.dp))
 
@@ -373,49 +368,60 @@ fun EnterAmountScreen(
             Button(
                 onClick = {
                     if (isAmountValid) {
-                        onGenerateQr(amountInput, noteInput, selectedUpiId, selectedTargetApp, selectedCategory, useCircularDots, useGradient)
+                        onGenerateQr(amountInput, "", selectedUpiId, selectedTargetApp, selectedCategory, useCircularDots, useGradient)
                     }
                 },
                 enabled = isAmountValid && selectedUpiId.isNotEmpty(),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(24.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF38393F),
+                    contentColor = Color.White
+                ),
+                border = BorderStroke(1.dp, Color(0xFF44474F)),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_qr_code),
+                    imageVector = Icons.Rounded.QrCode,
                     contentDescription = null,
+                    tint = Color.White,
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Generate QR Code",
                     style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
             }
 
             OutlinedButton(
                 onClick = { onManageUpiIds() },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = MaterialTheme.colorScheme.primary
+                    contentColor = Color.White
                 ),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
+                border = BorderStroke(1.dp, Color(0xFF44474F))
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_settings),
+                    imageVector = Icons.Rounded.Settings,
                     contentDescription = null,
+                    tint = Color.White,
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Manage $idTypeLabel",
                     style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White
                 )
             }
+
+            Spacer(modifier = Modifier.height(120.dp))
         }
     }
 

@@ -1,9 +1,22 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/dashboard/presentation
+ * File: FloatingDialogActivity.kt
+ * Description: Overlay dialog activity hosting floating productivity tools, quick search, and gestures.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.dashboard.presentation
 
+
+import com.google.gson.reflect.TypeToken
+import com.google.gson.Gson
 import com.balajitechlabs.quickdash.core.utils.AppLogger
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.animation.DecelerateInterpolator
 import androidx.activity.compose.setContent
@@ -30,21 +43,23 @@ import androidx.biometric.BiometricPrompt
 import com.balajitechlabs.quickdash.core.data.UserStore
 import com.balajitechlabs.quickdash.core.ui.QuickDashApp
 import com.balajitechlabs.quickdash.core.ui.theme.QuickDashTheme
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.Locale
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.activity.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import android.util.Log
+import android.widget.Toast
 
 @AndroidEntryPoint
 class FloatingDialogActivity : FragmentActivity() {
     private lateinit var userStore: UserStore
     private val mainViewModel: com.balajitechlabs.quickdash.MainViewModel by viewModels()
-    private var isAuthenticated by mutableStateOf(false)
+    private var isAuthenticated by mutableStateOf(true)
     private var isAuthRequired by mutableStateOf(false)
-    private var isFullScreen by mutableStateOf(false)
     private var currentAction by mutableStateOf<String?>(null)
 
     private val captureReceiver = object : android.content.BroadcastReceiver() {
@@ -67,16 +82,15 @@ class FloatingDialogActivity : FragmentActivity() {
             registerReceiver(captureReceiver, captureFilter)
         }
 
-        val config = resources.configuration
-        val isLargeScreen = config.smallestScreenWidthDp >= 600
-        isFullScreen = isLargeScreen
-
         val lp = window.attributes
         lp.width = android.view.WindowManager.LayoutParams.MATCH_PARENT
         lp.height = android.view.WindowManager.LayoutParams.MATCH_PARENT
         lp.gravity = android.view.Gravity.CENTER
         lp.windowAnimations = android.R.style.Animation_Dialog
         window.attributes = lp
+        window.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+        window.addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        window.setDimAmount(0.5f)
 
         // Apply saved locale — do NOT use runBlocking on the main thread (causes ANR/deadlock
         // with DataStore in release builds). Use a best-effort synchronous read from a
@@ -98,15 +112,16 @@ class FloatingDialogActivity : FragmentActivity() {
         lifecycleScope.launch {
             val locked = mainViewModel.userStore.isAppLocked.first()
             if (locked) {
+                isAuthenticated = false
                 isAuthRequired = true
                 showBiometricPrompt()
             } else {
                 isAuthenticated = true
             }
 
-            // Secure Mode Setup
+            // Secure Mode Setup (bypassed in DEBUG so development screenshots work)
             mainViewModel.userStore.secureMode.collect { secure ->
-                if (secure) {
+                if (secure && !com.balajitechlabs.quickdash.BuildConfig.DEBUG) {
                     window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
                 } else {
                     window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
@@ -115,13 +130,16 @@ class FloatingDialogActivity : FragmentActivity() {
         }
 
         setContent {
-            val themeMode by mainViewModel.userStore.themeMode.collectAsState(initial = "SYSTEM")
-            val dynamicColor by mainViewModel.userStore.dynamicColor.collectAsState(initial = false)
+            val themeMode by mainViewModel.userStore.themeMode.collectAsStateWithLifecycle(initialValue = "SYSTEM")
+            val dynamicColor by mainViewModel.userStore.dynamicColor.collectAsStateWithLifecycle(initialValue = false)
             val isDarkTheme = when (themeMode) {
                 "LIGHT" -> false
                 "DARK", "AMOLED" -> true
                 else -> isSystemInDarkTheme()
             }
+
+            val isOnboardingComplete by mainViewModel.userStore.isOnboardingComplete.collectAsStateWithLifecycle(initialValue = null)
+            val isWelcome = isOnboardingComplete == false
 
             QuickDashTheme(themeMode = themeMode, darkTheme = isDarkTheme, dynamicColor = dynamicColor) {
                 if (isAuthenticated) {
@@ -133,33 +151,34 @@ class FloatingDialogActivity : FragmentActivity() {
                                 interactionSource = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
                                 indication = null
                             ) {
-                                finish()
+                                if (!isWelcome) {
+                                    minimizeToBubble()
+                                }
                             },
                         contentAlignment = Alignment.Center
                     ) {
+
                         val config = androidx.compose.ui.platform.LocalConfiguration.current
                         val isLandscape = config.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
                         val isLargeScreen = config.smallestScreenWidthDp >= 600
 
+                        val widthFraction = when {
+                            isLandscape && isLargeScreen -> 0.65f
+                            isLandscape -> 0.70f
+                            isLargeScreen -> 0.75f
+                            else -> 0.90f
+                        }
+                        val maxDp = if (isLargeScreen) 560.dp else 480.dp
+
                         Box(
-                            modifier = Modifier
-                                .then(
-                                    if (isFullScreen) {
-                                        Modifier.fillMaxSize()
-                                    } else {
-                                        val widthFraction = when {
-                                            isLandscape && isLargeScreen -> 0.65f
-                                            isLandscape -> 0.70f
-                                            isLargeScreen -> 0.75f
-                                            else -> 0.90f
-                                        }
-                                        val maxDp = if (isLargeScreen) 560.dp else 480.dp
-                                        Modifier
-                                            .widthIn(max = maxDp)
-                                            .fillMaxWidth(widthFraction)
-                                            .wrapContentHeight()
-                                    }
-                                )
+                            modifier = if (isWelcome) {
+                                Modifier.fillMaxSize()
+                            } else {
+                                Modifier
+                                    .widthIn(max = maxDp)
+                                    .fillMaxWidth(widthFraction)
+                                    .wrapContentHeight()
+                            }
                                 .pointerInput(Unit) {
                                     awaitPointerEventScope {
                                         while (true) {
@@ -182,7 +201,7 @@ class FloatingDialogActivity : FragmentActivity() {
                                 shortcutAction = currentAction,
                                 themeMode = themeMode,
                                 dynamicColor = dynamicColor,
-                                isFloating = !isFullScreen,
+                                isFloating = !isWelcome,
                                 onToggleDynamicColor = { enabled ->
                                     lifecycleScope.launch {
                                         mainViewModel.userStore.saveDynamicColor(enabled)
@@ -195,15 +214,7 @@ class FloatingDialogActivity : FragmentActivity() {
                                 },
                                 onQrShown = { maxBrightness() },
                                 onRestoreBrightness = { restoreBrightness() },
-                                onDismiss = { finish() },
-                                onConvertToFullScreen = {
-                                    isFullScreen = true
-                                    val lp = window.attributes
-                                    lp.width = android.view.WindowManager.LayoutParams.MATCH_PARENT
-                                    lp.height = android.view.WindowManager.LayoutParams.MATCH_PARENT
-                                    lp.windowAnimations = android.R.style.Animation_Dialog
-                                    window.attributes = lp
-                                }
+                                onDismiss = { if (!isWelcome) minimizeToBubble() }
                             )
                         }
                     }
@@ -250,7 +261,7 @@ class FloatingDialogActivity : FragmentActivity() {
         super.onResume()
         // Share any pending crash log now that the window & task are fully ready.
         try {
-            val pendingCrash = com.balajitechlabs.quickdash.core.utils.DiagnosticLogger.getPendingCrashLogFile(this)
+            val pendingCrash = AppLogger.getPendingCrashLogFile(this)
             if (pendingCrash != null) {
                 shareLogFile(pendingCrash)
             }
@@ -293,19 +304,23 @@ class FloatingDialogActivity : FragmentActivity() {
                 val text = clipboard.primaryClip?.getItemAt(0)?.text?.toString()
                 if (!text.isNullOrBlank()) {
                     lifecycleScope.launch {
-                        val historyJson = mainViewModel.userStore.clipboardHistory.first()
-                        val gson = Gson()
-                        val listType = object : TypeToken<List<String>>() {}.type
-                        val list: MutableList<String> = try {
-                            gson.fromJson(historyJson, listType) ?: mutableListOf()
-                        } catch (e: Exception) {
-                            mutableListOf()
-                        }
-                        
-                        if (!list.contains(text)) {
-                            list.add(0, text)
-                            mainViewModel.userStore.saveClipboardHistory(gson.toJson(list.take(20)))
-                            android.widget.Toast.makeText(this@FloatingDialogActivity, "Saved to QuickDash Clipboard", android.widget.Toast.LENGTH_SHORT).show()
+                        withContext(Dispatchers.IO) {
+                            val historyJson = mainViewModel.userStore.clipboardHistory.first()
+                            val gson = Gson()
+                            val listType = object : TypeToken<List<String>>() {}.type
+                            val list: MutableList<String> = try {
+                                gson.fromJson(historyJson, listType) ?: mutableListOf()
+                            } catch (e: Exception) {
+                                mutableListOf()
+                            }
+                            
+                            if (!list.contains(text)) {
+                                list.add(0, text)
+                                mainViewModel.userStore.saveClipboardHistory(gson.toJson(list.take(20)))
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(this@FloatingDialogActivity, "Saved to QuickDash Clipboard", Toast.LENGTH_SHORT).show()
+                                }
+                            }
                         }
                     }
                 }
@@ -363,10 +378,26 @@ class FloatingDialogActivity : FragmentActivity() {
                 contentResolver.openOutputStream(it)?.use { s ->
                     bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, s)
                 }
-                android.widget.Toast.makeText(this, "📸 Floating Window Screenshot Saved!", android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Floating window screenshot saved", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
-            android.widget.Toast.makeText(this, "Screenshot failed: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Screenshot failed: ${e.message}", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun minimizeToBubble() {
+        if (android.provider.Settings.canDrawOverlays(this)) {
+            try {
+                val serviceIntent = Intent(this, com.balajitechlabs.quickdash.core.services.FloatingBubbleService::class.java)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(serviceIntent)
+                } else {
+                    startService(serviceIntent)
+                }
+            } catch (e: Exception) {
+                Log.e("QuickDash", "Error: ${e.message}", e)
+            }
+        }
+        finish()
     }
 }

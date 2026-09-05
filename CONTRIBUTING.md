@@ -1,145 +1,123 @@
-# Contributing to QuickDash ⚡
+# Contributing to QuickDash
 
-Thank you for your interest in contributing to **QuickDash**! QuickDash is an open-source Android floating utility hub built with Kotlin, Jetpack Compose, and Material Design 3. We are committed to maintaining a fast, privacy-first, on-device app with zero telemetry and 120Hz fluid animations.
+Welcome to QuickDash. QuickDash is an open-friendly Android floating productivity suite built with Jetpack Compose, Kotlin coroutines, and Material 3 Expressive.
 
-Whether you're fixing a bug, adding a new utility tool, improving accessibility, or refining documentation, your contributions are warmly welcomed!
-
----
-
-## 📜 Code of Conduct
-
-By participating in this project, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md). Please treat all community members with respect, kindness, and constructive feedback.
+This guide details our engineering standards, architecture rubric, local verification workflows, and contribution process.
 
 ---
 
-## 🌿 Branching Strategy & Workflow
+## 1. The 10-Category Quality Rubric
 
-QuickDash uses a two-tier branching strategy:
+Every contribution is evaluated against our 10 quality gates:
 
-- **`master` / `main`**: Production-ready code and official releases. Direct pushes are protected.
-- **`dev`**: Main development and integration branch. **All Pull Requests must target `dev`**.
-
-### Branch Naming Conventions
-
-Create focused branches from `dev` using descriptive prefixes:
-- `feat/feature-name` (e.g., `feat/custom-bubble-tools`, `feat/glance-widgets`)
-- `fix/bug-description` (e.g., `fix/timer-alarm-android-14`, `fix/webview-content-access`)
-- `refactor/scope` (e.g., `refactor/120hz-graphics-layer`)
-- `docs/topic` (e.g., `docs/architecture-guide`)
-- `security/hardening-target` (e.g., `security/codeql-hardening`)
+1. **Self-Documentation**: Every source and test file must maintain a canonical header with an authentic description recorded in `docs/file_manifest.json`. `docs/FILE_MAP.md` is auto-generated and kept in sync via `tools/sync_file_headers.py`.
+2. **Formatting & Consistency**: Zero wildcard imports, zero redundant inline fully-qualified packages, and consistent Kotlin style.
+3. **Static Analysis**: Zero compiler warnings (`w:`) or errors (`e:`), clean Android Lint runs, and strict baseline discipline.
+4. **Testing & Coverage**: Unit tests for all repositories, ViewModels, and parsers. Critical paths (`core/data`, `core/security`, `core/utils`) require negative and edge-case test suites.
+5. **Repo Hygiene**: Zero machine paths, zero cached secrets, zero build binaries in git, and strict `.gitignore` rules.
+6. **Architecture & Modularity**: Single-responsibility components. Megafiles are decomposed into focused presentation sections (e.g. `SettingsSecuritySection`, `SettingsDataSection`).
+7. **No Dead or Invisible Code**: Every preference key, enum branch, action, and tool route must have an active, reachable call site or test.
+8. **Algorithmic Correctness**: Core algorithms (parsers, cryptographic routines, classifiers) are documented in `docs/AlgorithmAudit.md` with explicit boundary validation.
+9. **Contributor Onboarding**: Clean, reproducible build steps in `docs/SETUP.md` with complete architecture references in `ARCHITECTURE.md`.
+10. **Engineering Process**: Conventional commits (`feat:`, `fix:`, `refactor:`, `docs:`, `chore:`, `perf:`), signed commits, and green CI validation.
 
 ---
 
-## 🛠️ Step-by-Step Contribution Guide
+## 2. Project Architecture
 
-### 1. Fork & Clone
+```
+app/src/main/java/com/balajitechlabs/quickdash/
+├── core/
+│ ├── data/ # UserStore, CryptoManager, EncryptedPrefs, Room Database
+│ ├── di/ # Hilt dependency injection modules
+│ ├── navigation/ # QuickDashNavHost and route definitions
+│ ├── network/ # OkHttp client, update models, CrashReporter
+│ ├── quicktile/ # Android Quick Settings tile services
+│ ├── security/ # IncognitoManager, SecurityGuardManager
+│ ├── services/ # FloatingBubbleService, ShakeDetectorService
+│ ├── shizuku/ # Shizuku privilege bridge
+│ ├── ui/ # QuickDashApp scaffold, theme tokens, reusable components
+│ └── utils/ # TextCategorizer, UpdateManager, QRCodeGenerator
+├── features/ # Isolated feature modules (screens, ViewModels)
+│ ├── about/ # Developer brand, social links, and update actions
+│ ├── calculator/ # Scientific floating calculator
+│ ├── clipboard/ # Clipboard history, auto-clean, search
+│ ├── dashboard/ # FloatingDialogActivity and Spotlight launcher
+│ ├── notes/ # Quick scratchpad notes backed by Room
+│ ├── qr/ # UPI generation, camera scanner, payload parser
+│ ├── settings/ # Modular preference categories
+│ ├── timer/ # Multi-timer and stopwatch tools
+│ └── [...tools] # Additional productivity modules
+└── widget/ # Glance home-screen app widgets
+```
+
+---
+
+## 3. Local Verification Commands
+
+Before submitting changes, run these verification steps from the repository root:
+
 ```bash
-# Clone your fork
-git clone https://github.com/<your-username>/quickdash.git
-cd quickdash
+# 1. Verify file headers and documentation sync
+python3 tools/sync_file_headers.py --check
+python3 tools/sync_file_headers.py --todo
 
-# Add upstream remote
-git remote add upstream https://github.com/Balajitechlabs/quickdash.git
-git fetch upstream
+# 2. Compile Kotlin sources (zero warnings, zero errors)
+./gradlew :app:compileDebugKotlin
+
+# 3. Execute unit test suite
+./gradlew :app:testDebugUnitTest
+
+# 4. Assemble debug APK
+./gradlew :app:assembleDebug
+
+# 5. Check git diff for trailing whitespace or formatting issues
+git diff --check
 ```
-
-### 2. Create a Feature Branch
-```bash
-git checkout -b feat/your-feature-name upstream/dev
-```
-
-### 3. Build & Test Locally
-Ensure your environment meets the prerequisites (JDK 17+, Android SDK 36):
-```bash
-# Build Debug APK
-./gradlew assembleDebug
-
-# Run Unit Tests
-./gradlew testDebugUnitTest
-
-# Run Lint Analysis
-./gradlew lint
-```
-
-### 4. Commit Standards (Conventional Commits)
-We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
-```
-<type>(<optional scope>): <short description in present tense>
-
-[optional body explaining rationale]
-```
-
-**Examples:**
-- `feat(bubble): add customizable 4-slot radial menu in Settings`
-- `fix(timer): prevent crash when setting exact alarms on Android 14+`
-- `docs(readme): add dynamic total downloads badge and showcase banner`
-- `security(crypto): enforce BIOMETRIC_STRONG for biometric authentication`
-
-*(Tip: GPG / SSH signed commits are highly recommended for verified badge on GitHub).*
-
-### 5. Push & Open Pull Request
-```bash
-git push origin feat/your-feature-name
-```
-- Open a Pull Request targeting the **`dev`** branch.
-- Complete the PR template with a clear description and testing notes.
-- Wait for automated GitHub Actions CI checks (`Android Build`, `Unit Tests`, `CodeQL`) to pass.
 
 ---
 
-## 🛡️ QuickDash Coding Rules & Stability Guidelines
+## 4. How-To Guides
 
-To maintain rock-solid stability, zero jank at 120Hz, and compile-readiness for stable Google Play releases, **all PRs must strictly adhere to these 8 rules**:
+### Adding a Preference Key
+1. Define the type-safe key in `core/data/prefs/PreferencesKeys.kt`:
+ ```kotlin
+ val MY_FEATURE_KEY = booleanPreferencesKey("my_feature_key")
+ ```
+2. Expose the reactive `Flow` and `suspend` mutation function in `core/data/UserStore.kt`:
+ ```kotlin
+ val myFeature: Flow<Boolean> = context.dataStore.data.map { it[MY_FEATURE_KEY] ?: false }
+ suspend fun saveMyFeature(enabled: Boolean) {
+ context.dataStore.edit { it[MY_FEATURE_KEY] = enabled }
+ }
+ ```
+3. Consume the property in your ViewModel using `stateIn` or in Compose via `collectAsStateWithLifecycle()`.
 
-### 1. Jetpack Compose Thread Safety
-- **CRITICAL:** All writes to Compose state variables (`mutableStateOf`, `mutableStateListOf`, DataStore collect updates) MUST execute on the Main Thread (`Dispatchers.Main`).
-- When fetching data asynchronously via coroutines, perform I/O on `Dispatchers.IO` and switch back or post updates on `Dispatchers.Main`.
+### Adding a New Screen or Tool
+1. Register the tool entry in `core/ui/QuickTool.kt` with a unique route name, title, category, and icon.
+2. Create your presentation composable inside `features/<feature_name>/presentation/<FeatureScreen>.kt`.
+3. Wire the route in `core/ui/QuickDashApp.kt` or `core/navigation/QuickDashNavHost.kt`.
+4. Run `python3 tools/sync_file_headers.py` to index the new file. Add its description in `docs/file_manifest.json` and re-run with `--check`.
 
-### 2. Intrinsic Measurements & SubcomposeLayout
-- **DO NOT** place any `SubcomposeLayout`-based components (including `LazyRow`, `LazyColumn`, `TabRow`, or `BoxWithConstraints`) inside layouts that invoke intrinsic measurement queries.
-- Material 3 `ListItem` uses intrinsic measurements to align its child slots (`headlineContent`, `supportingContent`, `trailingContent`). Use standard `Row` and `Column` layouts instead to prevent `IllegalStateException` runtime crashes.
-
-### 3. Intents from Floating / Service Contexts
-- Any `Intent` launched from a background service, quick setting tile, or floating window activity context MUST be flagged with `Intent.FLAG_ACTIVITY_NEW_TASK` to allow Android to launch the activity inside a clean task stack.
-
-### 4. Multi-Colored Vector & Image Assets
-- Always use `androidx.compose.foundation.Image` (without a `colorFilter` or `tint` argument) instead of the `Icon` composable when displaying multi-colored images or official logos (e.g., App Logo, UPI provider logos). Using `Icon` enforces a monochrome tint that obscures multi-colored graphics.
-
-### 5. UPI Handle Validations
-- Support flexible alpha-numeric UPI handles allowing digits, dots, hyphens, and underscores (e.g., `^[a-zA-Z0-9.\-_]+@[a-zA-Z0-9.\-_]+$`), and provide clean fallback empty values for new installs.
-
-### 6. Google Play Store Policy Compliance
-- **Never** add broad or prohibited permissions (such as `READ_MEDIA_IMAGES`, `READ_MEDIA_VIDEO`, or `REQUEST_INSTALL_PACKAGES`) without prior core team approval. All storage operations should use the Android Storage Access Framework (SAF) or Photo Picker.
-
-### 7. 120Hz Rendering & Animation Performance
-- Avoid animating layout-phase modifiers like `Modifier.scale()` or `Modifier.alpha()` inside continuous loops.
-- Use `Modifier.graphicsLayer { scaleX = ...; scaleY = ...; alpha = ... }` to offload transformations directly to the GPU RenderThread with zero recompositions.
-
-### 8. Static Analysis & CodeQL Security Hygiene
-- **Log Injection:** Sanitize all logcat outputs via `AppLogger.sanitize()` stripping carriage returns (`\r\n`).
-- **Implicit PendingIntents:** Always specify `intent.setPackage(context.packageName)` on notification and alarm PendingIntents.
-- **WebView Security:** Explicitly set `settings.allowContentAccess = false` and `settings.allowFileAccess = false` on WebViews.
-- **Local Auth:** Enforce `BIOMETRIC_STRONG` and `DEVICE_CREDENTIAL` for cryptographic authentication.
+### Synchronizing Headers & File Map
+Whenever you add or rename Kotlin files:
+```bash
+python3 tools/sync_file_headers.py --todo
+# Add the 1-sentence description in docs/file_manifest.json
+python3 tools/sync_file_headers.py
+python3 tools/sync_file_headers.py --check
+```
 
 ---
 
-## 🧪 Pre-PR Verification Checklist
+## 5. Contribution & Commit Standards
 
-Before submitting your PR, verify that:
-- [ ] All unit tests pass: `./gradlew testDebugUnitTest`
-- [ ] Lint analysis produces zero errors: `./gradlew lint`
-- [ ] Code follows Kotlin style conventions (no wildcard imports, 100% Kotlin).
-- [ ] No hardcoded strings in UI (use `strings.xml` for localization).
-- [ ] Tested on light mode and dark mode with Material You dynamic theming.
-- [ ] Pull Request targets the `dev` branch.
-
----
-
-## 💬 Getting Help & Discussion
-
-- **Ask Questions / Share Ideas**: [GitHub Discussions](https://github.com/Balajitechlabs/quickdash/discussions)
-- **Report Issues**: [GitHub Issues](https://github.com/Balajitechlabs/quickdash/issues)
-- **Architecture Overview**: [ARCHITECTURE.md](ARCHITECTURE.md)
-- **Setup Guide**: [SETUP.md](SETUP.md)
-
-Thank you for making QuickDash faster, safer, and better for everyone! 🚀✨
+- **Conventional Commits**: Format commit titles as `<type>(<scope>): <summary>`.
+ - Allowed types: `feat`, `fix`, `refactor`, `docs`, `perf`, `test`, `chore`.
+ - Examples:
+ - `feat(qr): add zoom toggle and tap-to-focus to camera scanner`
+ - `fix(classifier): disambiguate telephone numbers from math operators`
+ - `docs: sync file map and update algorithm audit specification`
+- **Zero AI Slop**: Code must be self-documenting without superficial or robotic comments.
+- **Brand Consistency**: Always write `balajitechlabs` in all lowercase letters.
+- **License**: PocketOps Custom Open Source Fork License. Copyright `||BTL||™ (balajitechlabs)`.

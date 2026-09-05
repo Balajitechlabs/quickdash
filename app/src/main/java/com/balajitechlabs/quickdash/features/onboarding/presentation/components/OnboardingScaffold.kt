@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/onboarding/presentation/components
+ * File: OnboardingScaffold.kt
+ * Description: Scaffold layout framing onboarding steps with consistent navigation headers and buttons.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.onboarding.presentation.components
 
 import androidx.compose.foundation.layout.*

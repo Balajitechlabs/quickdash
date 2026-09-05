@@ -1,5 +1,18 @@
+/*
+ * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
+ * License: PocketOps Custom Open Source Fork License
+ *
+ * Feature Module: features/insta/presentation
+ * File: QuickSocialScreen.kt
+ * Description: Utility screen facilitating rapid access to social profile links and link formatting.
+ * Developer: balajitechlabs
+ */
 package com.balajitechlabs.quickdash.features.insta.presentation
 
+
+import com.google.gson.JsonParser
+import com.google.gson.JsonObject
+import com.google.gson.JsonArray
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -34,15 +47,13 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.balajitechlabs.quickdash.R
 import com.balajitechlabs.quickdash.core.data.UserStore
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.URL
+import android.util.Log
 
 // Cache model to avoid hitting GitHub API rates
 data class GithubProfileCache(
@@ -179,7 +190,7 @@ fun QuickSocialScreen(
                                 }
                             }
                         } catch (e: Exception) {
-                            e.printStackTrace()
+                            Log.e("QuickDash", "Error occurred: ${e.message}", e)
                         }
 
                         val cacheItem = GithubProfileCache(
@@ -219,7 +230,7 @@ fun QuickSocialScreen(
                     showGithubProfile = false
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("QuickDash", "Error occurred: ${e.message}", e)
                 githubError = "Connection error. Please check your internet connection."
                 showGithubProfile = false
             } finally {
