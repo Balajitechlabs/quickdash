@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.ScreenRotation
 import androidx.compose.material.icons.filled.SettingsSystemDaydream
+import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -231,13 +232,39 @@ fun SettingsFloatingWindowSection(
                         manager.requestAddTileService(
                             componentName,
                             "QuickDash Hub",
-                            Icon.createWithResource(context, R.mipmap.ic_launcher_round),
+                            Icon.createWithResource(context, R.drawable.ic_quickdash_tile),
                             { executor -> executor.run() },
                             { _ -> }
                         )
                     } catch (_: Exception) {}
                 } else {
                     Toast.makeText(context, "Pull down top notification shade, tap Edit to add QuickDash Tile", Toast.LENGTH_LONG).show()
+                }
+            }
+        )
+        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+        PreferenceItem(
+            title = "Scan QR Code Tile",
+            subtitle = "Add 1-tap direct camera barcode scanner tile to notification shade",
+            iconVector = Icons.Rounded.QrCodeScanner,
+            onClick = {
+                if (Build.VERSION.SDK_INT >= 33) {
+                    try {
+                        val manager = context.getSystemService(Context.STATUS_BAR_SERVICE) as StatusBarManager
+                        val componentName = ComponentName(
+                            context,
+                            "com.balajitechlabs.quickdash.core.quicktile.QrScannerTileService"
+                        )
+                        manager.requestAddTileService(
+                            componentName,
+                            "Scan QR Code",
+                            Icon.createWithResource(context, R.drawable.ic_qr_code_2),
+                            { executor -> executor.run() },
+                            { _ -> }
+                        )
+                    } catch (_: Exception) {}
+                } else {
+                    Toast.makeText(context, "Pull down top notification shade, tap Edit to add QR Scanner Tile", Toast.LENGTH_LONG).show()
                 }
             }
         )
