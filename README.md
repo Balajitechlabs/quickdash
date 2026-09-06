@@ -53,7 +53,11 @@
   </a>
   &nbsp;&nbsp;
   <a href="https://github.com/balajitechlabs/quickdash/releases">
-    <img src="https://img.shields.io/github/downloads/balajitechlabs/quickdash/total?style=for-the-badge&logo=github&logoColor=white&color=2ea44f&label=DOWNLOADS" alt="Downloads">
+    <img src="https://img.shields.io/github/downloads/balajitechlabs/quickdash/total?style=for-the-badge&logo=github&logoColor=white&color=2ea44f&label=GITHUB%20DOWNLOADS" alt="GitHub Downloads">
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash">
+    <img src="https://img.shields.io/badge/PLAY%20STORE-50%2B%20INSTALLS-34A853?style=for-the-badge&logo=googleplay&logoColor=white" alt="Play Store Installs">
   </a>
   &nbsp;&nbsp;
   <a href="https://github.com/balajitechlabs/quickdash/stargazers">

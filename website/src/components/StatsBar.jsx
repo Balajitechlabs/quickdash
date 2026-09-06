@@ -7,8 +7,10 @@ function formatNum(n) {
   return String(n)
 }
 
+const PLAY_STORE_INSTALLS = 56 // Verified Google Play Store installs on active devices
+
 export default function StatsBar() {
-  const [stats, setStats] = useState({ downloads: 1250, tools: 12, rating: '5.0 ★' })
+  const [stats, setStats] = useState({ downloads: 1316, tools: 20, rating: '5.0 ★' })
 
   useEffect(() => {
     // 1. Try Cloudflare Worker API first
@@ -18,7 +20,7 @@ export default function StatsBar() {
         if (d && typeof d.downloads === 'number' && d.downloads > 0) {
           setStats(prev => ({ ...prev, downloads: d.downloads }))
         } else {
-          // 2. Fallback to GitHub Releases API
+          // 2. Fallback to GitHub Releases API + Play Store
           fetch('https://api.github.com/repos/balajitechlabs/quickdash/releases?per_page=100')
             .then(r => r.ok ? r.json() : [])
             .then(releases => {
@@ -29,7 +31,7 @@ export default function StatsBar() {
                     total += asset.download_count || 0
                   })
                 })
-                if (total > 0) setStats(prev => ({ ...prev, downloads: total }))
+                if (total > 0) setStats(prev => ({ ...prev, downloads: total + PLAY_STORE_INSTALLS }))
               }
             })
             .catch(() => {})
@@ -47,7 +49,7 @@ export default function StatsBar() {
                   total += asset.download_count || 0
                 })
               })
-              if (total > 0) setStats(prev => ({ ...prev, downloads: total }))
+              if (total > 0) setStats(prev => ({ ...prev, downloads: total + PLAY_STORE_INSTALLS }))
             }
           })
           .catch(() => {})
@@ -56,7 +58,7 @@ export default function StatsBar() {
 
   const items = [
     { label: 'DOWNLOADS', value: formatNum(stats.downloads) },
-    { label: 'FLOATING TOOLS', value: '12' },
+    { label: 'FLOATING TOOLS', value: '20+' },
     { label: 'RATING', value: '5.0 ★' },
   ]
 
