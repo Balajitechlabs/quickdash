@@ -18,6 +18,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
+import com.balajitechlabs.quickdash.core.quicktile.QrScannerTileService
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -250,10 +251,10 @@ fun SettingsFloatingWindowSection(
             onClick = {
                 if (Build.VERSION.SDK_INT >= 33) {
                     try {
-                        val manager = context.getSystemService(Context.STATUS_BAR_SERVICE) as StatusBarManager
+                        val manager = context.getSystemService(StatusBarManager::class.java)
                         val componentName = ComponentName(
                             context,
-                            "com.balajitechlabs.quickdash.core.quicktile.QrScannerTileService"
+                            QrScannerTileService::class.java
                         )
                         manager.requestAddTileService(
                             componentName,
