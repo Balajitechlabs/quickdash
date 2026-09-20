@@ -278,7 +278,7 @@ QuickDash is licensed under the **PocketOps Custom Open Source Fork License**.
     <a href="CHANGELOG.md">Changelog</a> &bull;
     <a href="THIRD_PARTY_NOTICES.md">Third-Party Notices</a>
     <br/>
-    Designed &amp; Developed with precision by <a href="https://balajitechlab.com"><b>balajitechlabs</b></a> in Bengaluru🇮🇳<br/>
+    Designed &amp; Developed with precision by <a href="https://balajitechlab.com"><b>balajitechlabs</b></a> in 🇮🇳<br/>
     Copyright &copy; 2026 <b>||BTL||™ (balajitechlabs)</b> &bull; All Rights Reserved<br/>
     <i>Last updated: September 5, 2026 at 19:16 IST</i>
   </sub>
