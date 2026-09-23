@@ -215,7 +215,6 @@ adb install -r app/build/outputs/apk/debug/app-arm64-v8a-debug.apk
 | **Build System** | Gradle 9.3 + Kotlin DSL + Version Catalog (`libs.versions.toml`) |
 
 ---
-
 ## Project Architecture
 
 ```
@@ -249,9 +248,9 @@ Contributions, bug reports, and feature proposals are warmly welcomed! Please re
 ## 🚀 Latest Updates (v5.2.3)
 
 - **⚡ Semantic In-App Updater** — Real-time update checks, ABI matching, and clean GitHub release tagging.
-- **🛡️ 100% Zero-Tracker Architecture** — Removed Firebase Crashlytics & ML Kit; binary size dropped by over 30MB.
-- **👁️ Sensitive Clipboard Shield** — Auto-masking for OTPs and credentials with interactive eye toggle.
-- **🎨 Essentials Floating Dock** — Unified bottom dock with spring-animated [Settings, Home, About] navigation.
+- **100% Zero-Tracker Architecture** — Removed Firebase Crashlytics & ML Kit; binary size dropped by over 30MB.
+- **Sensitive Clipboard Shield** — Auto-masking for OTPs and credentials with interactive eye toggle.
+- **Essentials Floating Dock** — Unified bottom dock with spring-animated [Settings, Home, About] navigation.
 
 > 📖 *For complete version history and historical releases, see the [Changelog](CHANGELOG.md).*
 
@@ -266,7 +265,7 @@ QuickDash is licensed under the **PocketOps Custom Open Source Fork License**.
 - **Third-Party Notices:** Open-source libraries and component attributions are documented in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 - **Compliance:** All original notices, licenses, and attributions are strictly preserved in full.
 
-© 2026 ||BTL||™ (balajitechlabs). Free to use, modify, and distribute.
+© 2026 ||BTL||™. Free to use, modify, and distribute.
 
 <br/>
 
