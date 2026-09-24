@@ -176,9 +176,7 @@ Official production builds and beta channel updates are available on [Google Pla
 ### 4. Obtainium & F-Droid
 - **Obtainium**: Add `https://github.com/balajitechlabs/quickdash` for automated release updates.
 - **F-Droid**: Build recipe metadata maintained in `metadata/com.balajitechlabs.quickdash.yml`.
-
 ---
-
 ## Build from Source
 
 ```bash
