@@ -36,7 +36,7 @@ import sys
 from pathlib import Path
 
 COPYRIGHT = "Copyright (c) 2026 ||BTL||\u2122 (balajitechlabs)"
-LICENSE = "License: PocketOps Custom Open Source Fork License"
+LICENSE = "License: GNU General Public License v3.0 (GPL-3.0)"
 AUTHOR = "Developer: balajitechlabs"
 
 PACKAGE_DIR = "com/balajitechlabs/quickdash"

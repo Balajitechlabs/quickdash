@@ -48,8 +48,8 @@
     <img src="https://img.shields.io/github/v/release/balajitechlabs/quickdash?style=for-the-badge&logo=github&color=2563eb&label=RELEASE" alt="Latest Release">
   </a>
   &nbsp;&nbsp;
-  <a href="https://github.com/balajitechlabs/quickdash/actions/workflows/pr-checks.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/balajitechlabs/quickdash/pr-checks.yml?style=for-the-badge&label=CI%20BUILD" alt="CI Status">
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/LICENSE-GPL--3.0-blue?style=for-the-badge&logo=gnu&logoColor=white" alt="GPL-3.0 License">
   </a>
   &nbsp;&nbsp;
   <a href="https://github.com/balajitechlabs/quickdash/releases">
@@ -254,16 +254,15 @@ Contributions, bug reports, and feature proposals are warmly welcomed! Please re
 
 ---
 
-## License & Attribution
+## ⚖️ License & Attribution
 
-QuickDash is licensed under the **PocketOps Custom Open Source Fork License**.
+QuickDash is licensed under the **GNU General Public License v3.0 (GPL-3.0)**. See the [LICENSE](LICENSE) file for complete terms.
 
-- **Original Base:** Forked from [PocketOps](https://github.com/IIXII-L192/PocketOps-app) by Aakarsh (L192) / IIXII™.
-- **Modifications:** Over 40% major architectural rebuild, modern Compose M3 Expressive UI, ZXing integration, in-app semantic updater, and security hardening (see [LICENSE](LICENSE)).
+- **Original Inspiration:** Originally inspired by and evolved from [PocketOps](https://github.com/IIXII-L192/PocketOps-app) by **Aakarsh Singhal (L192) / IIXII™**, with relicensing approved via written author permission under Clause 8.
+- **Architectural Evolution:** Over 85% new functionality, multi-module architecture, Material 3 Expressive UI, ZXing integration, Room database, automated test suites, and system security integrations.
 - **Third-Party Notices:** Open-source libraries and component attributions are documented in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-- **Compliance:** All original notices, licenses, and attributions are strictly preserved in full.
 
-© 2026 ||BTL||™. Free to use, modify, and distribute.
+Copyright (C) 2026 ||BTL||™ (balajitechlabs). Portions Copyright (C) 2026 Aakarsh Singhal (L192) / IIXII™.
 
 <br/>
 

@@ -19,7 +19,7 @@ export const specs = [
   { label: 'Target SDK', value: 'Android 16 (API 36)' },
   { label: 'Architecture', value: 'MVVM + Hilt DI + Jetpack Compose' },
   { label: 'Language', value: 'Kotlin' },
-  { label: 'License', value: 'PocketOps Custom Open Source Fork License' },
+  { label: 'License', value: 'GNU General Public License v3.0 (GPL-3.0)' },
   { label: 'APK Size', value: '~27.9 MB (universal), ~18.5 MB (ARM64)' },
   { label: 'Permissions', value: 'Overlay (SYSTEM_ALERT_WINDOW) — no internet required' },
   { label: 'Page Size', value: '16 KB page aligned (Android 16 ready)' },

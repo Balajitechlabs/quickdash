@@ -46,7 +46,7 @@ quickdash/
 ├── ARCHITECTURE.md # This system architecture specification
 ├── CONTRIBUTING.md # Contributor onboarding rubric and guidelines
 ├── THIRD_PARTY_NOTICES.md # Open-source licenses and attribution
-├── LICENSE # PocketOps Custom Open Source Fork License (||BTL||™)
+├── LICENSE # GNU General Public License v3.0 (GPL-3.0)
 └── PRIVACY_POLICY.md # Offline-first privacy guarantee
 ```
 
