@@ -48,8 +48,8 @@
     <img src="https://img.shields.io/github/v/release/balajitechlabs/quickdash?style=for-the-badge&logo=github&color=2563eb&label=RELEASE" alt="Latest Release">
   </a>
   &nbsp;&nbsp;
-  <a href="LICENSE">
-    <img src="https://img.shields.io/badge/LICENSE-GPL--3.0-blue?style=for-the-badge&logo=gnu&logoColor=white" alt="GPL-3.0 License">
+  <a href="https://github.com/balajitechlabs/quickdash/pulls">
+    <img src="https://img.shields.io/badge/PRs-WELCOME-10b981?style=for-the-badge&logo=github&logoColor=white" alt="PRs Welcome">
   </a>
   &nbsp;&nbsp;
   <a href="https://github.com/balajitechlabs/quickdash/releases">
@@ -91,7 +91,7 @@
   </a>
   &nbsp;&nbsp;
   <a href="LICENSE">
-    <img src="https://img.shields.io/badge/LICENSE-BTL%E2%84%A2%20CUSTOM%20OS%20FORK-orange?style=for-the-badge" alt="License">
+    <img src="https://img.shields.io/badge/License-GNU%20GPL%20v3.0-2563eb?style=for-the-badge&logo=gnu&logoColor=white" alt="License: GNU GPL v3.0">
   </a>
 </p>
 
