@@ -45,6 +45,7 @@ quickdash/
 ├── gradle/ # Version catalog and wrapper
 ├── ARCHITECTURE.md # This system architecture specification
 ├── CONTRIBUTING.md # Contributor onboarding rubric and guidelines
+├── CONTRIBUTORS.md # Official roster of core maintainers & contributors
 ├── THIRD_PARTY_NOTICES.md # Open-source licenses and attribution
 ├── LICENSE # GNU General Public License v3.0 (GPL-3.0)
 └── PRIVACY_POLICY.md # Offline-first privacy guarantee

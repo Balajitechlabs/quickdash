@@ -254,6 +254,17 @@ Contributions, bug reports, and feature proposals are warmly welcomed! Please re
 
 ---
 
+## 👥 Maintainers & Contributors
+
+QuickDash is actively developed and maintained by:
+
+* **Balaji S** ([@Balajitechlabs](https://github.com/Balajitechlabs)) — Founder, Lead Architect & Core Android Developer
+* **Mohith** ([@mohith-dev-m1](https://github.com/mohith-dev-m1)) — Core Contributor, QA, Testing & Collaborator
+
+See our full contributor roster in [CONTRIBUTORS.md](CONTRIBUTORS.md). Community pull requests are always welcome!
+
+---
+
 ## ⚖️ License & Attribution
 
 QuickDash is licensed under the **GNU General Public License v3.0 (GPL-3.0)**. See the [LICENSE](LICENSE) file for complete terms.
@@ -271,6 +282,7 @@ Copyright (C) 2026 ||BTL||™ (balajitechlabs). Portions Copyright (C) 2026 Aaka
     <a href="https://quickdash.balajitechlab.com" target="_blank">Website</a> &bull;
     <a href="https://rookieenough.github.io/Orion-Data/redirect.html?id=quickdash" target="_blank">Orion Store</a> &bull;
     <a href="https://balajitechlab.com" target="_blank">balajitechlabs</a> &bull;
+    <a href="CONTRIBUTORS.md">Contributors</a> &bull;
     <a href="CHANGELOG.md">Changelog</a> &bull;
     <a href="THIRD_PARTY_NOTICES.md">Third-Party Notices</a>
     <br/>
