@@ -44,7 +44,7 @@ fragmentKtx = "1.9.0"
 securityCrypto = "1.1.0"
 uiTextGoogleFonts = "1.6.0"
 turbine = "1.2.0"
-mockk = "1.13.13"
+mockk = "1.14.11"
 truth = "1.4.5"
 
 [libraries]
