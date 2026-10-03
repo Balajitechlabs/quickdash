@@ -83,7 +83,7 @@ object ShizukuHelper {
      */
     fun runCommand(command: String): String? {
         return try {
-            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
+            val process = Runtime.getRuntime().exec(arrayOf("/system/bin/sh", "-c", command))
             val out = process.inputStream.bufferedReader().readText().trim()
             process.waitFor()
             out.ifEmpty { null }
