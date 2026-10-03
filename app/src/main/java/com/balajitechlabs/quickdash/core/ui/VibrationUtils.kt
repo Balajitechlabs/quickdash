@@ -1,10 +1,10 @@
 /*
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
- * License: PocketOps Custom Open Source Fork License
+ * License: GNU General Public License v3.0 (GPL-3.0)
  *
  * Feature Module: core/ui
  * File: VibrationUtils.kt
- * Description: Standardized tactile haptic feedback and acoustic click helper for buttons, sliders, and gestures.
+ * Description: Haptic feedback helper triggering standardized click, long press, and error vibration waveforms.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.ui

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
- * License: PocketOps Custom Open Source Fork License
+ * License: GNU General Public License v3.0 (GPL-3.0)
  *
  * Feature Module: features/about/presentation/components
  * File: AboutLegalCard.kt
@@ -50,7 +50,7 @@ fun AboutLegalCard(
                 color = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "Fork of IIXII™ property • PocketOps Custom Fork License",
+                text = "Licensed under GNU GPL v3.0 • Inspired by PocketOps (IIXII™)",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.White.copy(alpha = 0.8f)
             )
@@ -93,7 +93,7 @@ fun AboutLegalCard(
             }
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Forked & Maintained by ||BTL||™ (balajitechlabs)\nOriginal Property © 2026 Aakarsh (L192) / IIXII™",
+                text = "Developed & Maintained by ||BTL||™ (balajitechlabs)\nOriginally Inspired by © 2026 Aakarsh Singhal (L192) / IIXII™",
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.Gray,
                 textAlign = TextAlign.Center,

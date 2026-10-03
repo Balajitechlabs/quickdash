@@ -349,7 +349,7 @@
     <ID>MaxLineLength:MainActivity.kt$MainActivity$val</ID>
     <ID>MaxLineLength:MainActivity.kt$MainActivity$val isOnboardingComplete by mainViewModel.userStore.isOnboardingComplete.collectAsStateWithLifecycle(initialValue = null)</ID>
     <ID>MaxLineLength:MainActivity.kt$MainActivity$val serviceIntent = Intent(this@MainActivity, FloatingBubbleService::class.java)</ID>
-    <ID>MaxLineLength:MainViewModel.kt$/* * Copyright (c) 2026 ||BTL||™ (balajitechlabs) * License: PocketOps Custom Open Source Fork License * * Feature Module: app * File: MainViewModel.kt * Description: Central ViewModel orchestrating UI state, UserStore data collection, tool interactions, and update checks. * Developer: balajitechlabs */</ID>
+    <ID>MaxLineLength:MainViewModel.kt$/* * Copyright (c) 2026 ||BTL||™ (balajitechlabs) * License: GNU General Public License v3.0 (GPL-3.0) * * Feature Module: app * File: MainViewModel.kt * Description: Central ViewModel orchestrating UI state, UserStore data collection, tool interactions, and update checks. * Developer: balajitechlabs */</ID>
     <ID>MaxLineLength:PaymentSetupStep.kt$stepSubtitle = "Add your $idTypeLabel ID to generate instant payment QR codes. You can skip this and add later."</ID>
     <ID>MaxLineLength:PermissionsStep.kt$whyExplanation = "Android system rules require Location permission to read Wi-Fi network names. QuickDash never tracks, stores, or transmits your GPS location."</ID>
     <ID>MaxLineLength:PermissionsStep.kt$whyExplanation = "QuickDash sends overlay notifications when payments succeed and when sync events complete. We never send ad or marketing notifications."</ID>
@@ -484,7 +484,7 @@
     <ID>MaxLineLength:QuickDashApp.kt$val isOnboardingCompleteFlow = mainViewModel.userStore.isOnboardingComplete.collectAsStateWithLifecycle(initialValue = null)</ID>
     <ID>MaxLineLength:QuickDashApp.kt$val sIntent = Intent(context, com.balajitechlabs.quickdash.core.services.FloatingBubbleService::class.java)</ID>
     <ID>MaxLineLength:QuickDashApp.kt$vibrator.vibrate(android.os.VibrationEffect.createPredefined(android.os.VibrationEffect.EFFECT_DOUBLE_CLICK))</ID>
-    <ID>MaxLineLength:QuickDashApplication.kt$/* * Copyright (c) 2026 ||BTL||™ (balajitechlabs) * License: PocketOps Custom Open Source Fork License * * Feature Module: app * File: QuickDashApplication.kt * Description: Application class initializing Hilt dependency injection, notification channels, and global crash reporting. * Developer: balajitechlabs */</ID>
+    <ID>MaxLineLength:QuickDashApplication.kt$/* * Copyright (c) 2026 ||BTL||™ (balajitechlabs) * License: GNU General Public License v3.0 (GPL-3.0) * * Feature Module: app * File: QuickDashApplication.kt * Description: Application class initializing Hilt dependency injection, notification channels, and global crash reporting. * Developer: balajitechlabs */</ID>
     <ID>MaxLineLength:QuickDashTipsSheet.kt$Text(tip.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)</ID>
     <ID>MaxLineLength:QuickDashTipsSheet.kt$Text(tip.title, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium)</ID>
     <ID>MaxLineLength:QuickDashWelcomeScreen.kt$ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED</ID>

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
- * License: PocketOps Custom Open Source Fork License
+ * License: GNU General Public License v3.0 (GPL-3.0)
  *
  * Feature Module: core/shizuku
  * File: ShizukuHelper.kt
@@ -83,7 +83,7 @@ object ShizukuHelper {
      */
     fun runCommand(command: String): String? {
         return try {
-            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", command))
+            val process = Runtime.getRuntime().exec(arrayOf("/system/bin/sh", "-c", command))
             val out = process.inputStream.bufferedReader().readText().trim()
             process.waitFor()
             out.ifEmpty { null }

@@ -1,10 +1,10 @@
 /*
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
- * License: PocketOps Custom Open Source Fork License
+ * License: GNU General Public License v3.0 (GPL-3.0)
  *
  * Feature Module: features/about/presentation/components
  * File: AboutDeveloperProfileSection.kt
- * Description: Developer showcase with colorful social pill grid matching the balajitechlab.com portfolio.
+ * Description: Developer showcase card with bio, social links, and website buttons.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.about.presentation.components

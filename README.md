@@ -48,8 +48,8 @@
     <img src="https://img.shields.io/github/v/release/balajitechlabs/quickdash?style=for-the-badge&logo=github&color=2563eb&label=RELEASE" alt="Latest Release">
   </a>
   &nbsp;&nbsp;
-  <a href="https://github.com/balajitechlabs/quickdash/actions/workflows/pr-checks.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/balajitechlabs/quickdash/pr-checks.yml?style=for-the-badge&label=CI%20BUILD" alt="CI Status">
+  <a href="https://github.com/balajitechlabs/quickdash/pulls">
+    <img src="https://img.shields.io/badge/PRs-WELCOME-10b981?style=for-the-badge&logo=github&logoColor=white" alt="PRs Welcome">
   </a>
   &nbsp;&nbsp;
   <a href="https://github.com/balajitechlabs/quickdash/releases">
@@ -91,7 +91,7 @@
   </a>
   &nbsp;&nbsp;
   <a href="LICENSE">
-    <img src="https://img.shields.io/badge/LICENSE-BTL%E2%84%A2%20CUSTOM%20OS%20FORK-orange?style=for-the-badge" alt="License">
+    <img src="https://img.shields.io/badge/License-GNU%20GPL%20v3.0-2563eb?style=for-the-badge&logo=gnu&logoColor=white" alt="License: GNU GPL v3.0">
   </a>
 </p>
 
@@ -176,9 +176,7 @@ Official production builds and beta channel updates are available on [Google Pla
 ### 4. Obtainium & F-Droid
 - **Obtainium**: Add `https://github.com/balajitechlabs/quickdash` for automated release updates.
 - **F-Droid**: Build recipe metadata maintained in `metadata/com.balajitechlabs.quickdash.yml`.
-
 ---
-
 ## Build from Source
 
 ```bash
@@ -215,7 +213,6 @@ adb install -r app/build/outputs/apk/debug/app-arm64-v8a-debug.apk
 | **Build System** | Gradle 9.3 + Kotlin DSL + Version Catalog (`libs.versions.toml`) |
 
 ---
-
 ## Project Architecture
 
 ```
@@ -249,24 +246,34 @@ Contributions, bug reports, and feature proposals are warmly welcomed! Please re
 ## 🚀 Latest Updates (v5.2.3)
 
 - **⚡ Semantic In-App Updater** — Real-time update checks, ABI matching, and clean GitHub release tagging.
-- **🛡️ 100% Zero-Tracker Architecture** — Removed Firebase Crashlytics & ML Kit; binary size dropped by over 30MB.
-- **👁️ Sensitive Clipboard Shield** — Auto-masking for OTPs and credentials with interactive eye toggle.
-- **🎨 Essentials Floating Dock** — Unified bottom dock with spring-animated [Settings, Home, About] navigation.
+- **100% Zero-Tracker Architecture** — Removed Firebase Crashlytics & ML Kit; binary size dropped by over 30MB.
+- **Sensitive Clipboard Shield** — Auto-masking for OTPs and credentials with interactive eye toggle.
+- **Essentials Floating Dock** — Unified bottom dock with spring-animated [Settings, Home, About] navigation.
 
 > 📖 *For complete version history and historical releases, see the [Changelog](CHANGELOG.md).*
 
 ---
 
-## License & Attribution
+## 👥 Maintainers & Contributors
 
-QuickDash is licensed under the **PocketOps Custom Open Source Fork License**.
+QuickDash is actively developed and maintained by:
 
-- **Original Base:** Forked from [PocketOps](https://github.com/IIXII-L192/PocketOps-app) by Aakarsh (L192) / IIXII™.
-- **Modifications:** Over 40% major architectural rebuild, modern Compose M3 Expressive UI, ZXing integration, in-app semantic updater, and security hardening (see [LICENSE](LICENSE)).
+* **Balaji S** ([@Balajitechlabs](https://github.com/Balajitechlabs)) — Founder, Lead Architect & Core Android Developer
+* **Mohith** ([@mohith-dev-m1](https://github.com/mohith-dev-m1)) — Core Contributor, QA, Testing & Collaborator
+
+See our full contributor roster in [CONTRIBUTORS.md](CONTRIBUTORS.md). Community pull requests are always welcome!
+
+---
+
+## ⚖️ License & Attribution
+
+QuickDash is licensed under the **GNU General Public License v3.0 (GPL-3.0)**. See the [LICENSE](LICENSE) file for complete terms.
+
+- **Original Inspiration:** Originally inspired by and evolved from [PocketOps](https://github.com/IIXII-L192/PocketOps-app) by **Aakarsh Singhal (L192) / IIXII™**, with relicensing approved via written author permission under Clause 8.
+- **Architectural Evolution:** Over 85% new functionality, multi-module architecture, Material 3 Expressive UI, ZXing integration, Room database, automated test suites, and system security integrations.
 - **Third-Party Notices:** Open-source libraries and component attributions are documented in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-- **Compliance:** All original notices, licenses, and attributions are strictly preserved in full.
 
-© 2026 ||BTL||™ (balajitechlabs). Free to use, modify, and distribute.
+Copyright (C) 2026 ||BTL||™ (balajitechlabs). Portions Copyright (C) 2026 Aakarsh Singhal (L192) / IIXII™.
 
 <br/>
 
@@ -275,10 +282,11 @@ QuickDash is licensed under the **PocketOps Custom Open Source Fork License**.
     <a href="https://quickdash.balajitechlab.com" target="_blank">Website</a> &bull;
     <a href="https://rookieenough.github.io/Orion-Data/redirect.html?id=quickdash" target="_blank">Orion Store</a> &bull;
     <a href="https://balajitechlab.com" target="_blank">balajitechlabs</a> &bull;
+    <a href="CONTRIBUTORS.md">Contributors</a> &bull;
     <a href="CHANGELOG.md">Changelog</a> &bull;
     <a href="THIRD_PARTY_NOTICES.md">Third-Party Notices</a>
     <br/>
-    Designed &amp; Developed with precision by <a href="https://balajitechlab.com"><b>balajitechlabs</b></a> in Bengaluru, India 🇮🇳<br/>
+    Designed &amp; Developed with precision by <a href="https://balajitechlab.com"><b>balajitechlabs</b></a> in 🇮🇳<br/>
     Copyright &copy; 2026 <b>||BTL||™ (balajitechlabs)</b> &bull; All Rights Reserved<br/>
     <i>Last updated: September 5, 2026 at 19:16 IST</i>
   </sub>

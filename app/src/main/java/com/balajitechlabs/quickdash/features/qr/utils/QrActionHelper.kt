@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 ||BTL||™ (balajitechlabs)
- * License: PocketOps Custom Open Source Fork License
+ * License: GNU General Public License v3.0 (GPL-3.0)
  *
  * Feature Module: features/qr/utils
  * File: QrActionHelper.kt
@@ -113,14 +113,28 @@ object QrActionHelper {
             if (!card.email.isNullOrBlank()) putExtra(ContactsContract.Intents.Insert.EMAIL, card.email)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
-        context.startActivity(intent)
+        val chooser = Intent.createChooser(intent, "Save Contact").apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        try {
+            context.startActivity(chooser)
+        } catch (_: Exception) {
+            Toast.makeText(context, "No contacts app available", Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun dialPhoneNumber(context: Context, phone: String) {
         val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone")).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
-        context.startActivity(intent)
+        val chooser = Intent.createChooser(intent, "Dial Phone").apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        try {
+            context.startActivity(chooser)
+        } catch (_: Exception) {
+            Toast.makeText(context, "No dialer app available", Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun composeEmail(context: Context, email: QrParsedResult.EmailAddress) {
@@ -128,7 +142,14 @@ object QrActionHelper {
             if (!email.subject.isNullOrBlank()) putExtra(Intent.EXTRA_SUBJECT, email.subject)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
-        context.startActivity(intent)
+        val chooser = Intent.createChooser(intent, "Send Email").apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        try {
+            context.startActivity(chooser)
+        } catch (_: Exception) {
+            Toast.makeText(context, "No email app available", Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun searchBarcodeOnline(context: Context, code: String) {

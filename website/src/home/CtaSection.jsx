@@ -131,7 +131,7 @@ export default function CtaSection() {
       <FadeInSection as="section" style={{ paddingBottom: 32 }}>
         <h2 className="section-title">Credits</h2>
         <div className="card" style={{ fontSize: 13, color: 'var(--md-on-surface-variant)', lineHeight: 1.7 }}>
-          <p>QuickDash is a fork of <strong>PocketOps</strong> by <strong>Aakarsh (L192) / IIXII™</strong> under the PocketOps Custom Open Source Fork License.</p>
+          <p>QuickDash is licensed under the <strong>GNU General Public License v3.0 (GPL-3.0)</strong>, originally inspired by and derived from <strong>PocketOps</strong> by <strong>Aakarsh Singhal (L192) / IIXII™</strong> with written author consent.</p>
           <p style={{ marginTop: 8 }}>
             View the original project: <a href="https://github.com/IIXII-L192/PocketOps-app" target="_blank" rel="noopener noreferrer" onClick={() => trackEvent('external_link', 'pocketops_github')}>github.com/IIXII-L192/PocketOps-app</a>
           </p>

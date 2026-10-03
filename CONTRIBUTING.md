@@ -1,6 +1,6 @@
 # Contributing to QuickDash
 
-Welcome to QuickDash. QuickDash is an open-friendly Android floating productivity suite built with Jetpack Compose, Kotlin coroutines, and Material 3 Expressive.
+Welcome to QuickDash. QuickDash is an open-friendly Android floating productivity suite built with Jetpack Compose, Kotlin coroutines, and Material 3 Expressive. See our team in [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 This guide details our engineering standards, architecture rubric, local verification workflows, and contribution process.
 
@@ -120,4 +120,4 @@ python3 tools/sync_file_headers.py --check
  - `docs: sync file map and update algorithm audit specification`
 - **Zero AI Slop**: Code must be self-documenting without superficial or robotic comments.
 - **Brand Consistency**: Always write `balajitechlabs` in all lowercase letters.
-- **License**: PocketOps Custom Open Source Fork License. Copyright `||BTL||™ (balajitechlabs)`.
+- **License**: GNU General Public License v3.0 (GPL-3.0). Copyright `||BTL||™ (balajitechlabs)`.

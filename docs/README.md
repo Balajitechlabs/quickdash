@@ -11,6 +11,8 @@ Welcome to the technical documentation for QuickDash. This directory contains de
 - [Security & Privacy Model](security.md): On-device zero-tracker execution, AES-256-GCM backup cryptography, and permissions analysis.
 - [Release Engineering](releasing.md): Single-source versioning conventions and GitHub release pipelines.
 - [Data Storage Layer](data-stores.md): Architecture comparison between UserStore (DataStore Preferences), Room DB, and Proto DataStore.
+- [Project Contributors](../CONTRIBUTORS.md): Core team roster and community contributor directory.
+- [Contributing Guidelines](../CONTRIBUTING.md): Engineering rubric and local verification workflow.
 
 ## Architectural Decision Records (ADR)
 

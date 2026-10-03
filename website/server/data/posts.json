@@ -37,6 +37,6 @@
     "category": "Community",
     "date": "2026-07-05",
     "excerpt": "Transparency, privacy, and community ownership are core to QuickDash's mission.",
-    "content": "QuickDash is proudly open source under the PocketOps Custom Open Source Fork License. We believe that utility software should be transparent by default. Every line of code is available on GitHub for audit, fork, and contribution. There is zero tracking, zero analytics, and zero telemetry in QuickDash. The community has contributed translations, bug fixes, and feature suggestions that have shaped the app's direction. Open source isn't just a license — it's a commitment to our users that QuickDash will always put their privacy first."
+    "content": "QuickDash is proudly open source under the GNU General Public License v3.0 (GPL-3.0). We believe that utility software should be transparent by default. Every line of code is available on GitHub for audit, fork, and contribution. There is zero tracking, zero analytics, and zero telemetry in QuickDash. The community has contributed translations, bug fixes, and feature suggestions that have shaped the app's direction. Open source isn't just a license — it's a commitment to our users that QuickDash will always put their privacy first."
   }
 ]
