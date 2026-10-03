@@ -2,7 +2,7 @@
 
 All major updates, feature additions, bug fixes, and system improvements for **QuickDash** are documented in this file.
 
-## [5.2.4] - 2026-10-03 (Security Hardening, Contributor Recognition & Exact Alarm Resilience)
+## [5.2.4-beta1] - 2026-10-03 (Security Hardening, Contributor Recognition & In-App Updater Resilience)
 
 ### Security Hardening & CodeQL Remediation
 - **Regex Log Sanitization**: Replaced basic char replacement in `AppLogger.kt` with robust regex newline stripping `Regex("[\r\n]")` to permanently eliminate Log Injection vulnerabilities (CodeQL Alert #66).
@@ -16,6 +16,11 @@ All major updates, feature additions, bug fixes, and system improvements for **Q
 ### In-App Contributor Recognition & Team Transparency
 - **In-App Team & Credits Hub**: Added a dedicated "Team & Credits" button in `AboutLegalCard.kt` connecting users directly to repository contributors.
 - **Developer Showcase Attribution**: Added official Co-Developer badge in `AboutDeveloperProfileSection.kt` and `AboutLegalCard.kt` acknowledging **Mohith** ([@mohith-dev-m1](https://github.com/mohith-dev-m1)).
+
+### In-App APK Updater & Play Store Policy Compliance
+- **In-App APK Updater**: Declared dynamic `${installPermission}` injecting `android.permission.REQUEST_INSTALL_PACKAGES` into standalone APK builds (`assembleRelease`), resolving installer permission failures on Android 8.0+ while dynamically excluding it from Google Play `.aab` bundles (`bundleRelease`) to prevent policy rejections.
+- **Play Store Source Guard**: Added automatic detection for installations sourced from `com.android.vending`, smoothly redirecting Play Store users to the Google Play Store update page.
+- **SecurityException Defense**: Wrapped package installer calls in `UpdateManager.kt` with friendly error handling that routes users straight to system "Install unknown apps" settings.
 
 ### Build System & Compliance
 - Bumped `versionCode = 526` and `versionName = "5.2.4"` in `app/build.gradle.kts`.

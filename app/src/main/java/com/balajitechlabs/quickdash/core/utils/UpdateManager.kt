@@ -289,8 +289,45 @@ object UpdateManager {
         }
     }
 
+    fun isInstalledFromPlayStore(context: Context): Boolean {
+        return try {
+            val installer = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                context.packageManager.getInstallSourceInfo(context.packageName).installingPackageName
+            } else {
+                @Suppress("DEPRECATION")
+                context.packageManager.getInstallerPackageName(context.packageName)
+            }
+            installer == "com.android.vending"
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    fun openPlayStore(context: Context) {
+        val playIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=${context.packageName}")).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        try {
+            context.startActivity(playIntent)
+        } catch (_: Exception) {
+            context.startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}")
+                ).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+            )
+        }
+    }
+
     fun installApk(context: Context, fileName: String) {
         try {
+            if (isInstalledFromPlayStore(context)) {
+                openPlayStore(context)
+                return
+            }
+
             val file = getApkFile(context, fileName)
             if (!file.exists()) {
                 showToast(context, "APK file not found. Please download again.")
@@ -335,6 +372,20 @@ object UpdateManager {
             }
 
             context.startActivity(intent)
+        } catch (e: SecurityException) {
+            Log.e(TAG, "SecurityException during install", e)
+            showToast(context, "Permission needed: Enable 'Install unknown apps' in Settings", Toast.LENGTH_LONG)
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val settingsIntent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
+                        data = Uri.parse("package:${context.packageName}")
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    context.startActivity(settingsIntent)
+                }
+            } catch (_: Exception) {
+                // Fallback silently if settings activity cannot be opened
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Install failed", e)
             showToast(context, "Install failed: ${e.localizedMessage}", Toast.LENGTH_LONG)

@@ -34,6 +34,8 @@ android {
     namespace = "com.balajitechlabs.quickdash"
     compileSdk = 37
 
+    val isBuildingBundle = gradle.startParameter.taskNames.any { it.contains("bundle", ignoreCase = true) }
+
     defaultConfig {
         applicationId = "com.balajitechlabs.quickdash"
         minSdk = 26
@@ -42,6 +44,13 @@ android {
         versionName = "5.2.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // In-App APK Updater permission: Excluded from Play Store AAB to comply with Google Play Policy
+        manifestPlaceholders["installPermission"] = if (isBuildingBundle) {
+            "android.permission.INTERNET"
+        } else {
+            "android.permission.REQUEST_INSTALL_PACKAGES"
+        }
 
         // Inject Telegram secrets from local.properties into BuildConfig
         buildConfigField(
@@ -66,9 +75,6 @@ android {
             abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a"))
         }
     }
-
-    val isBuildingBundle = gradle.startParameter.taskNames.any { it.contains("bundle", ignoreCase = true) }
-
     splits {
         abi {
             isEnable = !isBuildingBundle

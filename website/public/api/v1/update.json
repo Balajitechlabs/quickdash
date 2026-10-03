@@ -1,11 +1,11 @@
 {
   "version_code": 526,
-  "latest_version": "5.2.4",
+  "latest_version": "5.2.4-beta1",
   "min_version_code": 500,
-  "changelog": "• QuickDash v5.2.4: Security Hardening & Contributor Recognition\n• CodeQL Remediation: Log sanitization, implicit intent chooser shields, and command paths\n• Exact Alarm Reliability: Android 12+ permission fallback for reminders\n• Dependency Updates: Upgraded ZXing, Turbine, and Jetpack Compose libraries\n• In-App Recognition: Open Source Team & Contributors hub in About screen",
-  "apk_url": "https://github.com/balajitechlabs/quickdash/releases/latest/download/app-universal-release.apk",
-  "apk_size_bytes": 10096042,
-  "apk_sha256": "1861d7f620387b6f9dc9dbfc1b6dd4ea3feffbb0f1c4015adb41706946164343",
+  "changelog": "• QuickDash v5.2.4-beta1: Security Hardening & Contributor Recognition\n• In-App APK Updater: Injected REQUEST_INSTALL_PACKAGES for smooth updates\n• CodeQL Remediation: Log sanitization, implicit intent chooser shields, and command paths\n• Exact Alarm Reliability: Android 12+ permission fallback for reminders\n• Dependency Updates: Upgraded ZXing, Turbine, and Jetpack Compose libraries\n• In-App Recognition: Open Source Team & Contributors hub in About screen",
+  "apk_url": "https://github.com/balajitechlabs/quickdash/releases/download/v5.2.4-beta1/app-universal-release.apk",
+  "apk_size_bytes": 10096070,
+  "apk_sha256": "da3e0db41acf71cc793fb203dc3652b65a700a19f394491fb1c8dc6a07a765ad",
   "release_date": "2026-10-03",
   "critical_update": false,
   "features": {
