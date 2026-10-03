@@ -2,7 +2,7 @@
 
 All major updates, feature additions, bug fixes, and system improvements for **QuickDash** are documented in this file.
 
-## [5.2.4-beta1] - 2026-10-03 (Security Hardening, Contributor Recognition & In-App Updater Resilience)
+## [5.2.4] - 2026-10-03 (Official Public Release - Security Hardening, Contributor Recognition & UI Polish)
 
 ### Security Hardening & CodeQL Remediation
 - **Regex Log Sanitization**: Replaced basic char replacement in `AppLogger.kt` with robust regex newline stripping `Regex("[\r\n]")` to permanently eliminate Log Injection vulnerabilities (CodeQL Alert #66).
@@ -14,13 +14,14 @@ All major updates, feature additions, bug fixes, and system improvements for **Q
 - **Exact Alarm Resilience**: Added Android 12+ (API 31+) `canScheduleExactAlarms()` runtime check in `QuickRemindersScreen.kt`. If exact alarm scheduling isn't granted, alarms gracefully fall back to `setAndAllowWhileIdle()` to guarantee reminders are never dropped silently.
 
 ### In-App Contributor Recognition & Team Transparency
-- **In-App Team & Credits Hub**: Added a dedicated "Team & Credits" button in `AboutLegalCard.kt` connecting users directly to repository contributors.
+- **In-App Team & Credits Hub**: Added a dedicated "Open Source Team & Contributors" hub button in `AboutLegalCard.kt` connecting users directly to repository contributors.
 - **Developer Showcase Attribution**: Added official Co-Developer badge in `AboutDeveloperProfileSection.kt` and `AboutLegalCard.kt` acknowledging **Mohith** ([@mohith-dev-m1](https://github.com/mohith-dev-m1)).
 
-### In-App APK Updater & Play Store Policy Compliance
+### In-App APK Updater & UI Polish
 - **In-App APK Updater**: Declared dynamic `${installPermission}` injecting `android.permission.REQUEST_INSTALL_PACKAGES` into standalone APK builds (`assembleRelease`), resolving installer permission failures on Android 8.0+ while dynamically excluding it from Google Play `.aab` bundles (`bundleRelease`) to prevent policy rejections.
 - **Play Store Source Guard**: Added automatic detection for installations sourced from `com.android.vending`, smoothly redirecting Play Store users to the Google Play Store update page.
 - **SecurityException Defense**: Wrapped package installer calls in `UpdateManager.kt` with friendly error handling that routes users straight to system "Install unknown apps" settings.
+- **Card UI & Button Alignment**: Re-architected legal and open-source actions in `AboutLegalCard.kt` into a balanced, symmetrical 2-row layout (50/50 License & Privacy buttons, followed by full-width Team & Contributors Hub), matching design language with dark containers, icons, and tactile vibration feedback.
 
 ### Build System & Compliance
 - Bumped `versionCode = 526` and `versionName = "5.2.4"` in `app/build.gradle.kts`.
