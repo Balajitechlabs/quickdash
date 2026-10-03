@@ -1,0 +1,5 @@
+• Security Hardening: Strengthened log sanitization, implicit intent guards, and privileged shell paths.
+• Exact Alarm Reliability: Added Android 12+ permission fallback so reminder alarms never fail silently.
+• Dependency Updates: Upgraded ZXing, Turbine, and Jetpack Compose libraries.
+• Team Recognition: Added in-app Open Source team and contributor credits hub.
+• Performance: Enhanced background service lifecycle resilience across Android 14, 15, and 16.

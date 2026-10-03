@@ -1,12 +1,12 @@
 {
-  "version_code": 525,
-  "latest_version": "5.2.3",
+  "version_code": 526,
+  "latest_version": "5.2.4",
   "min_version_code": 500,
-  "changelog": "• QuickDash v5.2.3: Architecture Modernization and AI Code Purge\n• Quick Settings Tile: Monochrome vector icon and Android 14+ synchronous launch\n• Spotlight Search: Direct 1-tap camera QR scanner launch\n• Purged 88k+ lines of AI-generated boilerplate and synthetic code slop\n• 100% True Zero-Tracker FOSS Architecture (purged ML Kit, MediaPipe and Firebase)\n• Sensitive Clipboard Privacy Shield with interactive eye toggle\n• Essentials floating dock with personal brand showcase hub\n• Hardened Android 14+ background services against crash exceptions",
+  "changelog": "• QuickDash v5.2.4: Security Hardening & Contributor Recognition\n• CodeQL Remediation: Log sanitization, implicit intent chooser shields, and command paths\n• Exact Alarm Reliability: Android 12+ permission fallback for reminders\n• Dependency Updates: Upgraded ZXing, Turbine, and Jetpack Compose libraries\n• In-App Recognition: Open Source Team & Contributors hub in About screen",
   "apk_url": "https://github.com/balajitechlabs/quickdash/releases/latest/download/app-universal-release.apk",
   "apk_size_bytes": 8179682,
   "apk_sha256": "b8e1223edbd081098163a4752f17f5f3b7e6e0abf606f4b30c6314f467d91e7b",
-  "release_date": "2026-09-05",
+  "release_date": "2026-10-03",
   "critical_update": false,
   "features": {
     "ai_actions": false,

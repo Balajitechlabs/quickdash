@@ -150,12 +150,25 @@ fun QuickRemindersScreen() {
                                 android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE
                             )
                             val triggerAt = System.currentTimeMillis() + (selectedMinutes * 60 * 1000L)
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                                alarmManager?.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+                            val canScheduleExact = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                                alarmManager?.canScheduleExactAlarms() == true
                             } else {
-                                alarmManager?.setExact(android.app.AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+                                true
                             }
-                            Toast.makeText(context, " Reminder set for $selectedMinutes minutes!", Toast.LENGTH_SHORT).show()
+                            if (canScheduleExact) {
+                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                                    alarmManager?.setExactAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+                                } else {
+                                    alarmManager?.setExact(android.app.AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+                                }
+                            } else {
+                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                                    alarmManager?.setAndAllowWhileIdle(android.app.AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+                                } else {
+                                    alarmManager?.set(android.app.AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+                                }
+                            }
+                            Toast.makeText(context, "🔔 Reminder set for $selectedMinutes minutes!", Toast.LENGTH_SHORT).show()
                         } catch (e: Exception) {
                             Toast.makeText(context, "Reminder set for $selectedMinutes minutes!", Toast.LENGTH_SHORT).show()
                         }

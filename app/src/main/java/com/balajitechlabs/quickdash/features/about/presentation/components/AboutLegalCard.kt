@@ -56,7 +56,7 @@ fun AboutLegalCard(
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 OutlinedButton(
                     onClick = {
@@ -66,7 +66,7 @@ fun AboutLegalCard(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("View License", fontSize = 12.sp)
+                    Text("License", fontSize = 11.sp)
                 }
                 OutlinedButton(
                     onClick = {
@@ -88,12 +88,28 @@ fun AboutLegalCard(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Privacy Policy", fontSize = 12.sp)
+                    Text("Privacy", fontSize = 11.sp)
+                }
+                OutlinedButton(
+                    onClick = {
+                        com.balajitechlabs.quickdash.core.ui.playClickVibration(context, true)
+                        val contributorsUrl = "https://github.com/Balajitechlabs/quickdash/graphs/contributors"
+                        try {
+                            context.startActivity(
+                                Intent(Intent.ACTION_VIEW, Uri.parse(contributorsUrl))
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            )
+                        } catch (_: Exception) {}
+                    },
+                    modifier = Modifier.weight(1.2f),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Team & Credits", fontSize = 11.sp)
                 }
             }
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Developed & Maintained by ||BTL||™ (balajitechlabs)\nOriginally Inspired by © 2026 Aakarsh Singhal (L192) / IIXII™",
+                text = "Developed & Maintained by ||BTL||™ (balajitechlabs) & Mohith (@mohith-dev-m1)\nOriginally Inspired by © 2026 Aakarsh Singhal (L192) / IIXII™",
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.Gray,
                 textAlign = TextAlign.Center,

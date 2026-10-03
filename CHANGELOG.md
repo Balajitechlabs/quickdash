@@ -2,6 +2,28 @@
 
 All major updates, feature additions, bug fixes, and system improvements for **QuickDash** are documented in this file.
 
+## [5.2.4] - 2026-10-03 (Security Hardening, Contributor Recognition & Exact Alarm Resilience)
+
+### Security Hardening & CodeQL Remediation
+- **Regex Log Sanitization**: Replaced basic char replacement in `AppLogger.kt` with robust regex newline stripping `Regex("[\r\n]")` to permanently eliminate Log Injection vulnerabilities (CodeQL Alert #66).
+- **Implicit Intent Chooser Guards**: Wrapped contact card creation, phone dialer, and email intent dispatches in `QrActionHelper.kt` with `Intent.createChooser` and try-catch safety guards to prevent sensitive data exposure (CodeQL Alerts #67, #68).
+- **Privileged Path Execution**: Enforced explicit absolute binary path `/system/bin/sh` in `ShizukuHelper.kt` (CodeQL Alert #69).
+- **Zero-Vulnerability Supply Chain**: Merged all Dependabot security audits, clearing 12 package vulnerabilities across Android dependencies, website packages, and Cloudflare workers.
+
+### System Reliability & Exact Alarm Fallback
+- **Exact Alarm Resilience**: Added Android 12+ (API 31+) `canScheduleExactAlarms()` runtime check in `QuickRemindersScreen.kt`. If exact alarm scheduling isn't granted, alarms gracefully fall back to `setAndAllowWhileIdle()` to guarantee reminders are never dropped silently.
+
+### In-App Contributor Recognition & Team Transparency
+- **In-App Team & Credits Hub**: Added a dedicated "Team & Credits" button in `AboutLegalCard.kt` connecting users directly to repository contributors.
+- **Developer Showcase Attribution**: Added official Co-Developer badge in `AboutDeveloperProfileSection.kt` and `AboutLegalCard.kt` acknowledging **Mohith** ([@mohith-dev-m1](https://github.com/mohith-dev-m1)).
+
+### Build System & Compliance
+- Bumped `versionCode = 526` and `versionName = "5.2.4"` in `app/build.gradle.kts`.
+- Synchronized fastlane metadata (`526.txt`) and in-app updater configuration (`update.json`).
+- Maintained 100% GNU General Public License v3.0 (GPL-3.0) compliance across all 245 source files.
+
+---
+
 ## [5.2.3] - 2026-09-05 (Architecture Modernization, AI Code Slop Purge & Zero-Tracker FOSS Release)
 
 ### Core Architecture and Codebase De-Bloating

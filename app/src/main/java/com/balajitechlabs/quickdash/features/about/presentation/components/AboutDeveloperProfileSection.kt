@@ -73,6 +73,14 @@ val socialPills = listOf(
         iconRes = R.drawable.ic_github
     ),
     SocialPill(
+        label = "Co-Developer",
+        handle = "mohith-dev-m1",
+        url = "https://github.com/mohith-dev-m1",
+        badgeColor = Color(0xFF1E2024),
+        iconTint = Color(0xFF6C63FF),
+        iconRes = R.drawable.ic_github
+    ),
+    SocialPill(
         label = "Mail",
         handle = "admin@balajitechlab.com",
         url = "mailto:admin@balajitechlab.com",
