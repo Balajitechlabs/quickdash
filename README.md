@@ -57,7 +57,7 @@
   </a>
   &nbsp;&nbsp;
   <a href="https://play.google.com/store/apps/details?id=com.balajitechlabs.quickdash">
-    <img src="https://img.shields.io/badge/PLAY%20STORE-50%2B%20INSTALLS-34A853?style=for-the-badge&logo=googleplay&logoColor=white" alt="Play Store Installs">
+    <img src="https://img.shields.io/badge/PLAY%20STORE-100%2B%20INSTALLS-34A853?style=for-the-badge&logo=googleplay&logoColor=white" alt="Play Store Installs">
   </a>
   &nbsp;&nbsp;
   <a href="https://github.com/balajitechlabs/quickdash/stargazers">

@@ -7,7 +7,7 @@ function formatNum(n) {
   return String(n)
 }
 
-const PLAY_STORE_INSTALLS = 56 // Verified Google Play Store installs on active devices
+const PLAY_STORE_INSTALLS = 100 // Verified Google Play Store installs on active devices
 
 export default function StatsBar() {
   const [stats, setStats] = useState({ downloads: 1316, tools: 20, rating: '5.0 ★' })

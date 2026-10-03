@@ -101,7 +101,7 @@ async function handleStats(env: Env): Promise<Response> {
       fetch('https://quickdash.balajitechlab.com/api/v1/tools.json')
     ])
 
-    let downloads = 56 // Verified Google Play Store installs on active devices
+    let downloads = 100 // Verified Google Play Store installs on active devices
     if (releasesRes.status === 'fulfilled' && releasesRes.value.ok) {
       const releases: any = await releasesRes.value.json()
       for (const release of releases) {
