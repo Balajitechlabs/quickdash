@@ -246,22 +246,26 @@ fun QuickDashTheme(
         }
     }
 
-    val colorScheme = remember(dynamicColor) {
-        if (dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            try {
-                val dyn = dynamicDarkColorScheme(context)
-                EssentialXDarkColorScheme.copy(
-                    primary = dyn.primary,
-                    onPrimary = dyn.onPrimary,
-                    primaryContainer = dyn.primaryContainer,
-                    onPrimaryContainer = dyn.onPrimaryContainer
-                )
-            } catch (_: Exception) {
-                EssentialXDarkColorScheme
+    val isAmoled = themeMode.equals("AMOLED", ignoreCase = true)
+    val useDark = when (themeMode.uppercase()) {
+        "LIGHT" -> false
+        "DARK", "AMOLED" -> true
+        else -> darkTheme
+    }
+
+    val colorScheme = remember(dynamicColor, useDark, isAmoled, seedColor) {
+        val baseScheme = when {
+            dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+                try {
+                    if (useDark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+                } catch (_: Exception) {
+                    if (useDark) EssentialXDarkColorScheme else generateColorScheme(seedColor, isDark = false)
+                }
             }
-        } else {
-            EssentialXDarkColorScheme
+            useDark -> generateColorScheme(seedColor, isDark = true)
+            else -> generateColorScheme(seedColor, isDark = false)
         }
+        if (isAmoled) baseScheme.toAmoled() else baseScheme
     }
 
     val customShape = getCustomShape(shapeStyle, cornerRadius)

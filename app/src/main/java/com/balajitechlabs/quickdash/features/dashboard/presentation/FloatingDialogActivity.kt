@@ -143,7 +143,7 @@ class FloatingDialogActivity : FragmentActivity() {
 
         setContent {
             val themeMode by mainViewModel.userStore.themeMode.collectAsStateWithLifecycle(initialValue = "SYSTEM")
-            val dynamicColor by mainViewModel.userStore.dynamicColor.collectAsStateWithLifecycle(initialValue = false)
+            val dynamicColor by mainViewModel.userStore.dynamicColor.collectAsStateWithLifecycle(initialValue = true)
             val isDarkTheme = when (themeMode) {
                 "LIGHT" -> false
                 "DARK", "AMOLED" -> true

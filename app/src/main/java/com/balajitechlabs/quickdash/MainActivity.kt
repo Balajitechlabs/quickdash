@@ -74,7 +74,7 @@ class MainActivity : FragmentActivity() {
         // Standard, full-screen Welcome Setup Screen for fresh installs and cleared app data
         setContent {
             val themeMode by mainViewModel.userStore.themeMode.collectAsStateWithLifecycle(initialValue = "SYSTEM")
-            val dynamicColor by mainViewModel.userStore.dynamicColor.collectAsStateWithLifecycle(initialValue = false)
+            val dynamicColor by mainViewModel.userStore.dynamicColor.collectAsStateWithLifecycle(initialValue = true)
             val isDarkTheme = when (themeMode) {
                 "LIGHT" -> false
                 "DARK", "AMOLED" -> true
