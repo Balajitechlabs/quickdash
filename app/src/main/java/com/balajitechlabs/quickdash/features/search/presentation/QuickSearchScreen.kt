@@ -56,10 +56,14 @@ import android.util.Log
 import java.net.URLEncoder
 
 @Composable
-fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel, onDismiss: () -> Unit) {
+fun QuickSearchScreen(
+    mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
+    onDismiss: () -> Unit,
+    searchViewModel: QuickSearchViewModel = androidx.hilt.navigation.compose.hiltViewModel()
+) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val gson = Gson()
+    val gson = remember { Gson() }
 
     var query by remember { mutableStateOf("") }
     var showAddEngineDialog by remember { mutableStateOf(false) }
@@ -97,43 +101,15 @@ fun QuickSearchScreen(mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
     }
     
     var selectedEngine by remember(engines) { mutableStateOf(engines[0]) }
-    var querySuggestions by remember { mutableStateOf<List<String>>(emptyList()) }
+    val querySuggestions by searchViewModel.suggestions.collectAsStateWithLifecycle()
 
     LaunchedEffect(query) {
-        val trimmed = query.trim()
-        if (trimmed.length > 1) {
-            kotlinx.coroutines.delay(200)
-            withContext(Dispatchers.IO) {
-                try {
-                    val encodedQuery = URLEncoder.encode(trimmed, "UTF-8")
-                    val urlString = "https://suggestqueries.google.com/complete/search?client=firefox&q=$encodedQuery"
-                    val connection = java.net.URL(urlString).openConnection() as java.net.HttpURLConnection
-                    connection.requestMethod = "GET"
-                    connection.connectTimeout = 3000
-                    connection.readTimeout = 3000
-                    val response = connection.inputStream.bufferedReader().use { it.readText() }
-                    
-                    val jsonArray = JsonParser.parseString(response).asJsonArray
-                    if (jsonArray.size() > 1) {
-                        val suggestionList = jsonArray.get(1).asJsonArray
-                        val list = mutableListOf<String>()
-                        suggestionList.forEach { list.add(it.asString) }
-                        querySuggestions = list
-                    }
-                } catch (e: java.lang.Exception) {
-                    Log.e("QuickDash", "Error occurred: ${e.message}", e)
-                }
-            }
-        } else {
-            querySuggestions = emptyList()
-        }
+        searchViewModel.onQueryChanged(query)
     }
 
     fun doSearch(q: String) {
         if (q.isBlank()) return
-        coroutineScope.launch {
-            mainViewModel.userStore.addSearchHistory(q)
-        }
+        searchViewModel.recordSearch(q)
         try {
             val encoded = URLEncoder.encode(q, "UTF-8")
             val uri = Uri.parse(selectedEngine.second + encoded)
