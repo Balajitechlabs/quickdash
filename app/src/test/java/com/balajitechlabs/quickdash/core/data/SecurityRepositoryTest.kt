@@ -4,55 +4,68 @@
  *
  * Feature Module: core/data
  * File: SecurityRepositoryTest.kt
- * Description: Unit tests verifying security settings persistence and biometric lock logic.
+ * Description: Unit tests verifying real SecurityRepository encryption/decryption flow with DataStore.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.data
 
+import android.content.Context
 import com.google.common.truth.Truth.assertThat
-import io.mockk.coEvery
-import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SecurityRepositoryTest {
 
-    private val cryptoManager = mockk<CryptoManager>(relaxed = true)
-    private val securityRepository = mockk<SecurityRepository>(relaxed = true)
+    @get:Rule
+    val tempFolder = TemporaryFolder()
+
+    private lateinit var context: Context
+    private lateinit var cryptoManager: CryptoManager
+    private lateinit var repository: SecurityRepository
 
     @Before
     fun setup() {
-        coEvery { securityRepository.githubAccessToken } returns flowOf("")
-        coEvery { securityRepository.serverCredentials } returns flowOf("{}")
+        val appDir = tempFolder.newFolder("app_files")
+        context = mockk(relaxed = true) {
+            every { applicationContext } returns this
+            every { filesDir } returns appDir
+        }
+        cryptoManager = mockk {
+            every { encrypt(any()) } answers {
+                val bytes = firstArg<ByteArray>()
+                "enc:" + bytes.decodeToString()
+            }
+            every { decrypt(any()) } answers {
+                val encoded = firstArg<String>()
+                encoded.removePrefix("enc:").encodeToByteArray()
+            }
+        }
+        repository = SecurityRepository(context, cryptoManager)
     }
 
     @Test
-    fun `saveGithubAccessToken stores token`() = runTest {
-        securityRepository.saveGithubAccessToken("ghp_test_token")
-        coVerify { securityRepository.saveGithubAccessToken("ghp_test_token") }
+    fun `saveGithubAccessToken encrypts and emits token`() = runTest {
+        repository.saveGithubAccessToken("ghp_test_token")
+
+        verify { cryptoManager.encrypt("ghp_test_token".encodeToByteArray()) }
+        assertThat(repository.githubAccessToken.first()).isEqualTo("ghp_test_token")
     }
 
     @Test
-    fun `saveServerCredentials stores and retrieves`() = runTest {
+    fun `saveServerCredentials encrypts and emits json`() = runTest {
         val creds = """{"host":"example.com","user":"admin"}"""
-        coEvery { securityRepository.serverCredentials } returns flowOf(creds)
+        repository.saveServerCredentials(creds)
 
-        securityRepository.saveServerCredentials(creds)
-
-        coVerify { securityRepository.saveServerCredentials(creds) }
-        val retrieved = securityRepository.serverCredentials.first()
-        assertThat(retrieved).isEqualTo(creds)
-    }
-
-    @Test
-    fun `isAuthenticated returns false initially`() = runTest {
-        val token = securityRepository.githubAccessToken.first()
-        assertThat(token).isEmpty()
+        verify { cryptoManager.encrypt(creds.encodeToByteArray()) }
+        assertThat(repository.serverCredentials.first()).isEqualTo(creds)
     }
 }

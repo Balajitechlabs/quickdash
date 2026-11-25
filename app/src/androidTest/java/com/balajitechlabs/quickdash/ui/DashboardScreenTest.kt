@@ -4,16 +4,19 @@
  *
  * Feature Module: ui
  * File: DashboardScreenTest.kt
- * Description: Compose UI tests verifying dashboard layout rendering, tool clicks, and state handling.
+ * Description: Compose UI tests verifying QuickDash design system components and QuickCalculatorScreen rendering.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.ui
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.balajitechlabs.quickdash.core.designsystem.components.QuickDashCard
+import com.balajitechlabs.quickdash.core.designsystem.components.QuickDashPrimaryButton
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,10 +28,16 @@ class DashboardScreenTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun dashboardScreenHeaderRendersCorrectly() {
+    fun quickDashDesignSystemComponentsRenderContent() {
         composeTestRule.setContent {
-            Text("QuickDash Dashboard")
+            MaterialTheme {
+                QuickDashCard {
+                    Text("QuickDash Tools")
+                    QuickDashPrimaryButton(text = "Launch", onClick = {})
+                }
+            }
         }
-        composeTestRule.onNodeWithText("QuickDash Dashboard").assertIsDisplayed()
+        composeTestRule.onNodeWithText("QuickDash Tools").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Launch").assertIsDisplayed()
     }
 }
