@@ -19,8 +19,11 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.balajitechlabs.quickdash.core.data.UserStore
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -41,6 +44,7 @@ class QuickTileService : TileService() {
     @Inject
     lateinit var userStore: UserStore
 
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var isBubbleActive = false
 
     override fun onStartListening() {
@@ -113,9 +117,11 @@ class QuickTileService : TileService() {
         tile.updateTile()
 
         // 3. Persist state to UserStore DataStore asynchronously on IO
-        CoroutineScope(Dispatchers.IO).launch {
+        serviceScope.launch(Dispatchers.IO) {
             try {
                 userStore.setBubbleEnabled(newStatus)
+            } catch (ce: CancellationException) {
+                throw ce
             } catch (e: Exception) {
                 Log.e("QuickTileService", "Failed to save bubble state", e)
             }
@@ -127,9 +133,11 @@ class QuickTileService : TileService() {
         tile.icon = Icon.createWithResource(this, R.drawable.ic_quickdash_tile)
         tile.label = "Quick Bubble"
 
-        CoroutineScope(Dispatchers.Main).launch {
+        serviceScope.launch {
             isBubbleActive = try {
                 userStore.bubbleEnabled.first()
+            } catch (ce: CancellationException) {
+                throw ce
             } catch (_: Exception) {
                 false
             }
@@ -139,5 +147,10 @@ class QuickTileService : TileService() {
             }
             tile.updateTile()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        serviceScope.cancel()
     }
 }

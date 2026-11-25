@@ -50,8 +50,11 @@ class ShakeDetectorService : Service(), SensorEventListener {
     private var shakeCount = 0
     private var lastActionTime = 0L
 
+    @Volatile
     private var shakeMode = "DOUBLE"
+    @Volatile
     private var threshold = 14f
+    @Volatile
     private var vibrationMs = 25L
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -147,7 +150,12 @@ class ShakeDetectorService : Service(), SensorEventListener {
             }
         } catch (_: Exception) {}
 
-        // Launch floating dialog activity over whatever app the user is currently using (e.g. WhatsApp)
+        // Launch floating dialog activity over whatever app the user is currently using (e.g. WhatsApp).
+        // Android 10+ blocks Background Activity Launches unless overlay permission is granted.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
+            Log.w("ShakeDetectorService", "Skipping shake launch: SYSTEM_ALERT_WINDOW not granted")
+            return
+        }
         val intent = Intent(this, FloatingDialogActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }

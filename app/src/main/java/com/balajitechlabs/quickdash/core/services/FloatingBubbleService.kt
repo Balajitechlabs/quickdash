@@ -106,6 +106,11 @@ class FloatingBubbleService : Service() {
     private lateinit var floatingView: View
     private lateinit var params: WindowManager.LayoutParams
     private val savedStateRegistryOwner = MySavedStateRegistryOwner()
+    private val tapHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private var radialView: ComposeView? = null
+    private var snapAnimator: ValueAnimator? = null
+    @Volatile
+    private var pinnedToolIds: List<String> = emptyList()
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -162,7 +167,6 @@ class FloatingBubbleService : Service() {
         refreshBubbleIcon()
 
         // ── Track pinned tools from DataStore ──────────────────────────
-        var pinnedToolIds: List<String> = emptyList()
         val userStore = com.balajitechlabs.quickdash.core.data.UserStore(this@FloatingBubbleService)
         serviceScope.launch {
             try {
@@ -203,7 +207,8 @@ class FloatingBubbleService : Service() {
             val bw = floatingView.width.takeIf { it > 0 } ?: 150
             val margin = (12 * resources.displayMetrics.density).toInt()
             val targetX = if (params.x + bw / 2 < sw / 2) margin else sw - bw - margin
-            ValueAnimator.ofInt(params.x, targetX).apply {
+            snapAnimator?.cancel()
+            snapAnimator = ValueAnimator.ofInt(params.x, targetX).apply {
                 duration = 240
                 interpolator = DecelerateInterpolator()
                 addUpdateListener { anim ->
@@ -230,7 +235,6 @@ class FloatingBubbleService : Service() {
         // ── Radial menu state ──────────────────────────────────────────
         var isRadialMenuOpen = false
         var activeRadialSector = -1
-        var radialView: ComposeView? = null
         val radialState = mutableIntStateOf(-1)
 
         // Screen center — the menu is always drawn here
@@ -294,7 +298,6 @@ class FloatingBubbleService : Service() {
         var initialX = 0; var initialY = 0
         var initialTouchX = 0f; var initialTouchY = 0f
         var lastTapTime = 0L
-        val tapHandler = android.os.Handler(android.os.Looper.getMainLooper())
         var singleTapRunnable: Runnable? = null
         var isDragging = false
         val touchSlop = (14 * resources.displayMetrics.density).toInt()
@@ -393,7 +396,9 @@ class FloatingBubbleService : Service() {
                                     lastTapTime = 0L
                                     triggerDoubleVibration()
                                     serviceScope.launch { userStore.setBubbleEnabled(false) }
-                                    sendBroadcast(Intent("com.balajitechlabs.quickdash.CLOSE_APP"))
+                                    sendBroadcast(
+                                        Intent("com.balajitechlabs.quickdash.CLOSE_APP").setPackage(packageName)
+                                    )
                                     stopSelf()
                                 } else {
                                     // Single tap → open dashboard
@@ -451,9 +456,20 @@ class FloatingBubbleService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        tapHandler.removeCallbacksAndMessages(null)
+        snapAnimator?.cancel()
+        snapAnimator = null
         serviceScope.cancel()
+        radialView?.let {
+            try { windowManager.removeView(it) } catch (_: Exception) {}
+        }
+        radialView = null
         if (::floatingView.isInitialized) {
             try { windowManager.removeView(floatingView) } catch (_: Exception) {}
         }
+        savedStateRegistryOwner.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+        savedStateRegistryOwner.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
+        savedStateRegistryOwner.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        savedStateRegistryOwner.viewModelStore.clear()
     }
 }

@@ -9,31 +9,38 @@
  */
 package com.balajitechlabs.quickdash.core.services
 
-
-import com.google.gson.reflect.TypeToken
-import com.google.gson.Gson
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import android.content.Intent
-import com.balajitechlabs.quickdash.core.data.UserStore
+import android.util.Log
+import com.balajitechlabs.quickdash.core.data.HistoryRepository
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-
-import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
-import android.util.Log
 
 @AndroidEntryPoint
 class QuickDashNotificationListenerService : NotificationListenerService() {
 
     @Inject
-    lateinit var historyRepository: com.balajitechlabs.quickdash.core.data.HistoryRepository
+    lateinit var historyRepository: HistoryRepository
+
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val historyMutex = Mutex()
+    private val gson = Gson()
+    private val listType = object : TypeToken<MutableList<Map<String, Any>>>() {}.type
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         val packageName = sbn.packageName
-        
+
         // Exclude system UI or our own app
         if (packageName == "android" || packageName == applicationContext.packageName) {
             return
@@ -42,41 +49,48 @@ class QuickDashNotificationListenerService : NotificationListenerService() {
         val extras = sbn.notification.extras
         val title = extras.getString("android.title") ?: ""
         val text = extras.getCharSequence("android.text")?.toString() ?: ""
-        
+
         if (title.isBlank() && text.isBlank()) return
 
         val appName = try {
             val pm = packageManager
             val ai = pm.getApplicationInfo(packageName, 0)
             pm.getApplicationLabel(ai).toString()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             packageName
         }
 
         val timestamp = System.currentTimeMillis()
 
-        CoroutineScope(Dispatchers.IO).launch {
+        serviceScope.launch {
             try {
-                val currentJson = historyRepository.notificationHistory.first()
+                historyMutex.withLock {
+                    val currentJson = historyRepository.notificationHistory.first()
+                    val list: MutableList<Map<String, Any>> =
+                        gson.fromJson(currentJson, listType) ?: mutableListOf()
 
-                val gson = Gson()
-                val listType = object : TypeToken<MutableList<Map<String, Any>>>() {}.type
-                val list: MutableList<Map<String, Any>> = gson.fromJson(currentJson, listType) ?: mutableListOf()
+                    val item = mapOf(
+                        "appName" to appName,
+                        "packageName" to packageName,
+                        "title" to title,
+                        "text" to text,
+                        "timestamp" to timestamp
+                    )
+                    list.add(0, item)
 
-                val item = mapOf(
-                    "appName" to appName,
-                    "packageName" to packageName,
-                    "title" to title,
-                    "text" to text,
-                    "timestamp" to timestamp
-                )
-                list.add(0, item)
-                
-                // Keep last 50 notification logs
-                historyRepository.saveNotificationHistory(gson.toJson(list.take(50)))
+                    // Keep last 50 notification logs
+                    historyRepository.saveNotificationHistory(gson.toJson(list.take(50)))
+                }
+            } catch (ce: CancellationException) {
+                throw ce
             } catch (e: Exception) {
-                Log.e("QuickDash", "Error occurred: ${e.message}", e)
+                Log.e("QuickDash", "Failed to save notification history: ${e.message}", e)
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        serviceScope.cancel()
     }
 }
