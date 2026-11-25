@@ -69,175 +69,29 @@ data class GithubProfileCache(
     val followersList: List<Pair<String, String>> // list of Pair(login, avatarUrl)
 )
 
+@Suppress("UNUSED_PARAMETER")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuickSocialScreen(
     mainViewModel: com.balajitechlabs.quickdash.MainViewModel,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    socialViewModel: QuickSocialViewModel = androidx.hilt.navigation.compose.hiltViewModel()
 ) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     var username by remember { mutableStateOf("") }
-    
+
     // Available platforms
-    val platforms = listOf("Instagram", "Facebook", "X (Twitter)", "LinkedIn", "GitHub")
+    val platforms = remember { listOf("Instagram", "Facebook", "X (Twitter)", "LinkedIn", "GitHub") }
     var selectedPlatform by remember { mutableStateOf("Instagram") }
-    
-    // GitHub API states
-    var showGithubProfile by remember { mutableStateOf(false) }
-    var githubLoading by remember { mutableStateOf(false) }
-    var githubError by remember { mutableStateOf<String?>(null) }
-    var currentGithubProfile by remember { mutableStateOf<GithubProfileCache?>(null) }
-    
-    // In-memory cache for recursively loaded follower profiles
-    val profileCache = remember { mutableMapOf<String, GithubProfileCache>() }
+
+    val githubState by androidx.lifecycle.compose.collectAsStateWithLifecycle(socialViewModel.githubState)
+    val showGithubProfile = githubState.showProfile
+    val githubLoading = githubState.isLoading
+    val githubError = githubState.error
+    val currentGithubProfile = githubState.profile
 
     val cleanedUsername = username.trim().removePrefix("@").trim()
     val isValid = cleanedUsername.isNotEmpty() && !cleanedUsername.contains(" ")
-
-    // Fetch GitHub details helper
-    fun fetchGithubProfile(targetUsername: String) {
-        githubLoading = true
-        githubError = null
-        
-        // Check cache first
-        if (profileCache.containsKey(targetUsername.lowercase())) {
-            currentGithubProfile = profileCache[targetUsername.lowercase()]
-            githubLoading = false
-            showGithubProfile = true
-            return
-        }
-
-        scope.launch {
-            try {
-                // Run network operations in IO thread and get result
-                val result = withContext(Dispatchers.IO) {
-                    try {
-                        val token = mainViewModel.userStore.githubAccessToken.first()
-                        
-                        // 1. Fetch user general details
-                        val userUrl = URL("https://api.github.com/users/$targetUsername")
-                        val userConn = userUrl.openConnection() as HttpURLConnection
-                        userConn.requestMethod = "GET"
-                        userConn.connectTimeout = 5000
-                        userConn.readTimeout = 5000
-                        if (token.isNotBlank()) {
-                            userConn.setRequestProperty("Authorization", "token $token")
-                        }
-                        
-                        val responseCode = userConn.responseCode
-                        if (responseCode == 403) {
-                            return@withContext Result.failure<GithubProfileCache>(Exception("RATE_LIMIT"))
-                        } else if (responseCode == 404) {
-                            return@withContext Result.failure<GithubProfileCache>(Exception("NOT_FOUND"))
-                        } else if (responseCode != 200) {
-                            return@withContext Result.failure<GithubProfileCache>(Exception("ERROR_$responseCode"))
-                        }
-                        
-                        val userJsonStr = userConn.inputStream.bufferedReader().use { it.readText() }
-                        val userObj = org.json.JSONObject(userJsonStr)
-                        
-                        val login = userObj.optString("login", targetUsername)
-                        val name = userObj.optString("name", login)
-                        val avatarUrl = userObj.optString("avatar_url", "")
-                        val bio = userObj.optString("bio", "No bio description.")
-                        val followers = userObj.optInt("followers", 0)
-                        val following = userObj.optInt("following", 0)
-                        val blogUrl = userObj.optString("blog", "")
-                        val githubUrl = userObj.optString("html_url", "https://github.com/$login")
-                        
-                        // 2. Fetch README markdown preview
-                        var readmeContent = "No profile README found."
-                        val readmeUrls = listOf(
-                            URL("https://raw.githubusercontent.com/$login/$login/main/README.md"),
-                            URL("https://raw.githubusercontent.com/$login/$login/master/README.md")
-                        )
-                        for (url in readmeUrls) {
-                            try {
-                                val conn = url.openConnection() as HttpURLConnection
-                                conn.connectTimeout = 3000
-                                conn.readTimeout = 3000
-                                if (conn.responseCode == 200) {
-                                    readmeContent = conn.inputStream.bufferedReader().use { it.readText() }
-                                    break
-                                }
-                            } catch (e: Exception) {
-                                // try next URL
-                            }
-                        }
-
-                        // 3. Fetch followers list
-                        val followersList = mutableListOf<Pair<String, String>>()
-                        try {
-                            val fUrl = URL("https://api.github.com/users/$login/followers?per_page=12")
-                            val fConn = fUrl.openConnection() as HttpURLConnection
-                            fConn.requestMethod = "GET"
-                            fConn.connectTimeout = 3000
-                            fConn.readTimeout = 3000
-                            if (token.isNotBlank()) {
-                                fConn.setRequestProperty("Authorization", "token $token")
-                            }
-                            if (fConn.responseCode == 200) {
-                                val fJsonStr = fConn.inputStream.bufferedReader().use { it.readText() }
-                                val fArr = JsonParser.parseString(fJsonStr).asJsonArray
-                                fArr.forEach { el ->
-                                    val fObj = el.asJsonObject
-                                    val fLogin = fObj.get("login")?.asString ?: ""
-                                    val fAvatar = fObj.get("avatar_url")?.asString ?: ""
-                                    if (fLogin.isNotBlank()) {
-                                        followersList.add(Pair(fLogin, fAvatar))
-                                    }
-                                }
-                            }
-                        } catch (e: Exception) {
-                            Log.e("QuickDash", "Error occurred: ${e.message}", e)
-                        }
-
-                        val cacheItem = GithubProfileCache(
-                            login = login,
-                            name = name,
-                            avatarUrl = avatarUrl,
-                            bio = bio,
-                            followers = followers,
-                            following = following,
-                            blogUrl = blogUrl,
-                            githubUrl = githubUrl,
-                            readmeContent = readmeContent,
-                            followersList = followersList
-                        )
-                        Result.success(cacheItem)
-                    } catch (e: Exception) {
-                        Result.failure<GithubProfileCache>(e)
-                    }
-                }
-
-                // Update Compose state on the MAIN thread
-                if (result.isSuccess) {
-                    val cacheItem = result.getOrThrow()
-                    profileCache[cacheItem.login.lowercase()] = cacheItem
-                    currentGithubProfile = cacheItem
-                    githubError = null
-                    showGithubProfile = true
-                } else {
-                    val ex = result.exceptionOrNull()
-                    val msg = ex?.message ?: ""
-                    githubError = when {
-                        msg == "RATE_LIMIT" -> "Rate limit exceeded. Add a token in settings or try again later."
-                        msg == "NOT_FOUND" -> "GitHub user not found."
-                        msg.startsWith("ERROR_") -> "GitHub API error: ${msg.substring(6)}"
-                        else -> "Connection error. Please check your internet connection."
-                    }
-                    showGithubProfile = false
-                }
-            } catch (e: Exception) {
-                Log.e("QuickDash", "Error occurred: ${e.message}", e)
-                githubError = "Connection error. Please check your internet connection."
-                showGithubProfile = false
-            } finally {
-                githubLoading = false
-            }
-        }
-    }
 
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
         Text(
@@ -277,7 +131,7 @@ fun QuickSocialScreen(
                     else -> MaterialTheme.colorScheme.primary
                 }
                 Card(
-                    onClick = { selectedPlatform = platform; githubError = null },
+                    onClick = { selectedPlatform = platform; socialViewModel.clearError() },
                     shape = RoundedCornerShape(14.dp),
                     modifier = Modifier.weight(1f),
                     colors = CardDefaults.cardColors(
@@ -350,12 +204,12 @@ fun QuickSocialScreen(
             onClick = {
                 if (isValid) {
                     if (selectedPlatform == "GitHub") {
-                        fetchGithubProfile(cleanedUsername)
+                        socialViewModel.fetchGithubProfile(cleanedUsername)
                     } else {
                         // Handle native redirects
                         val (appUri, browserUri, pkg) = when (selectedPlatform) {
                             "Instagram" -> Triple(
-                                Uri.parse("http://instagram.com/_u/$cleanedUsername"),
+                                Uri.parse("https://instagram.com/_u/$cleanedUsername"),
                                 Uri.parse("https://instagram.com/$cleanedUsername"),
                                 "com.instagram.android"
                             )
@@ -409,9 +263,9 @@ fun QuickSocialScreen(
 
     // GitHub dialog pop-up overlay
     if (showGithubProfile && currentGithubProfile != null) {
-        val profile = currentGithubProfile!!
+        val profile = currentGithubProfile
         AlertDialog(
-            onDismissRequest = { showGithubProfile = false },
+            onDismissRequest = { socialViewModel.dismissProfile() },
             title = {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -425,7 +279,7 @@ fun QuickSocialScreen(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    IconButton(onClick = { showGithubProfile = false }) {
+                    IconButton(onClick = { socialViewModel.dismissProfile() }) {
                         Icon(Icons.Filled.Close, contentDescription = "Close")
                     }
                 }
@@ -508,7 +362,7 @@ fun QuickSocialScreen(
                                         modifier = Modifier
                                             .width(56.dp)
                                             .clickable {
-                                                fetchGithubProfile(fLogin)
+                                                socialViewModel.fetchGithubProfile(fLogin)
                                             }
                                     ) {
                                         AsyncImage(

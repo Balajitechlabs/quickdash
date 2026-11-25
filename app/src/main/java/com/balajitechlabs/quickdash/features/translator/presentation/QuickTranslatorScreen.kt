@@ -40,12 +40,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.balajitechlabs.quickdash.R
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONObject
-import java.net.HttpURLConnection
-import java.net.URL
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.net.URLEncoder
 
 private val LANGUAGES = listOf(
@@ -71,37 +68,6 @@ private val LANGUAGES = listOf(
     "Marathi" to "mr"
 )
 
-private suspend fun performGoogleTranslate(text: String, from: String, to: String): String = withContext(Dispatchers.IO) {
-    return@withContext try {
-        val srcLang = if (from == "auto") "auto" else from
-        val encoded = URLEncoder.encode(text, "UTF-8")
-        val urlStr = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=$srcLang&tl=$to&dt=t&dj=1&q=$encoded"
-        val conn = URL(urlStr).openConnection() as HttpURLConnection
-        conn.requestMethod = "GET"
-        conn.setRequestProperty("User-Agent", "Mozilla/5.0")
-        conn.connectTimeout = 7000
-        conn.readTimeout = 7000
-
-        if (conn.responseCode == 200) {
-            val json = conn.inputStream.bufferedReader().readText()
-            val obj = runCatching { JSONObject(json) }.getOrNull()
-            if (obj != null && obj.has("sentences")) {
-                val sentences = obj.getJSONArray("sentences")
-                val sb = StringBuilder()
-                for (i in 0 until sentences.length()) {
-                    val s = sentences.getJSONObject(i)
-                    if (s.has("trans")) sb.append(s.getString("trans"))
-                }
-                sb.toString()
-            } else text
-        } else {
-            "Translation service error (HTTP ${conn.responseCode})"
-        }
-    } catch (e: Exception) {
-        "Connection failed: ${e.localizedMessage ?: "Please check your network"}"
-    }
-}
-
 private data class TranslationHistoryItem(
     val originalText: String,
     val translatedText: String,
@@ -110,7 +76,9 @@ private data class TranslationHistoryItem(
 )
 
 @Composable
-fun QuickTranslatorScreen() {
+fun QuickTranslatorScreen(
+    viewModel: QuickTranslatorViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -134,7 +102,7 @@ fun QuickTranslatorScreen() {
     var targetLanguageIndex by remember { mutableIntStateOf(3) }
     var inputText by remember { mutableStateOf("") }
     var translatedResult by remember { mutableStateOf("") }
-    var isTranslating by remember { mutableStateOf(false) }
+    val isTranslating by viewModel.isTranslating.collectAsStateWithLifecycle()
 
     val translationHistory = remember { mutableStateListOf<TranslationHistoryItem>() }
 
@@ -204,9 +172,9 @@ fun QuickTranslatorScreen() {
                             }
                         }
                     ) {
-                        Icon(Icons.Filled.ContentPaste, null, modifier = Modifier.size(16.dp), tint = Color.White)
+                        Icon(Icons.Filled.ContentPaste, null, modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.primary)
                         Spacer(Modifier.width(6.dp))
-                        Text("Paste from Clipboard", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                        Text("Paste from Clipboard", color = MaterialTheme.colorScheme.primary, fontSize = 13.sp, fontWeight = FontWeight.Medium)
                     }
                 }
 
@@ -219,16 +187,13 @@ fun QuickTranslatorScreen() {
                     shape = RoundedCornerShape(14.dp),
                     onClick = {
                         if (inputText.isNotBlank() && !isTranslating) {
-                            isTranslating = true
-                            scope.launch {
-                                val res = performGoogleTranslate(
-                                    inputText,
-                                    LANGUAGES[sourceLanguageIndex].second,
-                                    LANGUAGES[targetLanguageIndex].second
-                                )
+                            viewModel.translate(
+                                text = inputText,
+                                fromCode = LANGUAGES[sourceLanguageIndex].second,
+                                toCode = LANGUAGES[targetLanguageIndex].second
+                            ) { res ->
                                 val isError = res.startsWith("Translation service error") || res.startsWith("Connection failed")
                                 translatedResult = res
-                                isTranslating = false
                                 if (!isError) {
                                     translationHistory.add(
                                         0,
@@ -246,11 +211,15 @@ fun QuickTranslatorScreen() {
                     enabled = !isTranslating && inputText.isNotBlank()
                 ) {
                     if (isTranslating) {
-                        CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp, color = Color.White)
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
                         Spacer(Modifier.width(8.dp))
                         Text("Translating…", fontWeight = FontWeight.Bold)
                     } else {
-                        Icon(Icons.Filled.Translate, null, tint = Color.White, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Filled.Translate, null, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(8.dp))
                         Text("Translate Now", fontWeight = FontWeight.Bold)
                     }
@@ -271,10 +240,10 @@ fun QuickTranslatorScreen() {
                         )
                     },
                     shape = RoundedCornerShape(14.dp),
-                    border = BorderStroke(1.dp, Color(0xFF44474F)),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = Color(0xFF2C2C2E),
-                        contentColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        contentColor = MaterialTheme.colorScheme.onSurface
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -283,7 +252,7 @@ fun QuickTranslatorScreen() {
                     Icon(
                         painter = painterResource(R.drawable.ic_globe),
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(Modifier.width(10.dp))
