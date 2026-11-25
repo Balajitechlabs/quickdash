@@ -309,25 +309,29 @@ fun QuickDashContent(
                                         detectVerticalDragGestures(
                                             onDragEnd = {
                                                 if (dragOffsetY > 100f) {
-                                                    if (Settings.canDrawOverlays(context)) {
-                                                        try {
-                                                            val sIntent = Intent(context, FloatingBubbleService::class.java)
-                                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                                                context.startForegroundService(sIntent)
-                                                            } else {
-                                                                context.startService(sIntent)
-                                                            }
-                                                        } catch (_: Exception) {}
-                                                        onDismiss()
+                                                    if (bubbleEnabled) {
+                                                        if (Settings.canDrawOverlays(context)) {
+                                                            try {
+                                                                val sIntent = Intent(context, FloatingBubbleService::class.java)
+                                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                                                    context.startForegroundService(sIntent)
+                                                                } else {
+                                                                    context.startService(sIntent)
+                                                                }
+                                                            } catch (_: Exception) {}
+                                                            onDismiss()
+                                                        } else {
+                                                            Toast.makeText(context, "Enable 'Display over other apps' to minimize into a bubble", Toast.LENGTH_LONG).show()
+                                                            try {
+                                                                val overlayIntent = Intent(
+                                                                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                                                    Uri.parse("package:${context.packageName}")
+                                                                ).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
+                                                                context.startActivity(overlayIntent)
+                                                            } catch (_: Exception) {}
+                                                            onDismiss()
+                                                        }
                                                     } else {
-                                                        Toast.makeText(context, "Enable 'Display over other apps' to minimize into a bubble", Toast.LENGTH_LONG).show()
-                                                        try {
-                                                            val overlayIntent = Intent(
-                                                                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                                                Uri.parse("package:${context.packageName}")
-                                                            ).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
-                                                            context.startActivity(overlayIntent)
-                                                        } catch (_: Exception) {}
                                                         onDismiss()
                                                     }
                                                 } else {

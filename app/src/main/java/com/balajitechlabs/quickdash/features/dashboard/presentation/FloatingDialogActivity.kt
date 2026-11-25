@@ -61,6 +61,7 @@ class FloatingDialogActivity : FragmentActivity() {
     private var isAuthenticated by mutableStateOf(true)
     private var isAuthRequired by mutableStateOf(false)
     private var currentAction by mutableStateOf<String?>(null)
+    private var isBubbleEnabled = false
 
     private val captureReceiver = object : android.content.BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -107,6 +108,12 @@ class FloatingDialogActivity : FragmentActivity() {
                     resources.updateConfiguration(appConfig, resources.displayMetrics)
                 }
             } catch (_: Exception) { /* fallback: keep system locale */ }
+        }
+
+        lifecycleScope.launch {
+            mainViewModel.userStore.bubbleEnabled.collect { enabled ->
+                isBubbleEnabled = enabled
+            }
         }
 
         lifecycleScope.launch {
@@ -386,9 +393,9 @@ class FloatingDialogActivity : FragmentActivity() {
     }
 
     private fun minimizeToBubble() {
-        if (android.provider.Settings.canDrawOverlays(this)) {
+        val serviceIntent = Intent(this, com.balajitechlabs.quickdash.core.services.FloatingBubbleService::class.java)
+        if (isBubbleEnabled && android.provider.Settings.canDrawOverlays(this)) {
             try {
-                val serviceIntent = Intent(this, com.balajitechlabs.quickdash.core.services.FloatingBubbleService::class.java)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     startForegroundService(serviceIntent)
                 } else {
@@ -397,6 +404,10 @@ class FloatingDialogActivity : FragmentActivity() {
             } catch (e: Exception) {
                 Log.e("QuickDash", "Error: ${e.message}", e)
             }
+        } else if (!isBubbleEnabled) {
+            try {
+                stopService(serviceIntent)
+            } catch (_: Exception) {}
         }
         finish()
     }

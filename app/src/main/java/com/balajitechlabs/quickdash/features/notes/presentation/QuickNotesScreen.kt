@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -117,13 +118,15 @@ fun FormattedMarkdown(text: String, modifier: Modifier = Modifier) {
         }
     }
 
-    Text(
-        text = annotatedString,
-        modifier = modifier.fillMaxWidth(),
-        style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp),
-        color = Color(0xFFE0E0E0),
-        textAlign = TextAlign.Start
-    )
+    SelectionContainer(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = annotatedString,
+            modifier = Modifier.fillMaxWidth(),
+            style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp),
+            color = Color(0xFFE0E0E0),
+            textAlign = TextAlign.Start
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -140,6 +143,7 @@ fun QuickNotesScreen(
     val notes by noteDao.getAllNotes().collectAsStateWithLifecycle(initialValue = emptyList())
 
     var noteInput by remember { mutableStateOf("") }
+    var editingNote by remember { mutableStateOf<NoteEntity?>(null) }
     var selectedMode by remember { mutableStateOf("Write") } // "Write" or "Preview"
     var searchQuery by remember { mutableStateOf("") }
 
@@ -249,26 +253,64 @@ fun QuickNotesScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Button(
-                onClick = {
-                    com.balajitechlabs.quickdash.core.ui.playHeavyVibration(context, true, 28L)
-                    val trimmed = noteInput.trim()
-                    if (trimmed.isNotBlank()) {
-                        coroutineScope.launch {
-                            noteDao.insertNote(NoteEntity(text = trimmed))
-                            mainViewModel.userStore.incrementNotesSaved()
-                            noteInput = ""
-                            Toast.makeText(context, "Note Saved ", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                },
-                enabled = noteInput.isNotBlank(),
-                shape = RoundedCornerShape(14.dp),
-                modifier = Modifier.fillMaxWidth().height(44.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(6.dp))
-                Text("Save Note", fontWeight = FontWeight.Bold)
+                if (editingNote != null) {
+                    OutlinedButton(
+                        onClick = {
+                            com.balajitechlabs.quickdash.core.ui.playClickVibration(context, true, 16L)
+                            editingNote = null
+                            noteInput = ""
+                        },
+                        shape = RoundedCornerShape(14.dp),
+                        modifier = Modifier.height(44.dp)
+                    ) {
+                        Text("Cancel")
+                    }
+                }
+                Button(
+                    onClick = {
+                        com.balajitechlabs.quickdash.core.ui.playHeavyVibration(context, true, 28L)
+                        val trimmed = noteInput.trim()
+                        if (trimmed.isNotBlank()) {
+                            val currentEditing = editingNote
+                            coroutineScope.launch {
+                                if (currentEditing != null) {
+                                    noteDao.updateNote(
+                                        currentEditing.copy(
+                                            text = trimmed,
+                                            timestamp = System.currentTimeMillis()
+                                        )
+                                    )
+                                    editingNote = null
+                                    noteInput = ""
+                                    Toast.makeText(context, "Note Updated", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    noteDao.insertNote(NoteEntity(text = trimmed))
+                                    mainViewModel.userStore.incrementNotesSaved()
+                                    noteInput = ""
+                                    Toast.makeText(context, "Note Saved ", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    },
+                    enabled = noteInput.isNotBlank(),
+                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier.weight(1f).height(44.dp)
+                ) {
+                    Icon(
+                        if (editingNote != null) Icons.Default.Check else Icons.Default.Add,
+                        null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        if (editingNote != null) "Update Note" else "Save Note",
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         } else {
             // Live Preview Card
@@ -327,9 +369,13 @@ fun QuickNotesScreen(
                 @Suppress("DEPRECATION")
                 val dismissState = rememberSwipeToDismissBoxState(
                     confirmValueChange = { dismissValue ->
-                        if (dismissValue == SwipeToDismissBoxValue.StartToEnd || dismissValue == SwipeToDismissBoxValue.EndToStart) {
+                        if (dismissValue == SwipeToDismissBoxValue.StartToEnd) {
                             coroutineScope.launch {
                                 noteDao.deleteNote(note)
+                                if (editingNote?.id == note.id) {
+                                    editingNote = null
+                                    noteInput = ""
+                                }
                                 Toast.makeText(context, "Note Deleted", Toast.LENGTH_SHORT).show()
                             }
                             true
@@ -339,6 +385,7 @@ fun QuickNotesScreen(
 
                 SwipeToDismissBox(
                     state = dismissState,
+                    enableDismissFromEndToStart = false,
                     backgroundContent = {
                         Box(
                             modifier = Modifier
@@ -369,6 +416,23 @@ fun QuickNotesScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.End
                             ) {
+                                IconButton(
+                                    onClick = {
+                                        com.balajitechlabs.quickdash.core.ui.playClickVibration(context, true, 18L)
+                                        editingNote = note
+                                        noteInput = note.text
+                                        selectedMode = "Write"
+                                    },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Edit,
+                                        contentDescription = "Edit",
+                                        tint = Color.White.copy(alpha = 0.7f),
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(6.dp))
                                 IconButton(
                                     onClick = {
                                         com.balajitechlabs.quickdash.core.ui.playClickVibration(context, true, 18L)
