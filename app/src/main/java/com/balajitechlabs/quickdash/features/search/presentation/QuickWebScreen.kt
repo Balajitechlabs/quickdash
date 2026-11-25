@@ -211,8 +211,8 @@ fun QuickWebScreen(
                     val cookieManager = CookieManager.getInstance()
                     cookieManager.setAcceptCookie(true)
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                        cookieManager.setAcceptThirdPartyCookies(this, true)
-                        settings.mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
+                        cookieManager.setAcceptThirdPartyCookies(this, false)
+                        settings.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
                     }
 
                     webViewClient = object : WebViewClient() {
@@ -233,17 +233,20 @@ fun QuickWebScreen(
                             view: WebView?,
                             request: android.webkit.WebResourceRequest?
                         ): Boolean {
-                            val url = request?.url?.toString() ?: return false
-                            if (url.startsWith("http://") || url.startsWith("https://")) {
+                            val uri = request?.url ?: return false
+                            val scheme = uri.scheme?.lowercase() ?: return true
+                            if (scheme == "http" || scheme == "https") {
                                 return false
                             }
-                            try {
-                                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, Uri.parse(url)).apply {
-                                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                            if (scheme in setOf("tel", "mailto", "geo")) {
+                                try {
+                                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri).apply {
+                                        addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    Log.e(TAG, "Failed to open external URL", e)
                                 }
-                                context.startActivity(intent)
-                            } catch (e: Exception) {
-                                Log.e(TAG, "Failed to open external URL", e)
                             }
                             return true
                         }
