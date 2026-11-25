@@ -22,13 +22,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -185,5 +189,57 @@ fun QuickDashEmptyState(
                 action()
             }
         }
+    }
+}
+
+/**
+ * Cohesive Material 3 Expressive container grouping related items with 2.dp spacing
+ * (zero HorizontalDividers, per Essentials design rules).
+ */
+@Composable
+fun QuickDashCardGroup(
+    modifier: Modifier = Modifier,
+    shape: Shape = QuickDashShapeTokens.Card,
+    spacing: androidx.compose.ui.unit.Dp = QuickDashTokens.Spacing.xxs,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape),
+        verticalArrangement = Arrangement.spacedBy(spacing),
+        content = content
+    )
+}
+
+/**
+ * Standard Material 3 Expressive Bottom Sheet wrapper replacing ad-hoc AlertDialogs for pickers & inputs.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun QuickDashBottomSheet(
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        sheetState = sheetState,
+        shape = QuickDashShapeTokens.BottomSheet,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = QuickDashTokens.Spacing.lg,
+                    end = QuickDashTokens.Spacing.lg,
+                    bottom = QuickDashTokens.Spacing.xl
+                ),
+            content = content
+        )
     }
 }

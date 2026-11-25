@@ -4,7 +4,7 @@
  *
  * Feature Module: features/password/presentation
  * File: QuickPasswordScreen.kt
- * Description: Cryptographically secure random password and passphrase generator with entropy scoring.
+ * Description: Material 3 Expressive password and SHA-256 hash generator screen with zero hardcoded colors.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.password.presentation
@@ -25,93 +25,49 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.balajitechlabs.quickdash.core.ui.components.RoundedCardContainer
-import java.security.MessageDigest
-import java.security.SecureRandom
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.balajitechlabs.quickdash.core.designsystem.components.QuickDashCard
+import com.balajitechlabs.quickdash.core.designsystem.components.QuickDashCardGroup
+import com.balajitechlabs.quickdash.core.designsystem.components.QuickDashTonalCard
+import com.balajitechlabs.quickdash.core.designsystem.theme.QuickDashHaptics
+import com.balajitechlabs.quickdash.core.designsystem.theme.QuickDashShapeTokens
+import com.balajitechlabs.quickdash.core.designsystem.theme.QuickDashTokens
 
-/**
- * Tool #15: Quick Password & Hash Generator.
- * Generate ultra-secure passwords, PINs, and SHA-256 hashes.
- */
 @Composable
-fun QuickPasswordScreen(isFloating: Boolean = false) {
+fun QuickPasswordScreen(
+    isFloating: Boolean = false,
+    viewModel: QuickPasswordViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
-
-    var passwordLength by remember { mutableFloatStateOf(16f) }
-    var includeSymbols by remember { mutableStateOf(true) }
-    var includeNumbers by remember { mutableStateOf(true) }
-    var generatedPassword by remember { mutableStateOf("") }
-    var inputHashText by remember { mutableStateOf("") }
-    var sha256Output by remember { mutableStateOf("") }
-
-    fun generatePassword() {
-        val uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        val lowercase = "abcdefghijklmnopqrstuvwxyz"
-        val numbers = "0123456789"
-        val symbols = "!@#$%^&*()_+-=[]{}|;:,.<>?"
-
-        val charPool = StringBuilder(uppercase + lowercase).apply {
-            if (includeNumbers) append(numbers)
-            if (includeSymbols) append(symbols)
-        }.toString()
-
-        val random = SecureRandom()
-        val password = StringBuilder()
-        val len = passwordLength.toInt()
-        for (i in 0 until len) {
-            password.append(charPool[random.nextInt(charPool.length)])
-        }
-        generatedPassword = password.toString()
-    }
-
-    fun computeSha256(text: String) {
-        if (text.isEmpty()) {
-            sha256Output = ""
-            return
-        }
-        val bytes = MessageDigest.getInstance("SHA-256").digest(text.toByteArray())
-        sha256Output = bytes.joinToString("") { "%02x".format(it) }
-    }
-
-    if (generatedPassword.isEmpty()) {
-        generatePassword()
-    }
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     fun copyToClipboard(text: String, label: String) {
-        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText(label, text)
-        clipboard.setPrimaryClip(clip)
+        QuickDashHaptics.perform(context, QuickDashHaptics.Style.CLICK)
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+        clipboard?.setPrimaryClip(ClipData.newPlainText(label, text))
         Toast.makeText(context, "Copied $label to clipboard", Toast.LENGTH_SHORT).show()
     }
 
@@ -119,7 +75,7 @@ fun QuickPasswordScreen(isFloating: Boolean = false) {
         modifier = Modifier
             .then(if (isFloating) Modifier.fillMaxWidth().wrapContentHeight() else Modifier.fillMaxSize())
             .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+            .padding(QuickDashTokens.Spacing.lg),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
@@ -132,153 +88,149 @@ fun QuickPasswordScreen(isFloating: Boolean = false) {
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(28.dp)
             )
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(QuickDashTokens.Spacing.sm))
             Text(
                 text = "Quick Password & Hash",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(QuickDashTokens.Spacing.lg))
 
-        // Generated Password Card
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-        ) {
+        QuickDashCard {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = "GENERATED PASSWORD", style = MaterialTheme.typography.labelSmall)
                     Text(
-                        text = generatedPassword,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = FontFamily.Monospace
-                        )
+                        text = "GENERATED PASSWORD",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary
                     )
+                    Spacer(modifier = Modifier.height(QuickDashTokens.Spacing.xs))
+                    SelectionContainer {
+                        Text(
+                            text = state.generatedPassword,
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = FontFamily.Monospace
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
-                IconButton(onClick = { generatePassword() }) {
-                    Icon(imageVector = Icons.Filled.Refresh, contentDescription = "Regenerate")
-                }
-                IconButton(onClick = { copyToClipboard(generatedPassword, "Password") }) {
-                    Icon(imageVector = Icons.Filled.ContentCopy, contentDescription = "Copy")
+                Row(horizontalArrangement = Arrangement.spacedBy(QuickDashTokens.Spacing.xs)) {
+                    FilledTonalIconButton(
+                        onClick = {
+                            QuickDashHaptics.perform(context, QuickDashHaptics.Style.CLICK)
+                            viewModel.regenerate()
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Filled.Refresh, contentDescription = "Regenerate")
+                    }
+                    FilledTonalIconButton(
+                        onClick = { copyToClipboard(state.generatedPassword, "Password") }
+                    ) {
+                        Icon(imageVector = Icons.Filled.ContentCopy, contentDescription = "Copy")
+                    }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(QuickDashTokens.Spacing.md))
 
-        // Controls Pod
-        RoundedCardContainer(modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.padding(14.dp)) {
+        QuickDashCardGroup {
+            QuickDashCard(shape = QuickDashShapeTokens.CardCompact) {
                 Text(
-                    text = "Length: ${passwordLength.toInt()} characters",
-                    style = MaterialTheme.typography.labelMedium
+                    text = "Length: ${state.length} characters",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Slider(
-                    value = passwordLength,
-                    onValueChange = {
-                        passwordLength = it
-                        generatePassword()
-                    },
+                    value = state.length.toFloat(),
+                    onValueChange = { viewModel.setLength(it.toInt()) },
                     valueRange = 8f..32f,
                     steps = 23
                 )
+            }
 
+            QuickDashCard(shape = QuickDashShapeTokens.CardCompact) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Include Numbers (0-9)")
+                    Text(
+                        text = "Include Numbers (0-9)",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f)
+                    )
                     Switch(
-                        checked = includeNumbers,
+                        checked = state.includeNumbers,
                         onCheckedChange = {
-                            includeNumbers = it
-                            generatePassword()
-                        },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = Color.White,
-                            checkedTrackColor = MaterialTheme.colorScheme.primary,
-                            checkedBorderColor = Color.Transparent,
-                            uncheckedThumbColor = Color.White,
-                            uncheckedTrackColor = Color(0xFF2A2B30),
-                            uncheckedBorderColor = Color(0xFF44474F)
-                        )
+                            QuickDashHaptics.perform(context, QuickDashHaptics.Style.TICK)
+                            viewModel.setIncludeNumbers(it)
+                        }
                     )
                 }
+            }
 
+            QuickDashCard(shape = QuickDashShapeTokens.CardCompact) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Include Symbols (!@#$)")
+                    Text(
+                        text = "Include Symbols (!@#$)",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f)
+                    )
                     Switch(
-                        checked = includeSymbols,
+                        checked = state.includeSymbols,
                         onCheckedChange = {
-                            includeSymbols = it
-                            generatePassword()
-                        },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = Color.White,
-                            checkedTrackColor = MaterialTheme.colorScheme.primary,
-                            checkedBorderColor = Color.Transparent,
-                            uncheckedThumbColor = Color.White,
-                            uncheckedTrackColor = Color(0xFF2A2B30),
-                            uncheckedBorderColor = Color(0xFF44474F)
-                        )
+                            QuickDashHaptics.perform(context, QuickDashHaptics.Style.TICK)
+                            viewModel.setIncludeSymbols(it)
+                        }
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(QuickDashTokens.Spacing.md))
 
-        // SHA-256 Hasher
         OutlinedTextField(
-            value = inputHashText,
-            onValueChange = {
-                inputHashText = it
-                computeSha256(it)
-            },
+            value = state.hashInput,
+            onValueChange = viewModel::onHashInputChange,
             label = { Text("Compute SHA-256 Hash") },
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp)
+            shape = QuickDashShapeTokens.Input
         )
 
-        if (sha256Output.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-            ) {
+        if (state.sha256Output.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(QuickDashTokens.Spacing.sm))
+            QuickDashTonalCard(shape = QuickDashShapeTokens.CardCompact) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = sha256Output,
-                        style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
-                        modifier = Modifier.weight(1f)
-                    )
-                    IconButton(onClick = { copyToClipboard(sha256Output, "SHA-256 Hash") }) {
+                    SelectionContainer(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = state.sha256Output,
+                            style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace)
+                        )
+                    }
+                    IconButton(onClick = { copyToClipboard(state.sha256Output, "SHA-256 Hash") }) {
                         Icon(imageVector = Icons.Filled.ContentCopy, contentDescription = "Copy Hash")
                     }
                 }
             }
         }
+
         Spacer(modifier = Modifier.height(120.dp))
     }
 }
