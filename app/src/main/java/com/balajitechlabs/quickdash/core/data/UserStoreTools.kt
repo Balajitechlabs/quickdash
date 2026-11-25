@@ -206,9 +206,7 @@ open class UserStoreTools(context: Context) : UserStorePayment(context) {
     }
 
     suspend fun clearClipboardHistory() {
-        context.dataStore.edit { preferences ->
-            preferences.remove(PreferencesKeys.CLIPBOARD_HISTORY_KEY)
-        }
+        EncryptedPrefsHelper.putString(PreferencesKeys.CLIPBOARD_HISTORY_KEY.name, "[]")
     }
 
     val clipboardAutocleanInterval: Flow<String> = context.dataStore.data.map { preferences ->

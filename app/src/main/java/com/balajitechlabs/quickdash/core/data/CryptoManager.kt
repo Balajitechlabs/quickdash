@@ -36,6 +36,7 @@ class CryptoManager @Inject constructor() {
         }
     }
 
+    @Synchronized
     private fun getKey(): SecretKey {
         val existingKey = keyStore.getEntry("secret", null) as? KeyStore.SecretKeyEntry
         return existingKey?.secretKey ?: createKey()
@@ -67,13 +68,17 @@ class CryptoManager @Inject constructor() {
 
     fun decrypt(encryptedString: String): ByteArray {
         val combined = Base64.decode(encryptedString, Base64.DEFAULT)
-        val iv = combined.copyOfRange(0, 12)
-        val encrypted = combined.copyOfRange(12, combined.size)
+        require(combined.size > IV_SIZE_BYTES) {
+            "Encrypted payload too short (${combined.size} bytes)"
+        }
+        val iv = combined.copyOfRange(0, IV_SIZE_BYTES)
+        val encrypted = combined.copyOfRange(IV_SIZE_BYTES, combined.size)
         val cipher = getDecryptCipherForIv(iv)
         return cipher.doFinal(encrypted)
     }
 
     companion object {
+        private const val IV_SIZE_BYTES = 12
         private const val ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
         private const val BLOCK_MODE = KeyProperties.BLOCK_MODE_GCM
         private const val PADDING = KeyProperties.ENCRYPTION_PADDING_NONE

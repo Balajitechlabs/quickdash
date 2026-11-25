@@ -197,10 +197,39 @@ object UpdateManager {
         }
     }
 
+    private val allowedDownloadHosts = setOf(
+        "github.com",
+        "objects.githubusercontent.com",
+        "release-assets.githubusercontent.com",
+        "quickdash.balajitechlab.com"
+    )
+
     fun startDownload(context: Context, urlStr: String, remoteVersionName: String, expectedSha256: String = "") {
-        val cleanVer = remoteVersionName.removePrefix("v")
+        val cleanVer = remoteVersionName.removePrefix("v").replace(Regex("[^0-9A-Za-z._-]"), "")
+        if (cleanVer.isBlank()) {
+            updateState = UpdateState.Error("Invalid update version name")
+            return
+        }
+        val parsedUrl = try {
+            URL(urlStr)
+        } catch (_: Exception) {
+            updateState = UpdateState.Error("Invalid update URL")
+            return
+        }
+        if (!parsedUrl.protocol.equals("https", ignoreCase = true) ||
+            parsedUrl.host.lowercase() !in allowedDownloadHosts
+        ) {
+            updateState = UpdateState.Error("Untrusted update host: ${parsedUrl.host}")
+            return
+        }
+
         val fileName = "QuickDash-v$cleanVer.apk"
+        val downloadDir = getDownloadDir(context)
         val destFile = getApkFile(context, fileName)
+        if (!destFile.canonicalPath.startsWith(downloadDir.canonicalPath + File.separator)) {
+            updateState = UpdateState.Error("Invalid download path")
+            return
+        }
 
         if (destFile.exists()) destFile.delete()
 
@@ -209,8 +238,7 @@ object UpdateManager {
         CoroutineScope(Dispatchers.IO).launch {
             var connection: HttpURLConnection? = null
             try {
-                val url = URL(urlStr)
-                connection = (url.openConnection() as HttpURLConnection).apply {
+                connection = (parsedUrl.openConnection() as HttpURLConnection).apply {
                     connectTimeout = 15000
                     readTimeout = 15000
                     instanceFollowRedirects = true
@@ -245,11 +273,18 @@ object UpdateManager {
                     }
                 }
 
-                // Verify checksum if provided
+                // Verify checksum if provided; abort installation on any mismatch
                 if (expectedSha256.isNotBlank()) {
                     val computedSha = computeFileSha256(destFile)
                     if (!computedSha.equals(expectedSha256.trim(), ignoreCase = true)) {
-                        Log.w(TAG, "Checksum mismatch! Expected: $expectedSha256, Computed: $computedSha")
+                        Log.e(TAG, "Checksum mismatch! Expected: $expectedSha256, Computed: $computedSha")
+                        if (destFile.exists()) destFile.delete()
+                        withContext(Dispatchers.Main) {
+                            hasLocalApk = false
+                            updateState = UpdateState.Error("Integrity check failed (SHA-256 mismatch)")
+                            Toast.makeText(context, "Update aborted: checksum mismatch", Toast.LENGTH_LONG).show()
+                        }
+                        return@launch
                     }
                 }
 

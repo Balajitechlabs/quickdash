@@ -29,22 +29,26 @@ object EncryptedPrefsHelper {
     @Synchronized
     fun init(context: Context) {
         if (::prefs.isInitialized) return
-        try {
-            val masterKey = MasterKey.Builder(context)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
-            prefs = EncryptedSharedPreferences.create(
-                context,
-                "secure_prefs",
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
+        prefs = try {
+            createEncryptedPrefs(context)
         } catch (e: Exception) {
-            Log.e("QuickDash", "Error occurred: ${e.message}", e)
-            // Fallback to normal shared preferences if keystore is corrupted or unavailable
-            prefs = context.getSharedPreferences("secure_prefs_fallback", Context.MODE_PRIVATE)
+            Log.e("QuickDash", "EncryptedSharedPreferences corrupted; resetting store", e)
+            context.deleteSharedPreferences("secure_prefs")
+            createEncryptedPrefs(context)
         }
+    }
+
+    private fun createEncryptedPrefs(context: Context): SharedPreferences {
+        val masterKey = MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        return EncryptedSharedPreferences.create(
+            context,
+            "secure_prefs",
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
     }
 
     suspend fun putString(key: String, value: String) = withContext(Dispatchers.IO) {
