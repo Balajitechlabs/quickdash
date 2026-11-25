@@ -4,292 +4,131 @@
  *
  * Feature Module: features/calculator/presentation
  * File: QuickCalculatorScreen.kt
- * Description: Floating scientific and standard calculator tool with history logging and gesture deletion.
+ * Description: Material 3 Expressive calculator UI delegating all expression parsing and state to QuickCalculatorViewModel.
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.features.calculator.presentation
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Backspace
+import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.HistoryToggleOff
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.balajitechlabs.quickdash.core.ui.playClickVibration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlin.math.sqrt
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.balajitechlabs.quickdash.core.designsystem.components.QuickDashSegmentedSelector
+import com.balajitechlabs.quickdash.core.designsystem.theme.QuickDashHaptics
+import com.balajitechlabs.quickdash.core.designsystem.theme.QuickDashShapeTokens
+import com.balajitechlabs.quickdash.core.designsystem.theme.QuickDashTokens
+import com.balajitechlabs.quickdash.features.calculator.domain.CalcKey
 
-// ── Domain ──────────────────────────────────────────────────────────────────
-
-private sealed class CalcKey {
-    data class Digit(val ch: String) : CalcKey()
-    data class Op(val ch: String) : CalcKey()
-    data class ScientificOp(val name: String) : CalcKey()
-    object Clear : CalcKey()
-    object Backspace : CalcKey()
-    object Equals : CalcKey()
-    object Dot : CalcKey()
-    object ToggleSign : CalcKey()
-    object Percent : CalcKey()
-    object Sqrt : CalcKey()
+private enum class CalculatorMode(val label: String) {
+    BASIC("Basic"),
+    SCIENTIFIC("Scientific")
 }
 
-private fun evaluate(expression: String): String = try {
-    val cleaned = expression.replace("×", "*")
-        .replace("÷", "/")
-        .replace("π", "3.141592653589793")
-        .replace(Regex("(?<![a-zA-Z0-9.])e(?![a-zA-Z0-9.])"), "2.718281828459045")
-    val parser = Parser(cleaned)
-    val result = parser.parse()
-    if (result.isNaN() || result.isInfinite()) "Error"
-    else java.math.BigDecimal(result).setScale(8, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toPlainString()
-} catch (_: Exception) { "Error" }
+private val StandardRows: List<List<CalcKey>> = listOf(
+    listOf(CalcKey.Clear, CalcKey.ToggleSign, CalcKey.Percent, CalcKey.Op("÷")),
+    listOf(CalcKey.Digit("7"), CalcKey.Digit("8"), CalcKey.Digit("9"), CalcKey.Op("×")),
+    listOf(CalcKey.Digit("4"), CalcKey.Digit("5"), CalcKey.Digit("6"), CalcKey.Op("-")),
+    listOf(CalcKey.Digit("1"), CalcKey.Digit("2"), CalcKey.Digit("3"), CalcKey.Op("+")),
+    listOf(CalcKey.Sqrt, CalcKey.Digit("0"), CalcKey.Dot, CalcKey.Equals)
+)
 
-private class Parser(private val str: String) {
-    private var pos = -1
-    private var ch = 0
+private val ScientificRows: List<List<CalcKey>> = listOf(
+    listOf(CalcKey.ScientificOp("sin"), CalcKey.ScientificOp("cos"), CalcKey.ScientificOp("tan"), CalcKey.ScientificOp("^")),
+    listOf(CalcKey.ScientificOp("ln"), CalcKey.ScientificOp("log"), CalcKey.ScientificOp("π"), CalcKey.ScientificOp("e")),
+    listOf(CalcKey.ScientificOp("("), CalcKey.ScientificOp(")"), CalcKey.Sqrt, CalcKey.Percent)
+)
 
-    private fun nextChar() {
-        ch = if (++pos < str.length) str[pos].code else -1
-    }
-
-    private fun eat(charToEat: Int): Boolean {
-        while (ch == ' '.code) nextChar()
-        if (ch == charToEat) {
-            nextChar()
-            return true
-        }
-        return false
-    }
-
-    fun parse(): Double {
-        nextChar()
-        val x = parseExpression()
-        if (pos < str.length) throw RuntimeException("Unexpected: " + ch.toChar())
-        return x
-    }
-
-    private fun parseExpression(): Double {
-        var x = parseTerm()
-        while (true) {
-            when {
-                eat('+'.code) -> x += parseTerm()
-                eat('-'.code) -> x -= parseTerm()
-                else -> return x
-            }
-        }
-    }
-
-    private fun parseTerm(): Double {
-        var x = parseFactor()
-        while (true) {
-            when {
-                eat('*'.code) -> x *= parseFactor()
-                eat('/'.code) -> x /= parseFactor()
-                else -> return x
-            }
-        }
-    }
-
-    private fun parseFactor(): Double {
-        if (eat('+'.code)) return parseFactor()
-        if (eat('-'.code)) return -parseFactor()
-
-        var x: Double
-        val startPos = this.pos
-        if (eat('('.code)) {
-            x = parseExpression()
-            eat(')'.code)
-        } else if (ch >= '0'.code && ch <= '9'.code || ch == '.'.code) {
-            while (ch >= '0'.code && ch <= '9'.code || ch == '.'.code || ch == 'e'.code || ch == 'E'.code ||
-                ((ch == '+'.code || ch == '-'.code) && (pos > 0 && (str[pos - 1] == 'e' || str[pos - 1] == 'E')))) {
-                nextChar()
-            }
-            x = str.substring(startPos, this.pos).toDouble()
-        } else if (ch >= 'a'.code && ch <= 'z'.code || ch == '√'.code) {
-            while (ch >= 'a'.code && ch <= 'z'.code || ch == '√'.code) nextChar()
-            val func = str.substring(startPos, this.pos)
-            x = parseFactor()
-            x = when (func) {
-                "sqrt", "√" -> Math.sqrt(x)
-                "sin" -> Math.sin(Math.toRadians(x))
-                "cos" -> Math.cos(Math.toRadians(x))
-                "tan" -> Math.tan(Math.toRadians(x))
-                "ln" -> Math.log(x)
-                "log" -> Math.log10(x)
-                else -> throw RuntimeException("Unknown function: $func")
-            }
-        } else {
-            throw RuntimeException("Unexpected: " + ch.toChar())
-        }
-
-        if (eat('^'.code)) x = Math.pow(x, parseFactor())
-
-        return x
-    }
-}
-
-// ── Screen ───────────────────────────────────────────────────────────────────
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuickCalculatorScreen(isFloating: Boolean = false) {
+fun QuickCalculatorScreen(
+    isFloating: Boolean = false,
+    viewModel: QuickCalculatorViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
-    var display by remember { mutableStateOf("0") }
-    var expression by remember { mutableStateOf("") }
-    var history by remember { mutableStateOf(listOf<String>()) }
-    var showHistory by remember { mutableStateOf(false) }
-    var justEvaluated by remember { mutableStateOf(false) }
-    var isScientific by remember { mutableStateOf(false) }
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val isScientific by viewModel.isScientific.collectAsStateWithLifecycle()
+    val showHistory by viewModel.showHistory.collectAsStateWithLifecycle()
 
-    fun handleKey(key: CalcKey) {
-        playClickVibration(context, true, 16L)
-        when (key) {
-            CalcKey.Clear -> { display = "0"; expression = ""; justEvaluated = false }
-            CalcKey.Backspace -> {
-                if (justEvaluated) { display = "0"; expression = ""; justEvaluated = false; return }
-                display = if (display.length > 1) display.dropLast(1) else "0"
-                if (expression.isNotEmpty()) expression = expression.dropLast(1)
-            }
-            CalcKey.Dot -> {
-                if (justEvaluated) { display = "0."; expression = "0."; justEvaluated = false; return }
-                if (!display.contains('.')) { display += "."; expression += "." }
-            }
-            CalcKey.ToggleSign -> {
-                display = if (display.startsWith('-')) display.drop(1) else "-$display"
-                expression = Regex("""(-?\d+\.?\d*)$""").replace(expression) { m ->
-                    val v = m.value.toBigDecimalOrNull() ?: java.math.BigDecimal.ZERO
-                    v.negate().stripTrailingZeros().toPlainString()
-                }
-            }
-            CalcKey.Percent -> {
-                val v = display.toBigDecimalOrNull() ?: return
-                val pct = v.divide(java.math.BigDecimal("100"), 12, java.math.RoundingMode.HALF_UP).stripTrailingZeros()
-                display = pct.toPlainString()
-                expression = Regex("""(-?\d+\.?\d*)$""").replace(expression) { display }
-            }
-            CalcKey.Sqrt -> {
-                val v = display.toDoubleOrNull() ?: return
-                if (v < 0) { display = "Error"; return }
-                val r = java.math.BigDecimal(sqrt(v)).setScale(8, java.math.RoundingMode.HALF_UP).stripTrailingZeros()
-                display = r.toPlainString()
-                expression = Regex("""(-?\d+\.?\d*)$""").replace(expression) { display }
-                justEvaluated = true
-            }
-            is CalcKey.Digit -> {
-                if (justEvaluated) { expression = key.ch; display = key.ch; justEvaluated = false; return }
-                if (display == "0" && key.ch != ".") {
-                    display = key.ch
-                    expression = expression.dropLastWhile { it.isDigit() } + key.ch
-                } else { display += key.ch; expression += key.ch }
-            }
-            is CalcKey.Op -> {
-                justEvaluated = false
-                expression = expression.trimEnd().trimEnd { it in "+-×÷*/" } + key.ch
-                display = "0"
-            }
-            is CalcKey.ScientificOp -> {
-                justEvaluated = false
-                if (key.name == "(") {
-                    expression += "("
-                    display = "0"
-                } else if (key.name == ")") {
-                    expression += ")"
-                    display = "0"
-                } else if (key.name in listOf("π", "e")) {
-                    if (display == "0" || justEvaluated) {
-                        display = key.name
-                        expression = if (justEvaluated) key.name else expression.dropLastWhile { it.isDigit() || it == '.' } + key.name
-                    } else {
-                        display += key.name
-                        expression += key.name
-                    }
-                } else {
-                    if (key.name == "^") {
-                        expression += "^"
-                        display = "0"
-                    } else {
-                        expression = expression + key.name + "("
-                        display = "0"
-                    }
-                }
-            }
-            CalcKey.Equals -> {
-                if (expression.isBlank()) return
-                val result = evaluate(expression)
-                if (result != "Error") history = listOf("$expression = $result") + history.take(19)
-                display = result; expression = result; justEvaluated = true
-            }
-        }
-    }
-
-    // Button layout
-    val rows: List<List<CalcKey>> = listOf(
-        listOf(CalcKey.Clear, CalcKey.ToggleSign, CalcKey.Percent, CalcKey.Op("÷")),
-        listOf(CalcKey.Digit("7"), CalcKey.Digit("8"), CalcKey.Digit("9"), CalcKey.Op("×")),
-        listOf(CalcKey.Digit("4"), CalcKey.Digit("5"), CalcKey.Digit("6"), CalcKey.Op("-")),
-        listOf(CalcKey.Digit("1"), CalcKey.Digit("2"), CalcKey.Digit("3"), CalcKey.Op("+")),
-        listOf(CalcKey.Sqrt, CalcKey.Digit("0"), CalcKey.Dot, CalcKey.Equals)
-    )
-
-    val scientificRows: List<List<CalcKey>> = listOf(
-        listOf(CalcKey.ScientificOp("sin"), CalcKey.ScientificOp("cos"), CalcKey.ScientificOp("tan"), CalcKey.ScientificOp("^")),
-        listOf(CalcKey.ScientificOp("ln"), CalcKey.ScientificOp("log"), CalcKey.ScientificOp("π"), CalcKey.ScientificOp("e")),
-        listOf(CalcKey.ScientificOp("("), CalcKey.ScientificOp(")"), CalcKey.Sqrt, CalcKey.Percent)
-    )
-
-    val btnSize = if (isFloating) 58.dp else 70.dp
-    val fontSize = if (isFloating) 18.sp else 22.sp
-    val hPad = if (isFloating) 8.dp else 12.dp
+    val btnHeight = if (isScientific) (if (isFloating) 44.dp else 56.dp) else (if (isFloating) 58.dp else 68.dp)
+    val fontSize = if (isScientific) (if (isFloating) 14.sp else 18.sp) else (if (isFloating) 18.sp else 22.sp)
+    val hPad = if (isFloating) QuickDashTokens.Spacing.sm else QuickDashTokens.Spacing.md
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = hPad, vertical = 4.dp)
+            .padding(horizontal = hPad, vertical = QuickDashTokens.Spacing.xs)
     ) {
-        // ── Display surface ──────────────────────────────────────────────
         Surface(
-            tonalElevation = 2.dp,
+            tonalElevation = QuickDashTokens.Elevation.card,
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
             shape = MaterialTheme.shapes.extraLarge,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 8.dp)
+                .padding(bottom = QuickDashTokens.Spacing.sm)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                    .padding(horizontal = 20.dp, vertical = QuickDashTokens.Spacing.md),
                 horizontalAlignment = Alignment.End
             ) {
-                // History toggle
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (history.isNotEmpty()) {
+                    if (state.history.isNotEmpty()) {
                         FilterChip(
                             selected = showHistory,
-                            onClick = { showHistory = !showHistory },
+                            onClick = { viewModel.setShowHistory(!showHistory) },
                             label = { Text("History", style = MaterialTheme.typography.labelSmall) },
                             leadingIcon = {
                                 Icon(
-                                    if (showHistory) Icons.Filled.HistoryToggleOff else Icons.Filled.History,
-                                    null,
+                                    imageVector = if (showHistory) Icons.Filled.HistoryToggleOff else Icons.Filled.History,
+                                    contentDescription = null,
                                     modifier = Modifier.size(FilterChipDefaults.IconSize)
                                 )
                             }
@@ -298,9 +137,11 @@ fun QuickCalculatorScreen(isFloating: Boolean = false) {
                         Spacer(modifier = Modifier.weight(1f))
                     }
 
-                    // Backspace
                     FilledIconButton(
-                        onClick = { handleKey(CalcKey.Backspace) },
+                        onClick = {
+                            QuickDashHaptics.perform(context, QuickDashHaptics.Style.CLICK)
+                            viewModel.onKey(CalcKey.Backspace)
+                        },
                         shape = MaterialTheme.shapes.medium,
                         colors = IconButtonDefaults.filledIconButtonColors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -308,76 +149,18 @@ fun QuickCalculatorScreen(isFloating: Boolean = false) {
                         ),
                         modifier = Modifier.size(36.dp)
                     ) {
-                        @Suppress("DEPRECATION") Icon(Icons.Filled.Backspace, contentDescription = "Backspace", modifier = Modifier.size(18.dp))
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Backspace,
+                            contentDescription = "Backspace",
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                 }
 
-    if (showHistory) {
-        AlertDialog(
-            onDismissRequest = { showHistory = false },
-            title = {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Calculation History", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    if (history.isNotEmpty()) {
-                        TextButton(onClick = { history = emptyList(); showHistory = false }) {
-                            Text("Clear", color = MaterialTheme.colorScheme.error)
-                        }
-                    }
-                }
-            },
-            text = {
-                if (history.isEmpty()) {
-                    Text("No past calculations yet.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                } else {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(max = 240.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(history) { entry ->
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                                onClick = {
-                                    val parts = entry.split("=")
-                                    if (parts.size == 2) {
-                                        display = parts[1].trim()
-                                        expression = parts[1].trim()
-                                    }
-                                    showHistory = false
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = entry,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier.padding(12.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { showHistory = false }) {
-                    Text("Close")
-                }
-            }
-        )
-    }
+                Spacer(modifier = Modifier.height(QuickDashTokens.Spacing.xs))
 
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // Secondary expression
                 AnimatedContent(
-                    targetState = expression,
+                    targetState = state.expression,
                     transitionSpec = { fadeIn() togetherWith fadeOut() },
                     label = "expr"
                 ) { expr ->
@@ -392,14 +175,13 @@ fun QuickCalculatorScreen(isFloating: Boolean = false) {
                     )
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(QuickDashTokens.Spacing.xs))
 
-                // Primary display
                 AnimatedContent(
-                    targetState = display,
+                    targetState = state.display,
                     transitionSpec = {
                         slideInVertically { it / 4 } + fadeIn() togetherWith
-                        slideOutVertically { -it / 4 } + fadeOut()
+                            slideOutVertically { -it / 4 } + fadeOut()
                     },
                     label = "display"
                 ) { d ->
@@ -423,158 +205,184 @@ fun QuickCalculatorScreen(isFloating: Boolean = false) {
             }
         }
 
-        // Mode Selector Row
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            FilterChip(
-                selected = !isScientific,
-                onClick = { isScientific = false },
-                label = { Text("Basic", style = MaterialTheme.typography.labelSmall) }
-            )
-            FilterChip(
-                selected = isScientific,
-                onClick = { isScientific = true },
-                label = { Text("Scientific", style = MaterialTheme.typography.labelSmall) }
-            )
-        }
-
-        // ── Keypad ───────────────────────────────────────────────────────────
-        Spacer(modifier = Modifier.height(4.dp))
-
-        val actualBtnSize = if (isScientific) (if (isFloating) 44.dp else 56.dp) else btnSize
-        val actualFontSize = if (isScientific) (if (isFloating) 14.sp else 18.sp) else fontSize
+        QuickDashSegmentedSelector(
+            options = CalculatorMode.entries,
+            selected = if (isScientific) CalculatorMode.SCIENTIFIC else CalculatorMode.BASIC,
+            onSelect = { mode ->
+                QuickDashHaptics.perform(context, QuickDashHaptics.Style.TICK)
+                viewModel.setScientific(mode == CalculatorMode.SCIENTIFIC)
+            },
+            label = { it.label },
+            modifier = Modifier.padding(bottom = QuickDashTokens.Spacing.sm)
+        )
 
         if (isScientific) {
-            scientificRows.forEach { row ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 2.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    row.forEach { key ->
-                        CalcButton(
-                            key = key,
-                            size = actualBtnSize,
-                            fontSize = actualFontSize,
-                            onClick = { handleKey(key) }
-                        )
-                    }
+            KeypadGrid(
+                rows = ScientificRows,
+                buttonHeight = btnHeight,
+                fontSize = fontSize,
+                onKey = { key ->
+                    QuickDashHaptics.perform(context, QuickDashHaptics.Style.TICK)
+                    viewModel.onKey(key)
                 }
-            }
+            )
+            Spacer(modifier = Modifier.height(QuickDashTokens.Spacing.xs))
         }
 
+        KeypadGrid(
+            rows = StandardRows,
+            buttonHeight = btnHeight,
+            fontSize = fontSize,
+            onKey = { key ->
+                QuickDashHaptics.perform(context, QuickDashHaptics.Style.CLICK)
+                viewModel.onKey(key)
+            }
+        )
+    }
+
+    if (showHistory) {
+        CalculatorHistoryDialog(
+            history = state.history,
+            onSelect = viewModel::selectHistoryEntry,
+            onClear = viewModel::clearHistory,
+            onDismiss = { viewModel.setShowHistory(false) }
+        )
+    }
+}
+
+@Composable
+private fun KeypadGrid(
+    rows: List<List<CalcKey>>,
+    buttonHeight: Dp,
+    fontSize: TextUnit,
+    onKey: (CalcKey) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(QuickDashTokens.Spacing.sm)) {
         rows.forEach { row ->
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 3.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(QuickDashTokens.Spacing.sm)
             ) {
                 row.forEach { key ->
-                    val isDuplicate = isScientific && (key == CalcKey.Sqrt || key == CalcKey.Percent)
-                    if (isDuplicate) {
-                        Spacer(modifier = Modifier.size(actualBtnSize))
-                    } else {
-                        CalcButton(
-                            key = key,
-                            size = actualBtnSize,
-                            fontSize = actualFontSize,
-                            onClick = { handleKey(key) }
-                        )
-                    }
+                    CalcButton(
+                        key = key,
+                        buttonHeight = buttonHeight,
+                        fontSize = fontSize,
+                        onClick = { onKey(key) },
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
         }
     }
 }
 
-// ── Button atoms ─────────────────────────────────────────────────────────────
-
 @Composable
 private fun CalcButton(
     key: CalcKey,
-    size: androidx.compose.ui.unit.Dp,
-    fontSize: androidx.compose.ui.unit.TextUnit,
-    onClick: () -> Unit
+    buttonHeight: Dp,
+    fontSize: TextUnit,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
+    val colors = MaterialTheme.colorScheme
+    val (container, content) = when (key) {
+        CalcKey.Clear -> colors.errorContainer to colors.onErrorContainer
+        CalcKey.Equals -> colors.primary to colors.onPrimary
+        is CalcKey.Op -> colors.primaryContainer to colors.onPrimaryContainer
+        CalcKey.ToggleSign, CalcKey.Percent, CalcKey.Sqrt, is CalcKey.ScientificOp ->
+            colors.secondaryContainer to colors.onSecondaryContainer
+        else -> colors.surfaceContainerHigh to colors.onSurface
+    }
+
     val label = when (key) {
-        CalcKey.Clear -> "C"
-        CalcKey.Backspace -> ""
-        CalcKey.Dot -> "."
-        CalcKey.ToggleSign -> "+/-"
-        CalcKey.Percent -> "%"
-        CalcKey.Sqrt -> "√"
-        CalcKey.Equals -> "="
         is CalcKey.Digit -> key.ch
         is CalcKey.Op -> key.ch
         is CalcKey.ScientificOp -> key.name
+        CalcKey.Clear -> "AC"
+        CalcKey.Backspace -> "⌫"
+        CalcKey.Equals -> "="
+        CalcKey.Dot -> "."
+        CalcKey.ToggleSign -> "±"
+        CalcKey.Percent -> "%"
+        CalcKey.Sqrt -> "√"
     }
 
-    val isOp = key is CalcKey.Op
-    val isEquals = key is CalcKey.Equals
-    val isFunc = key is CalcKey.Clear || key is CalcKey.ToggleSign || key is CalcKey.Percent || key is CalcKey.Sqrt || key is CalcKey.ScientificOp
-
-    when {
-        isEquals -> Button(
-            onClick = onClick,
-            modifier = Modifier.size(size),
-            shape = CircleShape,
-            contentPadding = PaddingValues(0.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp, pressedElevation = 0.dp)
-        ) {
-            Text(label, fontSize = fontSize, fontWeight = FontWeight.Medium)
-        }
-
-        isOp -> FilledTonalButton(
-            onClick = onClick,
-            modifier = Modifier.size(size),
-            shape = CircleShape,
-            contentPadding = PaddingValues(0.dp),
-            colors = ButtonDefaults.filledTonalButtonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-            ),
-            elevation = ButtonDefaults.filledTonalButtonElevation(defaultElevation = 1.dp, pressedElevation = 0.dp)
-        ) {
-            Text(label, fontSize = fontSize, fontWeight = FontWeight.Medium)
-        }
-
-        isFunc -> FilledTonalButton(
-            onClick = onClick,
-            modifier = Modifier.size(size),
-            shape = CircleShape,
-            contentPadding = PaddingValues(0.dp),
-            colors = ButtonDefaults.filledTonalButtonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-            ),
-            elevation = ButtonDefaults.filledTonalButtonElevation(defaultElevation = 1.dp, pressedElevation = 0.dp)
-        ) {
-            Text(label, fontSize = if (label.length > 2) (fontSize.value - 4).sp else fontSize, fontWeight = FontWeight.Medium)
-        }
-
-        else -> ElevatedButton(
-            onClick = onClick,
-            modifier = Modifier.size(size),
-            shape = CircleShape,
-            contentPadding = PaddingValues(0.dp),
-            colors = ButtonDefaults.elevatedButtonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                contentColor = MaterialTheme.colorScheme.onSurface
-            ),
-            elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 2.dp, pressedElevation = 0.dp)
-        ) {
-            Text(label, fontSize = fontSize, fontWeight = FontWeight.Normal)
-        }
+    FilledTonalButton(
+        onClick = onClick,
+        shape = if (key == CalcKey.Equals) QuickDashShapeTokens.Pill else QuickDashShapeTokens.CardCompact,
+        colors = ButtonDefaults.filledTonalButtonColors(
+            containerColor = container,
+            contentColor = content
+        ),
+        contentPadding = PaddingValues(0.dp),
+        modifier = modifier.height(buttonHeight)
+    ) {
+        Text(
+            text = label,
+            fontSize = fontSize,
+            fontWeight = if (key is CalcKey.Op || key == CalcKey.Equals) FontWeight.Bold else FontWeight.Medium,
+            maxLines = 1
+        )
     }
+}
+
+@Composable
+private fun CalculatorHistoryDialog(
+    history: List<String>,
+    onSelect: (String) -> Unit,
+    onClear: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Calculation History",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                if (history.isNotEmpty()) {
+                    TextButton(onClick = onClear) {
+                        Text("Clear", color = MaterialTheme.colorScheme.error)
+                    }
+                }
+            }
+        },
+        text = {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 240.dp),
+                verticalArrangement = Arrangement.spacedBy(QuickDashTokens.Spacing.sm)
+            ) {
+                items(history) { entry ->
+                    Surface(
+                        shape = QuickDashShapeTokens.CardCompact,
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        onClick = { onSelect(entry) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = entry,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.padding(QuickDashTokens.Spacing.md)
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Close")
+            }
+        }
+    )
 }
