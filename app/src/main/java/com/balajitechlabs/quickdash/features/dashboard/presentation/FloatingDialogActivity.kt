@@ -62,6 +62,8 @@ class FloatingDialogActivity : FragmentActivity() {
     private var isAuthRequired by mutableStateOf(false)
     private var currentAction by mutableStateOf<String?>(null)
     private var isBubbleEnabled = false
+    private var isSecureMode = false
+    private val clipboardMutex = kotlinx.coroutines.sync.Mutex()
 
     private val captureReceiver = object : android.content.BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -128,7 +130,10 @@ class FloatingDialogActivity : FragmentActivity() {
 
             // Secure Mode Setup (bypassed in DEBUG so development screenshots work)
             mainViewModel.userStore.secureMode.collect { secure ->
-                if (secure && !com.balajitechlabs.quickdash.BuildConfig.DEBUG) {
+                isSecureMode = secure
+                val enforceSecure = (secure || com.balajitechlabs.quickdash.core.security.IncognitoManager.isIncognitoActive) &&
+                    !com.balajitechlabs.quickdash.BuildConfig.DEBUG
+                if (enforceSecure) {
                     window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
                 } else {
                     window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
@@ -305,29 +310,46 @@ class FloatingDialogActivity : FragmentActivity() {
     }
 
     private fun saveClipboardData() {
+        if (com.balajitechlabs.quickdash.core.security.IncognitoManager.isIncognitoActive) return
         try {
             val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             if (clipboard.hasPrimaryClip()) {
-                val text = clipboard.primaryClip?.getItemAt(0)?.text?.toString()
+                val clip = clipboard.primaryClip ?: return
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    val isSensitive = clip.description?.extras?.getBoolean(
+                        android.content.ClipDescription.EXTRA_IS_SENSITIVE,
+                        false
+                    ) == true
+                    if (isSensitive) return
+                }
+                val text = clip.getItemAt(0)?.text?.toString()
                 if (!text.isNullOrBlank()) {
                     lifecycleScope.launch {
-                        withContext(Dispatchers.IO) {
-                            val historyJson = mainViewModel.userStore.clipboardHistory.first()
-                            val gson = Gson()
-                            val listType = object : TypeToken<List<String>>() {}.type
-                            val list: MutableList<String> = try {
-                                gson.fromJson(historyJson, listType) ?: mutableListOf()
-                            } catch (e: Exception) {
-                                mutableListOf()
-                            }
-                            
-                            if (!list.contains(text)) {
-                                list.add(0, text)
-                                mainViewModel.userStore.saveClipboardHistory(gson.toJson(list.take(20)))
-                                withContext(Dispatchers.Main) {
-                                    Toast.makeText(this@FloatingDialogActivity, "Saved to QuickDash Clipboard", Toast.LENGTH_SHORT).show()
+                        clipboardMutex.lock()
+                        try {
+                            val savedNew = withContext(Dispatchers.IO) {
+                                val historyJson = mainViewModel.userStore.clipboardHistory.first()
+                                val gson = Gson()
+                                val listType = object : TypeToken<List<String>>() {}.type
+                                val list: MutableList<String> = try {
+                                    gson.fromJson(historyJson, listType) ?: mutableListOf()
+                                } catch (_: Exception) {
+                                    mutableListOf()
+                                }
+
+                                if (!list.contains(text)) {
+                                    list.add(0, text)
+                                    mainViewModel.userStore.saveClipboardHistory(gson.toJson(list.take(20)))
+                                    true
+                                } else {
+                                    false
                                 }
                             }
+                            if (savedNew) {
+                                Toast.makeText(this@FloatingDialogActivity, "Saved to QuickDash Clipboard", Toast.LENGTH_SHORT).show()
+                            }
+                        } finally {
+                            clipboardMutex.unlock()
                         }
                     }
                 }
@@ -366,26 +388,47 @@ class FloatingDialogActivity : FragmentActivity() {
     }
 
     private fun captureAndSaveWindowScreenshot() {
+        if (isSecureMode || com.balajitechlabs.quickdash.core.security.IncognitoManager.isIncognitoActive) {
+            Toast.makeText(this, "Screenshots are disabled in Secure / Incognito mode", Toast.LENGTH_SHORT).show()
+            return
+        }
         try {
             val rootView = window.decorView.rootView
-            val bitmap = android.graphics.Bitmap.createBitmap(rootView.width, rootView.height, android.graphics.Bitmap.Config.ARGB_8888)
+            if (rootView.width <= 0 || rootView.height <= 0) return
+
+            val bitmap = android.graphics.Bitmap.createBitmap(
+                rootView.width,
+                rootView.height,
+                android.graphics.Bitmap.Config.ARGB_8888
+            )
             val canvas = android.graphics.Canvas(bitmap)
             rootView.draw(canvas)
 
-            val filename = "QuickDash_Window_${System.currentTimeMillis()}.png"
-            val cv = android.content.ContentValues().apply {
-                put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, filename)
-                put(android.provider.MediaStore.MediaColumns.MIME_TYPE, "image/png")
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                    put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/QuickDash")
+            lifecycleScope.launch {
+                val saved = withContext(Dispatchers.IO) {
+                    try {
+                        val filename = "QuickDash_Window_${System.currentTimeMillis()}.png"
+                        val cv = android.content.ContentValues().apply {
+                            put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                            put(android.provider.MediaStore.MediaColumns.MIME_TYPE, "image/png")
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                                put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/QuickDash")
+                            }
+                        }
+                        val uri = contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv)
+                        uri?.let {
+                            contentResolver.openOutputStream(it)?.use { s ->
+                                bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, s)
+                            }
+                            true
+                        } ?: false
+                    } finally {
+                        bitmap.recycle()
+                    }
                 }
-            }
-            val uri = contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv)
-            uri?.let {
-                contentResolver.openOutputStream(it)?.use { s ->
-                    bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, s)
+                if (saved) {
+                    Toast.makeText(this@FloatingDialogActivity, "Floating window screenshot saved", Toast.LENGTH_SHORT).show()
                 }
-                Toast.makeText(this, "Floating window screenshot saved", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             Toast.makeText(this, "Screenshot failed: ${e.message}", Toast.LENGTH_SHORT).show()

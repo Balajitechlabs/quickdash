@@ -96,7 +96,8 @@ fun ClipboardScreen(
         } catch (_: Exception) {}
     }
 
-    val listType = object : TypeToken<List<String>>() {}.type
+    val listType = remember { object : TypeToken<List<String>>() {}.type }
+    val phoneRegex = remember { Regex(".*[0-9]{7,15}.*") }
     val clipboardItems = remember(clipboardJson) {
         try {
             gson.fromJson<List<String>>(clipboardJson, listType) ?: emptyList()
@@ -117,7 +118,7 @@ fun ClipboardScreen(
         when (selectedFilter) {
             "Pinned" -> pinnedItems
             "Links" -> clipboardItems.filter { it.contains("http://") || it.contains("https://") || it.contains("www.") }
-            "Phones" -> clipboardItems.filter { it.matches(Regex(".*[0-9]{7,15}.*")) }
+            "Phones" -> clipboardItems.filter { it.matches(phoneRegex) }
             "Emails" -> clipboardItems.filter { it.contains("@") && it.contains(".") }
             else -> clipboardItems
         }
@@ -229,7 +230,7 @@ fun ClipboardScreen(
                             modifier = Modifier.padding(top = 8.dp, bottom = 4.dp).animateItem()
                         )
                     }
-                    itemsIndexed(pinnedItems, key = { index, item -> "pinned:$index:$item" }) { _, item ->
+                    items(pinnedItems, key = { item -> "pinned:$item" }) { item ->
                         Box(modifier = Modifier.animateItem()) {
                             ClipboardItemCard(
                                 item = item,
