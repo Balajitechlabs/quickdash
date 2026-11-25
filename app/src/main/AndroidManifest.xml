@@ -143,10 +143,6 @@
             android:exported="false" />
 
         <service
-            android:name=".core.services.SideBarDockService"
-            android:exported="false" />
-
-        <service
             android:name=".core.services.ShakeDetectorService"
             android:foregroundServiceType="specialUse"
             android:exported="false">

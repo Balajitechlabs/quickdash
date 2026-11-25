@@ -168,7 +168,6 @@ import com.balajitechlabs.quickdash.features.password.presentation.QuickPassword
 import com.balajitechlabs.quickdash.features.voicememos.presentation.QuickVoiceMemosScreen
 import com.balajitechlabs.quickdash.features.reminders.presentation.QuickRemindersScreen
 import com.balajitechlabs.quickdash.features.qr.presentation.QuickQrScannerScreen
-import com.balajitechlabs.quickdash.features.onboarding.presentation.WelcomeOnboardingScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import android.widget.Toast
 
