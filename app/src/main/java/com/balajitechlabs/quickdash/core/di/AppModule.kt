@@ -4,13 +4,17 @@
  *
  * Feature Module: core/di
  * File: AppModule.kt
- * Description: Hilt dependency injection module binding application context, repositories, database, and client instances.
+ * Description: Hilt dependency injection module providing application-wide singletons (DataStore, Room database, DAOs, and repositories).
  * Developer: balajitechlabs
  */
 package com.balajitechlabs.quickdash.core.di
 
 import android.content.Context
 import com.balajitechlabs.quickdash.core.data.UserStore
+import com.balajitechlabs.quickdash.core.data.database.AppDatabase
+import com.balajitechlabs.quickdash.core.data.database.NoteDao
+import com.balajitechlabs.quickdash.features.notes.data.NotesRepositoryImpl
+import com.balajitechlabs.quickdash.features.notes.domain.repository.NotesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,5 +30,23 @@ object AppModule {
     @Singleton
     fun provideUserStore(@ApplicationContext context: Context): UserStore {
         return UserStore(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
+        return AppDatabase.getDatabase(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNoteDao(database: AppDatabase): NoteDao {
+        return database.noteDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotesRepository(noteDao: NoteDao): NotesRepository {
+        return NotesRepositoryImpl(noteDao)
     }
 }
