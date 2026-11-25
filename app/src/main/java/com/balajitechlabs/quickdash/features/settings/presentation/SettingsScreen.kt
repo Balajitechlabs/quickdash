@@ -205,18 +205,13 @@ fun SettingsScreen(
         )
     }
 
-    @Suppress("DEPRECATION")
     fun triggerFeedback() {
-        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as? android.media.AudioManager
-        audioManager?.playSoundEffect(android.media.AudioManager.FX_KEY_CLICK, 0.3f)
-        if (hapticDuration <= 0f) return
-        if (vibrator != null && vibrator.hasVibrator()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                vibrator.vibrate(VibrationEffect.createOneShot(hapticDuration.toLong(), VibrationEffect.DEFAULT_AMPLITUDE))
-            } else {
-                vibrator.vibrate(hapticDuration.toLong())
-            }
-        }
+        com.balajitechlabs.quickdash.core.designsystem.theme.QuickDashHaptics.perform(
+            context = context,
+            style = com.balajitechlabs.quickdash.core.designsystem.theme.QuickDashHaptics.Style.CLICK,
+            enabled = hapticDuration > 0f,
+            playSound = true
+        )
     }
 
     val totalOpens by viewModel.userStore.totalAppOpens.collectAsStateWithLifecycle(initialValue = 0L)
@@ -242,16 +237,25 @@ fun SettingsScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         if (uri != null) {
-            try {
-                val bmp = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    android.graphics.ImageDecoder.decodeBitmap(android.graphics.ImageDecoder.createSource(context.contentResolver, uri))
-                } else {
-                    @Suppress("DEPRECATION")
-                    android.provider.MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+            coroutineScope.launch {
+                val bmp = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    try {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                            android.graphics.ImageDecoder.decodeBitmap(
+                                android.graphics.ImageDecoder.createSource(context.contentResolver, uri)
+                            )
+                        } else {
+                            @Suppress("DEPRECATION")
+                            android.provider.MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                        }
+                    } catch (e: Exception) {
+                        Log.e("QuickDash", "Error decoding gallery image: ${e.message}", e)
+                        null
+                    }
                 }
-                galleryBitmap = bmp
-            } catch (e: Exception) {
-                Log.e("QuickDash", "Error occurred: ${e.message}", e)
+                if (bmp != null) {
+                    galleryBitmap = bmp
+                }
             }
         }
     }

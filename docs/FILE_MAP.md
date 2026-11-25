@@ -6,20 +6,19 @@
 | File | Module | LOC | Purpose |
 | --- | --- | ---: | --- |
 | java/com/balajitechlabs/quickdash/core/database/QuickDashDatabaseTest.kt | core/database | 103 | Instrumentation tests verifying Room database operations and schema integrity on device. |
-| java/com/balajitechlabs/quickdash/ui/DashboardScreenTest.kt | ui | 34 | Compose UI tests verifying dashboard layout rendering, tool clicks, and state handling. |
+| java/com/balajitechlabs/quickdash/ui/DashboardScreenTest.kt | ui | 43 | Compose UI tests verifying dashboard layout rendering, tool clicks, and state handling. |
 | java/com/balajitechlabs/quickdash/MainActivity.kt | root | 174 | Main application activity hosting the primary Compose entry point and Edge-to-Edge window configuration. |
 | java/com/balajitechlabs/quickdash/MainViewModel.kt | root | 105 | Primary ViewModel managing application state, active tools, navigation, and user preferences. |
 | java/com/balajitechlabs/quickdash/QuickDashApplication.kt | root | 181 | Application class configuring Hilt dependency injection, notification channels, and global crash reporting. |
-| java/com/balajitechlabs/quickdash/core/data/CryptoManager.kt | core/data | 82 | Manages AES-256-GCM Keystore encryption, unique IV generation, and tamper detection for sensitive data. |
-| java/com/balajitechlabs/quickdash/core/data/EncryptedPrefsHelper.kt | core/data | 77 | Provides an encrypted SharedPreferences wrapper for hardware-backed storage of sensitive key-value pairs. |
+| java/com/balajitechlabs/quickdash/core/data/CryptoManager.kt | core/data | 87 | Manages AES-256-GCM Keystore encryption, unique IV generation, and tamper detection for sensitive data. |
+| java/com/balajitechlabs/quickdash/core/data/EncryptedPrefsHelper.kt | core/data | 81 | Provides an encrypted SharedPreferences wrapper for hardware-backed storage of sensitive key-value pairs. |
 | java/com/balajitechlabs/quickdash/core/data/HistoryRepository.kt | core/data | 147 | Repository for persisting and querying unified tool activity, searches, and clipboard history records. |
 | java/com/balajitechlabs/quickdash/core/data/HistorySerializer.kt | core/data | 33 | JSON serialization and deserialization helpers for polymorphic history and event records. |
-| java/com/balajitechlabs/quickdash/core/data/RemoteConfigManager.kt | core/data | 24 | Remote configuration interface providing fallback defaults and client feature flag evaluation. |
 | java/com/balajitechlabs/quickdash/core/data/SecurityRepository.kt | core/data | 77 | Repository coordinating biometric authentication status, app lock state, and secure window mode. |
 | java/com/balajitechlabs/quickdash/core/data/UserStore.kt | core/data | 215 | Central DataStore preferences repository managing all user customizations, feature flags, and UI states. |
 | java/com/balajitechlabs/quickdash/core/data/UserStoreBase.kt | core/data | 184 | Foundational preferences store defining companion keys, app lifecycle metrics, and JSON backup and restore. |
 | java/com/balajitechlabs/quickdash/core/data/UserStorePayment.kt | core/data | 199 | Payment preferences store managing UPI VPA IDs, PayPal identifiers, payee names, and QR history. |
-| java/com/balajitechlabs/quickdash/core/data/UserStoreTools.kt | core/data | 461 | Preferences delegate managing tool order, clipboard, notes, chat, Wi-Fi, and cloud backups. |
+| java/com/balajitechlabs/quickdash/core/data/UserStoreTools.kt | core/data | 459 | Preferences delegate managing tool order, clipboard, notes, chat, Wi-Fi, and cloud backups. |
 | java/com/balajitechlabs/quickdash/core/data/UserStoreUi.kt | core/data | 319 | UI, theme, bubble, typography, and haptic feedback preferences manager. |
 | java/com/balajitechlabs/quickdash/core/data/backup/BackupManager.kt | core/data/backup | 356 | Handles encrypted full-data backup generation, JSON export, and atomic restoration with schema validation. |
 | java/com/balajitechlabs/quickdash/core/data/database/AppDatabase.kt | core/data/database | 39 | Room database definition maintaining tables and DAOs for local offline persistence. |
@@ -27,7 +26,12 @@
 | java/com/balajitechlabs/quickdash/core/data/database/NoteEntity.kt | core/data/database | 25 | Room entity representing an individual user note with timestamp, title, and body content. |
 | java/com/balajitechlabs/quickdash/core/data/migration/DataMigrationManager.kt | core/data/migration | 113 | Manages legacy preference migrations, schema version increments, and automated data upgrades. |
 | java/com/balajitechlabs/quickdash/core/data/prefs/PreferencesKeys.kt | core/data/prefs | 138 | Defines type-safe DataStore preference keys for theming, security, bubble controls, and tool options. |
-| java/com/balajitechlabs/quickdash/core/di/AppModule.kt | core/di | 30 | Hilt dependency injection module binding application context, repositories, database, and client instances. |
+| java/com/balajitechlabs/quickdash/core/designsystem/components/QuickDashActions.kt | core/designsystem/components | 169 | _(add description in docs/file_manifest.json)_ |
+| java/com/balajitechlabs/quickdash/core/designsystem/components/QuickDashSurface.kt | core/designsystem/components | 245 | _(add description in docs/file_manifest.json)_ |
+| java/com/balajitechlabs/quickdash/core/designsystem/theme/QuickDashHaptics.kt | core/designsystem/theme | 70 | _(add description in docs/file_manifest.json)_ |
+| java/com/balajitechlabs/quickdash/core/designsystem/theme/QuickDashShapes.kt | core/designsystem/theme | 36 | _(add description in docs/file_manifest.json)_ |
+| java/com/balajitechlabs/quickdash/core/designsystem/theme/QuickDashTokens.kt | core/designsystem/theme | 58 | _(add description in docs/file_manifest.json)_ |
+| java/com/balajitechlabs/quickdash/core/di/AppModule.kt | core/di | 52 | Hilt dependency injection module binding application context, repositories, database, and client instances. |
 | java/com/balajitechlabs/quickdash/core/navigation/QuickDashNavHost.kt | core/navigation | 57 | Composable navigation graph coordinating transitions between dashboard tools, settings, and full-screen screens. |
 | java/com/balajitechlabs/quickdash/core/navigation/QuickDashRoutes.kt | core/navigation | 27 | Defines route constants and navigation arguments for all application screens and modal destinations. |
 | java/com/balajitechlabs/quickdash/core/network/ApiConfig.kt | core/network | 24 | Network configuration constants, API endpoints, user-agent declarations, and timeout parameters. |
@@ -38,17 +42,15 @@
 | java/com/balajitechlabs/quickdash/core/network/WifiTransferServer.kt | core/network | 77 | Embedded local HTTP server facilitating direct peer-to-peer file and clipboard transfers over Wi-Fi. |
 | java/com/balajitechlabs/quickdash/core/quicktile/QrScannerTileService.kt | core/quicktile | 60 | Quick Settings tile service launching the QuickDash QR scanner instantly from the notification shade. |
 | java/com/balajitechlabs/quickdash/core/security/IncognitoManager.kt | core/security | 45 | Coordinates ephemeral sessions, disables clipboard persistence, and clears cache on activity dismissal. |
-| java/com/balajitechlabs/quickdash/core/security/PlayIntegrityManager.kt | core/security | 18 | Verifies application binary integrity, package signatures, and genuine runtime environments via Play Integrity API. |
 | java/com/balajitechlabs/quickdash/core/security/SecurityGuardManager.kt | core/security | 101 | Enforces screen security flags, detects debuggers or tampered environments, and controls biometric gating. |
-| java/com/balajitechlabs/quickdash/core/services/FloatingBubbleService.kt | core/services | 459 | Foreground service rendering the draggable floating bubble overlay window and handling touch gestures. |
-| java/com/balajitechlabs/quickdash/core/services/QuickDashNotificationListenerService.kt | core/services | 82 | Notification listener service monitoring incoming alerts to provide quick reply and notification capture. |
+| java/com/balajitechlabs/quickdash/core/services/FloatingBubbleService.kt | core/services | 475 | Foreground service rendering the draggable floating bubble overlay window and handling touch gestures. |
+| java/com/balajitechlabs/quickdash/core/services/QuickDashNotificationListenerService.kt | core/services | 96 | Notification listener service monitoring incoming alerts to provide quick reply and notification capture. |
 | java/com/balajitechlabs/quickdash/core/services/QuickTileCategoryService.kt | core/services | 52 | Quick Settings tile enabling instant toggling of category-specific floating tool panels. |
-| java/com/balajitechlabs/quickdash/core/services/QuickTileService.kt | core/services | 143 | Primary Quick Settings tile service toggling the floating bubble overlay across any active app. |
-| java/com/balajitechlabs/quickdash/core/services/ShakeDetectorService.kt | core/services | 198 | Background sensor service monitoring accelerometer events to trigger the floating overlay upon device shake. |
-| java/com/balajitechlabs/quickdash/core/services/SideBarDockService.kt | core/services | 27 | Edge-screen docked sidebar service providing slide-out access to favorite productivity shortcuts. |
+| java/com/balajitechlabs/quickdash/core/services/QuickTileService.kt | core/services | 156 | Primary Quick Settings tile service toggling the floating bubble overlay across any active app. |
+| java/com/balajitechlabs/quickdash/core/services/ShakeDetectorService.kt | core/services | 206 | Background sensor service monitoring accelerometer events to trigger the floating overlay upon device shake. |
 | java/com/balajitechlabs/quickdash/core/shizuku/ShizukuHelper.kt | core/shizuku | 92 | Bridges privileged system APIs via Shizuku without requiring root permissions. |
-| java/com/balajitechlabs/quickdash/core/ui/QuickDashApp.kt | core/ui | 583 | Root composable scaffold managing the bottom navigation, floating toolbar, theme container, and screen transitions. |
-| java/com/balajitechlabs/quickdash/core/ui/QuickDashContent.kt | core/ui | 587 | Main screen content dispatcher routing between dashboard, settings, about, and active floating tools. |
+| java/com/balajitechlabs/quickdash/core/ui/QuickDashApp.kt | core/ui | 582 | Root composable scaffold managing the bottom navigation, floating toolbar, theme container, and screen transitions. |
+| java/com/balajitechlabs/quickdash/core/ui/QuickDashContent.kt | core/ui | 591 | Main screen content dispatcher routing between dashboard, settings, about, and active floating tools. |
 | java/com/balajitechlabs/quickdash/core/ui/QuickDashUiState.kt | core/ui | 53 | Sealed interface defining active navigation states, dialog visibility, and current tool screens. |
 | java/com/balajitechlabs/quickdash/core/ui/QuickTool.kt | core/ui | 69 | Enum representing all available QuickDash productivity tools, icons, titles, and routing metadata. |
 | java/com/balajitechlabs/quickdash/core/ui/VibrationUtils.kt | core/ui | 131 | Haptic feedback helper triggering standardized click, long press, and error vibration waveforms. |
@@ -89,26 +91,27 @@
 | java/com/balajitechlabs/quickdash/core/utils/CrashRecoveryHandler.kt | core/utils | 46 | UncaughtExceptionHandler providing graceful crash recovery, diagnostic logging, and restart options. |
 | java/com/balajitechlabs/quickdash/core/utils/DialogLauncher.kt | core/utils | 29 | Intent launcher starting the floating dialog activity as a distinct document window. |
 | java/com/balajitechlabs/quickdash/core/utils/IntentUtils.kt | core/utils | 29 | Helper extensions safely launching system intents, external browsers, and dialers. |
-| java/com/balajitechlabs/quickdash/core/utils/PlayStoreHelper.kt | core/utils | 23 | Utilities for launching Play Store developer pages, reviews, and app market links. |
 | java/com/balajitechlabs/quickdash/core/utils/QRCodeGenerator.kt | core/utils | 146 | Generates high-resolution monochrome and color QR code bitmaps using ZXing. |
 | java/com/balajitechlabs/quickdash/core/utils/SemanticVersion.kt | core/utils | 106 | Parses semantic version strings and provides comparison methods for update checks. |
 | java/com/balajitechlabs/quickdash/core/utils/ShakeDetector.kt | core/utils | 45 | SensorEventListener detecting acceleration spikes and calculating shake gestures with debouncing. |
 | java/com/balajitechlabs/quickdash/core/utils/ShareUtils.kt | core/utils | 162 | Generates system share sheets for text, QR bitmaps, notes, and contact cards. |
 | java/com/balajitechlabs/quickdash/core/utils/TextCategorizer.kt | core/utils | 271 | Deterministic text categorization and context-aware quick action dispatcher. |
 | java/com/balajitechlabs/quickdash/core/utils/UpdateDownloadWorker.kt | core/utils | 74 | WorkManager worker downloading APK release assets in the background with progress reporting. |
-| java/com/balajitechlabs/quickdash/core/utils/UpdateManager.kt | core/utils | 343 | Coordinates GitHub release update queries, changelog retrieval, and installation workflows. |
+| java/com/balajitechlabs/quickdash/core/utils/UpdateManager.kt | core/utils | 429 | Coordinates GitHub release update queries, changelog retrieval, and installation workflows. |
 | java/com/balajitechlabs/quickdash/features/about/presentation/AboutScreen.kt | features/about/presentation | 164 | Developer brand screen featuring social links, project architecture notes, and update actions. |
 | java/com/balajitechlabs/quickdash/features/about/presentation/components/AboutAppHeader.kt | features/about/presentation/components | 65 | App branding header displaying the logo, title, version, and developer label. |
-| java/com/balajitechlabs/quickdash/features/about/presentation/components/AboutDeveloperProfileSection.kt | features/about/presentation/components | 265 | Developer showcase card with bio, social links, and website buttons. |
+| java/com/balajitechlabs/quickdash/features/about/presentation/components/AboutDeveloperProfileSection.kt | features/about/presentation/components | 273 | Developer showcase card with bio, social links, and website buttons. |
 | java/com/balajitechlabs/quickdash/features/about/presentation/components/AboutFeaturesCard.kt | features/about/presentation/components | 90 | Card highlighting core productivity features, open source ethos, and tool statistics. |
 | java/com/balajitechlabs/quickdash/features/about/presentation/components/AboutFloatingWebsiteBubble.kt | features/about/presentation/components | 132 | Floating bubble launcher linking to balajitechlab.com developer website. |
-| java/com/balajitechlabs/quickdash/features/about/presentation/components/AboutLegalCard.kt | features/about/presentation/components | 104 | Card displaying license terms, privacy policy link, and copyright notice. |
+| java/com/balajitechlabs/quickdash/features/about/presentation/components/AboutLegalCard.kt | features/about/presentation/components | 196 | Card displaying license terms, privacy policy link, and copyright notice. |
 | java/com/balajitechlabs/quickdash/features/about/presentation/components/AboutUpToDateSheet.kt | features/about/presentation/components | 179 | Bottom sheet confirming the application is currently running the latest release. |
 | java/com/balajitechlabs/quickdash/features/about/presentation/components/AboutUpdaterCard.kt | features/about/presentation/components | 257 | In-app updater card initiating GitHub release checks and displaying version info. |
-| java/com/balajitechlabs/quickdash/features/about/presentation/dialogs/AboutLicenseDialog.kt | features/about/presentation/dialogs | 98 | Modal dialog displaying full text of the application open-source license. |
+| java/com/balajitechlabs/quickdash/features/about/presentation/dialogs/AboutLicenseDialog.kt | features/about/presentation/dialogs | 68 | Modal dialog displaying full text of the application open-source license. |
 | java/com/balajitechlabs/quickdash/features/broadcast/data/TelegramPollerWorker.kt | features/broadcast/data | 489 | WorkManager periodic task polling the Telegram announcement channel for in-app broadcasts. |
 | java/com/balajitechlabs/quickdash/features/broadcast/domain/TelegramTracker.kt | features/broadcast/domain | 27 | Manages read receipts and polling offset counters for received broadcast messages. |
-| java/com/balajitechlabs/quickdash/features/calculator/presentation/QuickCalculatorScreen.kt | features/calculator/presentation | 580 | Floating scientific and standard calculator tool with history logging and gesture deletion. |
+| java/com/balajitechlabs/quickdash/features/calculator/domain/CalculatorEngine.kt | features/calculator/domain | 290 | _(add description in docs/file_manifest.json)_ |
+| java/com/balajitechlabs/quickdash/features/calculator/presentation/QuickCalculatorScreen.kt | features/calculator/presentation | 388 | Floating scientific and standard calculator tool with history logging and gesture deletion. |
+| java/com/balajitechlabs/quickdash/features/calculator/presentation/QuickCalculatorViewModel.kt | features/calculator/presentation | 60 | _(add description in docs/file_manifest.json)_ |
 | java/com/balajitechlabs/quickdash/features/capture/presentation/QuickCaptureScreen.kt | features/capture/presentation | 252 | Screen recording and screenshot capture controls with resolution and audio settings. |
 | java/com/balajitechlabs/quickdash/features/capture/presentation/components/AnnotatorCanvasSection.kt | features/capture/presentation/components | 258 | Drawing canvas providing pens, highlighters, shapes, and color pickers for screenshot markup. |
 | java/com/balajitechlabs/quickdash/features/capture/presentation/components/AnnotatorCanvasUtils.kt | features/capture/presentation/components | 169 | Geometry and bitmap rendering utilities for path drawing, stroke smoothing, and export. |
@@ -121,8 +124,8 @@
 | java/com/balajitechlabs/quickdash/features/chat/presentation/components/ChatSettingsView.kt | features/chat/presentation/components | 262 | Preferences panel configuring default country codes and history auto-save for WhatsApp direct chat. |
 | java/com/balajitechlabs/quickdash/features/chat/presentation/components/CountryPickerView.kt | features/chat/presentation/components | 104 | Searchable country selector sheet with dialing codes and national flags. |
 | java/com/balajitechlabs/quickdash/features/clipboard/data/ClipboardRepository.kt | features/clipboard/data | 76 | Repository managing clipboard history items, encryption, pins, and search filtering. |
-| java/com/balajitechlabs/quickdash/features/clipboard/presentation/ClipboardScreen.kt | features/clipboard/presentation | 372 | Clipboard manager screen displaying captured clips, search, auto-clean options, and copy actions. |
-| java/com/balajitechlabs/quickdash/features/clipboard/presentation/ClipboardViewModel.kt | features/clipboard/presentation | 74 | ViewModel orchestrating clipboard item queries, pinning, manual deletion, and background sync. |
+| java/com/balajitechlabs/quickdash/features/clipboard/presentation/ClipboardScreen.kt | features/clipboard/presentation | 373 | Clipboard manager screen displaying captured clips, search, auto-clean options, and copy actions. |
+| java/com/balajitechlabs/quickdash/features/clipboard/presentation/ClipboardViewModel.kt | features/clipboard/presentation | 89 | ViewModel orchestrating clipboard item queries, pinning, manual deletion, and background sync. |
 | java/com/balajitechlabs/quickdash/features/clipboard/presentation/components/ClipboardActionParser.kt | features/clipboard/presentation/components | 212 | Semantic classifier parsing clipboard text for URLs, phone numbers, UPI IDs, OTPs, and sensitive data. |
 | java/com/balajitechlabs/quickdash/features/clipboard/presentation/components/ClipboardItemCard.kt | features/clipboard/presentation/components | 231 | Card displaying clipboard snippet content, timestamp, action chips, and pin toggle. |
 | java/com/balajitechlabs/quickdash/features/clipboard/presentation/components/ClipboardLockView.kt | features/clipboard/presentation/components | 85 | Biometric lock guard protecting private clipboard history with biometric authentication. |
@@ -134,7 +137,7 @@
 | java/com/balajitechlabs/quickdash/features/converter/presentation/components/UnitConverterCard.kt | features/converter/presentation/components | 257 | Unit converter card with category chips, unit dropdown selectors, and instant result computation. |
 | java/com/balajitechlabs/quickdash/features/customizer/presentation/BubbleCustomizerScreen.kt | features/customizer/presentation | 279 | Interactive preview screen for configuring floating bubble size, opacity, glow, and animations. |
 | java/com/balajitechlabs/quickdash/features/customizer/presentation/CustomizerViewModel.kt | features/customizer/presentation | 60 | ViewModel managing bubble styling settings and persisting live adjustments to UserStore. |
-| java/com/balajitechlabs/quickdash/features/dashboard/presentation/FloatingDialogActivity.kt | features/dashboard/presentation | 403 | Overlay dialog activity hosting floating productivity tools, quick search, and gestures. |
+| java/com/balajitechlabs/quickdash/features/dashboard/presentation/FloatingDialogActivity.kt | features/dashboard/presentation | 457 | Overlay dialog activity hosting floating productivity tools, quick search, and gestures. |
 | java/com/balajitechlabs/quickdash/features/dashboard/presentation/SpotlightLauncher.kt | features/dashboard/presentation | 485 | Quick search bar and app launcher indexing installed apps, tools, and actions. |
 | java/com/balajitechlabs/quickdash/features/dashboard/presentation/components/SearchEngineChip.kt | features/dashboard/presentation/components | 60 | Selectable chip component toggling active web search engines. |
 | java/com/balajitechlabs/quickdash/features/dashboard/presentation/components/SpotlightShortcutCard.kt | features/dashboard/presentation/components | 109 | Interactive card presenting favorite and recently launched productivity tools. |
@@ -147,35 +150,16 @@
 | java/com/balajitechlabs/quickdash/features/notes/data/NotesRepositoryImpl.kt | features/notes/data | 70 | Implementation of NotesRepository querying Room database for user note persistence. |
 | java/com/balajitechlabs/quickdash/features/notes/domain/model/Note.kt | features/notes/domain/model | 19 | Domain model representing a user note with timestamp, pin state, and content. |
 | java/com/balajitechlabs/quickdash/features/notes/domain/repository/NotesRepository.kt | features/notes/domain/repository | 23 | Repository interface defining reactive CRUD operations for notes. |
-| java/com/balajitechlabs/quickdash/features/notes/presentation/QuickNotesScreen.kt | features/notes/presentation | 414 | Lightweight notes tool supporting fast scratchpad capture, markdown formatting, and sharing. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/OnboardingScreen.kt | features/onboarding/presentation | 265 | Interactive setup wizard guiding new users through permissions, theme, and payment setup. |
+| java/com/balajitechlabs/quickdash/features/notes/presentation/QuickNotesScreen.kt | features/notes/presentation | 452 | Lightweight notes tool supporting fast scratchpad capture, markdown formatting, and sharing. |
+| java/com/balajitechlabs/quickdash/features/notes/presentation/QuickNotesViewModel.kt | features/notes/presentation | 68 | _(add description in docs/file_manifest.json)_ |
 | java/com/balajitechlabs/quickdash/features/onboarding/presentation/QuickDashWelcomeScreen.kt | features/onboarding/presentation | 218 | Welcome splash screen introducing core capabilities of the floating productivity suite. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/WelcomeOnboardingScreen.kt | features/onboarding/presentation | 184 | Modern step-based onboarding screen orchestrating page progression and state persistence. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/components/AnimatedStepTransition.kt | features/onboarding/presentation/components | 42 | Composable wrapper applying slide and fade animations between onboarding steps. |
 | java/com/balajitechlabs/quickdash/features/onboarding/presentation/components/CommunityRowItem.kt | features/onboarding/presentation/components | 115 | Onboarding link row highlighting community channels and social platforms. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/components/FeatureHighlightCard.kt | features/onboarding/presentation/components | 108 | Visual presentation card showcasing individual tool features during onboarding. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/components/LivePreviewCard.kt | features/onboarding/presentation/components | 139 | Interactive preview container demonstrating real-time UI customization changes during onboarding. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/components/OnboardingScaffold.kt | features/onboarding/presentation/components | 121 | Scaffold layout framing onboarding steps with consistent navigation headers and buttons. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/components/PermissionExplanationCard.kt | features/onboarding/presentation/components | 156 | Informational card detailing required Android permissions and why each is needed. |
 | java/com/balajitechlabs/quickdash/features/onboarding/presentation/components/PermissionRowItem.kt | features/onboarding/presentation/components | 159 | Permission grant card showing permission status, explanation, and settings intent button. |
 | java/com/balajitechlabs/quickdash/features/onboarding/presentation/components/QuickDashPermissionsContent.kt | features/onboarding/presentation/components | 240 | Step view explaining required Android runtime permissions and system overlay access. |
 | java/com/balajitechlabs/quickdash/features/onboarding/presentation/components/QuickDashWelcomeHeroStep.kt | features/onboarding/presentation/components | 260 | Hero onboarding screen welcoming users with features preview and setup guide. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/components/StepDots.kt | features/onboarding/presentation/components | 56 | Animated step indicator dots displaying current progression through onboarding. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/components/StepIndicatorDots.kt | features/onboarding/presentation/components | 58 | Animated dot indicator displaying current progress through the onboarding sequence. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/components/WelcomeOnboardingDoneStep.kt | features/onboarding/presentation/components | 119 | Final onboarding step celebrating setup completion and launching the main interface. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/components/WelcomeOnboardingIntroStep.kt | features/onboarding/presentation/components | 118 | Introductory onboarding screen outlining core app capabilities. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/components/WelcomeOnboardingPermissionsStep.kt | features/onboarding/presentation/components | 202 | Permission onboarding step guiding users through granting critical overlay access. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/components/WelcomeOnboardingPreferencesStep.kt | features/onboarding/presentation/components | 154 | Preference selection step allowing initial theme and behavior customization. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/components/WelcomeOnboardingSplashStep.kt | features/onboarding/presentation/components | 104 | Branded splash screen displayed during initial first-launch experience. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/steps/CompletionStep.kt | features/onboarding/presentation/steps | 224 | Final onboarding step confirming configuration and transitioning into the main dashboard. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/steps/FontStep.kt | features/onboarding/presentation/steps | 200 | Onboarding step allowing users to select their preferred system typography scale. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/steps/PaymentSetupStep.kt | features/onboarding/presentation/steps | 314 | Onboarding step configuring the user's primary UPI ID and default payment app. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/steps/PermissionsStep.kt | features/onboarding/presentation/steps | 145 | Onboarding step requesting overlay, accessibility, and storage permissions. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/steps/ShapeStep.kt | features/onboarding/presentation/steps | 208 | Onboarding step configuring corner radius, card borders, and surface shapes. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/steps/SplashStep.kt | features/onboarding/presentation/steps | 168 | Initial visual presentation step animating the QuickDash brand icon. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/steps/ThemeStep.kt | features/onboarding/presentation/steps | 212 | Onboarding step allowing users to choose light, dark, or pitch-black AMOLED themes. |
-| java/com/balajitechlabs/quickdash/features/onboarding/presentation/steps/WelcomeStep.kt | features/onboarding/presentation/steps | 110 | Opening introduction step detailing the floating productivity suite vision. |
-| java/com/balajitechlabs/quickdash/features/password/presentation/QuickPasswordScreen.kt | features/password/presentation | 284 | Cryptographically secure random password and passphrase generator with entropy scoring. |
+| java/com/balajitechlabs/quickdash/features/password/domain/PasswordGenerator.kt | features/password/domain | 48 | _(add description in docs/file_manifest.json)_ |
+| java/com/balajitechlabs/quickdash/features/password/presentation/QuickPasswordScreen.kt | features/password/presentation | 236 | Cryptographically secure random password and passphrase generator with entropy scoring. |
+| java/com/balajitechlabs/quickdash/features/password/presentation/QuickPasswordViewModel.kt | features/password/presentation | 95 | _(add description in docs/file_manifest.json)_ |
 | java/com/balajitechlabs/quickdash/features/pomodoro/presentation/QuickPomodoroScreen.kt | features/pomodoro/presentation | 225 | Pomodoro focus timer tool with interval tracking, ambient white noise, and break alerts. |
 | java/com/balajitechlabs/quickdash/features/qr/presentation/CustomCaptureActivity.kt | features/qr/presentation | 305 | Custom camera capture activity integrating tap-to-focus, zoom toggle, and reticle overlays. |
 | java/com/balajitechlabs/quickdash/features/qr/presentation/EnterAmountScreen.kt | features/qr/presentation | 435 | Fast amount entry screen generating dynamic UPI QR codes for merchant collection. |
@@ -184,18 +168,20 @@
 | java/com/balajitechlabs/quickdash/features/qr/presentation/QrScanActivity.kt | features/qr/presentation | 32 | Activity hosting the camera viewfinder for rapid scanning of barcodes and QR codes. |
 | java/com/balajitechlabs/quickdash/features/qr/presentation/QrViewModel.kt | features/qr/presentation | 39 | ViewModel managing UPI QR generation, scan result parsing, and scan history persistence. |
 | java/com/balajitechlabs/quickdash/features/qr/presentation/QuickContactQrScreen.kt | features/qr/presentation | 245 | Tool generating vCard QR codes for sharing contact cards without cellular network exchange. |
-| java/com/balajitechlabs/quickdash/features/qr/presentation/QuickQrScannerScreen.kt | features/qr/presentation | 170 | Full QR code scanner and generator screen with recent scan history and payload actions. |
+| java/com/balajitechlabs/quickdash/features/qr/presentation/QuickQrScannerScreen.kt | features/qr/presentation | 206 | Full QR code scanner and generator screen with recent scan history and payload actions. |
 | java/com/balajitechlabs/quickdash/features/qr/presentation/SetupScreen.kt | features/qr/presentation | 446 | Configuration screen for setting up primary merchant UPI ID and payee details. |
 | java/com/balajitechlabs/quickdash/features/qr/presentation/ShowQrScreen.kt | features/qr/presentation | 380 | High-contrast full-brightness display screen presenting generated QR codes for scanning. |
 | java/com/balajitechlabs/quickdash/features/qr/presentation/components/QrRecentScansSection.kt | features/qr/presentation/components | 148 | Section displaying recently scanned QR codes and barcodes with quick action triggers. |
 | java/com/balajitechlabs/quickdash/features/qr/presentation/components/QrResultCard.kt | features/qr/presentation/components | 214 | Semantic result card presenting parsed QR code metadata, attributes, and actions. |
 | java/com/balajitechlabs/quickdash/features/qr/presentation/components/QrScannerHeroPod.kt | features/qr/presentation/components | 176 | Hero card presenting camera scanner launch and on-screen barcode image picker. |
-| java/com/balajitechlabs/quickdash/features/qr/utils/QrActionHelper.kt | features/qr/utils | 166 | Intents and dispatchers executing primary contextual actions for scanned QR codes. |
+| java/com/balajitechlabs/quickdash/features/qr/utils/QrActionHelper.kt | features/qr/utils | 187 | Intents and dispatchers executing primary contextual actions for scanned QR codes. |
 | java/com/balajitechlabs/quickdash/features/qr/utils/QrPayloadParser.kt | features/qr/utils | 263 | Parses QR and barcode payloads into structured types (UPI, Wi-Fi, vCard, URLs). |
 | java/com/balajitechlabs/quickdash/features/qr/utils/QrScannerHelper.kt | features/qr/utils | 74 | Helper managing camera permissions, ZXing scanner intent dispatch, and result extraction. |
-| java/com/balajitechlabs/quickdash/features/reminders/presentation/QuickRemindersScreen.kt | features/reminders/presentation | 175 | Quick reminder tool scheduling system alarms and notifications with natural time presets. |
-| java/com/balajitechlabs/quickdash/features/search/presentation/QuickSearchScreen.kt | features/search/presentation | 511 | Universal web and device search screen querying multiple search engines with history. |
-| java/com/balajitechlabs/quickdash/features/search/presentation/QuickWebScreen.kt | features/search/presentation | 266 | Embedded lightweight web viewer displaying search results and web tools inside the overlay. |
+| java/com/balajitechlabs/quickdash/features/reminders/presentation/QuickRemindersScreen.kt | features/reminders/presentation | 188 | Quick reminder tool scheduling system alarms and notifications with natural time presets. |
+| java/com/balajitechlabs/quickdash/features/search/data/SearchSuggestionRepository.kt | features/search/data | 55 | _(add description in docs/file_manifest.json)_ |
+| java/com/balajitechlabs/quickdash/features/search/presentation/QuickSearchScreen.kt | features/search/presentation | 487 | Universal web and device search screen querying multiple search engines with history. |
+| java/com/balajitechlabs/quickdash/features/search/presentation/QuickSearchViewModel.kt | features/search/presentation | 58 | _(add description in docs/file_manifest.json)_ |
+| java/com/balajitechlabs/quickdash/features/search/presentation/QuickWebScreen.kt | features/search/presentation | 269 | Embedded lightweight web viewer displaying search results and web tools inside the overlay. |
 | java/com/balajitechlabs/quickdash/features/settings/presentation/AppPermissionsPreferenceGroup.kt | features/settings/presentation | 331 | Settings section displaying permission statuses and direct system settings links. |
 | java/com/balajitechlabs/quickdash/features/settings/presentation/BackupRestoreDialog.kt | features/settings/presentation | 536 | Dialog managing local encrypted backup creation, file exports, and restoration. |
 | java/com/balajitechlabs/quickdash/features/settings/presentation/BlogPostsScreen.kt | features/settings/presentation | 277 | Screen displaying developer announcements, update notes, and tutorials. |
@@ -240,10 +226,13 @@
 | java/com/balajitechlabs/quickdash/widget/ToggleBubbleReceiver.kt | widget | 69 | BroadcastReceiver handling widget taps to toggle the floating bubble service. |
 | java/com/balajitechlabs/quickdash/core/data/CryptoManagerTest.kt | core/data | 123 | Unit tests verifying AES-256-GCM encryption, IV uniqueness, and authentication tag validation. |
 | java/com/balajitechlabs/quickdash/core/data/HistoryRepositoryTest.kt | core/data | 92 | Unit tests for history repository querying, persistence, and clear operations. |
-| java/com/balajitechlabs/quickdash/core/data/SecurityRepositoryTest.kt | core/data | 58 | Unit tests verifying security settings persistence and biometric lock logic. |
+| java/com/balajitechlabs/quickdash/core/data/SecurityRepositoryTest.kt | core/data | 71 | Unit tests verifying security settings persistence and biometric lock logic. |
 | java/com/balajitechlabs/quickdash/core/data/UserStoreTest.kt | core/data | 60 | Unit tests verifying DataStore preference reading, writing, and flow emission. |
 | java/com/balajitechlabs/quickdash/core/data/backup/BackupManagerTest.kt | core/data/backup | 230 | Unit tests for encrypted backup export, JSON formatting, and atomic restoration. |
+| java/com/balajitechlabs/quickdash/core/utils/SemanticVersionTest.kt | core/utils | 30 | _(add description in docs/file_manifest.json)_ |
 | java/com/balajitechlabs/quickdash/core/utils/TextCategorizerTest.kt | core/utils | 76 | Unit tests for deterministic text classification, math evaluation, and edge cases. |
+| java/com/balajitechlabs/quickdash/features/calculator/domain/CalculatorEngineTest.kt | features/calculator/domain | 57 | _(add description in docs/file_manifest.json)_ |
+| java/com/balajitechlabs/quickdash/features/password/domain/PasswordGeneratorTest.kt | features/password/domain | 39 | _(add description in docs/file_manifest.json)_ |
 | java/com/balajitechlabs/quickdash/features/qr/utils/QrPayloadParserTest.kt | features/qr/utils | 150 | Unit tests verifying QR and barcode payload parsing across UPI, Wi-Fi, vCard, and web URLs. |
 | java/com/balajitechlabs/quickdash/viewmodel/ClipboardViewModelTest.kt | viewmodel | 58 | Unit tests verifying clipboard item management, search filtering, and deletion. |
 | java/com/balajitechlabs/quickdash/viewmodel/MainViewModelTest.kt | viewmodel | 70 | Unit tests verifying MainViewModel tool dispatching, navigation, and state updates. |

@@ -236,7 +236,7 @@ fun QuickDashContent(
             val targetWindowHeight = when (uiState) {
                 QuickDashUiState.Dashboard, QuickDashUiState.Settings, QuickDashUiState.About -> 660.dp
                 QuickDashUiState.WhatsApp, QuickDashUiState.Instagram -> 490.dp
-                QuickDashUiState.Timer, QuickDashUiState.Wifi, QuickDashUiState.Hotspot -> 460.dp
+                QuickDashUiState.Timer, QuickDashUiState.Wifi -> 460.dp
                 QuickDashUiState.Calculator -> 520.dp
                 QuickDashUiState.Notes, QuickDashUiState.Reminders, QuickDashUiState.Clipboard -> 580.dp
                 is QuickDashUiState.ShowQr, is QuickDashUiState.EnterAmount, is QuickDashUiState.Setup -> 540.dp

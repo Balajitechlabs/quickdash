@@ -65,8 +65,8 @@ fun PreferenceGroup(
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 5.dp),
         shape = RoundedCornerShape(24.dp),
-        color = Color(0xFF38393F),
-        border = BorderStroke(1.dp, Color(0xFF44474F).copy(alpha = 0.6f)),
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
         tonalElevation = 0.dp
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {

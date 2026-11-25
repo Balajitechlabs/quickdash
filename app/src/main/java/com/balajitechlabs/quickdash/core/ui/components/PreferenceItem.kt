@@ -32,12 +32,11 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.balajitechlabs.quickdash.core.ui.theme.ColorUtil
 
 /**
  * EssentialX / QuickDash Material 3 Expressive Preference Row.
  * Features:
- * - Deterministic pastel circle icon badge with vibrant tint
+ * - Material You semantic badge container (`secondaryContainer` / `onSecondaryContainer`)
  * - Crisp bold typography and high-contrast subtitle
  * - Clean trailing action slots (Switch, Badge, Arrow)
  *
@@ -54,8 +53,8 @@ fun PreferenceItem(
     onClick: (() -> Unit)? = null,
     trailing: @Composable (() -> Unit)? = null
 ) {
-    val pastelBg = iconContainerColor ?: Color(0xFF2A2B30)
-    val vibrantIcon = iconColor ?: Color.White
+    val pastelBg = iconContainerColor ?: MaterialTheme.colorScheme.secondaryContainer
+    val vibrantIcon = iconColor ?: MaterialTheme.colorScheme.onSecondaryContainer
 
     val leadingContent: (@Composable () -> Unit)? = when {
         iconVector != null -> ({

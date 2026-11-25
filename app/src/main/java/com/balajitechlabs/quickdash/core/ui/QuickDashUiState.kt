@@ -32,15 +32,12 @@ sealed interface QuickDashUiState {
     data object Search : QuickDashUiState
     data object Web : QuickDashUiState
     data object Wifi : QuickDashUiState
-    data object Hotspot : QuickDashUiState
-    data object ApiPanel : QuickDashUiState
     data object Clipboard : QuickDashUiState
     data object Calculator : QuickDashUiState
     data object Timer : QuickDashUiState
     data object Converter : QuickDashUiState
     data object Translator : QuickDashUiState
     data object Capture : QuickDashUiState
-    data object FirebaseSetup : QuickDashUiState
     data object BlogPosts : QuickDashUiState
     data object Pomodoro : QuickDashUiState
     data object Password : QuickDashUiState
